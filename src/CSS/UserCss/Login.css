@@ -1,0 +1,206 @@
+.login-page {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: relative; /* Ensure relative positioning */
+}
+
+.logo-image {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    height: auto;
+    max-width: 30%;
+    z-index: 999;
+}
+
+.label-container {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #782324;
+    font-size: 24px;
+    z-index: 999;
+}
+
+.label-text {
+    margin-top: 170px;
+}
+
+.logo-image1 {
+    position: absolute;
+    top: 150px;
+    right: -100px;
+    height: 1000px;
+    max-width: 1000px;
+    z-index: 100;
+    filter: grayscale(100%);
+    opacity: 0.2;
+}
+
+.login-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex: 1; /* Fill remaining vertical space */
+}
+
+.login-container {
+    background-color: #CBC3C3;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 550px;
+    min-height: 400px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 999;
+    margin-top: 20px; /* Adjust as needed */
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-form h2 {
+    margin-bottom: 40px;
+    font-size: 24px;
+    color: black;
+    text-align: center;
+}
+
+.input-group {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+.input-group .icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: black;
+    font-size: 14px;
+    left: 15px;
+    z-index: 1;
+}
+
+.input-group .toggle-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: black;
+    font-size: 14px;
+    z-index: 1;
+}
+
+.input-group input {
+    width: 100%; /* Adjust based on icon and toggle icon width */
+    padding: 12px;
+    padding-left: 40px;
+    padding-right: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: black;
+    background-color: white;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        width: 450px;
+        min-height: 320px;
+    }
+
+    .input-group .icon {
+        font-size: 18px;
+        left: 8px;
+    }
+
+    .input-group input {
+        padding-left: 32px;
+        padding-right: 32px;
+        font-size: 14px;
+    }
+
+    .logo-image {
+        width: 80%;
+        max-width: 350px;
+    }
+    .label-text{
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        width: 300px;
+        min-height: 280px;
+    }
+
+    .input-group .icon {
+        font-size: 16px;
+        left: 6px;
+    }
+
+    .input-group input {
+        padding-left: 28px;
+        padding-right: 28px;
+        font-size: 13px;
+    }
+
+    .logo-image {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        max-height: 100px;
+    }
+}
+
+.login-button,
+.clear-button {
+    width: 100%;
+    padding: 8px;
+    background-color: #782324;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover,
+.clear-button:hover {
+    background-color: rgb(68, 0, 0);
+    color: gold;
+}
+
+.clear-button {
+    margin-top: 10px;
+    background-color: gold;
+    color: #782324;
+    transition: background-color 0.3s ease;
+}
+
+.clear-button:hover {
+    background-color: rgb(255, 225, 54);
+    color: #782324;
+}

@@ -1,0 +1,96 @@
+/* src/components/Header.css */
+.header {
+  position: fixed;
+  width: 100%;
+  height: 65px;
+  top: 0;
+  left: 0;
+  background-color: #782324;
+  color: white;
+  text-align: center;
+  z-index: 1000; 
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-logo {
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 50px;
+  padding: 15px;
+  background-color: gold;
+}
+
+.header h2 {
+  margin: 0;
+}
+
+.header-right {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.greeting {
+  margin-right: 90px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.logout-button {
+  background-color: gold;
+  color: #782324;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  z-index: 1001;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.logout-button:hover {
+  background-color: rgb(255, 255, 255);
+  transition: background-color 0.3s;
+}
+
+.logout-text {
+  display: block;
+}
+
+.logout-icon {
+  display: none;
+  font-size: 24px;
+}
+
+@media (max-width: 767px) {
+  .header h2 {
+    font-size: 17px;
+  }
+
+  .logout-text {
+    display: none;
+  }
+
+  .logout-icon {
+    display: block;
+  }
+
+  .header-logo {
+    display: none;
+  }
+
+  .header {
+    width: 100%;
+  }
+  .greeting{
+    display: none;
+  }
+}

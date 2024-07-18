@@ -1,0 +1,292 @@
+/* UserSide.css */
+
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: white;
+  font-family: 'Poppins', sans-serif;
+  color: black;
+  
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-y: hidden;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+}
+
+.content {
+  padding: 20px;
+  flex: 1;
+  margin-left: 300px;
+  margin-top: 50px;
+}
+
+.container {
+  display: flex;
+}
+
+.vehicle-list {
+  background-color: #CBC3C3;
+  height: 650px;
+  width: 800px;
+  border-radius: 10px;
+  padding: 10px;
+  margin-right: 20px;
+  overflow-y: auto;
+  z-index: 999;
+}
+
+.another-container {
+  background-color: #CBC3C3; 
+  flex: 1; 
+  border-radius: 10px;
+  padding: 10px;
+  height: 650px;
+  width: 700px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 10px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.image-item {
+  display: flex;
+}
+
+.image-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: solid #782324;
+}
+
+.image-item img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.large-image {
+  grid-column: span 2;
+  height: 390px;
+}
+
+.vehicle-item {
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.vehicle-info {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.vehicle-image {
+  width: 300px;
+  height: auto;
+  margin-right: 20px;
+  border-radius: 5px;
+  object-fit: cover;
+  border: solid #782324;
+}
+
+.vehicle-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.vehicle-text h2 {
+  color: #782324;
+  font-size: 26px;
+  margin-bottom: 40px;
+}
+
+.vehicle-text h2, .vehicle-text p {
+  margin: 5px 0;
+}
+
+.vehicle-text p {
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+}
+
+.btn-inline {
+  padding: 8px 12px;
+  background-color: #782324;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px;
+  transition: background-color 0.3s;
+  font-weight: 800;
+}
+
+.btn-inline:hover {
+  background-color: gold;
+  color: #782324;
+}
+
+.instruction-and-button {
+  display: flex;
+  align-items: center;
+}
+
+.btn-beside-text {
+  padding: 8px 18px;
+  background-color: gold;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 170px;
+  transition: background-color 0.3s;
+  font-weight: 800;
+  z-index: 999;
+  font-size: 16px;
+  color: #782324;
+  border: solid #782324;
+}
+
+.btn-beside-text:hover {
+  background-color: #782324;
+  color: gold;
+  border: solid gold;
+}
+
+.btn-right-corner {
+  padding: 10px 16px;
+  background-color: #782324;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  align-self: flex-end;
+  margin-left: 50px;
+  transition: background-color 0.3s;
+  font-weight: 800;
+}
+
+.btn-right-corner:hover {
+  background-color: gold;
+  color: #782324;
+}
+
+.content h1 {
+  font-size: 32px;
+}
+
+.slider-buttons {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  padding: 0 10px;
+}
+
+.prev-button, .next-button {
+  padding: 10px 13px;
+  background-color: #782324;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.prev-button:hover, .next-button:hover {
+  background-color: gold;
+  color: #782324;
+}
+
+@media (max-width: 767px) {
+  .content {
+    margin-left: 0;
+    padding-top: 60px;
+    
+  }
+  .vehicle-list {
+    height: 800px;
+    width: 100%; /* Take full width */
+    margin-left: 40px;
+    max-width: 1000px; /* Limit maximum width if necessary */
+  }
+  .vehicle-image {
+    width: 120px;
+  }
+  .vehicle-text p {
+    font-size: 14px;
+  }
+  .vehicle-text h2 {
+    font-size: 18px;
+  }
+  .btn-right-corner {
+    padding: 10px 10px;
+    margin-left: 55px; /* Adjust as needed */
+    font-size: 12px;
+  }
+  .btn-beside-text {
+ 
+    font-size: 14px;
+    width: 200px;
+    height: 60px;
+  }
+  .container {
+    flex-direction: column; 
+    align-items: center;
+    height: 1000px; 
+  }
+  .another-container {
+    margin-top: 20px; /* Adjust margin as needed */
+    width: 100%; /* Take full width */
+    max-width: 700px; /* Limit maximum width if necessary */
+  }
+}
+
+
+
+.logo-image1 {
+  position: fixed;
+  top: 150px;
+  right: -100px;
+  height: 1000px;
+  max-width: 1000px;
+  z-index: 1;
+  filter: grayscale(100%);
+  opacity: 0.2;
+}

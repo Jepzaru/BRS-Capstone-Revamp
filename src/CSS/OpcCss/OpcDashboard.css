@@ -1,0 +1,132 @@
+/* UserSide.css */
+
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: white;
+    font-family: 'Poppins', sans-serif;
+    color: black;
+    z-index: -999;
+}
+
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.dashboard-content1 {
+    display: flex;
+    flex: 1;
+}
+
+.dashboard1 {
+    padding: 20px;
+    flex: 1;
+    margin-left: 300px;
+    margin-top: 50px;
+}
+
+.dashboard1 h1 {
+    font-size: 32px;
+}
+
+.dashboard-logo-image {
+    position: fixed;
+    top: 150px;
+    right: -100px;
+    height: 1000px;
+    max-width: 1000px;
+    z-index: -1;
+    filter: grayscale(100%);
+    opacity: 0.2;
+}
+
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.container-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    width: 65%;
+    margin-bottom: 0; /* Ensure no bottom margin */
+}
+
+.dashcontainer1, .dashcontainer2, .dashcontainer3 {
+    position: relative;
+    flex: 1;
+    padding: 10px;
+    background-color: #ddd;
+    box-sizing: border-box;
+    margin-right: 10px;
+    border-radius: 10px;
+    height: 85px;
+}
+
+.dashcontainer3 {
+    margin-right: 0; /* Remove margin from the last container */
+}
+
+.number-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #782324;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.calendar-container {
+    flex: 1;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    margin-left: 10px;
+    height: 50px; /* Match the height of container-wrapper */
+}
+
+.full-width-container {
+    margin-top: 20px; /* Adjust the top margin */
+    width: 65%;
+    padding: 10px;
+    background-color: #ddd;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+.additional-container {
+    margin-top: 20px; /* Adjust margin as needed */
+    padding: 10px;
+    background-color: #ddd;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+@media (max-width: 767px) {
+    .dashboard-content1 {
+        margin-left: -300px;
+    }
+    .calendar-container{
+        display: none;
+    }
+    .dashcontainer1, .dashcontainer2, .dashcontainer3{
+        width: 290px;
+        font-size: 14px;
+    }
+    .number-badge{
+        font-size: 14px;
+        padding: 5px 10px;
+        margin-top: 15px;
+    }
+}

@@ -1,0 +1,331 @@
+/* UserSide.css */
+
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: white;
+    font-family: 'Poppins', sans-serif;
+    color: black;
+    z-index: -999;
+}
+
+.reservation-app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.reservation-main-content {
+    display: flex;
+    flex: 1;
+}
+
+.reservation-content {
+    padding: 20px;
+    flex: 1;
+    margin-left: 300px;
+    margin-top: 50px;
+}
+
+.reservation-content h1 {
+    font-size: 32px;
+}
+
+.logo-image4 {
+    position: fixed;
+    top: 150px;
+    right: -100px;
+    height: 1000px;
+    max-width: 1000px;
+    z-index: -1;
+    filter: grayscale(100%);
+    opacity: 0.2;
+}
+
+.reservation-container {
+    display: flex;
+    background-color: #CBC3C3;
+    width: 100%;
+    max-width: 1400px;
+    border-radius: 10px;
+    padding: 20px;
+    margin-right: 20px;
+    overflow-y: auto;
+    z-index: 999;
+}
+
+.trip-type label {
+    margin-right: 15px;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+
+.reservation-form {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group-inline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    font-weight: 600;
+}
+
+.form-group-inline .form-group {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.form-group-inline .form-group:last-child {
+    margin-right: 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    border: none;
+    margin-top: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+}
+.dropdown-field {
+    padding: 8px; 
+    border-radius: 5px; 
+    border: 1px solid #ccc; 
+    font-size: 16px; 
+    width: 100%; 
+    margin-top: 3px;
+    box-sizing: border-box; 
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+  }
+
+.submit-button {
+    padding: 10px 15px;
+    background-color: #782324;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+.trip-type label {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 20px;
+    cursor: pointer; /* Change cursor to pointer for better UX */
+  }
+  
+  .trip-type input[type="radio"] {
+    display: none; /* Hide the default radio button */
+  }
+  
+  .trip-type input[type="radio"] + span {
+    position: relative;
+    padding-left: 30px; /* Space for custom radio button */
+    font-size: 16px; /* Text size */
+  }
+  
+  .trip-type input[type="radio"] + span:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #782324;
+    border-radius: 50%;
+    background-color: #fff;
+    transition: border-color 0.3s; /* Smooth transition for border color */
+  }
+  
+  .trip-type input[type="radio"]:checked + span:before {
+    background-color: #782324; 
+  }
+  
+  .trip-type input[type="radio"]:checked + span:after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: gold; /* Inner dot color */
+    border-radius: 50%; /* Inner dot shape */
+  }
+  
+  .trip-type label:hover span:before {
+    border-color: #782324; /* Border color on hover */
+  }
+  
+  .trip-type label:hover span {
+    color: #782324; /* Text color on hover */
+  }
+  
+
+@media (max-width: 767px) {
+    .reservation-content {
+        margin-left: 10px;
+    }
+    .reservation-container {
+        width: 90%;
+    }
+    .form-group-inline {
+        flex-direction: column;
+    }
+    .form-group-inline .form-group {
+        margin-right: 0;
+        width: 100%;
+    }
+}
+
+/* Reservation.css */
+
+.calendar-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    z-index: 1000; /* Ensure modal is on top of other content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .calendar-modal-content {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .submit-button, .reset-button {
+    padding: 10px 15px;
+    background-color: #782324;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    width: 49%;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  
+  .reset-button {
+    background-color: gold;
+    color: #782324;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .submit-button:hover{
+    background-color: #431314;
+    transition: background-color 0.3s;
+  }
+
+  .reset-button:hover{
+    background-color: rgb(252, 222, 51);
+    transition: background-color 0.3s;
+    transition: color 0.3s;
+    color: red;
+    
+  }
+  .form-group input[type="file"]{
+    background-color: white;
+    padding: 8px;
+    margin-top: 5px;
+    width: 450px;
+    border-radius: 5px;
+  }
+  #approvalProof button{
+    background-color: #782324;
+  }
+
+  .summary-container {
+    flex: 1; /* Add this */
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    margin-left: 20px;
+}
+.reservation-reason-textarea {
+  width: 100%; /* Adjust the width as needed */
+  height: 170px; /* Adjust the height as needed */
+  padding: 8px;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  border: 1px solid #ccc; /* Add border */
+  margin-top: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+.summary-item {
+    margin-bottom: 10px;
+}
+
+.back-btn{
+  background-color: #782324;
+  border-radius: 5px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  margin-left: 60px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.back-btn:hover{
+  background-color: #431314;
+  transition: background-color 0.3s;
+}
+
+@media (max-width: 767px) {
+  .reservation-container {
+      flex-direction: column;
+  }
+  .reservation-form {
+      margin-right: 0;
+  }
+  .summary-container {
+      margin-left: 0;
+      margin-top: 20px;
+  }
+  .reservation-reason-textarea {
+    width: 100%;
+  }
+}
