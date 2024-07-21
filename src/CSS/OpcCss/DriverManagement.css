@@ -91,6 +91,86 @@ body, html {
     filter: grayscale(100%);
     opacity: 0.2;
   }
+  .add-driver-btn{
+    background-color: #782324;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 20px;
+    color: white;
+    font-size: 16px;
+    margin-left: 20px;
+    cursor: pointer;
+  }
+  .add-driver-btn:hover{
+    background-color: #5b1a1a;
+    transition: background-color 0.3s;
+    font-weight: 700;
+  }
+  .driver-list-container{
+    background-color: #ddd;
+    width: 900px;
+    height: 680px;
+    border-radius: 10px;
+    
+  }
+  .driver-list-container {
+    background-color: #CBC3C3;
+    width: 900px;
+    height: 680px;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .driver-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    height: 700px;
+    overflow: auto;
+  }
+  
+  .driver-table th, .driver-table td {
+    border: none;
+    padding: 12px;
+  }
+  
+  .driver-table th {
+    background-color: #ddd;
+    font-size: 14px;
+  }
+  
+  .driver-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .driver-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .update-button, .delete-button {
+    background-color: #782324;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    margin-right: 5px;
+  }
+  
+  .update-button:hover, .delete-button:hover {
+    background-color: #5b1a1a;
+  }
+  
+  .no-driver {
+    font-size: 20px;
+    color: #782324;
+    font-weight: 600;
+    text-align: center;
+  }
   
   
   @media (max-width: 767px) {

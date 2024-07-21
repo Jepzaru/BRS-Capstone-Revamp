@@ -52,7 +52,7 @@ const OpcRequests = () => {
                 onChange={handleSearchChange}
                 className="search-bar"
               />
-              <button onClick={handleSearchClick} className="search-button"><IoSearch style={{marginBottom: "-3px"}}/></button>
+              <button onClick={handleSearchClick} className="search-button"><IoSearch style={{marginBottom: "-3px"}}/> Search</button>
               <FaSortAlphaDown style={{color: "#782324"}}/>
               <select onChange={handleSortChange} className="sort-dropdown">
                 <option value="">Sort By</option>
