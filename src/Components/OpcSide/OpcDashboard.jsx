@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
-import Calendar from '../../Components/UserSide/Calendar';
+import OpcCalendar from './OpcCalendar';
 import { MdDashboard } from "react-icons/md";
 import { FaFileLines } from "react-icons/fa6";
 import { FaBus } from "react-icons/fa";
@@ -88,7 +88,7 @@ const OpcDashboard = () => {
               </div>
             </div>
             <div className="calendar-container">
-              <Calendar />
+              <OpcCalendar />
             </div>
           </div>
           <div className="full-width-container">

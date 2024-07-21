@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client'; // Correct import for createRoot
+import ReactDOM from 'react-dom/client'; 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './Components/UserSide/Login';
 import ManageRequests from './Components/UserSide/ManageRequest';
@@ -11,6 +11,9 @@ import Reservation from './Components/UserSide/Reservation'
 import HeadSide from './Components/HeadSide/HeadSide'
 import OpcDashboard from './Components/OpcSide/OpcDashboard'
 import OpcRequests from './Components/OpcSide/OpcRequests'
+import VehicleManagement from './Components/OpcSide/VehicleManagement'
+import DriverManagement from './Components/OpcSide/DriverManagement'
+import OpcSettings from './Components/OpcSide/OpcSettings'
 
 const Main = () => {
   return (
@@ -26,6 +29,9 @@ const Main = () => {
         <Route path="/user-side/reservation" element={<Reservation/>} />
         <Route path="/dashboard" element={<OpcDashboard/>} />
         <Route path="/opc-requests" element={<OpcRequests/>} />
+        <Route path="/vehicle-management" element={<VehicleManagement/>} />
+        <Route path="/driver-management" element={<DriverManagement/>} />
+        <Route path="/opc-settings" element={<OpcSettings/>} />
       </Routes>
     </BrowserRouter>
   );

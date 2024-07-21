@@ -1,0 +1,113 @@
+*{
+    font-family: 'Poppins', sans-serif;
+   }
+  
+  .opc-calendar {
+    padding: 30px;
+    width: 450px;
+    background-color: #ddd; 
+    border-radius: 15px;
+  }
+    
+  .opc-calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+  
+  .opc-calendar-nav button {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+  
+  .opc-calendar-month {
+    font-weight: bold;
+    font-size: 18px;
+    color: black;
+    border-radius: 10px;
+    background-color: #ffcc00;
+    border: 2px solid black;
+    padding: 10px 50px;
+  }
+  
+  .opc-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+  
+  .opc-calendar-day-name{
+    text-align: center;
+    padding: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 10px;
+    background-color: #782324;
+    color: white;
+  }
+  .opc-calendar-day{
+    text-align: center;
+    padding: 5px;
+    padding: 10px;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
+  }
+  
+  .opc-calendar-day.active {
+    background-color: #ffcc00;
+    border: 2px solid black;
+    font-weight: bold;
+  }
+  .opc-calendar-day:hover{
+    background-color:  #782324;
+    transition: background-color 0.3s;
+    font-weight: 700;
+    color: white
+  
+  }
+  .calendar-events-content{
+    background-color: white;
+    height: 210px;
+    border-radius: 10px;
+  }
+  .event-btn{
+    background-color: #782324;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    margin-left: 70px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .event-btn:hover{
+    background-color: gold;
+    color: #782324;
+  }
+  
+  .previous{
+    font-weight: 900;
+  }
+  .next{
+    font-weight: 900;
+  }
+  .previous:hover{
+    background-color: #782324;
+    transition: background-color 0.3s;
+    color: #ffcc00;
+  }
+  .next:hover{
+    background-color: #782324;
+    transition: background-color 0.3s;
+    color: #ffcc00;
+  }
+  .calendar-day.past {
+    opacity: 0.5;
+  }
+  
