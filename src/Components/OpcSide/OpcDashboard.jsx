@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -10,17 +10,28 @@ import { GiCarSeat } from "react-icons/gi";
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import '../../CSS/OpcCss/OpcDashboard.css';
+import LoadingScreen from '../../Components/UserSide/LoadingScreen'; 
 
 // Register the necessary components with ChartJS
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const OpcDashboard = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const data = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     datasets: [
       {
         label: 'Number of Requests',
-        data: [12, 19, 3, 5, 2, 3, 10, 15, 8, 12, 7, 6], // Example data
+        data: [12, 19, 3, 5, 2, 3, 10, 15, 8, 12, 7, 6], 
         backgroundColor: (context) => {
           const value = context.dataset.data[context.dataIndex];
           return value < 10 ? 'gold' : '#782324';
@@ -36,6 +47,10 @@ const OpcDashboard = () => {
       },
     },
   };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="dashboard">

@@ -10,6 +10,7 @@ import HeadSettings from './Components/HeadSide/HeadSettings';
 import Reservation from './Components/UserSide/Reservation'
 import HeadSide from './Components/HeadSide/HeadSide'
 import OpcDashboard from './Components/OpcSide/OpcDashboard'
+import OpcRequests from './Components/OpcSide/OpcRequests'
 
 const Main = () => {
   return (
@@ -24,6 +25,7 @@ const Main = () => {
         <Route path="/head-side" element={<HeadSide/>} />
         <Route path="/user-side/reservation" element={<Reservation/>} />
         <Route path="/dashboard" element={<OpcDashboard/>} />
+        <Route path="/opc-requests" element={<OpcRequests/>} />
       </Routes>
     </BrowserRouter>
   );

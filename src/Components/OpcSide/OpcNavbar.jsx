@@ -26,7 +26,7 @@ const OpcNavbar = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/Requests" activeClassName="active-link">
+            <NavLink to="/opc-requests" activeClassName="active-link">
               < FaFileLines style={{ marginRight: "15px", marginBottom: "-2px" }} />Requests
             </NavLink>
           </li>
