@@ -34,13 +34,6 @@ body {
   font-size: 32px;
 }
 
-.opc-request-container1 {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start; /* Align to the left */
-  margin-bottom: 20px; /* Add some spacing below the header */
-}
-
 .search-container {
   display: flex;
   align-items: center;
@@ -212,10 +205,10 @@ body {
 .vehicle-modal {
   background-color: white;
   padding: 20px;
-  height: 300px;
+  height: 370px;
   width: 500px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(9, 5, 5, 0.1);
   z-index: 1000;
   animation: goUp 0.3s forwards; /* Apply the go-up animation */
 }
@@ -247,6 +240,7 @@ body {
   color: #782324;
   background: none;
   margin-left: 242px;
+  cursor: pointer;
 }
 .add-vehicle-btn-modal{
   border: none;

@@ -130,23 +130,26 @@ const VehicleManagement = () => {
           <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
             <h2>Add New Vehicle <button className="close-vehicle-btn" onClick={closeModal}><IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/></button></h2>
             <div className='add-vehicle-input'>
+              <label htmlFor='vehicle-name'>Vehicle Name</label>
             <input
               type="text"
-              placeholder="Vehicle Name"
+              placeholder="Ex. Coaster"
               value={vehicleName}
               onChange={(e) => setVehicleName(e.target.value)}
               className="vehicle-input"
             />
+             <label htmlFor='plate number'>Plate Number</label>
             <input
               type="text"
-              placeholder="Plate Number"
+              placeholder="Ex. BYZ-32T"
               value={plateNumber}
               onChange={(e) => setPlateNumber(e.target.value)}
               className="vehicle-input"
             />
+             <label htmlFor='capacity'>Capacity</label>
             <input
               type="number"
-              placeholder="Maximum Capacity"
+              placeholder="Ex. 50"
               value={maximumCapacity}
               onChange={(e) => setMaximumCapacity(e.target.value)}
               className="vehicle-input"

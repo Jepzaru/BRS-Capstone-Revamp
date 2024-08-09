@@ -28,7 +28,7 @@ const Header = () => {
       <div className="header-right">
         <span className="greeting">{getGreeting()} and Welcome,</span>
         <button className="logout-button" onClick={handleLogout}>
-          <span className="logout-text">Log Out</span>
+          <span className="logout-text"><FaSignOutAlt style={{marginBottom: "-3px", marginRight: "5px"}}/>Log Out</span>
           <FaSignOutAlt className="logout-icon" />
         </button>
       </div>

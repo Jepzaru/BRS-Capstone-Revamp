@@ -7,13 +7,14 @@ import HeadApprovedRequests from './Components/HeadSide/HeadApprovedRequests';
 import UserSide from './Components/UserSide/UserSide';
 import Settings from './Components/UserSide/Settings';
 import HeadSettings from './Components/HeadSide/HeadSettings';
-import Reservation from './Components/UserSide/Reservation'
-import HeadSide from './Components/HeadSide/HeadSide'
-import OpcDashboard from './Components/OpcSide/OpcDashboard'
-import OpcRequests from './Components/OpcSide/OpcRequests'
-import VehicleManagement from './Components/OpcSide/VehicleManagement'
-import DriverManagement from './Components/OpcSide/DriverManagement'
-import OpcSettings from './Components/OpcSide/OpcSettings'
+import Reservation from './Components/UserSide/Reservation';
+import HeadSide from './Components/HeadSide/HeadSide';
+import OpcDashboard from './Components/OpcSide/OpcDashboard';
+import OpcRequests from './Components/OpcSide/OpcRequests';
+import VehicleManagement from './Components/OpcSide/VehicleManagement';
+import DriverManagement from './Components/OpcSide/DriverManagement';
+import OpcSettings from './Components/OpcSide/OpcSettings';
+import Error404 from './Components/Error404';
 
 const Main = () => {
   return (
@@ -32,6 +33,7 @@ const Main = () => {
         <Route path="/vehicle-management" element={<VehicleManagement/>} />
         <Route path="/driver-management" element={<DriverManagement/>} />
         <Route path="/opc-settings" element={<OpcSettings/>} />
+        <Route path="*" element={<Error404 />} />
       </Routes>
     </BrowserRouter>
   );

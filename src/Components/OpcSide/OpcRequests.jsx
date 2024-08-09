@@ -66,7 +66,7 @@ const OpcRequests = () => {
             <table className="opc-requests-table">
               <thead>
                 <tr>
-                    <th>Requestor Name</th>
+                  <th>Requestor Name</th>
                   <th>Type of Trip</th>
                   <th>From</th>
                   <th>To</th>
