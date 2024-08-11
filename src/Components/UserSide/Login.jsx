@@ -12,10 +12,9 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate a loading delay
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 4000); // 4 seconds delay
+    }, 4000); 
 
     return () => clearTimeout(timer);
   }, []);

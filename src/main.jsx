@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client'; 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './Components/Homepage';
 import Login from './Components/UserSide/Login';
 import ManageRequests from './Components/UserSide/ManageRequest';
 import HeadApprovedRequests from './Components/HeadSide/HeadApprovedRequests';
@@ -20,7 +21,8 @@ const Main = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/user-authentication" element={<Login />} />
         <Route path="/manage-requests" element={<ManageRequests />} />
         <Route path="/head-approved-requests" element={<HeadApprovedRequests />} />
         <Route path="/settings" element={<Settings/>} />
