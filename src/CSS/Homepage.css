@@ -1,9 +1,16 @@
-/* General Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+
+
+.homepage-container {
+    background-image: url('../Images/homebg.png'); 
+    background-size: cover;  
+    background-attachment: fixed;  
+    background-position: center;  
+    background-repeat: no-repeat;  
+    min-height: 100vh;
+    width: 100%;
+    
 }
+
 
 .homepage-header {
     background-color: white;
@@ -75,16 +82,15 @@
 .home-label{
     align-items: center;
     text-align: center;
-    font-size: 38px;
+    font-size: 42px;
 }
-.home-services{
+.home-services p{
     align-items: center;
     text-align: center;
     font-size: 38px;
     margin-top: 100px;
-    font-weight: 500;
 }
-.service-label{
+.service-label p{
     align-items: center;
     text-align: center;
     font-size: 28px;
@@ -97,7 +103,7 @@
     border-radius: 5px;
     border: none;
     font-size: 28px;
-    margin-top: 30px;
+    margin-top: 10px;
     cursor: pointer;
     margin-bottom: 30px;
     font-weight: 800;
@@ -159,35 +165,51 @@
     margin-bottom: 20px;
 }
 
-.service-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columns for horizontal alignment */
-    gap: 20px;
-    justify-items: center; /* Center items horizontally within their grid area */
+
+.home-services {
+    text-align: center;
+    margin-top: 30px;
 }
 
-.grid-item img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.service-boxes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
 }
 
-/* Responsive design for smaller screens */
-@media (max-width: 1200px) {
-    .service-grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 columns for medium screens */
-    }
+.service-box {
+    width: 80%;
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
 }
 
-@media (max-width: 768px) {
-    .service-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 columns for smaller screens */
-    }
+.service-box.maroon {
+    background-color: #782324; 
+    width: 35%;
+    margin-right: 300px;
 }
 
-@media (max-width: 480px) {
-    .service-grid {
-        grid-template-columns: 1fr; /* 1 column for very small screens */
-    }
+.service-box.gold {
+    background-color: #D4AF37; 
+    width: 35%;
+    margin-left: 300px;
+}
+
+.service-box span {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.about-label{
+    text-align: center;
+    font-size: 38px;
+    margin-top: 100px;
 }

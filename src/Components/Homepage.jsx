@@ -4,8 +4,10 @@ import '../CSS/Homepage.css';
 import homelogo from '../Images/citlogo1.png';
 import mainImage from '../Images/homebanner.png';
 import LoadingScreen from './HomeLoadingScreen';
-import { SlGlobe } from "react-icons/sl";
-
+import serviceIcon1 from '../Images/1.png';
+import serviceIcon2 from '../Images/2.png';
+import serviceIcon3 from '../Images/3.png';
+import serviceIcon4 from '../Images/4.png';
 
 function HomePage() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -28,7 +30,7 @@ function HomePage() {
     }
 
     return (
-        <div>
+        <div className="homepage-container"> 
             <header className="homepage-header">
                 <nav className="homepage-navbar">
                     <img src={homelogo} alt="Logo" className="home-logo" />
@@ -62,11 +64,19 @@ function HomePage() {
                 <div className='service-label'>
                     <p>We offer convenient and reliable reservation services! ✨</p>
                 </div>
-                <div className='service-grid'>
-                    <div className='grid-item'><img src="path/to/image1.png" alt="Service 1" /></div>
-                    <div className='grid-item'><img src="path/to/image2.png" alt="Service 2" /></div>
-                    <div className='grid-item'><img src="path/to/image3.png" alt="Service 3" /></div>
-                    <div className='grid-item'><img src="path/to/image4.png" alt="Service 4" /></div>
+                <div className="service-boxes">
+                    <div className="service-box maroon">
+                        <span><img src={serviceIcon1} alt="Icon 1" className="service-icon" />Convenient Reservation</span>
+                    </div>
+                    <div className="service-box gold">
+                        <span><img src={serviceIcon2} alt="Icon 2" className="service-icon" />User Friendly</span>
+                    </div>
+                    <div className="service-box maroon">
+                        <span><img src={serviceIcon3} alt="Icon 3" className="service-icon" />Secure and Reliable</span>
+                    </div>
+                    <div className="service-box gold">
+                        <span><img src={serviceIcon4} alt="Icon 4" className="service-icon" />24/7 Support</span>
+                    </div>
                 </div>
             </div>
         </div>
