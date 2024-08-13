@@ -97,7 +97,7 @@
     margin-top: 30px;
 }
 .home-reserve-btn{
-    padding: 8px 20px;
+    padding: 10px 30px;
     background-color: #782324;
     color: white;
     border-radius: 5px;
@@ -138,13 +138,37 @@
     .home-logo {
         width: 300px; 
     }
+    .home-label p{
+        font-size: 32px;
+    }
 
     .mobile-menu-icon {
         display: flex;
     }
-    .main-image{
-       width: 50%;
+    .service-box.maroon, .service-box.gold {
+        width: 60% !important; 
+        margin: 10px 0 !important; 
+        font-size: 20px;
     }
+
+    .service-boxes {
+        width: 100%; 
+        align-items: center; 
+    }
+
+    .service-icon {
+        width: 50%;
+    }
+    .main-image {
+        width: 100%;
+        height: auto;
+    }
+    .homepage-container {
+        background-image: url('../Images/ut.png');
+        background-size: cover;
+        background-position: center;
+    }   
+
 }
 .main-image-container {
     text-align: center;
@@ -153,7 +177,7 @@
 .main-image {
     width: 100%;
     max-width: 1925px; 
-    height: 710px;
+    height: auto;
     border-radius: 10px; 
 }
 .home-services {
