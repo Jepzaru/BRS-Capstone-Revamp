@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import '../CSS/Homepage.css';
 import homelogo from '../Images/citlogo1.png';
@@ -8,22 +8,54 @@ import serviceIcon1 from '../Images/1.png';
 import serviceIcon2 from '../Images/2.png';
 import serviceIcon3 from '../Images/3.png';
 import serviceIcon4 from '../Images/4.png';
+import carouselImage1 from '../Images/busimage.jpg';
+import carouselImage2 from '../Images/busimage2.jpg';
+import carouselImage3 from '../Images/Vehicle1.jpg';
+import carouselImage4 from '../Images/Vehicle2.jpg';
+import carouselImage5 from '../Images/coasterimage.jpg';
+import carouselImage6 from '../Images/coasterimage2.jpg';
+import carouselImage7 from '../Images/coasterimage3.jpg';
 
 function HomePage() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const images = [carouselImage1, carouselImage2, carouselImage3, carouselImage4, carouselImage5, carouselImage6, carouselImage7];
+    const sectionsRef = useRef([]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setLoading(false);
-        }, 3000); // Adjust the time as needed
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, []);
 
+    useEffect(() => {
+        const slideInterval = setInterval(() => {
+            setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
+        }, 3000);
+
+        return () => clearInterval(slideInterval);
+    }, [images.length]);
+
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
+
+    const nextSlide = () => {
+        setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
+    };
+
+    const prevSlide = () => {
+        setCurrentSlide((prevSlide) => (prevSlide - 1 + images.length) % images.length);
+    };
+
+    const goToSlide = (index) => {
+        setCurrentSlide(index);
+    };
+
+    
 
     if (loading) {
         return <LoadingScreen />;
@@ -50,16 +82,16 @@ function HomePage() {
                 </nav>
             </header>
             
-            <div className="main-image-container">
+            <div className="main-image-container" ref={(el) => (sectionsRef.current[0] = el)}>
                 <img src={mainImage} alt="Main Visual" className="main-image" />
             </div>
-            <div className='home-label'>
+            <div className='home-label' ref={(el) => (sectionsRef.current[1] = el)}>
                 <p>Ride with Ease, Reserve with Confidence!</p>
                 <Link to="/user-authentication">
                     <button className='home-reserve-btn'>RESERVE NOW!</button>
                 </Link>
             </div>
-            <div className='home-services'>
+            <div className='home-services' ref={(el) => (sectionsRef.current[2] = el)}>
                 <p>Services</p>
                 <div className='service-label'>
                     <p>We offer convenient and reliable reservation services! ✨</p>
@@ -76,6 +108,32 @@ function HomePage() {
                     </div>
                     <div className="service-box gold">
                         <span><img src={serviceIcon4} alt="Icon 4" className="service-icon" />24/7 Support</span>
+                    </div>
+                </div>
+                <div className='carousel-label'>
+                    <p>Safe, Secure and Clean Buses and vehicles for you to ride!</p>
+                </div>
+                <div className="carousel" ref={(el) => (sectionsRef.current[3] = el)}>
+                    <div className="carousel-wrapper">
+                        {images.map((image, index) => (
+                            <img 
+                                key={index} 
+                                src={image} 
+                                alt={`Slide ${index + 1}`} 
+                                className={`carousel-image ${index === currentSlide ? 'active' : ''}`}
+                            />
+                        ))}
+                    </div>
+                    <button className="carousel-button prev" onClick={prevSlide}>&#10094;</button>
+                    <button className="carousel-button next" onClick={nextSlide}>&#10095;</button>
+                    <div className="carousel-indicators">
+                        {images.map((_, index) => (
+                            <span 
+                                key={index} 
+                                className={`carousel-indicator ${index === currentSlide ? 'active' : ''}`} 
+                                onClick={() => goToSlide(index)}
+                            ></span>
+                        ))}
                     </div>
                 </div>
             </div>
