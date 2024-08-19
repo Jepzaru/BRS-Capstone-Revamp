@@ -205,7 +205,7 @@ body {
 .vehicle-modal {
   background-color: white;
   padding: 20px;
-  height: 370px;
+  height: 480px;
   width: 500px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(9, 5, 5, 0.1);
@@ -293,4 +293,21 @@ body {
   .sort-dropdown {
     width: 50%;
   }
+}
+
+.image-upload-box {
+  border: 2px dashed #d4d4d4;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.image-upload-box.drag-active {
+  background-color: #f0f0f0;
+}
+
+.vehicle-image-input {
+  display: none;
 }

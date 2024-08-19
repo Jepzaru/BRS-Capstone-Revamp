@@ -15,16 +15,18 @@ const VehicleManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
-  const [vehicleName, setVehicleName] = useState('');
+  const [vehicleType, setVehicleType] = useState('');
   const [plateNumber, setPlateNumber] = useState('');
   const [maximumCapacity, setMaximumCapacity] = useState('');
+  const [vehicleImage, setVehicleImage] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
   const handleSearchClick = () => {
-    // You can add any additional logic for search click here if needed
+    // Additional logic for search click if needed
   };
 
   const handleSortChange = (event) => {
@@ -56,10 +58,55 @@ const VehicleManagement = () => {
     }, 300); // Match the duration of the slideDown animation
   };
 
-  const handleAddVehicle = () => {
-    // Handle adding the new vehicle here
-    console.log({ vehicleName, plateNumber, maximumCapacity });
-    closeModal();
+  const handleFileChange = (event) => {
+    setVehicleImage(event.target.files[0]);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragActive(false);
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragActive(false);
+
+    if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+      setVehicleImage(event.dataTransfer.files[0]);
+    }
+  };
+
+  const handleAddVehicle = async () => {
+    const formData = new FormData();
+    formData.append('vehicleType', vehicleType);
+    formData.append('plateNumber', plateNumber);
+    formData.append('maximumCapacity', maximumCapacity);
+    formData.append('vehicleImage', vehicleImage);
+
+    try {
+      const response = await fetch('http://localhost:8080/api/vehicles/add', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log('Vehicle added successfully');
+      
+        closeModal();
+      } else {
+        console.log('Failed to add vehicle');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -131,30 +178,45 @@ const VehicleManagement = () => {
             <h2>Add New Vehicle <button className="close-vehicle-btn" onClick={closeModal}><IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/></button></h2>
             <div className='add-vehicle-input'>
               <label htmlFor='vehicle-name'>Vehicle Name</label>
-            <input
-              type="text"
-              placeholder="Ex. Coaster"
-              value={vehicleName}
-              onChange={(e) => setVehicleName(e.target.value)}
-              className="vehicle-input"
-            />
-             <label htmlFor='plate number'>Plate Number</label>
-            <input
-              type="text"
-              placeholder="Ex. BYZ-32T"
-              value={plateNumber}
-              onChange={(e) => setPlateNumber(e.target.value)}
-              className="vehicle-input"
-            />
-             <label htmlFor='capacity'>Capacity</label>
-            <input
-              type="number"
-              placeholder="Ex. 50"
-              value={maximumCapacity}
-              onChange={(e) => setMaximumCapacity(e.target.value)}
-              className="vehicle-input"
-            />
-            <button className="add-vehicle-btn-modal"onClick={handleAddVehicle}>Add Vehicle</button>
+              <input
+                type="text"
+                placeholder="Ex. Coaster"
+                value={vehicleType}
+                onChange={(e) => setVehicleType(e.target.value)}
+                className="vehicle-input"
+              />
+              <label htmlFor='plate number'>Plate Number</label>
+              <input
+                type="text"
+                placeholder="Ex. BYZ-32T"
+                value={plateNumber}
+                onChange={(e) => setPlateNumber(e.target.value)}
+                className="vehicle-input"
+              />
+              <label htmlFor='capacity'>Capacity</label>
+              <input
+                type="number"
+                placeholder="Ex. 50"
+                value={maximumCapacity}
+                onChange={(e) => setMaximumCapacity(e.target.value)}
+                className="vehicle-input"
+              />
+              <label htmlFor='vehicle-image'>Vehicle Image</label>
+              <div
+                className={`image-upload-box ${dragActive ? 'drag-active' : ''}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="vehicle-image-input"
+                />
+                <span>{vehicleImage ? vehicleImage.name : "Drag & Drop an image or Click to select"}</span>
+              </div>
+              <button className="add-vehicle-btn-modal" onClick={handleAddVehicle}>Add Vehicle</button>
             </div>
           </div>
         </div>
