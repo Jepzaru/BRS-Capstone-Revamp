@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.brscapstone1.brscapstone1.Entity.VehicleEntity;
+import com.brscapstone1.brscapstone1.Repository.VehicleRepository;
 import com.brscapstone1.brscapstone1.Service.VehicleService;
 
 @RestController
@@ -22,9 +24,17 @@ public class VehicleController {
   @Autowired
   VehicleService vehicleService;
 
+  @Autowired
+  VehicleRepository vehicleRepository;
+
   @PostMapping("/post")
-  public VehicleEntity post(@RequestBody VehicleEntity post){
-    return vehicleService.post(post);
+  public VehicleEntity post(
+      @RequestParam("vehicleType") String vehicleType,
+      @RequestParam("plateNumber") String plateNumber,
+      @RequestParam("capacity") int capacity) {
+    
+    VehicleEntity vehicle = new VehicleEntity(vehicleType, plateNumber, capacity, "Available");
+    return vehicleRepository.save(vehicle);
   }
 
   @GetMapping("/vehicles")
@@ -42,3 +52,4 @@ public class VehicleController {
     return vehicleService.delete(id);
   }
 }
+

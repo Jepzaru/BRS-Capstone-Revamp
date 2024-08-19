@@ -100,16 +100,10 @@ body {
   transition: background-color 0.3s;
   font-weight: 700;
 }
-.vehicle-list-container{
-  background-color: #ddd;
-  width: 900px;
-  height: 680px;
-  border-radius: 10px;
-  
-}
+
 .vehicle-list-container {
   background-color: #CBC3C3;
-  width: 900px;
+  width: 1400px;
   height: 680px;
   border-radius: 10px;
   padding: 20px;

@@ -14,7 +14,6 @@ public class VehicleService {
   VehicleRepository vehicleRepository;
 
   public VehicleEntity post(VehicleEntity post){
-
     if(post.getStatus() == null || post.getStatus().isEmpty()){
       post.setStatus("Available");
     }
@@ -25,7 +24,7 @@ public class VehicleService {
     return vehicleRepository.findAll();
   }
 
-  public VehicleEntity update (int id, VehicleEntity newVehicle){
+  public VehicleEntity update(int id, VehicleEntity newVehicle){
     VehicleEntity vehicle;
 
     try{
@@ -34,6 +33,8 @@ public class VehicleService {
       vehicle.setPlateNumber(newVehicle.getPlateNumber());
       vehicle.setCapacity(newVehicle.getCapacity());
       vehicle.setStatus(newVehicle.getStatus());
+      // Remove the line that updates vehicleImage
+      // vehicle.setVehicleImage(newVehicle.getVehicleImage());
       return vehicleRepository.save(vehicle);
     } catch(NoSuchElementException e){
       throw e;

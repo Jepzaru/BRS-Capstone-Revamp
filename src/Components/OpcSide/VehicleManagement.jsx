@@ -14,12 +14,15 @@ const VehicleManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [sortOption, setSortOption] = useState('');
 
   const [vehicleType, setVehicleType] = useState('');
   const [plateNumber, setPlateNumber] = useState('');
-  const [maximumCapacity, setMaximumCapacity] = useState('');
+  const [capacity, setCapacity] = useState('');
   const [vehicleImage, setVehicleImage] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -36,7 +39,7 @@ const VehicleManagement = () => {
   const sortVehicle = (requests) => {
     switch (sortOption) {
       case "alphabetical":
-        return requests.sort((a, b) => a.reason.localeCompare(b.reason));
+        return requests.sort((a, b) => a.vehicleType.localeCompare(b.vehicleType));
       case "ascending":
         return requests.sort((a, b) => a.capacity - b.capacity);
       case "descending":
@@ -85,30 +88,33 @@ const VehicleManagement = () => {
   };
 
   const handleAddVehicle = async () => {
-    const formData = new FormData();
-    formData.append('vehicleType', vehicleType);
-    formData.append('plateNumber', plateNumber);
-    formData.append('maximumCapacity', maximumCapacity);
-    formData.append('vehicleImage', vehicleImage);
-
     try {
-      const response = await fetch('http://localhost:8080/api/vehicles/add', {
+      const formData = new FormData();
+      formData.append('vehicleType', vehicleType);
+      formData.append('plateNumber', plateNumber);
+      formData.append('capacity', capacity);
+  
+      const response = await fetch('http://localhost:8080/vehicle/post', { 
         method: 'POST',
         body: formData,
       });
-
-      if (response.ok) {
-        console.log('Vehicle added successfully');
-      
-        closeModal();
-      } else {
-        console.log('Failed to add vehicle');
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error('Failed to add vehicle: ' + errorText);
       }
+  
+      setSuccessMessage('Vehicle added successfully!');
+      setVehicleType('');
+      setPlateNumber('');
+      setCapacity('');
+      setVehicleImage(null);
     } catch (error) {
-      console.error('Error:', error);
+      setErrorMessage('Error adding vehicle: ' + error.message);
     }
   };
-
+  
+  
   return (
     <div className="vehiclemanage">
       <Header />
@@ -140,7 +146,8 @@ const VehicleManagement = () => {
             <table className="vehicle-table">
               <thead>
                 <tr>
-                  <th>Vehicle Name</th>
+                  <th>Vehicle Image</th>
+                  <th>Vehicle Type</th>
                   <th>Plate Number</th>
                   <th>Maximum Capacity</th>
                   <th>Status</th>
@@ -150,12 +157,13 @@ const VehicleManagement = () => {
               <tbody>
                 {vehicles.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="no-vehicles"><MdOutlineBusAlert style={{fontSize: "24px", marginBottom: "-2px"}}/> No Vehicle Registered</td>
+                    <td colSpan="6" className="no-vehicles"><MdOutlineBusAlert style={{fontSize: "24px", marginBottom: "-2px"}}/> No Vehicle Registered</td>
                   </tr>
                 ) : (
                   vehicles.map((vehicle, index) => (
                     <tr key={index}>
-                      <td>{vehicle.name}</td>
+                      <td><img src={`data:image/jpeg;base64,${vehicle.image}`} alt="Vehicle" className="vehicle-image-preview"/></td>
+                      <td>{vehicle.vehicleType}</td>
                       <td>{vehicle.plateNumber}</td>
                       <td>{vehicle.capacity}</td>
                       <td>
@@ -185,7 +193,7 @@ const VehicleManagement = () => {
                 onChange={(e) => setVehicleType(e.target.value)}
                 className="vehicle-input"
               />
-              <label htmlFor='plate number'>Plate Number</label>
+              <label htmlFor='plate-number'>Plate Number</label>
               <input
                 type="text"
                 placeholder="Ex. BYZ-32T"
@@ -197,8 +205,8 @@ const VehicleManagement = () => {
               <input
                 type="number"
                 placeholder="Ex. 50"
-                value={maximumCapacity}
-                onChange={(e) => setMaximumCapacity(e.target.value)}
+                value={capacity}
+                onChange={(e) => setCapacity(e.target.value)}
                 className="vehicle-input"
               />
               <label htmlFor='vehicle-image'>Vehicle Image</label>
@@ -217,6 +225,8 @@ const VehicleManagement = () => {
                 <span>{vehicleImage ? vehicleImage.name : "Drag & Drop an image or Click to select"}</span>
               </div>
               <button className="add-vehicle-btn-modal" onClick={handleAddVehicle}>Add Vehicle</button>
+              {successMessage && <p className="success-message">{successMessage}</p>}
+              {errorMessage && <p className="error-message">{errorMessage}</p>}
             </div>
           </div>
         </div>
