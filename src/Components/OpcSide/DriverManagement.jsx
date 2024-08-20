@@ -18,7 +18,6 @@ const DriverManagement = () => {
   // State for driver fields
   const [driverName, setDriverName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [address, setAddress] = useState('');
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -37,7 +36,6 @@ const DriverManagement = () => {
     // Reset the form fields
     setDriverName('');
     setPhoneNumber('');
-    setAddress('');
   };
 
   const closeModal = () => {
@@ -63,18 +61,13 @@ const DriverManagement = () => {
       return false;
     }
 
-    if (!address.trim()) {
-      alert('Address is required.');
-      return false;
-    }
-
     return true;
   };
 
   const handleAddDriver = () => {
     if (validateForm()) {
       // Handle adding the new driver here
-      console.log({ driverName, phoneNumber, address });
+      console.log({ driverName, phoneNumber });
       closeModal();
     }
   };
@@ -112,7 +105,6 @@ const DriverManagement = () => {
                 <tr>
                   <th>Driver Name</th>
                   <th>Phone Number</th>
-                  <th>Address</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -120,14 +112,13 @@ const DriverManagement = () => {
               <tbody>
                 {drivers.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="no-driver"><PiSteeringWheelFill style={{ fontSize: "24px", marginBottom: "-2px" }} /> No Driver Registered</td>
+                    <td colSpan="4" className="no-driver"><PiSteeringWheelFill style={{ fontSize: "24px", marginBottom: "-2px" }} /> No Driver Registered</td>
                   </tr>
                 ) : (
                   drivers.map((driver, index) => (
                     <tr key={index}>
                       <td>{driver.name}</td>
                       <td>{driver.phoneNumber}</td>
-                      <td>{driver.address}</td>
                       <td>
                         <button className="update-button">Update</button>
                         <button className="delete-button">Delete</button>
@@ -171,16 +162,6 @@ const DriverManagement = () => {
                 pattern="\d{11}" // Validate for exactly 11 digits
                 title="Phone number should be exactly 11 digits"
                 maxLength="11" // Restrict to 11 characters
-                className="driver-input"
-              />
-              
-              <label htmlFor='address'>Address</label>
-              <input
-                type="text"
-                placeholder="Ex. 123 Street, City"
-                value={address}
-                required
-                onChange={(e) => setAddress(e.target.value)}
                 className="driver-input"
               />
               
