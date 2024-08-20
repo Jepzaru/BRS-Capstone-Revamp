@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -10,9 +10,10 @@ import { IoIosCloseCircle } from "react-icons/io";
 import '../../CSS/OpcCss/VehicleManagement.css';
 
 const VehicleManagement = () => {
-  const vehicles = [];
+  const [vehicles, setVehicles] = useState([]); // State to store vehicles
   const [searchTerm, setSearchTerm] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [sortOption, setSortOption] = useState('');
 
@@ -23,6 +24,25 @@ const VehicleManagement = () => {
   const [dragActive, setDragActive] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+
+  useEffect(() => {
+    // Fetch vehicles when the component mounts
+    const fetchVehicles = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/vehicle/vehicles');
+        if (!response.ok) {
+          throw new Error('Failed to fetch vehicles');
+        }
+        const data = await response.json();
+        setVehicles(data); // Store fetched vehicles in state
+      } catch (error) {
+        console.error('Error fetching vehicles:', error);
+      }
+    };
+
+    fetchVehicles();
+  }, []);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -49,16 +69,26 @@ const VehicleManagement = () => {
     }
   };
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  const openAddModal = () => {
+    setIsAddModalOpen(true);
     setIsClosing(false);
   };
 
-  const closeModal = () => {
+  const closeAddModal = () => {
     setIsClosing(true);
     setTimeout(() => {
-      setIsModalOpen(false);
+      setIsAddModalOpen(false);
     }, 300); // Match the duration of the slideDown animation
+  };
+
+  const openDeleteModal = (vehicleId) => {
+    setSelectedVehicleId(vehicleId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedVehicleId(null);
   };
 
   const handleFileChange = (event) => {
@@ -109,16 +139,44 @@ const VehicleManagement = () => {
       setPlateNumber('');
       setCapacity('');
       setVehicleImage(null);
+
+      // Refresh the vehicle list after adding a new vehicle
+      const updatedVehicles = await fetch('http://localhost:8080/vehicle/vehicles');
+      const data = await updatedVehicles.json();
+      setVehicles(data);
+
     } catch (error) {
       setErrorMessage('Error adding vehicle: ' + error.message);
     }
   };
-  
-  
+
+  const handleDeleteVehicle = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/vehicle/delete/${selectedVehicleId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete vehicle');
+      }
+
+      setSuccessMessage('Vehicle deleted successfully!');
+      closeDeleteModal();
+
+      // Refresh the vehicle list after deletion
+      const updatedVehicles = await fetch('http://localhost:8080/vehicle/vehicles');
+      const data = await updatedVehicles.json();
+      setVehicles(data);
+
+    } catch (error) {
+      setErrorMessage('Error deleting vehicle: ' + error.message);
+    }
+  };
+
   return (
     <div className="vehiclemanage">
       <Header />
-      <div className={`vehicle-manage-content1 ${isModalOpen ? 'dimmed' : ''}`}>
+      <div className={`vehicle-manage-content1 ${isAddModalOpen ? 'dimmed' : ''}`}>
         <SideNavbar />
         <div className="vehicle1">
           <div className="header-container">
@@ -139,14 +197,13 @@ const VehicleManagement = () => {
                 <option value="ascending">Capacity Ascending</option>
                 <option value="descending">Capacity Descending</option>
               </select>
-              <button className='add-vehicle-btn' onClick={openModal}><MdAddCircle style={{ marginRight: "10px", marginBottom: "-2px" }} />Add new Vehicle</button>
+              <button className='add-vehicle-btn' onClick={openAddModal}><MdAddCircle style={{ marginRight: "10px", marginBottom: "-2px" }} />Add new Vehicle</button>
             </div>
           </div>
           <div className='vehicle-list-container'>
             <table className="vehicle-table">
               <thead>
                 <tr>
-                  <th>Vehicle Image</th>
                   <th>Vehicle Type</th>
                   <th>Plate Number</th>
                   <th>Maximum Capacity</th>
@@ -157,18 +214,18 @@ const VehicleManagement = () => {
               <tbody>
                 {vehicles.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="no-vehicles"><MdOutlineBusAlert style={{fontSize: "24px", marginBottom: "-2px"}}/> No Vehicle Registered</td>
+                    <td colSpan="5" className="no-vehicles"><MdOutlineBusAlert style={{fontSize: "24px", marginBottom: "-2px"}}/> No Vehicle Registered</td>
                   </tr>
                 ) : (
                   vehicles.map((vehicle, index) => (
                     <tr key={index}>
-                      <td><img src={`data:image/jpeg;base64,${vehicle.image}`} alt="Vehicle" className="vehicle-image-preview"/></td>
                       <td>{vehicle.vehicleType}</td>
                       <td>{vehicle.plateNumber}</td>
                       <td>{vehicle.capacity}</td>
+                      <td>{vehicle.status}</td>
                       <td>
                         <button className="update-button">Update</button>
-                        <button className="delete-button">Delete</button>
+                        <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}>Delete</button>
                       </td>
                     </tr>
                   ))
@@ -180,10 +237,11 @@ const VehicleManagement = () => {
         </div>
       </div>
 
-      {isModalOpen && (
+      {/* Add Vehicle Modal */}
+      {isAddModalOpen && (
         <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
           <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
-            <h2>Add New Vehicle <button className="close-vehicle-btn" onClick={closeModal}><IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/></button></h2>
+            <h2>Add New Vehicle <button className="close-vehicle-btn" onClick={closeAddModal}><IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/></button></h2>
             <div className='add-vehicle-input'>
               <label htmlFor='vehicle-name'>Vehicle Name</label>
               <input
@@ -191,42 +249,59 @@ const VehicleManagement = () => {
                 placeholder="Ex. Coaster"
                 value={vehicleType}
                 onChange={(e) => setVehicleType(e.target.value)}
-                className="vehicle-input"
               />
-              <label htmlFor='plate-number'>Plate Number</label>
+              <label htmlFor='vehicle-plate-number'>Plate Number</label>
               <input
                 type="text"
-                placeholder="Ex. BYZ-32T"
+                placeholder="Ex. GAB1234"
                 value={plateNumber}
                 onChange={(e) => setPlateNumber(e.target.value)}
-                className="vehicle-input"
               />
-              <label htmlFor='capacity'>Capacity</label>
+              <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
               <input
                 type="number"
-                placeholder="Ex. 50"
+                placeholder="Ex. 30"
                 value={capacity}
                 onChange={(e) => setCapacity(e.target.value)}
-                className="vehicle-input"
               />
-              <label htmlFor='vehicle-image'>Vehicle Image</label>
-              <div
-                className={`image-upload-box ${dragActive ? 'drag-active' : ''}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
+              <label htmlFor='vehicle-image'>Upload Image</label>
+              <div 
+                className={`dropzone ${dragActive ? 'drag-active' : ''}`} 
+                onDragOver={handleDragOver} 
+                onDragLeave={handleDragLeave} 
                 onDrop={handleDrop}
               >
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="vehicle-image-input"
+                {vehicleImage ? (
+                  <div className="file-info">
+                    <p>{vehicleImage.name}</p>
+                  </div>
+                ) : (
+                  <p>Drag & drop your image here or click to select</p>
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleFileChange} 
+                  className="file-input"
                 />
-                <span>{vehicleImage ? vehicleImage.name : "Drag & Drop an image or Click to select"}</span>
               </div>
-              <button className="add-vehicle-btn-modal" onClick={handleAddVehicle}>Add Vehicle</button>
-              {successMessage && <p className="success-message">{successMessage}</p>}
-              {errorMessage && <p className="error-message">{errorMessage}</p>}
+            </div>
+            <div className='add-vehicle-buttons'>
+              <button onClick={handleAddVehicle} className='add-vehicle-submit-btn'>Add Vehicle</button>
+            </div>
+            {successMessage && <p className="success-message">{successMessage}</p>}
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+          </div>
+        </div>
+      )}
+
+      {isDeleteModalOpen && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal-content">
+            <h2>Are you sure you want to delete this vehicle?</h2>
+            <div className="delete-modal-buttons">
+              <button className="cancel-button" onClick={closeDeleteModal}>Cancel</button>
+              <button className="delete-button-confirm" onClick={handleDeleteVehicle}>Delete Vehicle</button>
             </div>
           </div>
         </div>
