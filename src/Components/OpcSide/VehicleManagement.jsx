@@ -248,6 +248,7 @@ const VehicleManagement = () => {
                 type="text"
                 placeholder="Ex. Coaster"
                 value={vehicleType}
+                required
                 onChange={(e) => setVehicleType(e.target.value)}
               />
               <label htmlFor='vehicle-plate-number'>Plate Number</label>
@@ -255,6 +256,7 @@ const VehicleManagement = () => {
                 type="text"
                 placeholder="Ex. GAB1234"
                 value={plateNumber}
+                required
                 onChange={(e) => setPlateNumber(e.target.value)}
               />
               <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
@@ -262,6 +264,7 @@ const VehicleManagement = () => {
                 type="number"
                 placeholder="Ex. 30"
                 value={capacity}
+                required
                 onChange={(e) => setCapacity(e.target.value)}
               />
               <label htmlFor='vehicle-image'>Upload Image</label>

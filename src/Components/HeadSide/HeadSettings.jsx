@@ -64,6 +64,7 @@ const HeadSettings = () => {
                         type="password"
                         id="oldPassword"
                         value={oldPassword}
+                        required
                         onChange={(e) => setOldPassword(e.target.value)}
                       />
                     </div>
@@ -73,6 +74,7 @@ const HeadSettings = () => {
                         type="password"
                         id="newPassword"
                         value={newPassword}
+                        required
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
                     </div>
@@ -82,6 +84,7 @@ const HeadSettings = () => {
                         type="password"
                         id="confirmPassword"
                         value={confirmPassword}
+                        required
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
                     </div>
