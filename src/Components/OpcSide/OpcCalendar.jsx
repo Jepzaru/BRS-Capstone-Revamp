@@ -3,6 +3,7 @@ import '../../CSS/OpcCss/OpcCalendar.css';
 import { BsCalendar2EventFill } from "react-icons/bs";
 import { IoMdAddCircle } from "react-icons/io";
 import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
+import OpcAddEvent from './OpcAddEvent';
 
 const OpcCalendar = ({ onDateSelect }) => {
   const currentDate = new Date();
@@ -10,6 +11,7 @@ const OpcCalendar = ({ onDateSelect }) => {
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
   const [currentDay] = useState(currentDate.getDate());
   const [selectedDay, setSelectedDay] = useState(currentDay);
+  const [showModal, setShowModal] = useState(false);
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -54,6 +56,19 @@ const OpcCalendar = ({ onDateSelect }) => {
     onDateSelect(new Date(currentYear, currentMonth, day));
   };
 
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleSaveEvent = (eventData) => {
+    console.log('Event data:', eventData);
+    // Handle saving the event data here
+  };
+
   return (
     <div className="opc-calendar">
       <div className="opc-calendar-nav">
@@ -77,11 +92,15 @@ const OpcCalendar = ({ onDateSelect }) => {
       </div>
       <div className='calendar-events'>
         <h2><BsCalendar2EventFill style={{marginBottom: "-2px", marginRight: "10px"}} /> Calendar Events 
-        <button className='event-btn'>
+        <button className='event-btn' onClick={handleShowModal}>
         <IoMdAddCircle  style={{marginBottom: "-2px", marginRight: "10px"}}/> Add Event</button></h2>
         <div className='calendar-events-content'>
-
         </div>
+        <OpcAddEvent 
+        show={showModal} 
+        handleClose={handleCloseModal} 
+        handleSave={handleSaveEvent} 
+      />
       </div>
     </div>
   );
