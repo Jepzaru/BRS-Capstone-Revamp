@@ -8,6 +8,11 @@ import serviceIcon1 from '../Images/1.png';
 import serviceIcon2 from '../Images/2.png';
 import serviceIcon3 from '../Images/3.png';
 import serviceIcon4 from '../Images/4.png';
+import jep from '../Images/jep.jpg';
+import kim from '../Images/kim.jpg';
+import rj from '../Images/rj.jpg';
+import saly from '../Images/saly.jpg';
+import carlo from '../Images/busimage.jpg';
 import carouselImage1 from '../Images/busimage.jpg';
 import carouselImage2 from '../Images/busimage2.jpg';
 import carouselImage3 from '../Images/Vehicle1.jpg';
@@ -92,7 +97,7 @@ function HomePage() {
                 </Link>
             </div>
             <div className='home-services' ref={(el) => (sectionsRef.current[2] = el)}>
-                <p>Services</p>
+                <p>Services ⚙️  </p>
                 <div className='service-label'>
                     <p>We offer convenient and reliable reservation services! ✨</p>
                 </div>
@@ -136,6 +141,34 @@ function HomePage() {
                         ))}
                     </div>
                 </div>
+            </div>
+            <div className='about-us'>
+                <p>About Us 👨🏻‍💻</p>
+                <div className='about-us2'> 
+                    <p>Meet the developers behind the creation of the project!</p>
+                </div>
+                <div className='about-us-grid'>
+        <div className='grid-box'>
+            <img src={jep} alt="Image 1" />
+            <span className='image-name'>Jeff Francis D. Conson</span>
+        </div>
+        <div className='grid-box'>
+            <img src={kim} alt="Image 2" />
+            <span className='image-name'>Kimverly B. Bacalso</span>
+        </div>
+        <div className='grid-box'>
+            <img src={rj} alt="Image 3" />
+            <span className='image-name'>Rise Jade Benavente</span>
+        </div>
+        <div className='grid-box'>
+            <img src={saly} alt="Image 4" />
+            <span className='image-name'>Thesaly Tejano</span>
+        </div>
+        <div className='grid-box'>
+            <img src={carlo} alt="Image 5" />
+            <span className='image-name'>Carlo Garcia</span>
+        </div>
+    </div>
             </div>
         </div>
     );

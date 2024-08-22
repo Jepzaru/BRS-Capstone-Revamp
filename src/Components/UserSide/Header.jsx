@@ -24,7 +24,7 @@ const Header = () => {
   return (
     <header className="header">
       <img src={logo} alt="Logo" className="header-logo" />
-      <h2><FaBus style={{ marginRight: "15px", marginBottom: "-3px" }} />TRANSPORATION RESERVATION SYSTEM</h2>
+      <h2><FaBus style={{ marginRight: "15px", marginBottom: "-3px" }} />TRANSPORTATION RESERVATION SYSTEM</h2>
       <div className="header-right">
         <span className="greeting">{getGreeting()} and Welcome,</span>
         <button className="logout-button" onClick={handleLogout}>

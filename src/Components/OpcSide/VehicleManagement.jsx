@@ -13,10 +13,13 @@ const VehicleManagement = () => {
   const [vehicles, setVehicles] = useState([]); // State to store vehicles
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [sortOption, setSortOption] = useState('');
+  
 
+  // State for Add Vehicle modal
   const [vehicleType, setVehicleType] = useState('');
   const [plateNumber, setPlateNumber] = useState('');
   const [capacity, setCapacity] = useState('');
@@ -24,6 +27,11 @@ const VehicleManagement = () => {
   const [dragActive, setDragActive] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // State for Update Vehicle modal
+  const [updateVehicleType, setUpdateVehicleType] = useState('');
+  const [updatePlateNumber, setUpdatePlateNumber] = useState('');
+  const [updateCapacity, setUpdateCapacity] = useState('');
   const [selectedVehicleId, setSelectedVehicleId] = useState(null);
 
   useEffect(() => {
@@ -69,6 +77,13 @@ const VehicleManagement = () => {
     }
   };
 
+
+const filteredVehicles = vehicles.filter(vehicle => 
+  vehicle.vehicleType.toLowerCase().includes(searchTerm) ||
+  vehicle.plateNumber.toLowerCase().includes(searchTerm)
+);
+
+
   const openAddModal = () => {
     setIsAddModalOpen(true);
     setIsClosing(false);
@@ -78,7 +93,28 @@ const VehicleManagement = () => {
     setIsClosing(true);
     setTimeout(() => {
       setIsAddModalOpen(false);
-    }, 300); // Match the duration of the slideDown animation
+    }, 300);
+  };
+
+  const openUpdateModal = (vehicle) => {
+    if (!vehicle) {
+      console.error('Vehicle object is missing');
+      return;
+    }
+    setUpdateVehicleType(vehicle.vehicleType);
+    setUpdatePlateNumber(vehicle.plateNumber);
+    setUpdateCapacity(vehicle.capacity);
+    setSelectedVehicleId(vehicle.id);
+    setIsUpdateModalOpen(true);
+    setIsClosing(false);
+  };
+  
+
+  const closeUpdateModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsUpdateModalOpen(false);
+    }, 300);
   };
 
   const openDeleteModal = (vehicleId) => {
@@ -123,17 +159,18 @@ const VehicleManagement = () => {
       formData.append('vehicleType', vehicleType);
       formData.append('plateNumber', plateNumber);
       formData.append('capacity', capacity);
-  
+      formData.append('vehicleImage', vehicleImage);
+
       const response = await fetch('http://localhost:8080/vehicle/post', { 
         method: 'POST',
         body: formData,
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error('Failed to add vehicle: ' + errorText);
       }
-  
+
       setSuccessMessage('Vehicle added successfully!');
       setVehicleType('');
       setPlateNumber('');
@@ -149,6 +186,36 @@ const VehicleManagement = () => {
       setErrorMessage('Error adding vehicle: ' + error.message);
     }
   };
+
+  const handleUpdateVehicle = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('vehicleType', updateVehicleType);
+      formData.append('plateNumber', updatePlateNumber);
+      formData.append('capacity', updateCapacity);
+  
+      const response = await fetch(`http://localhost:8080/vehicle/update/${selectedVehicleId}`, {
+        method: 'PUT',
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update vehicle');
+      }
+  
+      // Refresh the vehicle list after updating
+      const updatedVehicles = await fetch('http://localhost:8080/vehicle/vehicles');
+      const data = await updatedVehicles.json();
+      setVehicles(data);
+  
+      setSuccessMessage('Vehicle updated successfully!');
+      closeUpdateModal();
+    } catch (error) {
+      setErrorMessage('Error updating vehicle: ' + error.message);
+    }
+  };
+  
+  
 
   const handleDeleteVehicle = async () => {
     try {
@@ -172,7 +239,6 @@ const VehicleManagement = () => {
       setErrorMessage('Error deleting vehicle: ' + error.message);
     }
   };
-
   return (
     <div className="vehiclemanage">
       <Header />
@@ -186,7 +252,7 @@ const VehicleManagement = () => {
                 type="text"
                 placeholder="Search Vehicle"
                 value={searchTerm}
-                onChange={handleSearchChange}
+                onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
                 className="search-bar"
               />
               <button onClick={handleSearchClick} className="search-button"><IoSearch style={{ marginBottom: "-3px" }} /> Search</button>
@@ -212,25 +278,25 @@ const VehicleManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {vehicles.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="no-vehicles"><MdOutlineBusAlert style={{fontSize: "24px", marginBottom: "-2px"}}/> No Vehicle Registered</td>
+              {filteredVehicles.length > 0 ? (
+                filteredVehicles.map(vehicle => (
+                  <tr key={vehicle.id}>
+                    <td>{vehicle.vehicleType}</td>
+                    <td>{vehicle.plateNumber}</td>
+                    <td>{vehicle.capacity}</td>
+                    <td>{vehicle.capacity}</td>
+                    <td>
+                      <button className="update-button" onClick={() => openUpdateModal(vehicle)}>Update</button>
+                      <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}>Delete</button>
+                    </td>
                   </tr>
-                ) : (
-                  vehicles.map((vehicle, index) => (
-                    <tr key={index}>
-                      <td>{vehicle.vehicleType}</td>
-                      <td>{vehicle.plateNumber}</td>
-                      <td>{vehicle.capacity}</td>
-                      <td>{vehicle.status}</td>
-                      <td>
-                        <button className="update-button">Update</button>
-                        <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}>Delete</button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4">No Vehicle Registered</td>
+                </tr>
+              )}
+            </tbody>
             </table>
           </div>
           <img src={logoImage1} alt="Logo" className="vehicle-logo-image" />
@@ -275,38 +341,35 @@ const VehicleManagement = () => {
         </div>
       )}
 
-       {isAddModalOpen && (
+  {isUpdateModalOpen && (
         <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
           <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
-            <h2>Add New Vehicle <button className="close-vehicle-btn" onClick={closeAddModal}><IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/></button></h2>
+            <h2>Update Vehicle <button className="close-vehicle-btn" onClick={closeUpdateModal}><IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/></button></h2>
             <div className='add-vehicle-input'>
               <label htmlFor='vehicle-name'>Vehicle Name</label>
               <input
                 type="text"
-                placeholder="Ex. Coaster"
-                value={vehicleType}
-                required
-                onChange={(e) => setVehicleType(e.target.value)}
+                placeholder="Vehicle Type"
+                value={updateVehicleType}
+                onChange={(e) => setUpdateVehicleType(e.target.value)}
               />
               <label htmlFor='vehicle-plate-number'>Plate Number</label>
               <input
                 type="text"
-                placeholder="Ex. GAB1234"
-                value={plateNumber}
-                required
-                onChange={(e) => setPlateNumber(e.target.value)}
+                placeholder="Plate Number"
+                value={updatePlateNumber}
+                onChange={(e) => setUpdatePlateNumber(e.target.value)}
               />
               <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
               <input
                 type="number"
-                placeholder="Ex. 30"
-                value={capacity}
-                required
-                onChange={(e) => setCapacity(e.target.value)}
+                placeholder="Maximum Capacity"
+                value={updateCapacity}
+                onChange={(e) => setUpdateCapacity(e.target.value)}
               />
             </div>
             <div className='add-vehicle-buttons'>
-              <button onClick={handleAddVehicle} className='add-vehicle-submit-btn'>Add Vehicle</button>
+            <button className="add-vehicle-submit-btn" onClick={handleUpdateVehicle}>Update Vehicle</button>
             </div>
             {successMessage && <p className="success-message">{successMessage}</p>}
             {errorMessage && <p className="error-message">{errorMessage}</p>}
@@ -325,6 +388,8 @@ const VehicleManagement = () => {
           </div>
         </div>
       )}
+
+      
     </div>
   );
 };
