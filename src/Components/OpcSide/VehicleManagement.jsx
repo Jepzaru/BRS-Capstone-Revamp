@@ -236,8 +236,6 @@ const VehicleManagement = () => {
           <img src={logoImage1} alt="Logo" className="vehicle-logo-image" />
         </div>
       </div>
-
-      {/* Add Vehicle Modal */}
       {isAddModalOpen && (
         <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
           <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
@@ -267,27 +265,45 @@ const VehicleManagement = () => {
                 required
                 onChange={(e) => setCapacity(e.target.value)}
               />
-              <label htmlFor='vehicle-image'>Upload Image</label>
-              <div 
-                className={`dropzone ${dragActive ? 'drag-active' : ''}`} 
-                onDragOver={handleDragOver} 
-                onDragLeave={handleDragLeave} 
-                onDrop={handleDrop}
-              >
-                {vehicleImage ? (
-                  <div className="file-info">
-                    <p>{vehicleImage.name}</p>
-                  </div>
-                ) : (
-                  <p>Drag & drop your image here or click to select</p>
-                )}
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  onChange={handleFileChange} 
-                  className="file-input"
-                />
-              </div>
+            </div>
+            <div className='add-vehicle-buttons'>
+              <button onClick={handleAddVehicle} className='add-vehicle-submit-btn'>Add Vehicle</button>
+            </div>
+            {successMessage && <p className="success-message">{successMessage}</p>}
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+          </div>
+        </div>
+      )}
+
+       {isAddModalOpen && (
+        <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
+          <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
+            <h2>Add New Vehicle <button className="close-vehicle-btn" onClick={closeAddModal}><IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/></button></h2>
+            <div className='add-vehicle-input'>
+              <label htmlFor='vehicle-name'>Vehicle Name</label>
+              <input
+                type="text"
+                placeholder="Ex. Coaster"
+                value={vehicleType}
+                required
+                onChange={(e) => setVehicleType(e.target.value)}
+              />
+              <label htmlFor='vehicle-plate-number'>Plate Number</label>
+              <input
+                type="text"
+                placeholder="Ex. GAB1234"
+                value={plateNumber}
+                required
+                onChange={(e) => setPlateNumber(e.target.value)}
+              />
+              <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
+              <input
+                type="number"
+                placeholder="Ex. 30"
+                value={capacity}
+                required
+                onChange={(e) => setCapacity(e.target.value)}
+              />
             </div>
             <div className='add-vehicle-buttons'>
               <button onClick={handleAddVehicle} className='add-vehicle-submit-btn'>Add Vehicle</button>
