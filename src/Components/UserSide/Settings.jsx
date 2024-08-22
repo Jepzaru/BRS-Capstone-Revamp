@@ -1,28 +1,70 @@
 import React, { useState } from 'react';
-import Header from './Header';
-import logoImage1 from "../../Images/citbglogo.png";
-import SideNavbar from './SideNavbar';
-import { IoMdSettings } from 'react-icons/io';
-import { FaLock } from "react-icons/fa";
 import { BsPersonSquare } from "react-icons/bs";
+import { FaLock } from "react-icons/fa";
+import { IoMdSettings } from 'react-icons/io';
 import '../../CSS/UserCss/Settings.css';
+import logoImage1 from "../../Images/citbglogo.png";
+import Header from './Header';
+import SideNavbar from './SideNavbar';
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('accountDetails');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordMatch, setPasswordMatch] = useState(true);
+  const [passwordTooShort, setPasswordTooShort] = useState(false);
+  const [showModal, setShowModal] = useState(false); 
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
+  const handleNewPasswordChange = (e) => {
+    setNewPassword(e.target.value);
+    setPasswordTooShort(e.target.value.length < 6);
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+    if (newPassword.length < 6) {
+      setPasswordTooShort(true);
+    } else {
+      setPasswordTooShort(false);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add your form submission logic here
-    console.log('Old Password:', oldPassword);
-    console.log('New Password:', newPassword);
-    console.log('Confirm Password:', confirmPassword);
+    if (newPassword === confirmPassword) {
+      setPasswordMatch(true);
+      setPasswordTooShort(false);
+      // Add your form submission logic here
+      console.log('Old Password:', oldPassword);
+      console.log('New Password:', newPassword);
+      console.log('Confirm Password:', confirmPassword);
+
+      setShowModal(true);
+    } else {
+      setPasswordMatch(false);
+      setTimeout(() => {
+        setPasswordMatch(true);
+      }, 2000);
+    }
+  };
+
+  const SuccessModal = ({ show, onClose }) => {
+    if (!show) return null;
+
+    return (
+      <div className="user-modal-overlay">
+        <div className="user-modal-content">
+          <h2>Password Updated</h2>
+          <p>Your password has been successfully updated.</p>
+          <button className="user-modal-close-btn" onClick={onClose}>Close</button>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -69,14 +111,19 @@ const Settings = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="newPassword">New Password</label>
+                    <label htmlFor="newPassword">New Password</label>
                       <input
                         type="password"
                         id="newPassword"
                         value={newPassword}
                         required
-                        onChange={(e) => setNewPassword(e.target.value)}
+                        onChange={handleNewPasswordChange}
                       />
+                      {passwordTooShort && (
+                        <p className="opc-password-requirements" style={{ color: 'red' }}>
+                          Password must be at least 6 characters long.
+                        </p>
+                      )}
                     </div>
                     <div className="form-group">
                       <label htmlFor="confirmPassword">Confirm Password</label>
@@ -85,10 +132,15 @@ const Settings = () => {
                         id="confirmPassword"
                         value={confirmPassword}
                         required
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onChange={handleConfirmPasswordChange}
                       />
+                      {!passwordMatch && (
+                        <p className="password-match-error" style={{ color: 'red' }}>
+                          Passwords do not match.
+                        </p>
+                      )}
                     </div>
-                    <button type="submit">Change Password</button>
+                    <button type="submit" disabled={!passwordMatch}>Change Password</button>
                   </form>
                 </div>
               )}
@@ -97,6 +149,7 @@ const Settings = () => {
           <img src={logoImage1} alt="Logo" className="logo-image3" />
         </div>
       </div>
+      <SuccessModal show={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 };
