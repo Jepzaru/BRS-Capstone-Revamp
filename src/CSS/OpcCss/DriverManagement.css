@@ -1,4 +1,4 @@
-/* UserSide.css */
+/* DriverManagement.css */
 
 body, html {
   margin: 0;
@@ -12,39 +12,28 @@ body {
   z-index: -999;
 }
 
+.driver-manage-content1 {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  margin-left: 300px;
+  margin-top: 50px;
+}
+
 .driver1 {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-}
-
-.driver-manage-content1 {
-  display: flex;
-  flex: 1;
-}
-
-.driver-manage-content1 {
-  padding: 20px;
-  flex: 1;
-  margin-left: 300px;
-  margin-top: 50px;
+  max-height: 100vh;
 }
 
 .driver-manage-content1 h1 {
   font-size: 32px;
 }
 
-.opc-request-container1 {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start; /* Align to the left */
-  margin-bottom: 20px; /* Add some spacing below the header */
-}
-
 .search-container {
   display: flex;
   align-items: center;
-  margin-left: 20px; /* Add some space between the h1 and the search bar */
+  margin-left: 20px;
 }
 
 .search-bar {
@@ -54,7 +43,7 @@ body {
   background-color: #ddd;
   border: 1px solid #ddd;
   border-radius: 5px;
-  margin-right: 10px; /* Add some space between the search bar and button */
+  margin-right: 10px;
 }
 
 .search-button {
@@ -65,11 +54,12 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-right: 10px; /* Add some space between the button and the dropdown */
+  margin-right: 10px;
 }
 
 .search-button:hover {
   background-color: #5b1a1a;
+  font-weight: 700;
 }
 
 .sort-dropdown {
@@ -91,7 +81,8 @@ body {
   filter: grayscale(100%);
   opacity: 0.2;
 }
-.add-driver-btn{
+
+.add-driver-btn {
   background-color: #782324;
   border: none;
   border-radius: 5px;
@@ -101,21 +92,16 @@ body {
   margin-left: 20px;
   cursor: pointer;
 }
-.add-driver-btn:hover{
+
+.add-driver-btn:hover {
   background-color: #5b1a1a;
   transition: background-color 0.3s;
   font-weight: 700;
 }
-.driver-list-container{
-  background-color: #ddd;
-  width: 900px;
-  height: 680px;
-  border-radius: 10px;
-  
-}
+
 .driver-list-container {
   background-color: #CBC3C3;
-  width: 900px;
+  width: 1400px;
   height: 680px;
   border-radius: 10px;
   padding: 20px;
@@ -130,29 +116,56 @@ body {
   border-collapse: collapse;
   background-color: white;
   height: 700px;
-  overflow: auto;
+}
+
+.driver-table thead {
+  background-color: #ddd;
+}
+
+.driver-table tbody {
+  display: block;
+  max-height: 630px; 
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.driver-table thead, .driver-table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .driver-table th, .driver-table td {
-  border: none;
   padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd; 
 }
 
 .driver-table th {
-  background-color: #ddd;
-  font-size: 14px;
-}
-
-.driver-table tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-.driver-table tr:hover {
+.driver-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.driver-table tbody tr:hover {
   background-color: #ddd;
 }
 
-.update-button, .delete-button {
+.delete-button {
   background-color: #782324;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.update-button {
+  background-color: rgb(0, 104, 0) !important;
   color: white;
   border: none;
   border-radius: 5px;
@@ -165,7 +178,7 @@ body {
   background-color: #5b1a1a;
 }
 
-.no-driver {
+.no-drivers {
   font-size: 20px;
   color: #782324;
   font-weight: 600;
@@ -278,5 +291,11 @@ body {
   background-color: #5b1a1a;
   transition: background-color 0.3s;
   font-weight: 700;
+}
+
+.success-message {
+  margin-top: 15px;
+  color: green;
+  font-weight: bold;
 }
 

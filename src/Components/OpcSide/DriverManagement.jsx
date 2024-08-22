@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -10,14 +10,29 @@ import { IoIosCloseCircle } from "react-icons/io";
 import '../../CSS/OpcCss/DriverManagement.css';
 
 const DriverManagement = () => {
-  const drivers = [];
+  const [drivers, setDrivers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // State for driver fields
   const [driverName, setDriverName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+
+  // State for update fields
+  const [updateDriverName, setUpdateDriverName] = useState('');
+  const [updatePhoneNumber, setUpdatePhoneNumber] = useState('');
+  const [selectedDriverId, setSelectedDriverId] = useState(null);
+
+  // Fetch drivers from the backend
+  useEffect(() => {
+    fetch('http://localhost:8080/driver/drivers')
+      .then(response => response.json())
+      .then(data => setDrivers(data))
+      .catch(error => console.error('Error fetching drivers:', error));
+  }, []);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -26,7 +41,7 @@ const DriverManagement = () => {
   const handleSearchClick = () => {};
 
   const handleSortChange = (event) => {
-    setSortOption(event.target.value);
+    // Logic for sorting if needed
   };
 
   const openModal = () => {
@@ -45,13 +60,27 @@ const DriverManagement = () => {
     }, 300); // Match the duration of the slide-down animation
   };
 
+  const openUpdateModal = (driver) => {
+    setUpdateDriverName(driver.driverName);
+    setUpdatePhoneNumber(driver.contactNumber);
+    setSelectedDriverId(driver.id);
+    setIsUpdateModalOpen(true);
+    setIsClosing(false);
+  };
+
+  const closeUpdateModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsUpdateModalOpen(false);
+    }, 300); // Match the duration of the slide-down animation
+  };
+
   const validateForm = () => {
     if (!driverName.trim()) {
       alert('Driver name is required.');
       return false;
     }
 
-    // Validate phone number format
     const phoneNumberPattern = /^\d{11}$/;
     if (!phoneNumber.trim()) {
       alert('Phone number is required.');
@@ -66,16 +95,79 @@ const DriverManagement = () => {
 
   const handleAddDriver = () => {
     if (validateForm()) {
-      // Handle adding the new driver here
-      console.log({ driverName, phoneNumber });
-      closeModal();
+      const newDriver = { driverName, contactNumber: phoneNumber, status: "Available" };
+      
+      // Send the new driver to the backend
+      fetch('http://localhost:8080/driver/post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newDriver),
+      })
+        .then(response => response.json())
+        .then(data => {
+          setDrivers([...drivers, data]); // Update the driver list with the new driver
+          closeModal();
+        })
+        .catch(error => console.error('Error adding driver:', error));
     }
+  };
+
+  const handleUpdateDriver = () => {
+    if (!updateDriverName.trim()) {
+      alert('Driver name is required.');
+      return;
+    }
+  
+    const phoneNumberPattern = /^\d{11}$/;
+    if (!updatePhoneNumber.trim()) {
+      alert('Phone number is required.');
+      return;
+    } else if (!phoneNumberPattern.test(updatePhoneNumber)) {
+      alert('Phone number must be exactly 11 digits.');
+      return;
+    }
+  
+    const updatedDriver = { driverName: updateDriverName, contactNumber: updatePhoneNumber, status: "Available" };
+    
+    // Send update request to the backend
+    fetch(`http://localhost:8080/driver/update/${selectedDriverId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedDriver),
+    })
+      .then(response => response.json())
+      .then(() => {
+        // Update the local state with the new driver data
+        setDrivers(drivers.map(driver =>
+          driver.id === selectedDriverId ? { ...driver, ...updatedDriver } : driver
+        ));
+        setSuccessMessage('Driver details updated successfully!');
+        closeUpdateModal();
+        setTimeout(() => setSuccessMessage(''), 3000); // Clear message after 3 seconds
+      })
+      .catch(error => console.error('Error updating driver:', error));
+  };
+  
+  const handleDeleteDriver = (id) => {
+    // Send delete request to the backend
+    fetch(`http://localhost:8080/driver/delete/${id}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        // Remove the deleted driver from the state
+        setDrivers(drivers.filter(driver => driver.id !== id));
+      })
+      .catch(error => console.error('Error deleting driver:', error));
   };
 
   return (
     <div className="drivermanage">
       <Header />
-      <div className={`driver-manage-content1 ${isModalOpen ? 'dimmed' : ''}`}>
+      <div className={`driver-manage-content1 ${isModalOpen || isUpdateModalOpen ? 'dimmed' : ''}`}>
         <SideNavbar />
         <div className="driver1">
           <div className="header-container">
@@ -99,6 +191,11 @@ const DriverManagement = () => {
               <button className='add-driver-btn' onClick={openModal}><BsPersonFillAdd style={{ marginRight: "10px", marginBottom: "-2px" }} />Add new Driver</button>
             </div>
           </div>
+          {successMessage && (
+            <div className="success-message">
+              {successMessage}
+            </div>
+          )}
           <div className='driver-list-container'>
             <table className="driver-table">
               <thead>
@@ -117,11 +214,12 @@ const DriverManagement = () => {
                 ) : (
                   drivers.map((driver, index) => (
                     <tr key={index}>
-                      <td>{driver.name}</td>
-                      <td>{driver.phoneNumber}</td>
+                      <td>{driver.driverName}</td>
+                      <td>{driver.contactNumber}</td>
+                      <td>{driver.status}</td>
                       <td>
-                        <button className="update-button">Update</button>
-                        <button className="delete-button">Delete</button>
+                        <button className="update-button" onClick={() => openUpdateModal(driver)}>Update</button>
+                        <button className="delete-button" onClick={() => handleDeleteDriver(driver.id)}>Delete</button>
                       </td>
                     </tr>
                   ))
@@ -133,10 +231,15 @@ const DriverManagement = () => {
         </div>
       </div>
 
+      {/* Add Driver Modal */}
       {isModalOpen && (
         <div className={`driver-modal-overlay ${isClosing ? 'driver-modal-closing' : ''}`}>
           <div className={`driver-modal ${isClosing ? 'driver-modal-closing' : ''}`}>
-            <h2>Add New Driver <button className="close-driver-btn" onClick={closeModal}><IoIosCloseCircle style={{ fontSize: "32px", marginBottom: "-8px" }} /></button></h2>
+            <h2>Add New Driver 
+              <button className="close-driver-btn" onClick={closeModal}>
+                <IoIosCloseCircle style={{ fontSize: "32px", marginBottom: "-8px" }} />
+              </button>
+            </h2>
             <div className='add-driver-input'>
               <label htmlFor='driver-name'>Driver Name</label>
               <input
@@ -155,17 +258,58 @@ const DriverManagement = () => {
                 value={phoneNumber}
                 required
                 onChange={(e) => {
-                  // Allow only digits and set the value
                   const value = e.target.value.replace(/\D/g, '');
                   setPhoneNumber(value);
                 }}
-                pattern="\d{11}" // Validate for exactly 11 digits
+                pattern="\d{11}"
                 title="Phone number should be exactly 11 digits"
-                maxLength="11" // Restrict to 11 characters
+                maxLength="11"
                 className="driver-input"
               />
               
               <button className="add-driver-btn-modal" onClick={handleAddDriver}>Add Driver</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update Driver Modal */}
+      {isUpdateModalOpen && (
+        <div className={`driver-modal-overlay ${isClosing ? 'driver-modal-closing' : ''}`}>
+          <div className={`driver-modal ${isClosing ? 'driver-modal-closing' : ''}`}>
+            <h2>Update Driver 
+              <button className="close-driver-btn" onClick={closeUpdateModal}>
+                <IoIosCloseCircle style={{ fontSize: "32px", marginBottom: "-8px" }} />
+              </button>
+            </h2>
+            <div className='add-driver-input'>
+              <label htmlFor='driver-name'>Driver Name</label>
+              <input
+                type="text"
+                placeholder="Ex. John Doe"
+                value={updateDriverName}
+                required
+                onChange={(e) => setUpdateDriverName(e.target.value)}
+                className="driver-input"
+              />
+              
+              <label htmlFor='phone number'>Phone Number</label>
+              <input
+                type="text"
+                placeholder="Ex. 09363882526"
+                value={updatePhoneNumber}
+                required
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, '');
+                  setUpdatePhoneNumber(value);
+                }}
+                pattern="\d{11}"
+                title="Phone number should be exactly 11 digits"
+                maxLength="11"
+                className="driver-input"
+              />
+              
+              <button className="add-driver-btn-modal" onClick={handleUpdateDriver}>Update Driver</button>
             </div>
           </div>
         </div>
