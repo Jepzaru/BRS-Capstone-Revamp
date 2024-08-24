@@ -121,6 +121,9 @@
   font-weight: 500;
   font-family: 'Poppins', sans-serif;
 }
+.no-modal-button:hover{
+  background-color: #ffcc00;
+}
 
 .logout-modal-button:hover {
   background-color: gold;
