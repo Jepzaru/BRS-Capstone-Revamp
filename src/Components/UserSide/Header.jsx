@@ -6,9 +6,10 @@ import logo from '../../Images/citlogo1.png';
 
 const Header = () => {
   const handleLogout = () => {
-    // Implement your logout logic here
-    console.log('Logout clicked');
-  };
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    window.location.href = '/user-authentication';
+};
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();

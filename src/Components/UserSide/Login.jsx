@@ -4,12 +4,15 @@ import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import logoImage from "../../Images/citlogo1.png";
 import logoImage1 from "../../Images/citbglogo.png";
 import LoadingScreen from './LoadingScreen'; 
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null); 
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -19,14 +22,44 @@ const Login = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // TODO: Add actual login logic here
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // Example: call login API, set state based on response, etc.
-  };
-
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+  
+    try {
+      const response = await fetch('http://localhost:8080/authenticate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });  
+      const data = await response.json();
+      const { token, role } = data;
+  
+      if (token && role) {
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
+      }
+  
+      if (role === 'ROLE_USER') {
+        navigate('/user-side');
+      } else if (role === 'ROLE_ADMIN') {
+        navigate('/head-side');
+      } else if (role === 'ROLE_OPC') {
+        navigate('/dashboard');
+      } else {
+        navigate('/');
+      }
+    } 
+    catch (error) {
+      setError(error.message);
+    } 
+    finally {
+      setIsLoading(false);
+    }
+  }; 
+  
   const handleClear = () => {
     setEmail('');
     setPassword('');
@@ -47,8 +80,9 @@ const Login = () => {
         <h1 className="label-text">TRANSPORTATION RESERVATION SYSTEM</h1>
       </div>
       <div className="login-container">
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleLogin}>
           <h2>User Authentication</h2>
+          {error && <p className="error-message">{error}</p>}
           <div className="input-group">
             <span className="icon"><FaUser /></span>
             <input
