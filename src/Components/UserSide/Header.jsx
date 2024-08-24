@@ -16,10 +16,17 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+<<<<<<< HEAD
     // Implement your logout logic here
     console.log('Logged out');
     setIsLogOutModalOpen(false);
   };
+=======
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    window.location.href = '/user-authentication';
+};
+>>>>>>> 3c5ae88211a117eabea2d614ab4df7a61fef8ad1
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();
