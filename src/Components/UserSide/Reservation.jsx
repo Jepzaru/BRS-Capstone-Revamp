@@ -10,6 +10,7 @@ import { MdAccessTime } from "react-icons/md";
 import { IoTime } from "react-icons/io5";
 import { RiSendPlaneFill, RiArrowGoBackLine } from "react-icons/ri";
 import { IoTrash } from "react-icons/io5";
+import { ImPriceTags } from "react-icons/im";
 import { CgDetailsMore } from "react-icons/cg";
 import Calendar from './Calendar'; 
 import '../../CSS/UserCss/Reservation.css';
@@ -26,6 +27,7 @@ const Reservation = () => {
     to: '',
     capacity: '',
     vehicleType: '',
+    plateNumber: '',
     departureTime: '',
     pickUpTime: '',
     department: '',
@@ -50,6 +52,7 @@ const Reservation = () => {
       to: '',
       capacity: '',
       vehicleType: '',
+      plateNumber: '',
       departureTime: '',
       pickUpTime: '',
       department: '',
@@ -158,6 +161,10 @@ const Reservation = () => {
                   <label htmlFor="capacity"><FaUserGroup style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Capacity:</label>
                   <input type="number" id="capacity" name="capacity" value={formData.capacity} required onChange={handleInputChange}/>
                 </div>
+                <div className="form-group">
+                  <label htmlFor="Plate number"><ImPriceTags style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Plate number:</label>
+                  <input type="text" id="plateNumber" name="plateNumber" value={formData.plateNumber} required onChange={handleInputChange}/>
+                </div>
               </div>
               <div className="form-group-inline">
                 <div className="form-group">
@@ -233,6 +240,9 @@ const Reservation = () => {
               </div>
               <div className="summary-item">
                 <strong>Capacity:</strong> {formData.capacity}
+              </div>
+              <div className="summary-item">
+                <strong>Plate Number:</strong> {formData.plateNumber}
               </div>
               <div className="summary-item">
                 <strong>Vehicle Type:</strong> {formData.vehicleType}

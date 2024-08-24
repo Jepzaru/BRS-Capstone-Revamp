@@ -10,7 +10,7 @@ import { IoIosCloseCircle } from "react-icons/io";
 import '../../CSS/OpcCss/VehicleManagement.css';
 
 const VehicleManagement = () => {
-  const [vehicles, setVehicles] = useState([]); // State to store vehicles
+  const [vehicles, setVehicles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -18,15 +18,14 @@ const VehicleManagement = () => {
   const [isClosing, setIsClosing] = useState(false);
   const [sortOption, setSortOption] = useState('');
   
-
   // State for Add Vehicle modal
   const [vehicleType, setVehicleType] = useState('');
   const [plateNumber, setPlateNumber] = useState('');
   const [capacity, setCapacity] = useState('');
   const [vehicleImage, setVehicleImage] = useState(null);
-  const [dragActive, setDragActive] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const plateNumberPattern = /^[A-Z0-9]{3}-[A-Z0-9]{3}$/;
 
   // State for Update Vehicle modal
   const [updateVehicleType, setUpdateVehicleType] = useState('');
@@ -35,7 +34,6 @@ const VehicleManagement = () => {
   const [selectedVehicleId, setSelectedVehicleId] = useState(null);
 
   useEffect(() => {
-    // Fetch vehicles when the component mounts
     const fetchVehicles = async () => {
       try {
         const response = await fetch('http://localhost:8080/vehicle/vehicles');
@@ -43,7 +41,7 @@ const VehicleManagement = () => {
           throw new Error('Failed to fetch vehicles');
         }
         const data = await response.json();
-        setVehicles(data); // Store fetched vehicles in state
+        setVehicles(data);
       } catch (error) {
         console.error('Error fetching vehicles:', error);
       }
@@ -64,6 +62,29 @@ const VehicleManagement = () => {
     setSortOption(event.target.value);
   };
 
+  useEffect(() => {
+    if (successMessage || errorMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage('');
+        setErrorMessage('');
+      }, 3000);
+
+      return () => clearTimeout(timer); 
+    }
+  }, [successMessage, errorMessage]);
+
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        if (isAddModalOpen) closeAddModal();
+        if (isUpdateModalOpen) closeUpdateModal();
+        if (isDeleteModalOpen) closeDeleteModal();
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, isAddModalOpen, isUpdateModalOpen, isDeleteModalOpen]);
+
   const sortVehicle = (requests) => {
     switch (sortOption) {
       case "alphabetical":
@@ -77,12 +98,10 @@ const VehicleManagement = () => {
     }
   };
 
-
-const filteredVehicles = vehicles.filter(vehicle => 
-  vehicle.vehicleType.toLowerCase().includes(searchTerm) ||
-  vehicle.plateNumber.toLowerCase().includes(searchTerm)
-);
-
+  const filteredVehicles = vehicles.filter(vehicle => 
+    vehicle.vehicleType.toLowerCase().includes(searchTerm) ||
+    vehicle.plateNumber.toLowerCase().includes(searchTerm)
+  );
 
   const openAddModal = () => {
     setIsAddModalOpen(true);
@@ -109,7 +128,6 @@ const filteredVehicles = vehicles.filter(vehicle =>
     setIsClosing(false);
   };
   
-
   const closeUpdateModal = () => {
     setIsClosing(true);
     setTimeout(() => {
@@ -153,41 +171,67 @@ const filteredVehicles = vehicles.filter(vehicle =>
     }
   };
 
+  const validatePlateNumber = (plateNumber) => {
+    return plateNumberPattern.test(plateNumber);
+  };
+
   const handleAddVehicle = async () => {
+    if (!validatePlateNumber(plateNumber)) {
+      setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
+      return;
+    }
+  
+    const capacityNumber = Number(capacity);
+    if (isNaN(capacityNumber) || capacityNumber < 0) {
+      setErrorMessage('Capacity must be a non-negative number');
+      return;
+    }
+  
     try {
       const formData = new FormData();
       formData.append('vehicleType', vehicleType);
       formData.append('plateNumber', plateNumber);
       formData.append('capacity', capacity);
       formData.append('vehicleImage', vehicleImage);
-
+  
       const response = await fetch('http://localhost:8080/vehicle/post', { 
         method: 'POST',
         body: formData,
       });
-
+  
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error('Failed to add vehicle: ' + errorText);
       }
-
+  
       setSuccessMessage('Vehicle added successfully!');
       setVehicleType('');
       setPlateNumber('');
       setCapacity('');
       setVehicleImage(null);
-
+  
       // Refresh the vehicle list after adding a new vehicle
       const updatedVehicles = await fetch('http://localhost:8080/vehicle/vehicles');
       const data = await updatedVehicles.json();
       setVehicles(data);
-
+  
     } catch (error) {
       setErrorMessage('Error adding vehicle: ' + error.message);
     }
   };
 
   const handleUpdateVehicle = async () => {
+    if (!validatePlateNumber(updatePlateNumber)) {
+      setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
+      return;
+    }
+  
+    const capacityNumber = Number(updateCapacity);
+    if (isNaN(capacityNumber) || capacityNumber < 0) {
+      setErrorMessage('Capacity must be a non-negative number');
+      return;
+    }
+  
     try {
       const formData = new FormData();
       formData.append('vehicleType', updateVehicleType);
@@ -214,8 +258,6 @@ const filteredVehicles = vehicles.filter(vehicle =>
       setErrorMessage('Error updating vehicle: ' + error.message);
     }
   };
-  
-  
 
   const handleDeleteVehicle = async () => {
     try {
@@ -239,6 +281,7 @@ const filteredVehicles = vehicles.filter(vehicle =>
       setErrorMessage('Error deleting vehicle: ' + error.message);
     }
   };
+
   return (
     <div className="vehiclemanage">
       <Header />
@@ -318,7 +361,7 @@ const filteredVehicles = vehicles.filter(vehicle =>
               <label htmlFor='vehicle-plate-number'>Plate Number</label>
               <input
                 type="text"
-                placeholder="Ex. GAB1234"
+                placeholder="Ex. GAB-1234"
                 value={plateNumber}
                 required
                 onChange={(e) => setPlateNumber(e.target.value)}
@@ -329,6 +372,7 @@ const filteredVehicles = vehicles.filter(vehicle =>
                 placeholder="Ex. 30"
                 value={capacity}
                 required
+                min="1"
                 onChange={(e) => setCapacity(e.target.value)}
               />
             </div>
@@ -365,6 +409,7 @@ const filteredVehicles = vehicles.filter(vehicle =>
                 type="number"
                 placeholder="Maximum Capacity"
                 value={updateCapacity}
+                min="1"
                 onChange={(e) => setUpdateCapacity(e.target.value)}
               />
             </div>

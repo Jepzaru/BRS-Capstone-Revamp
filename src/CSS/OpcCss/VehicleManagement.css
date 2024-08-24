@@ -273,6 +273,13 @@ body {
   text-align: center;
   margin-top: 10px;
 }
+.error-message {
+  color: #782324 !important;
+  font-weight: bold;
+  text-align: center;
+  font-size: 18px !important;
+  margin-top: 10px;
+}
 
 .error-message {
   color: red;
