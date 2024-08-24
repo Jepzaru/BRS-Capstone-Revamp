@@ -37,9 +37,10 @@ const Login = () => {
       const data = await response.json();
       const { token, role } = data;
   
-      if (token && role) {
+      if (token && role && data.email) {
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
+        localStorage.setItem('email', email);
       }
   
       if (role === 'ROLE_USER') {

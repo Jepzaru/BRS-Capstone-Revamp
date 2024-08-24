@@ -5,11 +5,15 @@ import { FaBus } from "react-icons/fa";
 import logo from '../../Images/citlogo1.png';
 
 const Header = () => {
+  const email = localStorage.getItem('email');
+  const firstName = email ? email.split('@')[0] : '';
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    localStorage.removeItem('email');
     window.location.href = '/user-authentication';
-};
+  };
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();
@@ -27,9 +31,9 @@ const Header = () => {
       <img src={logo} alt="Logo" className="header-logo" />
       <h2><FaBus style={{ marginRight: "15px", marginBottom: "-3px" }} />TRANSPORTATION RESERVATION SYSTEM</h2>
       <div className="header-right">
-        <span className="greeting">{getGreeting()} and Welcome,</span>
+        <span className="greeting">{getGreeting()} and Welcome, {firstName.charAt(0).toUpperCase() + firstName.slice(1)}</span>
         <button className="logout-button" onClick={handleLogout}>
-          <span className="logout-text"><FaSignOutAlt style={{marginBottom: "-3px", marginRight: "5px"}}/>Log Out</span>
+          <span className="logout-text"><FaSignOutAlt style={{ marginBottom: "-3px", marginRight: "5px" }} />Log Out</span>
           <FaSignOutAlt className="logout-icon" />
         </button>
       </div>
