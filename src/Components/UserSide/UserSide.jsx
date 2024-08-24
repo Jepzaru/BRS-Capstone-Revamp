@@ -14,7 +14,6 @@ import vehiclesubImage5 from "../../Images/coasterimage2.jpg";
 import vehiclesubImage6 from "../../Images/coasterimage3.jpg";
 import defaultVehicleImage from "../../Images/defualtVehicle.png";
 import { BiSolidDiamond } from "react-icons/bi";
-import { GrNext, GrPrevious } from "react-icons/gr";
 import { FaBook } from "react-icons/fa";
 import { FaBus } from "react-icons/fa";
 import '../../CSS/UserCss/UserSide.css';
@@ -22,6 +21,7 @@ import '../../CSS/UserCss/UserSide.css';
 const UserSide = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState([]); // Added state for events
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
@@ -34,6 +34,16 @@ const UserSide = () => {
       .catch(error => {
         console.error('There was an error fetching the vehicles!', error);
         setLoading(false);
+      });
+
+    // Fetch events data (placeholder URL, adjust as needed)
+    fetch('http://localhost:8080/events')
+      .then(response => response.json())
+      .then(data => {
+        setEvents(data);
+      })
+      .catch(error => {
+        console.error('There was an error fetching the events!', error);
       });
   }, []);
 
@@ -134,20 +144,21 @@ const UserSide = () => {
                   ))}
                 </div>
                 <div className="another-container">
-                  <div className="image-grid">
-                    {imageGrids[currentSlide].map((image, index) => (
-                      <div key={index} className={`image-item ${index === 2 ? 'large-image' : ''}`}>
-                        <img src={image} alt={`Vehicle ${index + 1}`} className="sub-vehicle-image" />
-                      </div>
-                    ))}
+                  <div className="inner-container">
+                    <label className="events-label">📣 Events and Updates</label>
                   </div>
-                  <div className="slider-buttons">
-                    <button className="prev-button" onClick={handlePrevSlide}>
-                      <GrPrevious style={{marginBottom: "-3px", fontWeight: "800"}}/>
-                    </button>
-                    <button className="next-button" onClick={handleNextSlide}>
-                      <GrNext style={{marginBottom: "-3px", fontWeight: "800"}}/>
-                    </button>
+                  <div className="events-list">
+                    {events.length > 0 ? (
+                      // Render events if available
+                      events.map((event, index) => (
+                        <div key={index} className="event-item">
+                          {/* Adjust the content and styling as needed */}
+                          <p>{event.title}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="no-events-label">No Events</p>
+                    )}
                   </div>
                 </div>
               </div>
