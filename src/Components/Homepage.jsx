@@ -18,14 +18,14 @@ import carouselImage2 from '../Images/busimage2.jpg';
 import carouselImage3 from '../Images/Vehicle1.jpg';
 import carouselImage4 from '../Images/Vehicle2.jpg';
 import carouselImage5 from '../Images/coasterimage.jpg';
-import carouselImage6 from '../Images/coasterimage2.jpg';
 import carouselImage7 from '../Images/coasterimage3.jpg';
+import footerImage from '../Images/footerlogo.png';
 
 function HomePage() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
-    const images = [carouselImage1, carouselImage2, carouselImage3, carouselImage4, carouselImage5, carouselImage6, carouselImage7];
+    const images = [carouselImage1, carouselImage2, carouselImage3, carouselImage4, carouselImage5, carouselImage7];
     const sectionsRef = useRef([]);
 
     useEffect(() => {
@@ -116,31 +116,28 @@ function HomePage() {
                     </div>
                 </div>
                 <div className='carousel-label'>
-                    <p>Safe, Secure and Clean Buses and vehicles for you to ride!</p>
+                    <p>Safe, Secure, Clean Buses and vehicles for you to ride!</p>
                 </div>
-                <div className="carousel" ref={(el) => (sectionsRef.current[3] = el)}>
-                    <div className="carousel-wrapper">
-                        {images.map((image, index) => (
-                            <img 
-                                key={index} 
-                                src={image} 
-                                alt={`Slide ${index + 1}`} 
-                                className={`carousel-image ${index === currentSlide ? 'active' : ''}`}
-                            />
-                        ))}
-                    </div>
-                    <button className="carousel-button prev" onClick={prevSlide}>&#10094;</button>
-                    <button className="carousel-button next" onClick={nextSlide}>&#10095;</button>
-                    <div className="carousel-indicators">
-                        {images.map((_, index) => (
-                            <span 
-                                key={index} 
-                                className={`carousel-indicator ${index === currentSlide ? 'active' : ''}`} 
-                                onClick={() => goToSlide(index)}
-                            ></span>
-                        ))}
-                    </div>
+                <div className="carousel" ref={(el) => (sectionsRef.current[0] = el)}>
+                <div className="carousel-wrapper" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+                    {images.map((image, index) => (
+                        <div key={index} className="carousel-slide">
+                            <img src={image} alt={`Slide ${index + 1}`} className="carousel-image" />
+                        </div>
+                    ))}
                 </div>
+                <button className="carousel-button prev" onClick={prevSlide}>&#10094;</button>
+                <button className="carousel-button next" onClick={nextSlide}>&#10095;</button>
+                <div className="carousel-indicators">
+                    {images.map((_, index) => (
+                        <span
+                            key={index}
+                            className={`carousel-indicator ${index === currentSlide ? 'active' : ''}`}
+                            onClick={() => goToSlide(index)}
+                        ></span>
+                    ))}
+                </div>
+            </div>
             </div>
             <div className='about-us'>
                 <p>About Us 👨🏻‍💻</p>
@@ -170,6 +167,13 @@ function HomePage() {
         </div>
     </div>
             </div>
+
+            <footer>
+                <img src={footerImage} alt="Footer Image" className="footer-image" /> 
+                <div className="footer-content">
+                  
+                </div>
+            </footer>
         </div>
     );
 }

@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../../CSS/UserCss/Header.css';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { FaBus } from "react-icons/fa";
 import logo from '../../Images/citlogo1.png';
 
 const Header = () => {
-  const email = localStorage.getItem('email');
-  const firstName = email ? email.split('@')[0] : '';
+  const [isLogOutModalOpen, setIsLogOutModalOpen] = useState(false);
+
+  const handleLogoutClick = () => {
+    setIsLogOutModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsLogOutModalOpen(false);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
