@@ -1,4 +1,4 @@
-package com.brscapstone1.brscapstone1;
+package com.brscapstone1.brscapstone1.Configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
