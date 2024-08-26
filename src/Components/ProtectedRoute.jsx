@@ -1,9 +1,10 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { checkAccess } from './CheckAccess'; 
+import { checkAccess } from './CheckAccess';
 
 const ProtectedRoute = ({ element, path }) => {
-    return checkAccess(path) ? element : <Navigate to="/error404" />;
+  const hasAccess = checkAccess(path);
+  return hasAccess ? element : <Navigate to="/" />;
 };
 
 export default ProtectedRoute;

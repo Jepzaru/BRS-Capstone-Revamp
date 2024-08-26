@@ -30,22 +30,22 @@ public class UserController {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
     
-    @PostMapping("/api/add")
+    @PostMapping("/admin/users/add")
     public UserEntity post(@RequestBody UserEntity user) {
         return userService.post(user);
     }
     
-    @GetMapping("/read")
+    @GetMapping("/admin/users/read")
     public List<UserEntity> read() {
         return userService.read();
     }
     
-    @PutMapping("/api/update/{id}")
+    @PutMapping("/admin/users/update/{id}")
     public UserEntity update(@PathVariable int id, @RequestBody UserEntity newUser) {
         return userService.update(id, newUser);
     }
     
-    @DeleteMapping("/api/delete/{id}")
+    @DeleteMapping("/admin/users/delete/{id}")
     public String delete(@PathVariable int id) {
         return userService.delete(id);
     }
