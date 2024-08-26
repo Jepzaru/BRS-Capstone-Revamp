@@ -8,7 +8,7 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
-    position: relative; /* Ensure relative positioning */
+    position: relative; 
 }
 
 .logo-image {
@@ -48,7 +48,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    flex: 1; /* Fill remaining vertical space */
+    flex: 1;
 }
 
 .login-container {
@@ -61,7 +61,7 @@
     box-sizing: border-box;
     position: relative;
     z-index: 999;
-    margin-top: 20px; /* Adjust as needed */
+    margin-top: 20px;
 }
 
 .login-form {
@@ -106,7 +106,7 @@
 }
 
 .input-group input {
-    width: 100%; /* Adjust based on icon and toggle icon width */
+    width: 100%; 
     padding: 12px;
     padding-left: 40px;
     padding-right: 40px;

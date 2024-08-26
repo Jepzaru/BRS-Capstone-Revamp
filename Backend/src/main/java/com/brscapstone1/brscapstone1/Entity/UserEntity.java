@@ -13,6 +13,7 @@ public class UserEntity {
 	private int id;
 	private String email;
 	private String password;
+	private String department;
 	private String role;
 	
 	public int getId() {
@@ -36,13 +37,20 @@ public class UserEntity {
 	public String getRole() {
 		return role;
 	}
+	public String getDepartment(){
+		return department;
+	}
+	public void setDepartment(String department){
+		this.department = department;
+	}
 	public void setRole(String role) {
 		this.role = role;
 	}	
-	public UserEntity(String email, String password, String role) {
+	public UserEntity(String email, String password, String department, String role) {
 		super();
 		this.email = email;
 		this.password = password;
+		this.department = department;
 		this.role = role;
 	}
 	public UserEntity() {

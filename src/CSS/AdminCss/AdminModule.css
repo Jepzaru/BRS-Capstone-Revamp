@@ -98,6 +98,7 @@ body, html {
     padding: 12px; 
     text-align: left;
     transition: background-color 0.3s ease;
+    text-align: center;
   }
   
   .accounts-table th {
@@ -192,6 +193,11 @@ body, html {
     border-radius: 4px;
     margin-left: 10px;
     cursor: pointer;
+  }
+
+  .action-td{
+    display: flex;
+    justify-content: space-evenly;
   }
   
   .addacc-modal-buttons button:first-of-type {

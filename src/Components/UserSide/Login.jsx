@@ -5,6 +5,7 @@ import logoImage from "../../Images/citlogo1.png";
 import logoImage1 from "../../Images/citbglogo.png";
 import LoadingScreen from './LoadingScreen'; 
 import { useNavigate } from 'react-router-dom';
+import { roles } from '../Roles';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -25,6 +26,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
   
     try {
       const response = await fetch('http://localhost:8080/authenticate', {
@@ -33,30 +35,46 @@ const Login = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-      });  
+      });
+  
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Invalid email or password.');
+        }
+        throw new Error('Login failed.');
+      }
+  
       const data = await response.json();
       const { token, role } = data;
   
-      if (token && role && data.email) {
+      if (token && role) {
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('email', email);
-      }
   
-      if (role === 'ROLE_USER') {
-        navigate('/user-side');
-      } else if (role === 'ROLE_HEAD') {
-        navigate('/head-side');
-      } else if (role === 'ROLE_OPC') {
-        navigate('/dashboard');
+        switch (role) {
+          case 'ROLE_USER':
+            navigate('/user-side');
+            break;
+          case 'ROLE_HEAD':
+            navigate('/head-side');
+            break;
+          case 'ROLE_OPC':
+            navigate('/dashboard');
+            break;
+          case 'ROLE_ADMIN':
+            navigate('/admin');
+            break;
+          default:
+            navigate('/');
+            break;
+        }
       } else {
-        navigate('/');
+        throw new Error('Invalid login response.');
       }
-    } 
-    catch (error) {
+    } catch (error) {
       setError(error.message);
-    } 
-    finally {
+    } finally {
       setIsLoading(false);
     }
   }; 
