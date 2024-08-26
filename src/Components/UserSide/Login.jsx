@@ -45,7 +45,7 @@ const Login = () => {
   
       if (role === 'ROLE_USER') {
         navigate('/user-side');
-      } else if (role === 'ROLE_ADMIN') {
+      } else if (role === 'ROLE_HEAD') {
         navigate('/head-side');
       } else if (role === 'ROLE_OPC') {
         navigate('/dashboard');

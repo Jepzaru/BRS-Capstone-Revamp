@@ -31,7 +31,7 @@ public class UserService {
 		try {
 			user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
 			user.setEmail(newUser.getEmail());
-			user.setPassword(passwordEncoder.encode(newUser.getPassword())); // Fix here
+			user.setPassword(passwordEncoder.encode(newUser.getPassword()));
 			user.setRole(newUser.getRole());
 			return userRepository.save(user);
 		} catch (NoSuchElementException e) {

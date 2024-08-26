@@ -12,10 +12,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import '../../CSS/OpcCss/OpcDashboard.css';
 import LoadingScreen from '../../Components/UserSide/LoadingScreen'; 
 
-// Register the necessary components with ChartJS
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-// Custom hook for counting effect
 const useCounter = (target, duration, startCounting) => {
   const [count, setCount] = useState(0);
 
