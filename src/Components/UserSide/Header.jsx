@@ -23,7 +23,7 @@ const Header = () => {
     localStorage.removeItem('role');
     localStorage.removeItem('email');
     window.location.href = '/user-authentication';
-  };
+};
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();

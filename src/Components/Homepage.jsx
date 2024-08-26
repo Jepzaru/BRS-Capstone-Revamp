@@ -26,7 +26,6 @@ import { FaInstagram } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import { RiComputerLine } from "react-icons/ri";
 import { FaBriefcase } from "react-icons/fa6";
-import { MdAdminPanelSettings } from "react-icons/md";
 
 function HomePage() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -114,9 +113,6 @@ function HomePage() {
                         <li><a onClick={() => scrollToSection(3)}>About Us</a></li>
                         <Link to="/user-authentication">
                             <button className="get-started">Get Started</button>
-                        </Link>
-                        <Link to="/admin-authentication">
-                            <p className='admin-route'><MdAdminPanelSettings style={{fontSize: "34px", marginBottom: "-10px"}}/> Admin Login</p>
                         </Link>
                     </div>
                     <div className="mobile-menu-icon" onClick={toggleMobileMenu}>

@@ -79,13 +79,17 @@
     background-color: #5b1a1a;
 }
 .admin-route{
-    color: #782324;
-    font-weight: 600;
-    transition: color 0.3s;
+    font-weight: 400; 
+    color: inherit;
+    padding: 5px 10px;
+    border: 2px solid transparent; 
+    transition: all 0.3s ease-in-out;
 }
 .admin-route:hover{
-    font-weight: 700;
-    color: #D4AF37;
+    font-weight: 700; 
+    color: #782324; 
+    border-color: #D4AF37;
+    box-shadow: 0 0 5px #D4AF37, 0 0 10px #D4AF37, 0 0 15px #D4AF37; 
 }
 
 .mobile-menu-icon {

@@ -193,6 +193,42 @@
     color: gold;
 }
 
+.super-admin {
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    width: 100%; 
+  }
+  
+  .super-admin p {
+    margin: 0;
+    font-size: 18px;
+    color: #782324;
+  }
+  
+  .super-admin a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+  }
+
+  .home-route {
+    font-weight: 400; 
+    color: inherit;
+    padding: 5px 10px; 
+    border: 2px solid transparent; 
+    transition: all 0.3s ease-in-out;
+}
+
+.home-route:hover {
+    font-weight: 700;
+    color: #782324; 
+    border-color: #D4AF37; 
+    box-shadow: 0 0 5px #D4AF37, 0 0 10px #D4AF37, 0 0 15px #D4AF37;
+}
+
 .clear-button {
     margin-top: 10px;
     background-color: gold;

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/Login.css';
-import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { MdAdminPanelSettings } from 'react-icons/md';
+import { FaUser, FaLock, FaEye, FaEyeSlash, FaHome } from 'react-icons/fa';
 import logoImage from "../../Images/citlogo1.png";
 import logoImage1 from "../../Images/citbglogo.png";
 import LoadingScreen from './LoadingScreen'; 
@@ -131,6 +133,20 @@ const Login = () => {
           </div>
           <button type="submit" className="login-button">LOGIN</button>
           <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTITIES</button>
+          <div className="super-admin">
+          <Link to="/admin-authentication">
+          <p className='admin-route'>
+            <MdAdminPanelSettings style={{ fontSize: "34px", marginBottom: "-10px" }} /> Admin Login
+          </p>
+        </Link>
+
+        <Link to="/home">
+          <p className='home-route'>
+            <FaHome style={{ fontSize: "34px", marginBottom: "-10px" }} /> Home
+          </p>
+        </Link>
+        </div>
+
         </form>
       </div>
       <img src={logoImage1} alt="Logo" className="logo-image1" />
