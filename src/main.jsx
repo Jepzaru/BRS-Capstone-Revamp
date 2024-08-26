@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './Components/Homepage';
+import AdminLogin from './Components/Admin/AdminLogin';
+import AdminModule from './Components/Admin/AdminModule';
 import Login from './Components/UserSide/Login';
 import ManageRequests from './Components/UserSide/ManageRequest';
 import HeadApprovedRequests from './Components/HeadSide/HeadApprovedRequests';
@@ -24,6 +26,8 @@ const Main = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/user-authentication" element={<Login />} />
+        <Route path="/admin-authentication" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminModule />} />
         <Route path="/user-side" element={<ProtectedRoute path="/user-side" element={<UserSide />} />} />
         <Route path="/user-side/reservation" element={<ProtectedRoute path="/user-side/reservation" element={<Reservation />} />} />
         <Route path="/manage-requests" element={<ProtectedRoute path="/manage-requests" element={<ManageRequests />} />} />

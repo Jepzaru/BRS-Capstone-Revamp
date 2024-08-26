@@ -15,10 +15,16 @@
 .homepage-header {
     background-color: white;
     padding: 20px;
-    display: fixed;
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%; 
+    z-index: 1000; 
     justify-content: space-between; 
     align-items: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
 }
+
 
 .homepage-navbar {
     display: flex;
@@ -36,6 +42,8 @@
     display: flex;
     gap: 60px;
     align-items: center;
+    margin-right: 100px;
+    cursor: pointer;
 }
 
 .home-nav-links li a {
@@ -49,6 +57,11 @@
     color: #782324;
     font-weight: 700;
 }
+.home-nav-links li a.active {
+    color: #333; 
+    font-weight: 700;
+}
+
 
 .get-started {
     background-color: #782324;
@@ -65,7 +78,15 @@
 .get-started:hover {
     background-color: #5b1a1a;
 }
-
+.admin-route{
+    color: #782324;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+.admin-route:hover{
+    font-weight: 700;
+    color: #D4AF37;
+}
 
 .mobile-menu-icon {
     display: none;
@@ -83,17 +104,20 @@
     align-items: center;
     text-align: center;
     font-size: 42px;
+    font-weight: 600;
 }
 .home-services p{
     align-items: center;
     text-align: center;
     font-size: 38px;
     margin-top: 100px;
+    font-weight: 600;
 }
 .service-label p{
     align-items: center;
     text-align: center;
     font-size: 28px;
+    font-weight: 300;
     margin-top: 30px;
 }
 .home-reserve-btn{
@@ -125,6 +149,7 @@
         background-color: white;
         align-items: center;
         padding: 20px;
+
     }
 
     .home-nav-links.open {
@@ -144,6 +169,7 @@
 
     .mobile-menu-icon {
         display: flex;
+        margin-right: 50px;
     }
     .service-box.maroon, .service-box.gold {
         width: 60% !important; 
@@ -170,6 +196,9 @@
     }   
     .carousel-label p{
         font-size: 24px;
+    }
+    .main-image-container {
+        margin-top: 100px;
     }
 
 }
@@ -242,6 +271,7 @@
 }
 .carousel-label{
     font-size: 28px;
+    text-align: center;
 }
 .carousel {
     position: relative;
@@ -377,38 +407,70 @@
     opacity: 1;
 }
 
-footer {
-    background-color: white;
-    padding: 20px;
+
+.custom-footer {
+    background-color: white; 
+    color: #333; 
+    padding: 20px 0;
     text-align: center;
-    position: relative;
-    margin-top: 100px;
-}
-
-.footer-image {
-    position: absolute;
-    top: 20px;
-    left: 150px;
-    width: 400px; /* Adjust width as needed */
-    height: auto;
-}
-
-.footer-content {
-    padding: 0 20px;
-}
-
-.social-links {
-    list-style: none;
-    padding: 0;
-}
-
-.social-links li {
-    display: inline;
+    box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.1); 
+  }
+  
+  .footer-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .footer-logo img {
+    max-width: 300px;
+  }
+  
+  .footer-nav p{
+    font-weight: 700;
+  }
+  
+  .footer-nav ul li a:hover {
+    color: #007bff; 
+  }
+  
+  .footer-social a {
     margin: 0 10px;
-}
+  }
+  
+  .footer-social img {
+    max-width: 25px;
+  }
+  
+  .footer-bottom {
+    padding-top: 10px;
+    font-size: 14px;
 
-.social-links li a {
-    color: #333;
-    text-decoration: none;
-    font-size: 1.5em;
-}
+  }
+  
+  .footer-bottom p {
+    margin: 0;
+  }
+
+  
+
+  @media (max-width: 768px) {
+    .footer-content {
+      flex-direction: column;
+    }
+  
+    .footer-nav ul li {
+      display: block;
+      margin: 10px 0;
+    }
+  
+    .footer-social {
+      margin-top: 20px;
+    }
+  }
+  
+  

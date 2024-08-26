@@ -8,11 +8,11 @@ import serviceIcon1 from '../Images/1.png';
 import serviceIcon2 from '../Images/2.png';
 import serviceIcon3 from '../Images/3.png';
 import serviceIcon4 from '../Images/4.png';
-import jep from '../Images/jep.jpg';
-import kim from '../Images/kim.jpg';
-import rj from '../Images/rj.jpg';
-import saly from '../Images/saly.jpg';
-import carlo from '../Images/busimage.jpg';
+import jep from '../Images/jip.jpg';
+import kim from '../Images/kem.jpg';
+import rj from '../Images/rays.jpg';
+import saly from '../Images/tesaly.jpg';
+import carlo from '../Images/carlo.jpg';
 import carouselImage1 from '../Images/busimage.jpg';
 import carouselImage2 from '../Images/busimage2.jpg';
 import carouselImage3 from '../Images/Vehicle1.jpg';
@@ -20,6 +20,13 @@ import carouselImage4 from '../Images/Vehicle2.jpg';
 import carouselImage5 from '../Images/coasterimage.jpg';
 import carouselImage7 from '../Images/coasterimage3.jpg';
 import footerImage from '../Images/footerlogo.png';
+import { FaFacebook } from "react-icons/fa";
+import { FaTiktok } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
+import { FaYoutube } from "react-icons/fa";
+import { RiComputerLine } from "react-icons/ri";
+import { FaBriefcase } from "react-icons/fa6";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 function HomePage() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -27,6 +34,7 @@ function HomePage() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const images = [carouselImage1, carouselImage2, carouselImage3, carouselImage4, carouselImage5, carouselImage7];
     const sectionsRef = useRef([]);
+    const navLinksRef = useRef([]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -53,30 +61,62 @@ function HomePage() {
     };
 
     const prevSlide = () => {
-        setCurrentSlide((prevSlide) => (prevSlide - 1 + images.length) % images.length);
+        setCurrentSlide((prevSlide - 1 + images.length) % images.length);
     };
 
     const goToSlide = (index) => {
         setCurrentSlide(index);
     };
 
-    
+    const scrollToSection = (index) => {
+        sectionsRef.current[index]?.scrollIntoView({ behavior: 'smooth' });
+        setIsMobileMenuOpen(false); // Close the mobile menu after navigation
+    };
+
+    useEffect(() => {
+        const handleScroll = () => {
+            let current = '';
+
+            sectionsRef.current.forEach((section, index) => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+
+                if (window.pageYOffset >= sectionTop - sectionHeight / 3) {
+                    current = index;
+                }
+            });
+
+            navLinksRef.current.forEach((link, index) => {
+                link.classList.remove('active');
+                if (index === current) {
+                    link.classList.add('active');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     if (loading) {
         return <LoadingScreen />;
     }
 
     return (
-        <div className="homepage-container"> 
+        <div className="homepage-container">
             <header className="homepage-header">
                 <nav className="homepage-navbar">
                     <img src={homelogo} alt="Logo" className="home-logo" />
                     <div className={`home-nav-links ${isMobileMenuOpen ? 'open' : ''}`}>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#services">Services</a></li>
-                        <li><a href="#about-us">About Us</a></li>
+                        <li><a onClick={() => scrollToSection(0)}>Home</a></li>
+                        <li><a onClick={() => scrollToSection(2)}>Services</a></li>
+                        <li><a onClick={() => scrollToSection(3)}>About Us</a></li>
                         <Link to="/user-authentication">
                             <button className="get-started">Get Started</button>
+                        </Link>
+                        <Link to="/admin-authentication">
+                            <p className='admin-route'><MdAdminPanelSettings style={{fontSize: "34px", marginBottom: "-10px"}}/> Admin Login</p>
                         </Link>
                     </div>
                     <div className="mobile-menu-icon" onClick={toggleMobileMenu}>
@@ -86,19 +126,21 @@ function HomePage() {
                     </div>
                 </nav>
             </header>
-            
+
             <div className="main-image-container" ref={(el) => (sectionsRef.current[0] = el)}>
                 <img src={mainImage} alt="Main Visual" className="main-image" />
             </div>
-            <div className='home-label' ref={(el) => (sectionsRef.current[1] = el)}>
+
+            <div className="home-label" ref={(el) => (sectionsRef.current[1] = el)}>
                 <p>Ride with Ease, Reserve with Confidence!</p>
                 <Link to="/user-authentication">
-                    <button className='home-reserve-btn'>RESERVE NOW!</button>
+                    <button className="home-reserve-btn">RESERVE NOW!</button>
                 </Link>
             </div>
-            <div className='home-services' ref={(el) => (sectionsRef.current[2] = el)}>
-                <p>Services ⚙️  </p>
-                <div className='service-label'>
+
+            <div className="home-services" ref={(el) => (sectionsRef.current[2] = el)}>
+                <p>Services</p>
+                <div className="service-label">
                     <p>We offer convenient and reliable reservation services! ✨</p>
                 </div>
                 <div className="service-boxes">
@@ -115,10 +157,12 @@ function HomePage() {
                         <span><img src={serviceIcon4} alt="Icon 4" className="service-icon" />24/7 Support</span>
                     </div>
                 </div>
-                <div className='carousel-label'>
-                    <p>Safe, Secure, Clean Buses and vehicles for you to ride!</p>
-                </div>
-                <div className="carousel" ref={(el) => (sectionsRef.current[0] = el)}>
+            </div>
+
+            <div className="carousel-label">
+                <p>Safe, Secure, Clean Buses and vehicles for you to ride!</p>
+            </div>
+            <div className="carousel" ref={(el) => (sectionsRef.current[3] = el)}>
                 <div className="carousel-wrapper" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
                     {images.map((image, index) => (
                         <div key={index} className="carousel-slide">
@@ -138,40 +182,55 @@ function HomePage() {
                     ))}
                 </div>
             </div>
-            </div>
-            <div className='about-us'>
-                <p>About Us 👨🏻‍💻</p>
-                <div className='about-us2'> 
+
+            <div className="about-us" ref={(el) => (sectionsRef.current[3] = el)}>
+                <p style={{fontWeight: "600"}}>About Us 👨🏻‍💻</p>
+                <div className="about-us2">
                     <p>Meet the developers behind the creation of the project!</p>
                 </div>
-                <div className='about-us-grid'>
-        <div className='grid-box'>
-            <img src={jep} alt="Image 1" />
-            <span className='image-name'>Jeff Francis D. Conson</span>
-        </div>
-        <div className='grid-box'>
-            <img src={kim} alt="Image 2" />
-            <span className='image-name'>Kimverly B. Bacalso</span>
-        </div>
-        <div className='grid-box'>
-            <img src={rj} alt="Image 3" />
-            <span className='image-name'>Rise Jade Benavente</span>
-        </div>
-        <div className='grid-box'>
-            <img src={saly} alt="Image 4" />
-            <span className='image-name'>Thesaly Tejano</span>
-        </div>
-        <div className='grid-box'>
-            <img src={carlo} alt="Image 5" />
-            <span className='image-name'>Carlo Garcia</span>
-        </div>
-    </div>
+                <div className="about-us-grid">
+                    <div className="grid-box">
+                        <img src={jep} alt="Image 1" />
+                        <span className="image-name">Jeff Francis D. Conson</span>
+                    </div>
+                    <div className="grid-box">
+                        <img src={kim} alt="Image 2" />
+                        <span className="image-name">Kimverly B. Bacalso</span>
+                    </div>
+                    <div className="grid-box">
+                        <img src={rj} alt="Image 3" />
+                        <span className="image-name">Rise Jade Benavente</span>
+                    </div>
+                    <div className="grid-box">
+                        <img src={saly} alt="Image 4" />
+                        <span className="image-name">Thesaly Tejano</span>
+                    </div>
+                    <div className="grid-box">
+                        <img src={carlo} alt="Image 5" />
+                        <span className="image-name">Carlo Garcia</span>
+                    </div>
+                </div>
             </div>
 
-            <footer>
-                <img src={footerImage} alt="Footer Image" className="footer-image" /> 
+            <footer className="custom-footer">
                 <div className="footer-content">
-                  
+                    <div className="footer-logo">
+                        <img src={footerImage} alt="Logo" />
+                    </div>
+                    <div className="footer-nav">
+                       <p><RiComputerLine /> Capstone 2 Project</p>
+                       <p><FaBriefcase /> Transportation Reservation System</p>
+                    </div>
+                    <div className="footer-social">
+                        <p style={{fontWeight: "700"}}>Get in Touch</p>
+                        <a href="https://www.facebook.com/CITUniversity" ><FaFacebook style={{color: "blue", fontSize: "34px"}}/></a>
+                        <a href="https://www.tiktok.com/" ><FaTiktok style={{color: "black", fontSize: "34px"}}/></a>
+                        <a href="https://www.instagram.com/" ><FaInstagram style={{color: "brown", fontSize: "34px"}}/></a>
+                        <a href="https://www.youtube.com/" ><FaYoutube style={{color: "red", fontSize: "34px"}}/></a>
+                    </div>
+                    <div className="footer-bottom">
+                    <p>&copy; 2024 Cebu Institute of Technology University. All rights reserved.</p>
+                </div>
                 </div>
             </footer>
         </div>
