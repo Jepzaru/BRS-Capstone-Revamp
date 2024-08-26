@@ -259,18 +259,14 @@ const AdminModule = () => {
           <div className="addacc-modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>Update Account</h2>
             <form className="addacc-modal-form" onSubmit={handleUpdateAccount}>
-              <label>First Name:</label>
-              <input type="text" name="firstName" defaultValue={selectedUser.firstName} />
-              <label>Last Name:</label>
-              <input type="text" name="lastName" defaultValue={selectedUser.lastName} />
+              <label>Email:</label>
+              <input type="email" name="email" defaultValue={selectedUser.email} />
               <label>Department:</label>
               <select name="department" defaultValue={selectedUser.department}>
                 {departments.map((department, index) => (
                   <option key={index} value={department}>{department}</option>
                 ))}
               </select>
-              <label>Email:</label>
-              <input type="email" name="email" defaultValue={selectedUser.email} />
               <label>Role:</label>
               <select name="role" defaultValue={selectedUser.role}>
                 {user_roles.map((role, index) => (
