@@ -18,13 +18,6 @@ public class VehicleEntity {
   private int capacity;
   private String status;
   
-  // Remove the vehicleImage field
-  // @Lob
-  // private byte[] vehicleImage;
-
-  // Getters and Setters for all fields excluding vehicleImage
-
-  // Other getters and setters
   public int getId() {
     return id;
   }
@@ -64,15 +57,6 @@ public class VehicleEntity {
   public void setStatus(String status) {
     this.status = status;
   }
-
-  // Remove the getter and setter for vehicleImage
-  // public byte[] getVehicleImage() {
-  //   return vehicleImage;
-  // }
-
-  // public void setVehicleImage(byte[] vehicleImage) {
-  //   this.vehicleImage = vehicleImage;
-  // }
 
   public VehicleEntity(String vehicleType, String plateNumber, int capacity, String status) {
     this.vehicleType = vehicleType;

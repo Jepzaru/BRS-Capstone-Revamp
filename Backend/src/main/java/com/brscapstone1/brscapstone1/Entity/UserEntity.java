@@ -38,7 +38,7 @@ public class UserEntity {
 	}
 	public void setRole(String role) {
 		this.role = role;
-	}
+	}	
 	public UserEntity(String email, String password, String role) {
 		super();
 		this.email = email;
@@ -49,4 +49,3 @@ public class UserEntity {
 		super();
 	}
 }
-

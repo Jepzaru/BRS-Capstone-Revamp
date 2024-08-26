@@ -17,26 +17,25 @@ const VehicleManagement = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [sortOption, setSortOption] = useState('');
-  
-  // State for Add Vehicle modal
   const [vehicleType, setVehicleType] = useState('');
   const [plateNumber, setPlateNumber] = useState('');
   const [capacity, setCapacity] = useState('');
-  const [vehicleImage, setVehicleImage] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const plateNumberPattern = /^[A-Z0-9]{3}-[A-Z0-9]{3}$/;
-
-  // State for Update Vehicle modal
   const [updateVehicleType, setUpdateVehicleType] = useState('');
   const [updatePlateNumber, setUpdatePlateNumber] = useState('');
   const [updateCapacity, setUpdateCapacity] = useState('');
   const [selectedVehicleId, setSelectedVehicleId] = useState(null);
 
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const response = await fetch('http://localhost:8080/vehicle/vehicles');
+        const response = await fetch('http://localhost:8080/opc/vehicle/getAll', {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch vehicles');
         }
@@ -46,16 +45,14 @@ const VehicleManagement = () => {
         console.error('Error fetching vehicles:', error);
       }
     };
-
     fetchVehicles();
-  }, []);
+  }, [token]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
   const handleSearchClick = () => {
-    // Additional logic for search click if needed
   };
 
   const handleSortChange = (event) => {
@@ -98,11 +95,6 @@ const VehicleManagement = () => {
     }
   };
 
-  const filteredVehicles = vehicles.filter(vehicle => 
-    vehicle.vehicleType.toLowerCase().includes(searchTerm) ||
-    vehicle.plateNumber.toLowerCase().includes(searchTerm)
-  );
-
   const openAddModal = () => {
     setIsAddModalOpen(true);
     setIsClosing(false);
@@ -126,7 +118,7 @@ const VehicleManagement = () => {
     setSelectedVehicleId(vehicle.id);
     setIsUpdateModalOpen(true);
     setIsClosing(false);
-  };
+  };  
   
   const closeUpdateModal = () => {
     setIsClosing(true);
@@ -177,46 +169,37 @@ const VehicleManagement = () => {
 
   const handleAddVehicle = async () => {
     if (!validatePlateNumber(plateNumber)) {
-      setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
-      return;
+        setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
+        return;
     }
-  
     const capacityNumber = Number(capacity);
     if (isNaN(capacityNumber) || capacityNumber < 0) {
-      setErrorMessage('Capacity must be a non-negative number');
-      return;
+        setErrorMessage('Capacity must be a non-negative number');
+        return;
     }
-  
     try {
-      const formData = new FormData();
-      formData.append('vehicleType', vehicleType);
-      formData.append('plateNumber', plateNumber);
-      formData.append('capacity', capacity);
-      formData.append('vehicleImage', vehicleImage);
-  
-      const response = await fetch('http://localhost:8080/vehicle/post', { 
-        method: 'POST',
-        body: formData,
-      });
-  
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error('Failed to add vehicle: ' + errorText);
-      }
-  
-      setSuccessMessage('Vehicle added successfully!');
-      setVehicleType('');
-      setPlateNumber('');
-      setCapacity('');
-      setVehicleImage(null);
-  
-      // Refresh the vehicle list after adding a new vehicle
-      const updatedVehicles = await fetch('http://localhost:8080/vehicle/vehicles');
-      const data = await updatedVehicles.json();
-      setVehicles(data);
-  
+        const vehicleData = { vehicleType, plateNumber, capacity: capacityNumber };
+        const response = await fetch('http://localhost:8080/opc/vehicle/post', { 
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(vehicleData),
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error('Failed to add vehicle: ' + errorText);
+        }
+        const newVehicle = await response.json();
+        setVehicles([...vehicles, newVehicle]);
+        setSuccessMessage('Vehicle added successfully!');
+        setVehicleType('');
+        setPlateNumber('');
+        setCapacity('');
+        openAddModal(false);
     } catch (error) {
-      setErrorMessage('Error adding vehicle: ' + error.message);
+        setErrorMessage('Error adding vehicle: ' + error.message);
     }
   };
 
@@ -225,58 +208,71 @@ const VehicleManagement = () => {
       setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
       return;
     }
-  
     const capacityNumber = Number(updateCapacity);
     if (isNaN(capacityNumber) || capacityNumber < 0) {
       setErrorMessage('Capacity must be a non-negative number');
       return;
     }
-  
     try {
-      const formData = new FormData();
-      formData.append('vehicleType', updateVehicleType);
-      formData.append('plateNumber', updatePlateNumber);
-      formData.append('capacity', updateCapacity);
+      const requestData = {
+        vehicleType: updateVehicleType,
+        plateNumber: updatePlateNumber,
+        capacity: capacityNumber, 
+      };
   
-      const response = await fetch(`http://localhost:8080/vehicle/update/${selectedVehicleId}`, {
+      const response = await fetch(`http://localhost:8080/opc/vehicle/update/${selectedVehicleId}`, {
         method: 'PUT',
-        body: formData,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json', 
+        },
+        body: JSON.stringify(requestData), 
       });
-  
       if (!response.ok) {
-        throw new Error('Failed to update vehicle');
+        const errorText = await response.text();
+        throw new Error('Failed to update vehicle: ' + errorText);
       }
+      setSuccessMessage('Vehicle updated successfully!');
+      closeUpdateModal();
   
-      // Refresh the vehicle list after updating
-      const updatedVehicles = await fetch('http://localhost:8080/vehicle/vehicles');
+      const updatedVehicles = await fetch('http://localhost:8080/opc/vehicle/getAll', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!updatedVehicles.ok) {
+        throw new Error('Failed to fetch updated vehicle list');
+      }
       const data = await updatedVehicles.json();
       setVehicles(data);
   
-      setSuccessMessage('Vehicle updated successfully!');
-      closeUpdateModal();
     } catch (error) {
       setErrorMessage('Error updating vehicle: ' + error.message);
     }
   };
 
   const handleDeleteVehicle = async () => {
+    if (!selectedVehicleId) return;
     try {
-      const response = await fetch(`http://localhost:8080/vehicle/delete/${selectedVehicleId}`, {
+      const response = await fetch(`http://localhost:8080/opc/vehicle/delete/${selectedVehicleId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
-
       if (!response.ok) {
-        throw new Error('Failed to delete vehicle');
+        const errorText = await response.text();
+        throw new Error('Failed to delete vehicle: ' + errorText);
       }
-
       setSuccessMessage('Vehicle deleted successfully!');
       closeDeleteModal();
-
-      // Refresh the vehicle list after deletion
-      const updatedVehicles = await fetch('http://localhost:8080/vehicle/vehicles');
+      const updatedVehicles = await fetch('http://localhost:8080/opc/vehicle/getAll', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       const data = await updatedVehicles.json();
       setVehicles(data);
-
     } catch (error) {
       setErrorMessage('Error deleting vehicle: ' + error.message);
     }
@@ -321,13 +317,13 @@ const VehicleManagement = () => {
                 </tr>
               </thead>
               <tbody>
-              {filteredVehicles.length > 0 ? (
-                filteredVehicles.map(vehicle => (
+              {vehicles.length > 0 ? (
+                vehicles.map(vehicle => (
                   <tr key={vehicle.id}>
                     <td>{vehicle.vehicleType}</td>
                     <td>{vehicle.plateNumber}</td>
                     <td>{vehicle.capacity}</td>
-                    <td>{vehicle.capacity}</td>
+                    <td>{vehicle.status}</td>
                     <td>
                       <button className="update-button" onClick={() => openUpdateModal(vehicle)}>Update</button>
                       <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}>Delete</button>
@@ -384,11 +380,14 @@ const VehicleManagement = () => {
           </div>
         </div>
       )}
-
-  {isUpdateModalOpen && (
+      {isUpdateModalOpen && (
         <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
           <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
-            <h2>Update Vehicle <button className="close-vehicle-btn" onClick={closeUpdateModal}><IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/></button></h2>
+            <h2>Update Vehicle 
+              <button className="close-vehicle-btn" onClick={closeUpdateModal}>
+                <IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/>
+              </button>
+            </h2>
             <div className='add-vehicle-input'>
               <label htmlFor='vehicle-name'>Vehicle Name</label>
               <input
@@ -414,27 +413,24 @@ const VehicleManagement = () => {
               />
             </div>
             <div className='add-vehicle-buttons'>
-            <button className="add-vehicle-submit-btn" onClick={handleUpdateVehicle}>Update Vehicle</button>
+              <button className="add-vehicle-submit-btn" onClick={handleUpdateVehicle}>Update Vehicle</button>
             </div>
             {successMessage && <p className="success-message">{successMessage}</p>}
             {errorMessage && <p className="error-message">{errorMessage}</p>}
           </div>
         </div>
       )}
-
       {isDeleteModalOpen && (
         <div className="delete-modal-overlay">
           <div className="delete-modal-content">
             <h2>Are you sure you want to delete this vehicle?</h2>
             <div className="delete-modal-buttons">
               <button className="cancel-button" onClick={closeDeleteModal}>Cancel</button>
-              <button className="delete-button-confirm" onClick={handleDeleteVehicle}>Delete Vehicle</button>
+              <button className="delete-button-confirm" onClick={() => handleDeleteVehicle(selectedVehicleId)}>Delete Vehicle</button>
             </div>
           </div>
         </div>
       )}
-
-      
     </div>
   );
 };

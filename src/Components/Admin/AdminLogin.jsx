@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import '../../CSS/UserCss/Login.css';
+import '../../CSS/AdminCss/AdminLogin.css';
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import logoImage from "../../Images/citlogo1.png";
 import logoImage1 from "../../Images/citbglogo.png";
-import LoadingScreen from './LoadingScreen'; 
+import LoadingScreen from '../UserSide/LoadingScreen'; 
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -45,7 +45,7 @@ const Login = () => {
   
       if (role === 'ROLE_USER') {
         navigate('/user-side');
-      } else if (role === 'ROLE_HEAD') {
+      } else if (role === 'ROLE_ADMIN') {
         navigate('/head-side');
       } else if (role === 'ROLE_OPC') {
         navigate('/dashboard');
@@ -75,14 +75,14 @@ const Login = () => {
   }
 
   return (
-    <div className="login-page">
+    <div className="admin-login-page">
       <img src={logoImage} alt="Logo" className="logo-image" />
       <div className="label-container">
         <h1 className="label-text">TRANSPORTATION RESERVATION SYSTEM</h1>
       </div>
       <div className="login-container">
-        <form className="login-form" onSubmit={handleLogin}>
-          <h2>User Authentication</h2>
+        <form className="admin-login-form" onSubmit={handleLogin}>
+          <h2>Admin Authentication</h2>
           {error && <p className="error-message">{error}</p>}
           <div className="input-group">
             <span className="icon"><FaUser /></span>
@@ -120,4 +120,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;
