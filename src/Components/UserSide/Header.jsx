@@ -42,11 +42,21 @@ const Header = () => {
       <h2><FaBus style={{ marginRight: "15px", marginBottom: "-3px" }} />TRANSPORTATION RESERVATION SYSTEM</h2>
       <div className="header-right">
         <span className="greeting">{getGreeting()} and Welcome, {firstName.charAt(0).toUpperCase() + firstName.slice(1)}</span>
-        <button className="logout-button" onClick={handleLogout}>
+        <button className="logout-button" onClick={handleLogoutClick}>
           <span className="logout-text"><FaSignOutAlt style={{ marginBottom: "-3px", marginRight: "5px" }} />Log Out</span>
           <FaSignOutAlt className="logout-icon" />
         </button>
       </div>
+
+      {isLogOutModalOpen && (
+        <div className="logout-modal-overlay">
+          <div className="logout-modal">
+            <p>Are you sure you want to log out?</p>
+            <button className="yes-modal-button" onClick={handleLogout}>Yes, I would like to log out</button>
+            <button className="no-modal-button" onClick={handleCloseModal}>Cancel</button>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
