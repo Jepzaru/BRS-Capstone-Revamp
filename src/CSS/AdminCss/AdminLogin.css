@@ -11,6 +11,17 @@
     position: relative; 
 }
 
+.icon-button {
+    font-size: 50px;
+    margin-bottom: -10px;
+    transition: color 0.3s ease;
+}
+
+.icon-button:hover {
+    color: #ffcc00; 
+    cursor: pointer; 
+}
+
 .logo-image {
     position: absolute;
     top: 20px;

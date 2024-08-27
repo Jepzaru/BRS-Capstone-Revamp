@@ -5,6 +5,7 @@ import logoImage from "../../Images/citlogo1.png";
 import logoImage1 from "../../Images/citbglogo.png";
 import LoadingScreen from '../UserSide/LoadingScreen'; 
 import { useNavigate } from 'react-router-dom';
+import { IoArrowBackCircleSharp } from "react-icons/io5";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -121,7 +122,18 @@ const AdminLogin = () => {
             </span>
           </div>
           <button type="submit" className="login-button">LOGIN</button>
-          <button type="button" className="clear-button" onClick={handleClear}>CLEAR</button>
+          <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTITIES</button>
+
+          <div className="super-admin">
+            <p 
+              className='history-route' 
+              onClick={() => navigate(-1)} // Go back to the previous page
+              style={{ cursor: 'pointer' }} // Change the cursor to pointer
+            >
+              <IoArrowBackCircleSharp style={{ fontSize: '50px', marginBottom: '-10px' }} />
+            </p>
+          </div>
+
         </form>
       </div>
       <img src={logoImage1} alt="Logo" className="logo-image1" />

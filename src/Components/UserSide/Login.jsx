@@ -133,14 +133,15 @@ const Login = () => {
           </div>
           <button type="submit" className="login-button">LOGIN</button>
           <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTITIES</button>
-          <div className="super-admin">
-          <Link to="/admin-authentication">
-          <p className='admin-route'>
-            <MdAdminPanelSettings style={{ fontSize: "34px", marginBottom: "-10px" }} /> Admin Login
-          </p>
-        </Link>
 
-        <Link to="/home">
+          <div className="super-admin">
+            <Link to="/admin-authentication">
+                <p className='admin-route'>
+                  <MdAdminPanelSettings style={{ fontSize: "34px", marginBottom: "-10px" }} /> Admin Login
+                </p>
+            </Link>
+
+        <Link to="/">
           <p className='home-route'>
             <FaHome style={{ fontSize: "34px", marginBottom: "-10px" }} /> Home
           </p>
