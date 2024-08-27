@@ -1,5 +1,3 @@
-/* DriverManagement.css */
-
 body, html {
   margin: 0;
   padding: 0;
@@ -231,13 +229,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 1000;
 }
 
 .driver-modal {
   background-color: white;
   padding: 20px;
-  height: 310px;
+  height: 320px;
   width: 500px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(9, 5, 5, 0.1);
@@ -250,6 +248,8 @@ body {
 }
 
 .driver-modal h2 {
+  display: flex;
+  justify-content: space-between;
   margin-top: 0;
 }
 
@@ -269,9 +269,7 @@ body {
 
 .close-driver-btn {
   border: none;
-  color: #782324;
   background: none;
-  margin-left: 242px;
   cursor: pointer;
 }
 
@@ -298,4 +296,3 @@ body {
   color: green;
   font-weight: bold;
 }
-

@@ -27,8 +27,6 @@ const VehicleManagement = () => {
   const [selectedVehicleId, setSelectedVehicleId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('vehicleType'); 
-  const [sortDirection, setSortDirection] = useState('asc'); 
-
 
   const token = localStorage.getItem('token');
 
@@ -285,7 +283,7 @@ const VehicleManagement = () => {
                       <td>{vehicle.plateNumber}</td>
                       <td>{vehicle.capacity}</td>
                       <td>{vehicle.status}</td>
-                      <td>
+                      <td className='td-action'>
                         <button className="update-button" onClick={() => openUpdateModal(vehicle)}>Update</button>
                         <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}>Delete</button>
                       </td>

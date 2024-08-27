@@ -290,6 +290,11 @@ body {
   animation: slideUp 0.3s ease-out;
 }
 
+.td-action{
+  display: flex;
+  justify-content: space-evenly;
+}
+
 @keyframes slideUp {
   from {
     transform: translateY(0);

@@ -18,13 +18,13 @@ import com.brscapstone1.brscapstone1.Service.DriverService;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/driver")
+@RequestMapping("/opc/driver")
 public class DriverController {
   
   @Autowired
   DriverService driverService;
 
-  @GetMapping("/drivers")
+  @GetMapping("/getAll")
   public List<DriverEntity> drivers(){
     return driverService.drivers();
   }
