@@ -11,21 +11,28 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null); 
-  const navigate = useNavigate(); 
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const role = localStorage.getItem('role');
+      if (role === 'ROLE_ADMIN') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    } else {
       setIsLoading(false);
-    }, 4000); 
-
-    return () => clearTimeout(timer);
-  }, []);
+    }
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-  
+    setError(null);
+
     try {
       const response = await fetch('http://localhost:8080/authenticate', {
         method: 'POST',
@@ -33,34 +40,36 @@ const AdminLogin = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-      });  
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Invalid email or password.');
+        }
+        throw new Error('Login failed.');
+      }
+
       const data = await response.json();
       const { token, role } = data;
-  
-      if (token && role && data.email) {
+
+      if (token && role) {
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('email', email);
-      }
-  
-      if (role === 'ROLE_USER') {
-        navigate('/user-side');
-      } else if (role === 'ROLE_ADMIN') {
-        navigate('/head-side');
-      } else if (role === 'ROLE_OPC') {
-        navigate('/dashboard');
+
+        if (role === 'ROLE_ADMIN') {
+          navigate('/admin');
+        }
       } else {
-        navigate('/');
+        throw new Error('Invalid login response.');
       }
-    } 
-    catch (error) {
+    } catch (error) {
       setError(error.message);
-    } 
-    finally {
+    } finally {
       setIsLoading(false);
     }
-  }; 
-  
+  };
+
   const handleClear = () => {
     setEmail('');
     setPassword('');
@@ -112,7 +121,7 @@ const AdminLogin = () => {
             </span>
           </div>
           <button type="submit" className="login-button">LOGIN</button>
-          <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTITIES</button>
+          <button type="button" className="clear-button" onClick={handleClear}>CLEAR</button>
         </form>
       </div>
       <img src={logoImage1} alt="Logo" className="logo-image1" />

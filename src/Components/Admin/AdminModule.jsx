@@ -91,11 +91,8 @@ const AdminModule = () => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const updatedUser = {
-      firstName: formData.get('firstName'),
-      lastName: formData.get('lastName'),
       department: formData.get('department'),
       email: formData.get('email'),
-      password: formData.get('password'),
       role: formData.get('role')
     };
   
@@ -270,7 +267,7 @@ const AdminModule = () => {
               <label>Role:</label>
               <select name="role" defaultValue={selectedUser.role}>
                 {user_roles.map((role, index) => (
-                  <option key={index} value={`ROLE_${role}`}>{role}</option>
+                  <option key={index} value={role}>{role}</option>
                 ))}
               </select>
               <div className="addacc-modal-buttons">

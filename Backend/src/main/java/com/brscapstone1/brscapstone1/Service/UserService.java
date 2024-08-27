@@ -26,19 +26,20 @@ public class UserService {
 	}
 	
 	public UserEntity update(int id, UserEntity newUser) {
-		UserEntity user;
+		UserEntity user = userRepository.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
 		
-		try {
-			user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
-			user.setEmail(newUser.getEmail());
+		user.setEmail(newUser.getEmail());
+		
+		if (newUser.getPassword() != null && !newUser.getPassword().isEmpty()) {
 			user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-			user.setDepartment(newUser.getDepartment());
-			user.setRole(newUser.getRole());
-			return userRepository.save(user);
-		} catch (NoSuchElementException e) {
-			throw e;
 		}
+		
+		user.setDepartment(newUser.getDepartment());
+		user.setRole(newUser.getRole());
+		return userRepository.save(user);
 	}
+	
 	
 	public String delete(int id) {
 		String message = "";
