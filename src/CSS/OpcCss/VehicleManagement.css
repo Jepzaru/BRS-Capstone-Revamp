@@ -1,5 +1,3 @@
-/* UserSide.css */
-
 body, html {
   margin: 0;
   padding: 0;
@@ -326,7 +324,7 @@ body {
 
 .delete-modal-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   margin-top: 20px;
 }
 
