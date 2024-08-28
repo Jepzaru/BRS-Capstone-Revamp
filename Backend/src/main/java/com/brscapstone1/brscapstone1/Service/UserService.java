@@ -3,6 +3,7 @@ package com.brscapstone1.brscapstone1.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.brscapstone1.brscapstone1.Entity.UserEntity;
@@ -26,18 +27,18 @@ public class UserService {
 	}
 	
 	public UserEntity update(int id, UserEntity newUser) {
-		UserEntity user;
+		UserEntity user = userRepository.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
 		
-		try {
-			user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
-			user.setEmail(newUser.getEmail());
+		user.setEmail(newUser.getEmail());
+		
+		if (newUser.getPassword() != null && !newUser.getPassword().isEmpty()) {
 			user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-			user.setDepartment(newUser.getDepartment());
-			user.setRole(newUser.getRole());
-			return userRepository.save(user);
-		} catch (NoSuchElementException e) {
-			throw e;
 		}
+		
+		user.setDepartment(newUser.getDepartment());
+		user.setRole(newUser.getRole());
+		return userRepository.save(user);
 	}
 	
 	public String delete(int id) {
@@ -51,4 +52,23 @@ public class UserService {
 		}
 		return message;
 	}
+
+	public String changePassword(int id, String oldPassword, String newPassword) {
+		UserEntity user = userRepository.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
+	
+		if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+			user.setPassword(passwordEncoder.encode(newPassword));
+			userRepository.save(user);
+			return "Password successfully changed.";
+		} else {
+			throw new IllegalArgumentException("Old password is incorrect.");
+		}
+	}	
+
+	public UserEntity findByEmail(String email) {
+    return userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+	}
+
 }

@@ -5,18 +5,16 @@ import SideNavbar from './OpcNavbar';
 import { FaBus } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
-import { MdAddCircle, MdOutlineBusAlert } from "react-icons/md";
+import { MdAddCircle } from "react-icons/md";
 import { IoIosCloseCircle } from "react-icons/io";
 import '../../CSS/OpcCss/VehicleManagement.css';
 
 const VehicleManagement = () => {
   const [vehicles, setVehicles] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [sortOption, setSortOption] = useState('');
   const [vehicleType, setVehicleType] = useState('');
   const [plateNumber, setPlateNumber] = useState('');
   const [capacity, setCapacity] = useState('');
@@ -27,6 +25,8 @@ const VehicleManagement = () => {
   const [updatePlateNumber, setUpdatePlateNumber] = useState('');
   const [updateCapacity, setUpdateCapacity] = useState('');
   const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('vehicleType'); 
 
   const token = localStorage.getItem('token');
 
@@ -48,12 +48,6 @@ const VehicleManagement = () => {
     fetchVehicles();
   }, [token]);
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleSearchClick = () => {
-  };
 
   const handleSortChange = (event) => {
     setSortOption(event.target.value);
@@ -81,19 +75,6 @@ const VehicleManagement = () => {
       return () => clearTimeout(timer);
     }
   }, [successMessage, isAddModalOpen, isUpdateModalOpen, isDeleteModalOpen]);
-
-  const sortVehicle = (requests) => {
-    switch (sortOption) {
-      case "alphabetical":
-        return requests.sort((a, b) => a.vehicleType.localeCompare(b.vehicleType));
-      case "ascending":
-        return requests.sort((a, b) => a.capacity - b.capacity);
-      case "descending":
-        return requests.sort((a, b) => b.capacity - a.capacity);
-      default:
-        return requests;
-    }
-  };
 
   const openAddModal = () => {
     setIsAddModalOpen(true);
@@ -135,32 +116,6 @@ const VehicleManagement = () => {
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
     setSelectedVehicleId(null);
-  };
-
-  const handleFileChange = (event) => {
-    setVehicleImage(event.target.files[0]);
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setDragActive(true);
-  };
-
-  const handleDragLeave = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setDragActive(false);
-  };
-
-  const handleDrop = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setDragActive(false);
-
-    if (event.dataTransfer.files && event.dataTransfer.files[0]) {
-      setVehicleImage(event.dataTransfer.files[0]);
-    }
   };
 
   const validatePlateNumber = (plateNumber) => {
@@ -278,6 +233,11 @@ const VehicleManagement = () => {
     }
   };
 
+  const filteredVehicles = vehicles.filter(vehicle =>
+    vehicle.vehicleType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    vehicle.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
+  );  
+
   return (
     <div className="vehiclemanage">
       <Header />
@@ -291,16 +251,15 @@ const VehicleManagement = () => {
                 type="text"
                 placeholder="Search Vehicle"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-bar"
               />
-              <button onClick={handleSearchClick} className="search-button"><IoSearch style={{ marginBottom: "-3px" }} /> Search</button>
+              <button className="search-button"><IoSearch style={{ marginBottom: "-3px" }} /> Search</button>
               <FaSortAlphaDown style={{ color: "#782324" }} />
-              <select onChange={handleSortChange} className="sort-dropdown">
-                <option value="">Sort By</option>
-                <option value="alphabetical">Alphabetical</option>
-                <option value="ascending">Capacity Ascending</option>
-                <option value="descending">Capacity Descending</option>
+              <select value={sortOption} onChange={handleSortChange} className="sort-dropdown">
+                <option value="vehicleType">Vehicle Type</option>
+                <option value="plateNumber">Plate Number</option>
+                <option value="capacity">Capacity</option>
               </select>
               <button className='add-vehicle-btn' onClick={openAddModal}><MdAddCircle style={{ marginRight: "10px", marginBottom: "-2px" }} />Add new Vehicle</button>
             </div>
@@ -317,25 +276,25 @@ const VehicleManagement = () => {
                 </tr>
               </thead>
               <tbody>
-              {vehicles.length > 0 ? (
-                vehicles.map(vehicle => (
-                  <tr key={vehicle.id}>
-                    <td>{vehicle.vehicleType}</td>
-                    <td>{vehicle.plateNumber}</td>
-                    <td>{vehicle.capacity}</td>
-                    <td>{vehicle.status}</td>
-                    <td>
-                      <button className="update-button" onClick={() => openUpdateModal(vehicle)}>Update</button>
-                      <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}>Delete</button>
-                    </td>
+                {filteredVehicles.length > 0 ? (
+                  filteredVehicles.map(vehicle => (
+                    <tr key={vehicle.id}>
+                      <td>{vehicle.vehicleType}</td>
+                      <td>{vehicle.plateNumber}</td>
+                      <td>{vehicle.capacity}</td>
+                      <td>{vehicle.status}</td>
+                      <td className='td-action'>
+                        <button className="update-button" onClick={() => openUpdateModal(vehicle)}>Update</button>
+                        <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}>Delete</button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5">No Vehicle Found</td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4">No Vehicle Registered</td>
-                </tr>
-              )}
-            </tbody>
+                )}
+              </tbody>
             </table>
           </div>
           <img src={logoImage1} alt="Logo" className="vehicle-logo-image" />
@@ -426,7 +385,7 @@ const VehicleManagement = () => {
             <h2>Are you sure you want to delete this vehicle?</h2>
             <div className="delete-modal-buttons">
               <button className="cancel-button" onClick={closeDeleteModal}>Cancel</button>
-              <button className="delete-button-confirm" onClick={() => handleDeleteVehicle(selectedVehicleId)}>Delete Vehicle</button>
+              <button className="delete-button-confirm" onClick={() => handleDeleteVehicle(selectedVehicleId)}>Delete</button>
             </div>
           </div>
         </div>

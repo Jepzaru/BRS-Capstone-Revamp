@@ -1,9 +1,9 @@
 /* src/components/SideNavbar.css */
 .side-navbar {
   height: 100%;
-  width: 285px;
+  width: 286px;
   position: fixed;
-  top: 60px; /* Adjust this value based on the header's height */
+  top: 65px; /* Adjust this value based on the header's height */
   left: 0;
   background-color: #111;
   padding-top: 20px;

@@ -32,6 +32,10 @@ public class DriverService {
       driver.setDriverName(newDriver.getDriverName());
       driver.setContactNumber(newDriver.getContactNumber());
       driver.setStatus(newDriver.getStatus());
+      
+      if(driver.getStatus() == null || driver.getStatus().isEmpty()){
+        driver.setStatus("Available");
+      }
       return driverRepo.save(driver);
     } catch(NoSuchElementException e){
       throw e;

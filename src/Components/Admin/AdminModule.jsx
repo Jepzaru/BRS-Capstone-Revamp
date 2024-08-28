@@ -91,11 +91,8 @@ const AdminModule = () => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const updatedUser = {
-      firstName: formData.get('firstName'),
-      lastName: formData.get('lastName'),
       department: formData.get('department'),
       email: formData.get('email'),
-      password: formData.get('password'),
       role: formData.get('role')
     };
   
@@ -259,22 +256,18 @@ const AdminModule = () => {
           <div className="addacc-modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>Update Account</h2>
             <form className="addacc-modal-form" onSubmit={handleUpdateAccount}>
-              <label>First Name:</label>
-              <input type="text" name="firstName" defaultValue={selectedUser.firstName} />
-              <label>Last Name:</label>
-              <input type="text" name="lastName" defaultValue={selectedUser.lastName} />
+              <label>Email:</label>
+              <input type="email" name="email" defaultValue={selectedUser.email} />
               <label>Department:</label>
               <select name="department" defaultValue={selectedUser.department}>
                 {departments.map((department, index) => (
                   <option key={index} value={department}>{department}</option>
                 ))}
               </select>
-              <label>Email:</label>
-              <input type="email" name="email" defaultValue={selectedUser.email} />
               <label>Role:</label>
               <select name="role" defaultValue={selectedUser.role}>
                 {user_roles.map((role, index) => (
-                  <option key={index} value={`ROLE_${role}`}>{role}</option>
+                  <option key={index} value={role}>{role}</option>
                 ))}
               </select>
               <div className="addacc-modal-buttons">

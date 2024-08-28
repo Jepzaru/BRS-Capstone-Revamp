@@ -45,12 +45,13 @@ const Login = () => {
       }
   
       const data = await response.json();
-      const { token, role } = data;
+      const { token, role, userId } = data;
   
-      if (token && role) {
+      if (token && role && userId) {
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('email', email);
+        localStorage.setItem('userId', userId);
   
         switch (role) {
           case 'ROLE_USER':
@@ -131,13 +132,19 @@ const Login = () => {
           </div>
           <button type="submit" className="login-button">LOGIN</button>
           <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTITIES</button>
-          <div className="super-admin">
-          <p>Are you an Admin?<Link to="/admin-authentication">Click here</Link></p>
-        </div>
-        <div className="homepage-back">
-          <p><Link to="/">Back to Homepage</Link></p>
-        </div>
 
+          <div className="super-admin">
+            <Link to="/admin-authentication">
+                <p className='admin-route'>
+                  <MdAdminPanelSettings style={{ fontSize: "34px", marginBottom: "-10px" }} /> Admin Login
+                </p>
+            </Link>
+        <Link to="/">
+          <p className='home-route'>
+            <FaHome style={{ fontSize: "34px", marginBottom: "-10px" }} /> Home
+          </p>
+        </Link>
+        </div>
         </form>
       </div>
       <img src={logoImage1} alt="Logo" className="logo-image1" />

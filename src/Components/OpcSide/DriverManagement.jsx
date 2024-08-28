@@ -11,44 +11,38 @@ import '../../CSS/OpcCss/DriverManagement.css';
 
 const DriverManagement = () => {
   const [drivers, setDrivers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-
-  // State for driver fields
   const [driverName, setDriverName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-
-  // State for update fields
   const [updateDriverName, setUpdateDriverName] = useState('');
   const [updatePhoneNumber, setUpdatePhoneNumber] = useState('');
   const [selectedDriverId, setSelectedDriverId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState('');
 
-  // Fetch drivers from the backend
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
-    fetch('http://localhost:8080/driver/drivers')
-      .then(response => response.json())
-      .then(data => setDrivers(data))
-      .catch(error => console.error('Error fetching drivers:', error));
-  }, []);
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleSearchClick = () => {};
-
-  const handleSortChange = (event) => {
-    // Logic for sorting if needed
-  };
+    const fetchDriverDetails = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/opc/driver/getAll", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await response.json();
+        setDrivers(data);
+      } catch (error) {
+        console.error("Failed to fetch driver details", error);
+      }
+    }
+    fetchDriverDetails();
+  }, [token]);
 
   const openModal = () => {
     setIsModalOpen(true);
     setIsClosing(false);
-
-    // Reset the form fields
     setDriverName('');
     setPhoneNumber('');
   };
@@ -57,7 +51,7 @@ const DriverManagement = () => {
     setIsClosing(true);
     setTimeout(() => {
       setIsModalOpen(false);
-    }, 300); // Match the duration of the slide-down animation
+    }, 300);
   };
 
   const openUpdateModal = (driver) => {
@@ -72,98 +66,102 @@ const DriverManagement = () => {
     setIsClosing(true);
     setTimeout(() => {
       setIsUpdateModalOpen(false);
-    }, 300); // Match the duration of the slide-down animation
+    }, 300);
   };
 
-  const validateForm = () => {
-    if (!driverName.trim()) {
-      alert('Driver name is required.');
-      return false;
-    }
-
-    const phoneNumberPattern = /^\d{11}$/;
-    if (!phoneNumber.trim()) {
-      alert('Phone number is required.');
-      return false;
-    } else if (!phoneNumberPattern.test(phoneNumber)) {
-      alert('Phone number must be exactly 11 digits.');
-      return false;
-    }
-
-    return true;
+  const openDeleteModal = (driverId) => {
+    setSelectedDriverId(driverId);
+    setIsDeleteModalOpen(true);
   };
 
-  const handleAddDriver = () => {
-    if (validateForm()) {
-      const newDriver = { driverName, contactNumber: phoneNumber, status: "Available" };
-      
-      // Send the new driver to the backend
-      fetch('http://localhost:8080/driver/post', {
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedDriverId(null);
+  };
+
+  const handleAddDriver = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/opc/driver/post", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(newDriver),
-      })
-        .then(response => response.json())
-        .then(data => {
-          setDrivers([...drivers, data]); // Update the driver list with the new driver
-          closeModal();
-        })
-        .catch(error => console.error('Error adding driver:', error));
+        body: JSON.stringify({ driverName, contactNumber: phoneNumber })
+      });
+      if (response.ok) {
+        const newDriver = await response.json();
+        setDrivers([...drivers, newDriver]); 
+        closeModal();
+      } else {
+        throw new Error('Failed to add driver');
+      }
+    } catch (error) {
+      console.error("Failed to add driver", error);
     }
   };
-
-  const handleUpdateDriver = () => {
-    if (!updateDriverName.trim()) {
-      alert('Driver name is required.');
-      return;
-    }
   
-    const phoneNumberPattern = /^\d{11}$/;
-    if (!updatePhoneNumber.trim()) {
-      alert('Phone number is required.');
-      return;
-    } else if (!phoneNumberPattern.test(updatePhoneNumber)) {
-      alert('Phone number must be exactly 11 digits.');
-      return;
-    }
-  
-    const updatedDriver = { driverName: updateDriverName, contactNumber: updatePhoneNumber, status: "Available" };
-    
-    // Send update request to the backend
-    fetch(`http://localhost:8080/driver/update/${selectedDriverId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedDriver),
-    })
-      .then(response => response.json())
-      .then(() => {
-        // Update the local state with the new driver data
-        setDrivers(drivers.map(driver =>
-          driver.id === selectedDriverId ? { ...driver, ...updatedDriver } : driver
-        ));
-        setSuccessMessage('Driver details updated successfully!');
+  const handleUpdateDriver = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/opc/driver/update/${selectedDriverId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ driverName: updateDriverName, contactNumber: updatePhoneNumber })
+      });
+      if (response.ok) {
+        const updatedDriver = await response.json();
+        setDrivers(drivers.map(driver => driver.id === selectedDriverId ? updatedDriver : driver));
         closeUpdateModal();
-        setTimeout(() => setSuccessMessage(''), 3000); // Clear message after 3 seconds
-      })
-      .catch(error => console.error('Error updating driver:', error));
-  };
-  
-  const handleDeleteDriver = (id) => {
-    // Send delete request to the backend
-    fetch(`http://localhost:8080/driver/delete/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => {
-        // Remove the deleted driver from the state
-        setDrivers(drivers.filter(driver => driver.id !== id));
-      })
-      .catch(error => console.error('Error deleting driver:', error));
+      } else {
+        throw new Error('Failed to update driver');
+      }
+    } catch (error) {
+      console.error("Failed to update driver", error);
+    }
+  };  
+
+  const handleDeleteDriver = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/opc/driver/delete/${selectedDriverId}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (response.ok) {
+        setDrivers(drivers.filter(driver => driver.id !== selectedDriverId));
+        closeDeleteModal();
+      } else {
+        throw new Error('Failed to delete driver');
+      }
+    } catch (error) {
+      console.error("Failed to delete driver.", error);
+    }
   };
 
+  const sortedDrivers = [...drivers].sort((a, b) => {
+    switch (sortOption) {
+      case 'alphabetical':
+        return a.driverName.localeCompare(b.driverName);
+      case 'ascending':
+        return a.contactNumber.localeCompare(b.contactNumber);
+      case 'descending':
+        return b.contactNumber.localeCompare(a.contactNumber);
+      default:
+        return 0;
+    }
+  });
+  
+  const filteredDrivers = sortedDrivers.filter(driver =>
+    driver.driverName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    driver.contactNumber.includes(searchQuery)
+  );
+
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+  };  
+  
   return (
     <div className="drivermanage">
       <Header />
@@ -176,11 +174,11 @@ const DriverManagement = () => {
               <input
                 type="text"
                 placeholder="Search Driver"
-                value={searchTerm}
-                onChange={handleSearchChange}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-bar"
               />
-              <button onClick={handleSearchClick} className="search-button"><IoSearch style={{ marginBottom: "-3px" }} /></button>
+              <button className="search-button"><IoSearch style={{ marginBottom: "-3px" }} /></button>
               <FaSortAlphaDown style={{ color: "#782324" }} />
               <select onChange={handleSortChange} className="sort-dropdown">
                 <option value="">Sort By</option>
@@ -191,11 +189,6 @@ const DriverManagement = () => {
               <button className='add-driver-btn' onClick={openModal}><BsPersonFillAdd style={{ marginRight: "10px", marginBottom: "-2px" }} />Add new Driver</button>
             </div>
           </div>
-          {successMessage && (
-            <div className="success-message">
-              {successMessage}
-            </div>
-          )}
           <div className='driver-list-container'>
             <table className="driver-table">
               <thead>
@@ -207,19 +200,21 @@ const DriverManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {drivers.length === 0 ? (
+                {filteredDrivers.length === 0 ? (
                   <tr>
-                    <td colSpan="4" className="no-driver"><PiSteeringWheelFill style={{ fontSize: "24px", marginBottom: "-2px" }} /> No Driver Registered</td>
+                    <td colSpan="4" className="no-driver">
+                      <PiSteeringWheelFill style={{ fontSize: "24px", marginBottom: "-2px" }} /> No Driver Registered
+                    </td>
                   </tr>
                 ) : (
-                  drivers.map((driver, index) => (
-                    <tr key={index}>
+                  filteredDrivers.map((driver) => (
+                    <tr key={driver.id}>
                       <td>{driver.driverName}</td>
                       <td>{driver.contactNumber}</td>
                       <td>{driver.status}</td>
-                      <td>
+                      <td className='td-action'>
                         <button className="update-button" onClick={() => openUpdateModal(driver)}>Update</button>
-                        <button className="delete-button" onClick={() => handleDeleteDriver(driver.id)}>Delete</button>
+                        <button className="delete-button" onClick={() => openDeleteModal(driver.id)}>Delete</button>
                       </td>
                     </tr>
                   ))
@@ -230,8 +225,6 @@ const DriverManagement = () => {
           <img src={logoImage1} alt="Logo" className="driver-logo-image" />
         </div>
       </div>
-
-      {/* Add Driver Modal */}
       {isModalOpen && (
         <div className={`driver-modal-overlay ${isClosing ? 'driver-modal-closing' : ''}`}>
           <div className={`driver-modal ${isClosing ? 'driver-modal-closing' : ''}`}>
@@ -266,14 +259,11 @@ const DriverManagement = () => {
                 maxLength="11"
                 className="driver-input"
               />
-              
               <button className="add-driver-btn-modal" onClick={handleAddDriver}>Add Driver</button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Update Driver Modal */}
       {isUpdateModalOpen && (
         <div className={`driver-modal-overlay ${isClosing ? 'driver-modal-closing' : ''}`}>
           <div className={`driver-modal ${isClosing ? 'driver-modal-closing' : ''}`}>
@@ -308,8 +298,18 @@ const DriverManagement = () => {
                 maxLength="11"
                 className="driver-input"
               />
-              
               <button className="add-driver-btn-modal" onClick={handleUpdateDriver}>Update Driver</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isDeleteModalOpen && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal-content">
+            <h2>Are you sure you want to delete this vehicle?</h2>
+            <div className="delete-modal-buttons">
+              <button className="cancel-button" onClick={closeDeleteModal}>Cancel</button>
+              <button className="delete-button-confirm" onClick={() => handleDeleteDriver(selectedDriverId)}>Delete</button>
             </div>
           </div>
         </div>

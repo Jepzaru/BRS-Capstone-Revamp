@@ -6,7 +6,10 @@ import logo from '../../Images/citlogo1.png';
 
 const Header = () => {
   const email = localStorage.getItem('email');
-  const firstName = email ? email.split('@')[0] : '';
+  const namePart = email.split('@')[0];
+  const [firstName, lastName] = namePart.split('.');
+  const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  const formattedName = `${capitalize(firstName)} ${capitalize(lastName)}`;
 
   const [isLogOutModalOpen, setIsLogOutModalOpen] = useState(false);
 
@@ -41,7 +44,7 @@ const Header = () => {
       <img src={logo} alt="Logo" className="header-logo" />
       <h2><FaBus style={{ marginRight: "15px", marginBottom: "-3px" }} />TRANSPORTATION RESERVATION SYSTEM</h2>
       <div className="header-right">
-        <span className="greeting">{getGreeting()} and Welcome, {firstName.charAt(0).toUpperCase() + firstName.slice(1)}</span>
+        <span className="greeting">{getGreeting()} and Welcome, {formattedName}</span>
         <button className="logout-button" onClick={handleLogoutClick}>
           <span className="logout-text"><FaSignOutAlt style={{ marginBottom: "-3px", marginRight: "5px" }} />Log Out</span>
           <FaSignOutAlt className="logout-icon" />
