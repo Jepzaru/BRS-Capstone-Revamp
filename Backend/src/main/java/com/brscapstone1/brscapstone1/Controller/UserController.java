@@ -50,6 +50,14 @@ public class UserController {
         return userService.delete(id);
     }
     
+    @PutMapping("/users/change-password/{id}")
+    public ResponseEntity<String> changePassword(@PathVariable int id, @RequestBody Map<String, String> passwords) {
+        String oldPassword = passwords.get("oldPassword");
+        String newPassword = passwords.get("newPassword");
+        String message = userService.changePassword(id, oldPassword, newPassword);
+        return ResponseEntity.ok(message);
+    }
+
     @PostMapping("/authenticate")
     public ResponseEntity<Map<String, String>> authenticateAndGetToken(@RequestBody LoginForm loginForm) {
         Authentication authentication = authenticationManager.authenticate(
@@ -62,14 +70,20 @@ public class UserController {
             String role = userDetails.getAuthorities().iterator().next().getAuthority();
             String email = userDetails.getUsername();
 
+            // Fetch the user from the database to get the userId
+            UserEntity user = userService.findByEmail(email);
+            int userId = user.getId(); // assuming `getId()` returns the userId
+
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
             response.put("role", role);
             response.put("email", email);
+            response.put("userId", String.valueOf(userId)); // Include userId in the response
 
             return ResponseEntity.ok(response);
         } else {
             throw new UsernameNotFoundException("Invalid credentials");
         }
     }
+
 }

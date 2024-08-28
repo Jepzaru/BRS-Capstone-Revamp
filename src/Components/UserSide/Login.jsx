@@ -47,12 +47,13 @@ const Login = () => {
       }
   
       const data = await response.json();
-      const { token, role } = data;
+      const { token, role, userId } = data;
   
-      if (token && role) {
+      if (token && role && userId) {
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('email', email);
+        localStorage.setItem('userId', userId);
   
         switch (role) {
           case 'ROLE_USER':
@@ -140,14 +141,12 @@ const Login = () => {
                   <MdAdminPanelSettings style={{ fontSize: "34px", marginBottom: "-10px" }} /> Admin Login
                 </p>
             </Link>
-
         <Link to="/">
           <p className='home-route'>
             <FaHome style={{ fontSize: "34px", marginBottom: "-10px" }} /> Home
           </p>
         </Link>
         </div>
-
         </form>
       </div>
       <img src={logoImage1} alt="Logo" className="logo-image1" />

@@ -18,7 +18,7 @@ const useCounter = (target, duration, startCounting) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!startCounting) return; // Do nothing if counting should not start
+    if (!startCounting) return; 
     const stepTime = Math.abs(Math.floor(duration / target));
     const timer = setInterval(() => {
       setCount((prevCount) => {
@@ -37,7 +37,41 @@ const useCounter = (target, duration, startCounting) => {
 };
 
 const OpcDashboard = () => {
+  const [drivers, setDrivers] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const token = localStorage.getItem('token');
+
+  useEffect(() =>{
+    const fetchNumberOfDrivers = async () =>{
+      try {
+        const response = await fetch("http://localhost:8080/opc/driver/getAll",{
+          headers: {"Authorization" : `Bearer ${token}`}
+        })
+        const data = await response.json();
+        setDrivers(data);
+      } catch (error) {
+        console.error("Failed to fetch driver details.", error);
+      }
+    }
+    fetchNumberOfDrivers();
+  }, [token]);
+
+  useEffect(() =>{
+    const fetchNumberOfVehicles = async () =>{
+      try {
+        const response = await fetch("http://localhost:8080/opc/vehicle/getAll",{
+          headers: {"Authorization" : `Bearer ${token}`}
+        })
+        const data = await response.json();
+        setVehicles(data);
+      } catch (error) {
+        console.error("Failed to fetch vehicle data", error);
+      }
+    }
+    fetchNumberOfVehicles();
+  }, [token]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -47,9 +81,7 @@ const OpcDashboard = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Initialize counters with a target number and duration, and start counting only when loading is complete
   const requestsCount = useCounter(42, 2000, !isLoading);
-  const driversCount = useCounter(25, 2000, !isLoading);
   const vehiclesCount = useCounter(10, 2000, !isLoading);
 
   const data = {
@@ -101,14 +133,14 @@ const OpcDashboard = () => {
                       <GiCarSeat style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Drivers
                     </h3>
-                    <span className="number-badge">{driversCount}</span>
+                    <span className="number-badge">{drivers.length}</span>
                   </div>
                   <div className="dashcontainer3">
                     <h3 style={{ fontWeight: "700", marginLeft: "10px" }}>
                       <FaBus style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Vehicles
                     </h3>
-                    <span className="number-badge">{vehiclesCount}</span>
+                    <span className="number-badge">{vehicles.length}</span>
                   </div>
                 </div>
                 <div className="calendar-container">
