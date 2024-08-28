@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import '../../CSS/AdminCss/AdminLogin.css';
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import logoImage from "../../Images/citlogo1.png";
@@ -113,6 +114,9 @@ const AdminLogin = () => {
           </div>
           <button type="submit" className="login-button">LOGIN</button>
           <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTITIES</button>
+          <div className="homepage-back">
+          <p><Link to="/">Back to Homepage</Link></p>
+        </div>
         </form>
       </div>
       <img src={logoImage1} alt="Logo" className="logo-image1" />

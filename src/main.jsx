@@ -27,7 +27,7 @@ const Main = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/user-authentication" element={<Login />} />
-        <Route path="/admin-authentication" element={<ProtectedRoute path="/admin-authentication" element={<AdminLogin />} />} />
+        <Route path="/admin-authentication" element={<AdminLogin />}/>
         <Route path="/admin" element={<ProtectedRoute path="/admin" element={<AdminModule />} />} />
         <Route path="/user-side" element={<ProtectedRoute path="/user-side" element={<UserSide />} />} />
         <Route path="/user-side/reservation" element={<ProtectedRoute path="/user-side/reservation" element={<Reservation />} />} />
