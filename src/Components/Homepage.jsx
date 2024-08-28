@@ -112,7 +112,7 @@ function HomePage() {
                         <li><a onClick={() => scrollToSection(2)}>Services</a></li>
                         <li><a onClick={() => scrollToSection(3)}>About Us</a></li>
                         <Link to="/user-authentication">
-                            <button className="get-started">Logi in</button>
+                            <button className="get-started">Log in</button>
                         </Link>
                     </div>
                     <div className="mobile-menu-icon" onClick={toggleMobileMenu}>
