@@ -21,31 +21,35 @@ import '../../CSS/UserCss/UserSide.css';
 const UserSide = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [events, setEvents] = useState([]); // Added state for events
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [events, setEvents] = useState([]); 
+  const [currentSlide, setCurrentSlide] = useState(0); 
+
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    fetch('http://localhost:8080/vehicle/vehicles')
-      .then(response => response.json())
-      .then(data => {
-        setVehicles(data);
+    const fetchVehicleDetails = async () =>{
+      try {
+        const response = await fetch("http://localhost:8080/vehicle/getAll", {
+          headers: { "Authorization" : `Bearer ${token}` }
+        });
+        
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setVehicles(data);
+        } else {
+          console.error("Expected an array from API but got:", data);
+          setVehicles([]);
+        }
+        
+        setLoading(false); 
+      } catch (error) {
+        console.error("Failed to fetch vehicle details", error);
         setLoading(false);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the vehicles!', error);
-        setLoading(false);
-      });
-
-    // Fetch events data (placeholder URL, adjust as needed)
-    fetch('http://localhost:8080/events')
-      .then(response => response.json())
-      .then(data => {
-        setEvents(data);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the events!', error);
-      });
-  }, []);
+      }
+    };
+    
+    fetchVehicleDetails();
+  }, [token]);
 
   const getVehicleImage = (vehicleType) => {
     switch (vehicleType) {
@@ -63,18 +67,10 @@ const UserSide = () => {
     [vehiclesubImage4, vehiclesubImage5, vehiclesubImage6],
   ];
 
-  const handleNextSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide + 1) % imageGrids.length);
-  };
-
-  const handlePrevSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide - 1 + imageGrids.length) % imageGrids.length);
-  };
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide(prevSlide => (prevSlide + 1) % imageGrids.length);
-    }, 3000); // Change slide every 3 seconds
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [imageGrids.length]);
@@ -149,10 +145,8 @@ const UserSide = () => {
                   </div>
                   <div className="events-list">
                     {events.length > 0 ? (
-                      // Render events if available
                       events.map((event, index) => (
                         <div key={index} className="event-item">
-                          {/* Adjust the content and styling as needed */}
                           <p>{event.title}</p>
                         </div>
                       ))

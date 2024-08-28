@@ -47,13 +47,14 @@ const Login = () => {
       }
   
       const data = await response.json();
-      const { token, role, userId } = data;
+      const { token, role, userId, department } = data;
   
-      if (token && role && userId) {
+      if (token && role && userId && department) {
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('email', email);
         localStorage.setItem('userId', userId);
+        localStorage.setItem('department', department);
   
         switch (role) {
           case 'ROLE_USER':

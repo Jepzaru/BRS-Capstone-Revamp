@@ -70,15 +70,15 @@ public class UserController {
             String role = userDetails.getAuthorities().iterator().next().getAuthority();
             String email = userDetails.getUsername();
 
-            // Fetch the user from the database to get the userId
             UserEntity user = userService.findByEmail(email);
-            int userId = user.getId(); // assuming `getId()` returns the userId
-
+            String department = user.getDepartment();
+            int userId = user.getId(); 
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
             response.put("role", role);
             response.put("email", email);
-            response.put("userId", String.valueOf(userId)); // Include userId in the response
+            response.put("department", department);
+            response.put("userId", String.valueOf(userId)); 
 
             return ResponseEntity.ok(response);
         } else {

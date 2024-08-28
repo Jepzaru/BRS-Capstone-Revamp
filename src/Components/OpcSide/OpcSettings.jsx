@@ -19,6 +19,7 @@ const OpcSettings = () => {
   const email = localStorage.getItem('email');
   const role = localStorage.getItem('role');
   const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId'); 
   const namePart = email.split('@')[0];
   const [firstName, lastName] = namePart.split('.');
   const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
@@ -51,9 +52,7 @@ const OpcSettings = () => {
       return;
     }
   
-    try {
-      const userId = localStorage.getItem('userId'); 
-  
+    try {  
       const response = await fetch(`http://localhost:8080/users/change-password/${userId}`, {
         method: 'PUT',
         headers: {

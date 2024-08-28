@@ -8,28 +8,27 @@ import com.brscapstone1.brscapstone1.Service.VehicleService;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/opc/vehicle")
 public class VehicleController {
 
     @Autowired
     VehicleService vehicleService;
 
-    @PostMapping("/post")
+    @PostMapping("/opc/vehicle/post")
     public VehicleEntity post(@RequestBody VehicleEntity vehicle) {
         return vehicleService.post(vehicle);
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/vehicle/getAll")
     public List<VehicleEntity> vehicles() {
         return vehicleService.vehicles();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/opc/vehicle/update/{id}")
     public VehicleEntity update(@PathVariable int id, @RequestBody VehicleEntity newVehicle) {
         return vehicleService.update(id, newVehicle);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/opc/vehicle/delete/{id}")
     public String delete(@PathVariable int id) {
         return vehicleService.delete(id);
     }
