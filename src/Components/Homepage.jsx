@@ -8,11 +8,11 @@ import serviceIcon1 from '../Images/1.png';
 import serviceIcon2 from '../Images/2.png';
 import serviceIcon3 from '../Images/3.png';
 import serviceIcon4 from '../Images/4.png';
-import jep from '../Images/jip.jpg';
-import kim from '../Images/kem.jpg';
-import rj from '../Images/rays.jpg';
-import saly from '../Images/tesaly.jpg';
-import carlo from '../Images/carlo.jpg';
+import jep from '../Images/Jep.png';
+import kim from '../Images/kem.png';
+import rj from '../Images/rays.png';
+import saly from '../Images/saly.png';
+import carlo from '../Images/carlo.png';
 import carouselImage1 from '../Images/busimage.jpg';
 import carouselImage2 from '../Images/busimage2.jpg';
 import carouselImage3 from '../Images/Vehicle1.jpg';
@@ -112,7 +112,7 @@ function HomePage() {
                         <li><a onClick={() => scrollToSection(2)}>Services</a></li>
                         <li><a onClick={() => scrollToSection(3)}>About Us</a></li>
                         <Link to="/user-authentication">
-                            <button className="get-started">Get Started</button>
+                            <button className="get-started">Log in</button>
                         </Link>
                     </div>
                     <div className="mobile-menu-icon" onClick={toggleMobileMenu}>
@@ -220,9 +220,9 @@ function HomePage() {
                     <div className="footer-social">
                         <p style={{fontWeight: "700"}}>Get in Touch</p>
                         <a href="https://www.facebook.com/CITUniversity" ><FaFacebook style={{color: "blue", fontSize: "34px"}}/></a>
-                        <a href="https://www.tiktok.com/" ><FaTiktok style={{color: "black", fontSize: "34px"}}/></a>
-                        <a href="https://www.instagram.com/" ><FaInstagram style={{color: "brown", fontSize: "34px"}}/></a>
-                        <a href="https://www.youtube.com/" ><FaYoutube style={{color: "red", fontSize: "34px"}}/></a>
+                        <a href="https://www.tiktok.com/@cituniversity?lang=en" ><FaTiktok style={{color: "black", fontSize: "34px"}}/></a>
+                        <a href="https://www.instagram.com/cituniversity/" ><FaInstagram style={{color: "brown", fontSize: "34px"}}/></a>
+                        <a href="https://www.youtube.com/results?search_query=cit+university" ><FaYoutube style={{color: "red", fontSize: "34px"}}/></a>
                     </div>
                     <div className="footer-bottom">
                     <p>&copy; 2024 Cebu Institute of Technology University. All rights reserved.</p>
