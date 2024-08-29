@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
 import com.brscapstone1.brscapstone1.Service.ReservationService;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/reservation")
 public class ReservationController {
 
     @Autowired
@@ -26,7 +28,7 @@ public class ReservationController {
     }
 
     //[POST] approved reservations by HEAD
-    @PostMapping("/head-approve/{reservationId}")
+    @PostMapping("/user/reservations/head-approve/{reservationId}")
     public ResponseEntity<String> headApproveReservation(@PathVariable int reservationId) {
         try {
             resServ.headApproveReservation(reservationId);
@@ -37,7 +39,7 @@ public class ReservationController {
     }
 
     //[POST] approved reservations by OPC
-    @PostMapping("/opc-approve/{reservationId}")
+    @PostMapping("/user/reservations/opc-approve/{reservationId}")
     public ResponseEntity<String> opcApproveReservation(@PathVariable int reservationId, @RequestParam int driverId, @RequestParam String driverName) {
         try {
             resServ.opcApproveReservation(reservationId, driverId, driverName);
@@ -48,7 +50,7 @@ public class ReservationController {
     }
 
     //[isRejected] rejects a reservation and returns boolean output
-    @PostMapping("/reject/{reservationId}")
+    @PostMapping("/user/reservations/reject/{reservationId}")
     public ResponseEntity<String> rejectReservation(@PathVariable int reservationId, @RequestBody String feedback) {
         try {
             resServ.rejectReservation(reservationId, feedback);
@@ -59,27 +61,30 @@ public class ReservationController {
     }
 
     //[POST] || submits a reservation
-    @PostMapping("/add")
+    @PostMapping("/user/reservations/add")
     public ReservationEntity addReservation(@RequestParam("userName") String userName, @RequestParam(value = "file", required = false) MultipartFile file, @RequestParam("reservation") String reservationJson) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false); // Disable timestamp format
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Ignore unknown properties
+        objectMapper.registerModule(new JavaTimeModule()); // Register Java Time module for LocalDate
         ReservationEntity reservation = objectMapper.readValue(reservationJson, ReservationEntity.class);
         return resServ.saveReservation(userName, reservation, file);
     }
 
     //[GET] all Reservations
-    @GetMapping("/reservations")
+    @GetMapping("/user/reservations/getAll")
     public List<ReservationEntity> getAllReservations() {
         return resServ.getAllReservations();
     }
 
     //[GET] Reservation by ID
-    @GetMapping("/reservations/{id}")
+    @GetMapping("/user/reservations/{id}")
     public ReservationEntity getReservationById(@PathVariable("id") int id) {
         return resServ.getReservationById(id);
     }
 
     //[GET] all user's reservations
-    @GetMapping("/reservations/user/{userName}")
+    @GetMapping("/user/reservations/user/{userName}")
     public ResponseEntity<List<ReservationEntity>> getUserReservations(@PathVariable String userName) {
       try {
         List<ReservationEntity> userReservations = resServ.getUserReservations(userName);
@@ -90,7 +95,7 @@ public class ReservationController {
     }
 
      //[POST] || update assigned driver
-     @PostMapping("/update-driver/{reservationId}")
+     @PostMapping("/user/update-driver/{reservationId}")
      public ResponseEntity<String> updateAssignedDriver(@PathVariable int reservationId, @RequestParam int driverId, @RequestParam String assignedDriverName) {
          try {
              resServ.updateAssignedDriver(reservationId, driverId, assignedDriverName);
@@ -101,7 +106,7 @@ public class ReservationController {
      }
      
       //[PUT] update reservation
-    @PutMapping("/update/{reservationId}")
+    @PutMapping("/user/update/{reservationId}")
     public ResponseEntity<ReservationEntity> updateReservation(@PathVariable int reservationId, @RequestParam(value = "file", required = false) MultipartFile file, @RequestParam("reservation") String reservationJson) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();

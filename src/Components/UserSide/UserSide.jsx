@@ -17,12 +17,14 @@ import { BiSolidDiamond } from "react-icons/bi";
 import { FaBook } from "react-icons/fa";
 import { FaBus } from "react-icons/fa";
 import '../../CSS/UserCss/UserSide.css';
+import { useNavigate } from 'react-router-dom';
 
 const UserSide = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState([]); 
   const [currentSlide, setCurrentSlide] = useState(0); 
+  const navigate = useNavigate();
 
   const token = localStorage.getItem('token');
 
@@ -74,6 +76,10 @@ const UserSide = () => {
 
     return () => clearInterval(interval);
   }, [imageGrids.length]);
+
+  const handleSelectVehicle = (vehicle) => {
+    navigate('/user-side/reservation', { state: { vehicle } });
+  };  
 
   return (
     <div className="app">
@@ -131,7 +137,7 @@ const UserSide = () => {
                           <p>👥 Capacity: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.capacity}</span></p>
                           <p>{vehicle.status === 'Available' ? '🟢' : '🔴'} Status: <span style={{color: vehicle.status === 'Available' ? 'green' : 'red', marginLeft: "5px"}}>{vehicle.status}</span></p>
                         </div>
-                        <button className="btn-right-corner">
+                        <button className="btn-right-corner" onClick={() => handleSelectVehicle(vehicle)}>
                           <FaBus style={{marginBottom: "-2px", marginRight: "10px"}}/>
                           Select Vehicle
                         </button>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import '../../CSS/AdminCss/AdminLogin.css';
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import logoImage from "../../Images/citlogo1.png";

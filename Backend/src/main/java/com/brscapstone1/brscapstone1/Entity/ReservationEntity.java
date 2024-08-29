@@ -1,7 +1,6 @@
 package com.brscapstone1.brscapstone1.Entity;
 
-import java.sql.Date;
-
+import java.time.LocalDate;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,7 +19,7 @@ public class ReservationEntity {
     private String destinationFrom;
     private int capacity;
     private String department;
-    private Date schedule;
+    private LocalDate schedule;  
     private String vehicleType;
     private String pickUpTime;
     private String departureTime;
@@ -85,11 +84,11 @@ public class ReservationEntity {
         this.department = department;
     }
 
-    public Date getSchedule() {
+    public LocalDate getSchedule() {
         return schedule;
     }
 
-    public void setSchedule(Date schedule) {
+    public void setSchedule(LocalDate schedule) {
         this.schedule = schedule;
     }
 
@@ -219,7 +218,7 @@ public class ReservationEntity {
 
     public ReservationEntity(String typeOfTrip, String destinationTo, String 
                             destinationFrom, int capacity, String department, 
-                            Date schedule, String vehicleType, String pickUpTime, 
+                            LocalDate schedule, String vehicleType, String pickUpTime, 
                             String departureTime, String reason, String fileName, 
                             String fileType, long fileSize, String status, 
                             boolean opcIsApproved, boolean isRejected, boolean headIsApproved, 
