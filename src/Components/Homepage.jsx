@@ -12,7 +12,7 @@ import jep from '../Images/Jep.png';
 import kim from '../Images/kem.png';
 import rj from '../Images/rays.png';
 import saly from '../Images/saly.png';
-import carlo from '../Images/carlo.png';
+import carlo from '../Images/caloy.png';
 import carouselImage1 from '../Images/busimage.jpg';
 import carouselImage2 from '../Images/busimage2.jpg';
 import carouselImage3 from '../Images/Vehicle1.jpg';
@@ -187,23 +187,23 @@ function HomePage() {
                 <div className="about-us-grid">
                     <div className="grid-box">
                         <img src={jep} alt="Image 1" />
-                        <span className="image-name">Jeff Francis D. Conson</span>
+                        <span className="image-name">Jeff Francis Conson</span>
                     </div>
                     <div className="grid-box">
                         <img src={kim} alt="Image 2" />
-                        <span className="image-name">Kimverly B. Bacalso</span>
+                        <span className="image-name">Kimverly Bacalso</span>
                     </div>
                     <div className="grid-box">
-                        <img src={rj} alt="Image 3" />
-                        <span className="image-name">Rise Jade Benavente</span>
+                        <img src={carlo} alt="Image 3" />
+                        <span className="image-name">Carlo Garcia</span>
                     </div>
                     <div className="grid-box">
                         <img src={saly} alt="Image 4" />
                         <span className="image-name">Thesaly Tejano</span>
                     </div>
                     <div className="grid-box">
-                        <img src={carlo} alt="Image 5" />
-                        <span className="image-name">Carlo Garcia</span>
+                        <img src={rj} alt="Image 5" />
+                        <span className="image-name">Rise Jade Benavente</span>
                     </div>
                 </div>
             </div>
