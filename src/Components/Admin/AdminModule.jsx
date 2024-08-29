@@ -24,35 +24,35 @@ const AdminModule = () => {
 
   const token = localStorage.getItem('token');
 
-  useEffect(() =>{
-    const fetchUsers = async () =>{
-      try {
-        const response = await fetch("http://localhost:8080/admin/users/read",{
-          headers: {"Authorization" : `Bearer ${token}`}
-        });
-        const data = await response.json();
-        setUsers(data);
-      } catch (error) {
-        console.error("Failed to fetch users", error);
-      }
-    };
+  const fetchUsers = async () =>{
+    try {
+      const response = await fetch("http://localhost:8080/admin/users/read",{
+        headers: {"Authorization" : `Bearer ${token}`}
+      });
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Failed to fetch users", error);
+    }
+  };
 
+  useEffect(() =>{
     fetchUsers();
   }, [token])
 
-  useEffect(() =>{
-    const fetchDepartments = async () =>{
-      try {
-        const response = await fetch("http://localhost:8080/department/getAll",{
-          headers: {"Authorization" : `Bearer ${token}`}
-        })
-        const data = await response.json();
-        setDepartment(data);
-      } catch (error) {
-        console.error("Failed to fetch department details.", error);
-      }
+  const fetchDepartments = async () =>{
+    try {
+      const response = await fetch("http://localhost:8080/department/getAll",{
+        headers: {"Authorization" : `Bearer ${token}`}
+      })
+      const data = await response.json();
+      setDepartment(data);
+    } catch (error) {
+      console.error("Failed to fetch department details.", error);
     }
-
+  }
+  
+  useEffect(() =>{
     fetchDepartments();
   }, [token])
 
