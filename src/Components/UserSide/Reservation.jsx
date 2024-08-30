@@ -169,7 +169,7 @@ const Reservation = () => {
         department: formData.department,
         schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
         vehicleType: formData.vehicleType,
-        pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
+        pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : "N/A",
         departureTime: formatTime(formData.departureTime),
         reason: formData.reservationReason,
         status: "Pending",
@@ -231,7 +231,6 @@ const Reservation = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
 
   return (
     <div className="reservation-app">

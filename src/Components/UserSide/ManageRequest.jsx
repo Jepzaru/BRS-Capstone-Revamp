@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from './Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './SideNavbar';
@@ -9,33 +9,60 @@ import '../../CSS/UserCss/ManageRequest.css';
 
 const ManageRequest = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const requests = []; // Add your requests here
+  const [requests, setRequests] = useState([]);
+  const [sortOption, setSortOption] = useState("");
+  const email = localStorage.getItem('email');
+  const token = localStorage.getItem('token');
+  const localPart = email.split('@')[0];
+  const [firstName, lastName] = localPart.split('.');
+  const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+  const username = formatName(firstName) + " " + formatName(lastName);
+
+  const fetchUsersRequests = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/user/reservations/${username}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setRequests(data);
+    } catch (error) {
+      console.error("Failed to fetch user's requests.", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsersRequests();
+  }, [token]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSearchClick = () => {
-    // You can add any additional logic for search click here if needed
-  };
   const handleSortChange = (event) => {
     setSortOption(event.target.value);
   };
 
+  const handleSearchClick = () => {
+  };
+
   const sortRequests = (requests) => {
     switch (sortOption) {
-      case "alphabetical":
-        return requests.sort((a, b) => a.reason.localeCompare(b.reason));
-      case "ascending":
-        return requests.sort((a, b) => a.capacity - b.capacity);
-      case "descending":
-        return requests.sort((a, b) => b.capacity - a.capacity);
+      case "status":
+        return requests.sort((a, b) => a.status.localeCompare(b.status));
+      case "schedule":
+        return requests.sort((a, b) => new Date(a.schedule) - new Date(b.schedule));
+      case "typeOfTrip":
+        return requests.sort((a, b) => a.typeOfTrip.localeCompare(b.typeOfTrip));
+      case "department":
+        return requests.sort((a, b) => a.department.localeCompare(b.department));
       default:
         return requests;
     }
-  };
+  };  
 
-  const filteredRequests = requests.filter(request =>
+  const sortedRequests = sortRequests(requests);
+
+  const filteredRequests = sortedRequests.filter(request =>
     request.reason.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -46,7 +73,7 @@ const ManageRequest = () => {
         <SideNavbar />
         <div className="content1">
           <div className="header-container">
-            <h1><FaSwatchbook style={{marginRight: "15px", color: "#782324"}}/>Manage Requests</h1>
+            <h1><FaSwatchbook style={{ marginRight: "15px", color: "#782324" }} />Manage Requests</h1>
             <div className="search-container">
               <input
                 type="text"
@@ -55,13 +82,14 @@ const ManageRequest = () => {
                 onChange={handleSearchChange}
                 className="search-bar"
               />
-              <button onClick={handleSearchClick} className="search-button"><IoSearch style={{marginBottom: "-3px"}}/></button>
-              <FaSortAlphaDown style={{color: "#782324"}}/>
+              <button onClick={handleSearchClick} className="search-button"><IoSearch style={{ marginBottom: "-3px" }} /></button>
+              <FaSortAlphaDown style={{ color: "#782324" }} />
               <select onChange={handleSortChange} className="sort-dropdown">
                 <option value="">Sort By</option>
-                <option value="alphabetical">Alphabetical</option>
-                <option value="ascending">Capacity Ascending</option>
-                <option value="descending">Capacity Descending</option>
+                <option value="status">Status</option>
+                <option value="schedule">Schedule</option>
+                <option value="typeOfTrip">Type of Trip</option>
+                <option value="department">Department</option>
               </select>
             </div>
           </div>
@@ -88,11 +116,11 @@ const ManageRequest = () => {
                     <td colSpan="11" className="no-requests">No Requests Made</td>
                   </tr>
                 ) : (
-                  filteredRequests.map((request, index) => (
-                    <tr key={index}>
+                  filteredRequests.map(request => (
+                    <tr key={request.id}>
                       <td>{request.typeOfTrip}</td>
-                      <td>{request.from}</td>
-                      <td>{request.to}</td>
+                      <td>{request.destinationFrom}</td>
+                      <td>{request.destinationTo}</td>
                       <td>{request.capacity}</td>
                       <td>{request.vehicleType}</td>
                       <td>{request.schedule}</td>

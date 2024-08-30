@@ -64,9 +64,9 @@ public class ReservationController {
     @PostMapping("/user/reservations/add")
     public ReservationEntity addReservation(@RequestParam("userName") String userName, @RequestParam(value = "file", required = false) MultipartFile file, @RequestParam("reservation") String reservationJson) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false); // Disable timestamp format
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Ignore unknown properties
-        objectMapper.registerModule(new JavaTimeModule()); // Register Java Time module for LocalDate
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false); 
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); 
+        objectMapper.registerModule(new JavaTimeModule());
         ReservationEntity reservation = objectMapper.readValue(reservationJson, ReservationEntity.class);
         return resServ.saveReservation(userName, reservation, file);
     }
@@ -78,13 +78,13 @@ public class ReservationController {
     }
 
     //[GET] Reservation by ID
-    @GetMapping("/user/reservations/{id}")
+    @GetMapping("/user/reservations/id/{id}")
     public ReservationEntity getReservationById(@PathVariable("id") int id) {
         return resServ.getReservationById(id);
     }
 
     //[GET] all user's reservations
-    @GetMapping("/user/reservations/user/{userName}")
+    @GetMapping("/user/reservations/{userName}")
     public ResponseEntity<List<ReservationEntity>> getUserReservations(@PathVariable String userName) {
       try {
         List<ReservationEntity> userReservations = resServ.getUserReservations(userName);
