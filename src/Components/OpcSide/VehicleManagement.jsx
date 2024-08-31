@@ -124,40 +124,41 @@ const VehicleManagement = () => {
 
   const handleAddVehicle = async () => {
     if (!validatePlateNumber(plateNumber)) {
-        setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
-        return;
+      setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
+      return;
     }
     const capacityNumber = Number(capacity);
     if (isNaN(capacityNumber) || capacityNumber < 0) {
-        setErrorMessage('Capacity must be a non-negative number');
-        return;
+      setErrorMessage('Capacity must be a non-negative number');
+      return;
     }
     try {
-        const vehicleData = { vehicleType, plateNumber, capacity: capacityNumber };
-        const response = await fetch('http://localhost:8080/opc/vehicle/post', { 
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(vehicleData),
-        });
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error('Failed to add vehicle: ' + errorText);
-        }
-        const newVehicle = await response.json();
-        setVehicles([...vehicles, newVehicle]);
-        setSuccessMessage('Vehicle added successfully!');
-        setVehicleType('');
-        setPlateNumber('');
-        setCapacity('');
-        openAddModal(false);
+      const vehicleData = { vehicleType, plateNumber, capacity: capacityNumber };
+      const response = await fetch('http://localhost:8080/opc/vehicle/post', { 
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(vehicleData),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error('Failed to add vehicle: ' + errorText);
+      }
+      const newVehicle = await response.json();
+      // Prepend the new vehicle to the list
+      setVehicles([newVehicle, ...vehicles]);
+      setSuccessMessage('Vehicle added successfully!');
+      setVehicleType('');
+      setPlateNumber('');
+      setCapacity('');
+      closeAddModal();
     } catch (error) {
-        setErrorMessage('Error adding vehicle: ' + error.message);
+      setErrorMessage('Error adding vehicle: ' + error.message);
     }
   };
-
+  
   const handleUpdateVehicle = async () => {
     if (!validatePlateNumber(updatePlateNumber)) {
       setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');

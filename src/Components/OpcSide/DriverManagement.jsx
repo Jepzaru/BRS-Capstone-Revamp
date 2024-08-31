@@ -91,7 +91,8 @@ const DriverManagement = () => {
       });
       if (response.ok) {
         const newDriver = await response.json();
-        setDrivers([...drivers, newDriver]); 
+        // Insert new driver at the beginning of the list
+        setDrivers([newDriver, ...drivers]);
         closeModal();
       } else {
         throw new Error('Failed to add driver');
@@ -100,6 +101,7 @@ const DriverManagement = () => {
       console.error("Failed to add driver", error);
     }
   };
+  
   
   const handleUpdateDriver = async () => {
     try {
@@ -247,7 +249,7 @@ const DriverManagement = () => {
               <label htmlFor='phone number'>Phone Number</label>
               <input
                 type="text"
-                placeholder="Ex. 09363882526"
+                placeholder="Ex. 09*********"
                 value={phoneNumber}
                 required
                 onChange={(e) => {
