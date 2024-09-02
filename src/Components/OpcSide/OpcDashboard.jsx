@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -40,6 +40,7 @@ const OpcDashboard = () => {
   const [drivers, setDrivers] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [requests, setRequests] = useState([]);
 
   const token = localStorage.getItem('token');
 
@@ -61,7 +62,7 @@ const OpcDashboard = () => {
   useEffect(() =>{
     const fetchNumberOfVehicles = async () =>{
       try {
-        const response = await fetch("http://localhost:8080/opc/vehicle/getAll",{
+        const response = await fetch("http://localhost:8080/vehicle/getAll",{
           headers: {"Authorization" : `Bearer ${token}`}
         })
         const data = await response.json();
@@ -72,6 +73,22 @@ const OpcDashboard = () => {
     }
     fetchNumberOfVehicles();
   }, [token]);
+
+  useEffect(() =>{
+    const fetchNumbersOfRequests = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/reservations/getAll", {
+          headers: {"Authorization" : `Bearer ${token}`}
+        })
+        const data = await response.json();
+        setRequests(data);
+      } catch (error) {
+        console.error("Failed to fetch numbers of requests.", error);
+      }
+    }
+
+    fetchNumbersOfRequests();
+  }, [token])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -126,7 +143,7 @@ const OpcDashboard = () => {
                       <FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Requests
                     </h3>
-                    <span className="number-badge">{requestsCount}</span>
+                    <span className="number-badge">{requests.length}</span>
                   </div>
                   <div className="dashcontainer2">
                     <h3 style={{ fontWeight: "700", marginLeft: "10px" }}>
