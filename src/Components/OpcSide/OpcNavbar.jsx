@@ -6,6 +6,7 @@ import { FaFileLines } from "react-icons/fa6";
 import { FaBus } from "react-icons/fa";
 import { GiCarSeat } from "react-icons/gi";
 import { FaGear } from "react-icons/fa6";
+import { FaClipboardCheck } from "react-icons/fa6";
 import { NavLink } from 'react-router-dom';
 
 const OpcNavbar = () => {
@@ -28,6 +29,11 @@ const OpcNavbar = () => {
           <li>
             <NavLink to="/opc-requests" activeClassName="active-link">
               < FaFileLines style={{ marginRight: "15px", marginBottom: "-2px" }} />Requests
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/opc-approved-requests" activeClassName="active-link">
+              < FaClipboardCheck style={{ marginRight: "15px", marginBottom: "-2px" }} />Approved Requests
             </NavLink>
           </li>
           <li>

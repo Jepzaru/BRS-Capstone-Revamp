@@ -19,7 +19,11 @@
     max-width: 30%;
     z-index: 999;
 }
-
+.admin-path{
+    text-align: center;
+    margin-top: 30px;
+    font-size: 14px;
+}
 .label-container {
     text-align: center;
     margin-bottom: 20px;
@@ -192,68 +196,7 @@
     background-color: rgb(68, 0, 0);
     color: gold;
 }
-.super-admin{
-    margin-top: 20px;
-    text-align: center;
-}
 
-.super-admin p {
-    display: flex;
-    align-items: center;
-    margin: 0; 
-    font-size: 14px;
-  }
-  
-  .super-admin a {
-    margin-left: 5px; 
-    color: #0000EE;
-    font-size: 14px;
-    text-decoration: none; 
-  }
-  
-  .super-admin a:hover {
-    text-decoration: none; 
-    color: #782324;
-  }
-
-  .homepage-back{
-    margin-top: 20px;
-    text-align: center;
-}
-
-.homepage-back p {
-    display: flex;
-    align-items: center;
-    margin: 0; 
-    font-size: 14px;
-  }
-  
-  .homepage-back a {
-    margin-left: 5px; 
-    color: #782324;
-    font-size: 14px;
-    text-decoration: none; 
-  }
-  
-  .homepage-back a:hover {
-    text-decoration: none; 
-    color: #782324;
-  }
-
-  .home-route {
-    font-weight: 400; 
-    color: inherit;
-    padding: 5px 10px; 
-    border: 2px solid transparent; 
-    transition: all 0.3s ease-in-out;
-}
-
-.home-route:hover {
-    font-weight: 700;
-    color: #782324; 
-    border-color: #D4AF37; 
-    box-shadow: 0 0 5px #D4AF37, 0 0 10px #D4AF37, 0 0 15px #D4AF37;
-}
 
 .clear-button {
     margin-top: 10px;

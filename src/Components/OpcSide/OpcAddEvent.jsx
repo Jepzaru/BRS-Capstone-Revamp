@@ -9,7 +9,7 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
   const [minDate, setMinDate] = useState('');
 
   useEffect(() => {
-    // Calculate the minimum date: 2 days from today
+    
     const today = new Date();
     const minDate = new Date(today.setDate(today.getDate() + 2)).toISOString().split('T')[0];
     setMinDate(minDate);

@@ -302,8 +302,8 @@ const AdminModule = () => {
             <h2>Confirm Delete</h2>
             <p>Are you sure you want to delete {userToDelete?.firstName} {userToDelete?.lastName}?</p>
             <div className="delete-modal-buttons">
-              <button type="button" onClick={closeDeleteModal}>Cancel</button>
-              <button type="button" onClick={handleDeleteAccount}>Delete</button>
+              <button type="button" className="del-cancel" onClick={closeDeleteModal}>Cancel</button>
+              <button type="button" className="del-delete" onClick={handleDeleteAccount}>Yes, Delete this Account</button>
             </div>
           </div>
         </div>

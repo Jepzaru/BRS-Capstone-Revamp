@@ -6,10 +6,20 @@ import logo from '../../Images/citlogo1.png';
 
 const Header = () => {
   const email = localStorage.getItem('email');
-  const namePart = email.split('@')[0];
-  const [firstName, lastName] = namePart.split('.');
-  const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  const formattedName = `${capitalize(firstName)} ${capitalize(lastName)}`;
+  let formattedName = "User";
+
+  if (email) {
+    const namePart = email.split('@')[0];
+    const nameParts = namePart.split('.');
+    
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts[1] || '';
+  
+    const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    formattedName = `${capitalize(firstName)} ${capitalize(lastName)}`;
+  } else {
+    console.error("Email not found in localStorage");
+  }
 
   const [isLogOutModalOpen, setIsLogOutModalOpen] = useState(false);
 
@@ -26,7 +36,7 @@ const Header = () => {
     localStorage.removeItem('role');
     localStorage.removeItem('email');
     window.location.href = '/user-authentication';
-};
+  };
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();
