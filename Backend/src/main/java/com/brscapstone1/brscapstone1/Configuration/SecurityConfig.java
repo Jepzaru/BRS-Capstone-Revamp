@@ -37,7 +37,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(registry -> {
                 registry.requestMatchers("/", "/authenticate", "/admin/users/add").permitAll();
                 registry.requestMatchers("/admin/**").hasRole("ADMIN");
-                registry.requestMatchers("/opc/**").hasRole("OPC");
+                registry.requestMatchers("/opc/events/**").permitAll();  // Ensure this is correctly placed
                 registry.anyRequest().authenticated();
             })
             .exceptionHandling(exceptions -> exceptions
