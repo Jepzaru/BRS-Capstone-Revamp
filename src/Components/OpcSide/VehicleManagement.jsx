@@ -33,7 +33,7 @@ const VehicleManagement = () => {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const response = await fetch('http://localhost:8080/opc/vehicle/getAll', {
+        const response = await fetch('http://localhost:8080/vehicle/getAll', {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!response.ok) {

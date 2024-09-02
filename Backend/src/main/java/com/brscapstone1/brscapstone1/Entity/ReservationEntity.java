@@ -28,9 +28,9 @@ public class ReservationEntity {
     private String fileType;
     private long fileSize;
     private String status;
-    private boolean opcIsApproved; 
-    private boolean isRejected;
-    private boolean headIsApproved;
+    private Boolean opcIsApproved; 
+    private Boolean isRejected;
+    private Boolean headIsApproved;
     private String userName;
     private String feedback;
     private int driverId;
@@ -156,27 +156,27 @@ public class ReservationEntity {
         this.status = status;
     }
 
-    public boolean isOpcIsApproved() {
+    public Boolean isOpcIsApproved() {
         return opcIsApproved;
     }
 
-    public void setOpcIsApproved(boolean opcIsApproved) {
+    public void setOpcIsApproved(Boolean opcIsApproved) {
         this.opcIsApproved = opcIsApproved;
     }
 
-    public boolean isRejected() {
+    public Boolean isRejected() {
         return isRejected;
     }
 
-    public void setRejected(boolean isRejected) {
+    public void setRejected(Boolean isRejected) {
         this.isRejected = isRejected;
     }
 
-    public boolean isHeadIsApproved() {
+    public Boolean isHeadIsApproved() {
         return headIsApproved;
     }
 
-    public void setHeadIsApproved(boolean headIsApproved) {
+    public void setHeadIsApproved(Boolean headIsApproved) {
         this.headIsApproved = headIsApproved;
     }
 
@@ -216,12 +216,10 @@ public class ReservationEntity {
         super();
     }
 
-    public ReservationEntity(String typeOfTrip, String destinationTo, String 
-                            destinationFrom, int capacity, String department, 
-                            LocalDate schedule, String vehicleType, String pickUpTime, 
-                            String departureTime, String reason, String fileName, 
-                            String fileType, long fileSize, String status, 
-                            boolean opcIsApproved, boolean isRejected, boolean headIsApproved, 
+    public ReservationEntity(String typeOfTrip, String destinationTo, String destinationFrom, int capacity,
+                            String department, LocalDate schedule, String vehicleType, String pickUpTime,
+                            String departureTime, String reason, String fileName, String fileType, long fileSize,
+                            String status, Boolean opcIsApproved, Boolean isRejected, Boolean headIsApproved,
                             String userName, String feedback, int driverId, String driverName) {
         this.typeOfTrip = typeOfTrip;
         this.destinationTo = destinationTo;

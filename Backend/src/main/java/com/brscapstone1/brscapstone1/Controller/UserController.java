@@ -71,7 +71,7 @@ public class UserController {
             String email = userDetails.getUsername();
 
             UserEntity user = userService.findByEmail(email);
-            String department = user.getDepartment();
+            String department = user.getDepartment(); 
             int userId = user.getId(); 
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
@@ -85,5 +85,4 @@ public class UserController {
             throw new UsernameNotFoundException("Invalid credentials");
         }
     }
-
 }

@@ -101,32 +101,34 @@ public class ReservationService {
         ReservationEntity existingReservation = resRepo.findById(reservationId)
             .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
 
-        existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
-        existingReservation.setDestinationTo(updatedReservation.getDestinationTo());
-        existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());
-        existingReservation.setCapacity(updatedReservation.getCapacity());
-        existingReservation.setDepartment(updatedReservation.getDepartment());
-        existingReservation.setSchedule(updatedReservation.getSchedule());
-        existingReservation.setVehicleType(updatedReservation.getVehicleType());
-        existingReservation.setPickUpTime(updatedReservation.getPickUpTime());
-        existingReservation.setDepartureTime(updatedReservation.getDepartureTime());
-        existingReservation.setReason(updatedReservation.getReason());
+        // Update fields only if they are not null
+        if (updatedReservation.getTypeOfTrip() != null) existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
+        if (updatedReservation.getDestinationTo() != null) existingReservation.setDestinationTo(updatedReservation.getDestinationTo());
+        if (updatedReservation.getDestinationFrom() != null) existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());
+        if (updatedReservation.getCapacity() > 0) existingReservation.setCapacity(updatedReservation.getCapacity()); // Assuming 0 is an invalid capacity
+        if (updatedReservation.getDepartment() != null) existingReservation.setDepartment(updatedReservation.getDepartment());
+        if (updatedReservation.getSchedule() != null) existingReservation.setSchedule(updatedReservation.getSchedule());
+        if (updatedReservation.getVehicleType() != null) existingReservation.setVehicleType(updatedReservation.getVehicleType());
+        if (updatedReservation.getPickUpTime() != null) existingReservation.setPickUpTime(updatedReservation.getPickUpTime());
+        if (updatedReservation.getDepartureTime() != null) existingReservation.setDepartureTime(updatedReservation.getDepartureTime());
+        if (updatedReservation.getReason() != null) existingReservation.setReason(updatedReservation.getReason());
+        if (updatedReservation.getStatus() != null) existingReservation.setStatus(updatedReservation.getStatus());
+        if (updatedReservation.isOpcIsApproved() != null) existingReservation.setOpcIsApproved(updatedReservation.isOpcIsApproved());
+        if (updatedReservation.isRejected() != null) existingReservation.setRejected(updatedReservation.isRejected());
+        if (updatedReservation.isHeadIsApproved() != null) existingReservation.setHeadIsApproved(updatedReservation.isHeadIsApproved());
+        if (updatedReservation.getUserName() != null) existingReservation.setUserName(updatedReservation.getUserName());
+        if (updatedReservation.getFeedback() != null) existingReservation.setFeedback(updatedReservation.getFeedback());
+        if (updatedReservation.getDriverId() > 0) existingReservation.setDriverId(updatedReservation.getDriverId()); // Assuming 0 is an invalid driverId
+        if (updatedReservation.getDriverName() != null) existingReservation.setDriverName(updatedReservation.getDriverName());
 
+        // Handle file update if provided
         if (file != null && !file.isEmpty()) {
             existingReservation.setFileName(file.getOriginalFilename());
             existingReservation.setFileType(file.getContentType());
             existingReservation.setFileSize(file.getSize());
         }
-        
-        existingReservation.setStatus(updatedReservation.getStatus());
-        existingReservation.setOpcIsApproved(updatedReservation.isOpcIsApproved());
-        existingReservation.setRejected(updatedReservation.isRejected());
-        existingReservation.setHeadIsApproved(updatedReservation.isHeadIsApproved());
-        existingReservation.setUserName(updatedReservation.getUserName());
-        existingReservation.setFeedback(updatedReservation.getFeedback());
-        existingReservation.setDriverId(updatedReservation.getDriverId());
-        existingReservation.setDriverName(updatedReservation.getDriverName());
 
+        // Save and return the updated reservation
         return resRepo.save(existingReservation);
     }
 }

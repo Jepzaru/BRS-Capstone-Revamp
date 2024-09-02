@@ -4,7 +4,7 @@ import ToggleButton from '../../Components/UserSide/ToggleButton';
 import { FaBook } from "react-icons/fa";
 import { FaFileCircleCheck } from "react-icons/fa6";
 import { FaGear } from "react-icons/fa6";
-import { NavLink } from 'react-router-dom'; // Change to NavLink
+import { NavLink } from 'react-router-dom';
 
 const HeadNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);

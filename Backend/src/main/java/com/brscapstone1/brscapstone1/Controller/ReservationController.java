@@ -72,7 +72,7 @@ public class ReservationController {
     }
 
     //[GET] all Reservations
-    @GetMapping("/user/reservations/getAll")
+    @GetMapping("/reservations/getAll")
     public List<ReservationEntity> getAllReservations() {
         return resServ.getAllReservations();
     }
@@ -95,7 +95,7 @@ public class ReservationController {
     }
 
      //[POST] || update assigned driver
-     @PostMapping("/user/update-driver/{reservationId}")
+     @PostMapping("/user/reservations/update-driver/{reservationId}")
      public ResponseEntity<String> updateAssignedDriver(@PathVariable int reservationId, @RequestParam int driverId, @RequestParam String assignedDriverName) {
          try {
              resServ.updateAssignedDriver(reservationId, driverId, assignedDriverName);
@@ -106,8 +106,9 @@ public class ReservationController {
      }
      
       //[PUT] update reservation
-    @PutMapping("/user/update/{reservationId}")
-    public ResponseEntity<ReservationEntity> updateReservation(@PathVariable int reservationId, @RequestParam(value = "file", required = false) MultipartFile file, @RequestParam("reservation") String reservationJson) {
+    @PutMapping("/reservations/update/{reservationId}")
+    public ResponseEntity<ReservationEntity> updateReservation(@PathVariable int reservationId, @RequestParam(value = "file", required = false) MultipartFile file,
+                                                                @RequestParam("reservation") String reservationJson) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             ReservationEntity updatedReservation = objectMapper.readValue(reservationJson, ReservationEntity.class);
