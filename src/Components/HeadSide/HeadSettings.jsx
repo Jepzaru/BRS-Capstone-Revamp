@@ -14,7 +14,17 @@ const HeadSettings = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [passwordTooShort, setPasswordTooShort] = useState(false);
-  const [showModal, setShowModal] = useState(false); 
+  const [showModal, setShowModal] = useState(false);
+
+  const email = localStorage.getItem('email');
+  const role = localStorage.getItem('role');
+  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId');
+  const department = localStorage.getItem('department');
+  const namePart = email.split('@')[0];
+  const [firstName, lastName] = namePart.split('.');
+  const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  const formattedName = `${capitalize(firstName)} ${capitalize(lastName)}`;
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -34,22 +44,41 @@ const HeadSettings = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (newPassword === confirmPassword) {
-      setPasswordMatch(true);
-      setPasswordTooShort(false);
-      // Add your form submission logic here
-      console.log('Old Password:', oldPassword);
-      console.log('New Password:', newPassword);
-      console.log('Confirm Password:', confirmPassword);
-
-      setShowModal(true);
-    } else {
+    
+    if (newPassword !== confirmPassword) {
       setPasswordMatch(false);
-      setTimeout(() => {
-        setPasswordMatch(true);
-      }, 2000);
+      setTimeout(() => setPasswordMatch(true), 2000);
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8080/users/change-password/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          oldPassword: oldPassword,
+          newPassword: newPassword
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.text();
+        console.log(data);
+        setShowModal(true);
+        setOldPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
@@ -93,12 +122,23 @@ const HeadSettings = () => {
               {activeTab === 'accountDetails' && (
                 <div>
                   <h2><BsPersonSquare style={{marginRight: "10px", marginBottom: "-3px"}}/>Account Details</h2>
-                  {/* Add your account details form or content here */}
+                  <p>
+                    <b>Name:</b> {formattedName}
+                  </p>
+                  <p>
+                    <b>Email:</b> {email}
+                  </p>
+                  <p>
+                    <b>Department:</b> {department}
+                  </p>
+                  <p>
+                    <b>Role:</b> {role}
+                  </p>
                 </div>
               )}
               {activeTab === 'changePassword' && (
                 <div>
-                  <h2> <FaLock style={{marginRight: "10px"}}/>Change Password</h2>
+                  <h2><FaLock style={{marginRight: "10px"}}/>Change Password</h2>
                   <form onSubmit={handleSubmit} className="password-form">
                     <div className="form-group">
                       <label htmlFor="oldPassword">Old Password</label>

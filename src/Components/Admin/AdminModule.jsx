@@ -4,7 +4,7 @@ import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './AdminNavbar';
 import { FaUserGroup } from "react-icons/fa6";
 import { MdGroupAdd } from "react-icons/md";
-import { departments } from '../Department';
+// import { departments } from '../Department';
 import { user_roles } from '../Roles'; 
 import '../../CSS/AdminCss/AdminModule.css';
 
@@ -12,6 +12,7 @@ const AdminModule = () => {
   const [isAddAccountModalOpen, setIsAddAccountModalOpen] = useState(false);
   const [isUpdateAccountModalOpen, setIsUpdateAccountModalOpen] = useState(false);
   const [users, setUsers] = useState([]); 
+  const [department, setDepartment] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
@@ -37,6 +38,22 @@ const AdminModule = () => {
 
   useEffect(() =>{
     fetchUsers();
+  }, [token])
+
+  const fetchDepartments = async () =>{
+    try {
+      const response = await fetch("http://localhost:8080/department/getAll",{
+        headers: {"Authorization" : `Bearer ${token}`}
+      })
+      const data = await response.json();
+      setDepartment(data);
+    } catch (error) {
+      console.error("Failed to fetch department details.", error);
+    }
+  }
+  
+  useEffect(() =>{
+    fetchDepartments();
   }, [token])
 
   const handleAddAccount = async (event) => {
@@ -232,8 +249,8 @@ const AdminModule = () => {
               <input type="password" name="password" />
               <label>Department:</label>
               <select name="department">
-                {departments.map((department, index) => (
-                  <option key={index} value={department}>{department}</option>
+                {department.map(departments =>(
+                  <option key={departments.id} value={departments.name}>{departments.name}</option>
                 ))}
               </select>
               <label>Role:</label>
@@ -260,8 +277,8 @@ const AdminModule = () => {
               <input type="email" name="email" defaultValue={selectedUser.email} />
               <label>Department:</label>
               <select name="department" defaultValue={selectedUser.department}>
-                {departments.map((department, index) => (
-                  <option key={index} value={department}>{department}</option>
+                {department.map(departments =>(
+                  <option key={departments.id} value={departments.name}>{departments.name}</option>
                 ))}
               </select>
               <label>Role:</label>

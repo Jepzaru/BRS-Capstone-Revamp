@@ -17,35 +17,41 @@ import { BiSolidDiamond } from "react-icons/bi";
 import { FaBook } from "react-icons/fa";
 import { FaBus } from "react-icons/fa";
 import '../../CSS/UserCss/UserSide.css';
+import { useNavigate } from 'react-router-dom';
 
 const UserSide = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [events, setEvents] = useState([]); // Added state for events
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [events, setEvents] = useState([]); 
+  const [currentSlide, setCurrentSlide] = useState(0); 
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    fetch('http://localhost:8080/vehicle/vehicles')
-      .then(response => response.json())
-      .then(data => {
-        setVehicles(data);
+    const fetchVehicleDetails = async () =>{
+      try {
+        const response = await fetch("http://localhost:8080/vehicle/getAll", {
+          headers: { "Authorization" : `Bearer ${token}` }
+        });
+        
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setVehicles(data);
+        } else {
+          console.error("Expected an array from API but got:", data);
+          setVehicles([]);
+        }
+        
+        setLoading(false); 
+      } catch (error) {
+        console.error("Failed to fetch vehicle details", error);
         setLoading(false);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the vehicles!', error);
-        setLoading(false);
-      });
-
-    // Fetch events data (placeholder URL, adjust as needed)
-    fetch('http://localhost:8080/events')
-      .then(response => response.json())
-      .then(data => {
-        setEvents(data);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the events!', error);
-      });
-  }, []);
+      }
+    };
+    
+    fetchVehicleDetails();
+  }, [token]);
 
   const getVehicleImage = (vehicleType) => {
     switch (vehicleType) {
@@ -63,21 +69,17 @@ const UserSide = () => {
     [vehiclesubImage4, vehiclesubImage5, vehiclesubImage6],
   ];
 
-  const handleNextSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide + 1) % imageGrids.length);
-  };
-
-  const handlePrevSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide - 1 + imageGrids.length) % imageGrids.length);
-  };
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide(prevSlide => (prevSlide + 1) % imageGrids.length);
-    }, 3000); // Change slide every 3 seconds
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [imageGrids.length]);
+
+  const handleSelectVehicle = (vehicle) => {
+    navigate('/user-side/reservation', { state: { vehicle } });
+  };  
 
   return (
     <div className="app">
@@ -135,7 +137,7 @@ const UserSide = () => {
                           <p>👥 Capacity: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.capacity}</span></p>
                           <p>{vehicle.status === 'Available' ? '🟢' : '🔴'} Status: <span style={{color: vehicle.status === 'Available' ? 'green' : 'red', marginLeft: "5px"}}>{vehicle.status}</span></p>
                         </div>
-                        <button className="btn-right-corner">
+                        <button className="btn-right-corner" onClick={() => handleSelectVehicle(vehicle)}>
                           <FaBus style={{marginBottom: "-2px", marginRight: "10px"}}/>
                           Select Vehicle
                         </button>
@@ -149,10 +151,8 @@ const UserSide = () => {
                   </div>
                   <div className="events-list">
                     {events.length > 0 ? (
-                      // Render events if available
                       events.map((event, index) => (
                         <div key={index} className="event-item">
-                          {/* Adjust the content and styling as needed */}
                           <p>{event.title}</p>
                         </div>
                       ))

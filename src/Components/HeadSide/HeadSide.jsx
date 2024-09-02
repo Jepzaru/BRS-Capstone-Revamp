@@ -10,14 +10,12 @@ import '../../CSS/HeadCss/HeadSide.css';
 const HeadSide = () => {
   const requests = []; 
   const [searchTerm, setSearchTerm] = useState("");
-
   
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
   const handleSearchClick = () => {
-    // You can add any additional logic for search click here if needed
   };
   const handleSortChange = (event) => {
     setSortOption(event.target.value);

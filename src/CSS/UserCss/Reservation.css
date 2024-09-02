@@ -96,7 +96,8 @@ body {
 }
 
 .form-group input[type="text"],
-.form-group input[type="number"] {
+.form-group input[type="number"],
+.form-group input[type="time"] {
     width: 100%;
     padding: 8px;
     box-sizing: border-box;

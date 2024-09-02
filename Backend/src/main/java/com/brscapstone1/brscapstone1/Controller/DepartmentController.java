@@ -27,12 +27,12 @@ public class DepartmentController {
   @Autowired
   DepartmentService departmentService;
 
-  @PostMapping("/add")
+  @PostMapping("/post")
   public DepartmentEntity post(@RequestBody DepartmentEntity post){
     return departmentService.post(post);
   }
 
-  @GetMapping("/departments")
+  @GetMapping("/getAll")
   public List<DepartmentEntity> departments(){
     return departmentService.departments();
   }

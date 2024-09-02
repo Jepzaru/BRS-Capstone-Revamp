@@ -127,8 +127,8 @@ const AdminLogin = () => {
           <div className="super-admin">
             <p 
               className='history-route' 
-              onClick={() => navigate(-1)} // Go back to the previous page
-              style={{ cursor: 'pointer' }} // Change the cursor to pointer
+              onClick={() => navigate('/user-authentication')} 
+              style={{ cursor: 'pointer' }} 
             >
               <IoArrowBackCircleSharp style={{ fontSize: '50px', marginBottom: '-10px' }} />
             </p>
