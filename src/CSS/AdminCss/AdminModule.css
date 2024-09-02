@@ -216,6 +216,34 @@ body, html {
   .addacc-modal-buttons button:last-of-type:hover {
     background-color: #5c1a1a;
   }
+
+  .del-cancel{
+    background-color: #aaa;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .del-delete{
+    background-color: #782324;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .del-cancel:hover{
+    background-color: #333;
+    transition: background-color 0.3s;
+  }
+
+  .del-delete:hover{
+    background-color: #5c1a1a;
+    transition: background-color 0.3s;
+  }
   
   @media (max-width: 767px) {
     .admin-content1 {

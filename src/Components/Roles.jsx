@@ -1,8 +1,8 @@
 export const roles = {
     ROLE_USER: ['/', '/user-authentication', '/user-side', '/user-side/reservation', '/manage-requests', '/settings'],
     ROLE_HEAD: ['/head-side', '/head-approved-requests', '/head-settings'],
-    ROLE_OPC: ['/dashboard', '/opc-requests', '/vehicle-management', '/driver-management', '/opc-settings'],
-    ROLE_ADMIN: ['/admin']
+    ROLE_OPC: ['/dashboard', '/opc-requests', '/vehicle-management', '/driver-management', '/opc-settings', '/opc-approved-requests'],
+    ROLE_ADMIN: ['/admin', '/admin-department']
 };
 
 

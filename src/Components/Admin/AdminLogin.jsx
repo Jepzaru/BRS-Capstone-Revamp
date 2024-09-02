@@ -130,7 +130,7 @@ const AdminLogin = () => {
               onClick={() => navigate('/user-authentication')} 
               style={{ cursor: 'pointer' }} 
             >
-              <IoArrowBackCircleSharp style={{ fontSize: '50px', marginBottom: '-10px' }} />
+              Go back to user log in
             </p>
           </div>
 

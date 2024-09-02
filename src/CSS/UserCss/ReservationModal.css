@@ -44,4 +44,14 @@
     cursor: pointer;
     margin-left: 30px;
   }
+
+  .rmodal-button-close{
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    background: #b3b3b3 ;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+  }
   

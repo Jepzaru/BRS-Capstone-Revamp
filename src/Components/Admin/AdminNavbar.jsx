@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import '../../CSS/UserCss/SideNavbar.css';
 import ToggleButton from '../../Components/UserSide/ToggleButton';
 import { FaUserGroup } from "react-icons/fa6";
+import { RiBuildingFill } from "react-icons/ri";
+
 import { NavLink } from 'react-router-dom';
 
 const AdminNavbar = () => {
@@ -19,6 +21,11 @@ const AdminNavbar = () => {
           <li>
             <NavLink to="/admin" activeClassName="active-link">
               <FaUserGroup style={{ marginRight: "15px", marginBottom: "-2px" }} />Accounts Management
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/admin-department" activeClassName="active-link">
+              <RiBuildingFill style={{ marginRight: "15px", marginBottom: "-2px" }} />Manage Department
             </NavLink>
           </li>
         </ul>

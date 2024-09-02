@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './Components/Homepage';
 import AdminLogin from './Components/Admin/AdminLogin';
 import AdminModule from './Components/Admin/AdminModule';
+import AdminDepartment from './Components/Admin/AdminDepartment';
 import Login from './Components/UserSide/Login';
 import ManageRequests from './Components/UserSide/ManageRequest';
 import HeadApprovedRequests from './Components/HeadSide/HeadApprovedRequests';
@@ -14,6 +15,7 @@ import Reservation from './Components/UserSide/Reservation';
 import HeadSide from './Components/HeadSide/HeadSide';
 import OpcDashboard from './Components/OpcSide/OpcDashboard';
 import OpcRequests from './Components/OpcSide/OpcRequests';
+import OpcApprovedRequests from './Components/OpcSide/OpcApprovedRequests';
 import VehicleManagement from './Components/OpcSide/VehicleManagement';
 import DriverManagement from './Components/OpcSide/DriverManagement';
 import OpcSettings from './Components/OpcSide/OpcSettings';
@@ -28,6 +30,7 @@ const Main = () => {
         <Route path="/user-authentication" element={<Login />} />
         <Route path="/admin-authentication" element={<AdminLogin />} />
         <Route path="/admin" element={<ProtectedRoute path="/admin" element={<AdminModule />} />} />
+        <Route path="/admin-department" element={<ProtectedRoute path="/admin-department" element={<AdminDepartment />} />} />
         <Route path="/user-side" element={<ProtectedRoute path="/user-side" element={<UserSide />} />} />
         <Route path="/user-side/reservation" element={<ProtectedRoute path="/user-side/reservation" element={<Reservation />} />} />
         <Route path="/manage-requests" element={<ProtectedRoute path="/manage-requests" element={<ManageRequests />} />} />
@@ -37,6 +40,7 @@ const Main = () => {
         <Route path="/head-settings" element={<ProtectedRoute path="/head-settings" element={<HeadSettings />} />} />
         <Route path="/dashboard" element={<ProtectedRoute path="/dashboard" element={<OpcDashboard />} />} />
         <Route path="/opc-requests" element={<ProtectedRoute path="/opc-requests" element={<OpcRequests />} />} />
+        <Route path="/opc-approved-requests" element={<ProtectedRoute path="/opc-approved-requests" element={<OpcApprovedRequests />} />} />
         <Route path="/vehicle-management" element={<ProtectedRoute path="/vehicle-management" element={<VehicleManagement />} />} />
         <Route path="/driver-management" element={<ProtectedRoute path="/driver-management" element={<DriverManagement />} />} />
         <Route path="/opc-settings" element={<ProtectedRoute path="/opc-settings" element={<OpcSettings />} />} />

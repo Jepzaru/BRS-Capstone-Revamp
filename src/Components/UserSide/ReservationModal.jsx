@@ -11,15 +11,15 @@ const ReservationModal = ({ isOpen, onClose, onConfirm, message, type }) => {
         <div className="modal-buttons">
           {type === 'confirmation' && (
             <>
-              <button onClick={onClose} className="modal-button-cancel">Cancel</button>
-              <button onClick={onConfirm} className="modal-button-confirm">Confirm</button>
+              <button onClick={onClose} className="modal-button-cancel-button">Cancel</button>
+              <button onClick={onConfirm} className=".modal-button-confirm-button">Confirm</button>
             </>
           )}
           {type === 'success' && (
-            <button onClick={onClose} className="modal-button-close">Close</button>
+            <button onClick={onClose} className="rmodal-button-close">Close</button>
           )}
           {type === 'error' && (
-            <button onClick={onClose} className="modal-button-close">Close</button>
+            <button onClick={onClose} className="rmodal-button-close">Close</button>
           )}
         </div>
       </div>
