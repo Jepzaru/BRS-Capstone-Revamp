@@ -6,17 +6,12 @@ import { FaFileCircleCheck } from "react-icons/fa6";
 import '../../CSS/HeadCss/HeadApprovedRequests.css';
 
 const HeadApprovedRequests = () => {
-  // State to hold approved reservations
   const [requests, setRequests] = useState([]);
-  // State to handle loading and error states (optional)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Retrieve token and department from localStorage
   const token = localStorage.getItem('token');
   const department = localStorage.getItem('department'); 
 
-  // Function to fetch approved reservations
   const fetchApprovedRequests = async () => {
     try {
       const response = await fetch("http://localhost:8080/reservations/getAll", {
@@ -29,10 +24,7 @@ const HeadApprovedRequests = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const data = await response.json();
-
-      // Filter reservations to include only those approved by the head and matching the department
       const approvedReservations = data.filter(reservation => 
         reservation.department === department && reservation.headIsApproved
       );
@@ -48,31 +40,24 @@ const HeadApprovedRequests = () => {
     }
   };
 
-  // Fetch approved reservations on component mount
   useEffect(() => {
     fetchApprovedRequests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, department]); // Include department if it can change
+  }, [token, department]); 
 
-  // Optional: Implement search and sort functionalities
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("");
 
-  // Handle search input change
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  // Handle sort option change
   const handleSortChange = (event) => {
     setSortOption(event.target.value);
   };
 
-  // Function to get filtered and sorted requests
   const getDisplayedRequests = () => {
     let filteredRequests = requests;
 
-    // Filter by search term if provided
     if (searchTerm.trim() !== "") {
       filteredRequests = filteredRequests.filter(request => 
         request.reason.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -80,7 +65,6 @@ const HeadApprovedRequests = () => {
       );
     }
 
-    // Sort based on sortOption
     if (sortOption === "alphabetical") {
       filteredRequests.sort((a, b) => a.userName.localeCompare(b.userName));
     } else if (sortOption === "ascending") {
@@ -88,7 +72,6 @@ const HeadApprovedRequests = () => {
     } else if (sortOption === "descending") {
       filteredRequests.sort((a, b) => b.capacity - a.capacity);
     }
-
     return filteredRequests;
   };
 

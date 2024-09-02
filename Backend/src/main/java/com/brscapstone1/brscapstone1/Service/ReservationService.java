@@ -97,11 +97,11 @@ public class ReservationService {
         resRepo.save(reservation);
     }
 
+    //[PUT] || update reservations
     public ReservationEntity updateReservation(int reservationId, ReservationEntity updatedReservation, MultipartFile file) throws IOException {
         ReservationEntity existingReservation = resRepo.findById(reservationId)
             .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
 
-        // Update fields only if they are not null
         if (updatedReservation.getTypeOfTrip() != null) existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
         if (updatedReservation.getDestinationTo() != null) existingReservation.setDestinationTo(updatedReservation.getDestinationTo());
         if (updatedReservation.getDestinationFrom() != null) existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());
@@ -121,14 +121,12 @@ public class ReservationService {
         if (updatedReservation.getDriverId() > 0) existingReservation.setDriverId(updatedReservation.getDriverId()); // Assuming 0 is an invalid driverId
         if (updatedReservation.getDriverName() != null) existingReservation.setDriverName(updatedReservation.getDriverName());
 
-        // Handle file update if provided
         if (file != null && !file.isEmpty()) {
             existingReservation.setFileName(file.getOriginalFilename());
             existingReservation.setFileType(file.getContentType());
             existingReservation.setFileSize(file.getSize());
         }
 
-        // Save and return the updated reservation
         return resRepo.save(existingReservation);
     }
 }

@@ -80,11 +80,9 @@ const HeadSide = () => {
   };
 
   const handleSearchClick = () => {
-    // Implement search logic
   };
 
   const handleSortChange = (event) => {
-    // Implement sort logic
   };
 
   return (
