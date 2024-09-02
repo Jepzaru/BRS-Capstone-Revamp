@@ -12,25 +12,26 @@ const HeadSide = () => {
   const [request, setRequests] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [modalAction, setModalAction] = useState(null);
 
   const token = localStorage.getItem('token');
 
   const fetchRequestsData = async () => {
-    try {
-      const department = localStorage.getItem('department'); 
+  try {
+    const department = localStorage.getItem('department');
   
-      const response = await fetch("http://localhost:8080/reservations/getAll", {
-        headers: { "Authorization": `Bearer ${token}` },
-      });  
-      const data = await response.json();
-      const matchingReservations = data.filter(reservation => 
-        reservation.department === department && !reservation.headIsApproved
-      );
-      setRequests(matchingReservations); 
-    } catch (error) {
-      console.error("Failed to fetch requests.", error);
-    }
+    const response = await fetch("http://localhost:8080/reservations/getAll", {
+      headers: { "Authorization": `Bearer ${token}` },
+    });  
+    const data = await response.json();
+    const matchingReservations = data.filter(reservation => 
+      reservation.department === department && !reservation.headIsApproved && !reservation.rejected
+    );
+    setRequests(matchingReservations); 
+  } catch (error) {
+    console.error("Failed to fetch requests.", error);
   }
+}
 
   const handleApproveRequests = async () => {
     try {
@@ -61,14 +62,52 @@ const HeadSide = () => {
     }
   };
 
+  const handleRejectRequest = async () => {
+    try {
+      const reservationData = {
+        rejected: true,
+        status: 'Rejected'
+      };
+  
+      const formData = new FormData();
+      formData.append("reservation", JSON.stringify(reservationData));
+  
+      const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        body: formData,
+      });
+  
+      if (response.ok) {
+        console.log("Reservation rejected successfully.");
+        fetchRequestsData(); 
+        closeModal();
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Failed to approve the request.", error);
+    }
+  };
+
   const openModal = (request) => {
     setSelectedRequest(request);
+    setModalAction('approve'); 
+    setIsModalOpen(true);
+  };
+
+  const openModalForRejection = (request) => {
+    setSelectedRequest(request);
+    setModalAction('reject'); 
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedRequest(null);
+    setModalAction(null); 
   };
 
   useEffect(() => {
@@ -149,10 +188,10 @@ const HeadSide = () => {
                       <td>
                         <div className="action-buttons">
                           <button className="approve-button" onClick={() => openModal(requests)}>Approve</button>
-                          <button className="reject-button">Reject</button>
+                          <button className="reject-button" onClick={() => openModalForRejection(requests)}>Reject</button>
                           <button className="view-file-button">View Attached File</button>
                         </div>
-                      </td>
+                    </td>
                     </tr>
                   ))
                 )}
@@ -166,10 +205,14 @@ const HeadSide = () => {
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h2>Approve Request</h2>
-            <p>Are you sure you want to approve this request?</p>
+            <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
+            <p>Are you sure you want to {modalAction} this request?</p>
             <div className="modal-buttons">
-              <button onClick={handleApproveRequests} className="approve-button">Approve</button>
+              {modalAction === 'approve' ? (
+                <button onClick={handleApproveRequests} className="approve-button">Approve</button>
+              ) : (
+                <button onClick={handleRejectRequest} className="reject-button">Reject</button>
+              )}
               <button onClick={closeModal} className="close-button">Cancel</button>
             </div>
           </div>

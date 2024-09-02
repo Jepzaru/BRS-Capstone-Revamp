@@ -96,7 +96,6 @@ const HeadApprovedRequests = () => {
             <button onClick={() => {}} className="search-button">
               <FaFileCircleCheck style={{ marginBottom: "-3px" }} />
             </button>
-            {/* <FaSortAlphaDown style={{ color: "#782324", marginLeft: "10px" }} /> */}
             <select onChange={handleSortChange} className="sort-dropdown">
               <option value="">Sort By</option>
               <option value="alphabetical">Alphabetical</option>

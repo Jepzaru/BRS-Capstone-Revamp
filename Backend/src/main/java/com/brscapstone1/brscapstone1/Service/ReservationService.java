@@ -101,11 +101,11 @@ public class ReservationService {
     public ReservationEntity updateReservation(int reservationId, ReservationEntity updatedReservation, MultipartFile file) throws IOException {
         ReservationEntity existingReservation = resRepo.findById(reservationId)
             .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
-
+    
         if (updatedReservation.getTypeOfTrip() != null) existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
         if (updatedReservation.getDestinationTo() != null) existingReservation.setDestinationTo(updatedReservation.getDestinationTo());
         if (updatedReservation.getDestinationFrom() != null) existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());
-        if (updatedReservation.getCapacity() > 0) existingReservation.setCapacity(updatedReservation.getCapacity()); // Assuming 0 is an invalid capacity
+        if (updatedReservation.getCapacity() > 0) existingReservation.setCapacity(updatedReservation.getCapacity()); 
         if (updatedReservation.getDepartment() != null) existingReservation.setDepartment(updatedReservation.getDepartment());
         if (updatedReservation.getSchedule() != null) existingReservation.setSchedule(updatedReservation.getSchedule());
         if (updatedReservation.getVehicleType() != null) existingReservation.setVehicleType(updatedReservation.getVehicleType());
@@ -118,15 +118,15 @@ public class ReservationService {
         if (updatedReservation.isHeadIsApproved() != null) existingReservation.setHeadIsApproved(updatedReservation.isHeadIsApproved());
         if (updatedReservation.getUserName() != null) existingReservation.setUserName(updatedReservation.getUserName());
         if (updatedReservation.getFeedback() != null) existingReservation.setFeedback(updatedReservation.getFeedback());
-        if (updatedReservation.getDriverId() > 0) existingReservation.setDriverId(updatedReservation.getDriverId()); // Assuming 0 is an invalid driverId
+        if (updatedReservation.getDriverId() > 0) existingReservation.setDriverId(updatedReservation.getDriverId()); 
         if (updatedReservation.getDriverName() != null) existingReservation.setDriverName(updatedReservation.getDriverName());
-
+    
         if (file != null && !file.isEmpty()) {
             existingReservation.setFileName(file.getOriginalFilename());
             existingReservation.setFileType(file.getContentType());
             existingReservation.setFileSize(file.getSize());
         }
-
+    
         return resRepo.save(existingReservation);
     }
 }
