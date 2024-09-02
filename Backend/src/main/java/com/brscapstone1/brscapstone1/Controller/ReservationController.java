@@ -21,12 +21,6 @@ public class ReservationController {
     @Autowired
     private ReservationService resServ;
 
-    //[GET] all reservations that is approved by HEAD
-    @GetMapping("/reservations/head-approved")
-    public List<ReservationEntity> getApprovedReservations() {
-        return resServ.getHeadApprovedReservations();
-    }
-
     //[POST] approved reservations by HEAD
     @PostMapping("/user/reservations/head-approve/{reservationId}")
     public ResponseEntity<String> headApproveReservation(@PathVariable int reservationId) {
@@ -121,5 +115,17 @@ public class ReservationController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    //[GET] all OPC approved
+    @GetMapping("/reservations/opc-approved")
+    public List<ReservationEntity> getOpcApprovedReservations() {
+        return resServ.getOpcApprovedReservation();
+    }
+
+    //[GET] all reservations that is approved by HEAD
+    @GetMapping("/reservations/head-approved")
+    public List<ReservationEntity> getApprovedReservations() {
+        return resServ.getHeadApprovedReservations();
     }
 }

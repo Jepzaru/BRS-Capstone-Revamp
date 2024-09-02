@@ -10,4 +10,5 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
   List<ReservationEntity> findByStatus(String status);
   List<ReservationEntity> findByHeadIsApproved(boolean headIsApproved);
   List<ReservationEntity> findByUserName(String userName);
+  List<ReservationEntity> findByOpcIsApproved(boolean opcIsApproved);
 }

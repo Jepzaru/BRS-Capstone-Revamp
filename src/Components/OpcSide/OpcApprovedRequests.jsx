@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -8,33 +8,55 @@ import { FaClipboardCheck } from "react-icons/fa6";
 import '../../CSS/OpcCss/OpcRequests.css';
 
 const OpcApprovedRequests = () => {
-  const requests = []; 
+  const [requests, setRequests] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState("");
 
-  
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    const fetchApprovedRequests = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/reservations/opc-approved', {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const approvedRequests = data.filter(request => request.opcIsApproved === true);
+        setRequests(approvedRequests);
+      } catch (error) {
+        console.error("Error fetching approved requests:", error);
+      }
+    };
+    fetchApprovedRequests();
+  }, [token]);
+
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
   const handleSearchClick = () => {
-    // You can add any additional logic for search click here if needed
   };
+
   const handleSortChange = (event) => {
     setSortOption(event.target.value);
   };
 
   const sortRequests = (requests) => {
+    const filteredRequests = requests.filter(request => request.reason.toLowerCase().includes(searchTerm.toLowerCase()));
+
     switch (sortOption) {
       case "alphabetical":
-        return requests.sort((a, b) => a.reason.localeCompare(b.reason));
+        return filteredRequests.sort((a, b) => a.reason.localeCompare(b.reason));
       case "ascending":
-        return requests.sort((a, b) => a.capacity - b.capacity);
+        return filteredRequests.sort((a, b) => a.capacity - b.capacity);
       case "descending":
-        return requests.sort((a, b) => b.capacity - a.capacity);
+        return filteredRequests.sort((a, b) => b.capacity - a.capacity);
       default:
-        return requests;
+        return filteredRequests;
     }
   };
+
+  const sortedRequests = sortRequests(requests);
 
   return (
     <div className="opcrequest">
@@ -42,9 +64,9 @@ const OpcApprovedRequests = () => {
       <div className="opc-request-content1">
         <SideNavbar />
         <div className="opc1">
-        <div className="header-container">
-          <h1><FaClipboardCheck style={{marginRight: "15px", color: "#782324"}}/>Approved Requests</h1>
-          <div className="search-container">
+          <div className="header-container">
+            <h1><FaClipboardCheck style={{ marginRight: "15px", color: "#782324" }} />Approved Requests</h1>
+            <div className="search-container">
               <input
                 type="text"
                 placeholder="Search Reason"
@@ -52,8 +74,8 @@ const OpcApprovedRequests = () => {
                 onChange={handleSearchChange}
                 className="search-bar"
               />
-              <button onClick={handleSearchClick} className="search-button"><IoSearch style={{marginBottom: "-3px"}}/> Search</button>
-              <FaSortAlphaDown style={{color: "#782324"}}/>
+              <button onClick={handleSearchClick} className="search-button"><IoSearch style={{ marginBottom: "-3px" }} /> Search</button>
+              <FaSortAlphaDown style={{ color: "#782324" }} />
               <select onChange={handleSortChange} className="sort-dropdown">
                 <option value="">Sort By</option>
                 <option value="alphabetical">Alphabetical</option>
@@ -61,7 +83,7 @@ const OpcApprovedRequests = () => {
                 <option value="descending">Capacity Descending</option>
               </select>
             </div>
-            </div>
+          </div>
           <div className='opc-request-container1'>
             <table className="opc-requests-table">
               <thead>
@@ -82,22 +104,21 @@ const OpcApprovedRequests = () => {
               <tbody>
                 {requests.length === 0 ? (
                   <tr>
-                    <td colSpan="12" className="no-requests">No Requests Available</td>
+                    <td colSpan="11" className="no-requests">No Requests Available</td>
                   </tr>
                 ) : (
-                  requests.map((request, index) => (
+                  sortedRequests.map((request, index) => (
                     <tr key={index}>
+                      <td>{request.userName}</td>
                       <td>{request.typeOfTrip}</td>
-                      <td>{request.from}</td>
-                      <td>{request.to}</td>
+                      <td>{request.destinationFrom}</td>
+                      <td>{request.destinationTo}</td>
                       <td>{request.capacity}</td>
                       <td>{request.vehicleType}</td>
                       <td>{request.schedule}</td>
                       <td>{request.departureTime}</td>
                       <td>{request.pickUpTime}</td>
-                      <td>{request.department}</td>
                       <td>{request.reason}</td>
-                      <td>{request.status}</td>
                       <td>
                         <div className="action-buttons">
                           <button className="approve-button">Export to Excel</button>

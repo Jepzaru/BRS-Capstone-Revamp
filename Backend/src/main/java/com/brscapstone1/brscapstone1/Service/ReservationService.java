@@ -35,11 +35,6 @@ public class ReservationService {
         resRepo.save(reservation);
     }
 
-    //[GET] all reservations that is approved by HEAD
-    public List<ReservationEntity> getHeadApprovedReservations() {
-        return resRepo.findByHeadIsApproved(true);
-    }
-
     //[isRejected] rejects a reservation and returns boolean output
     public void rejectReservation(int reservationId, String feedback) {
         ReservationEntity reservation = resRepo.findById(reservationId).orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
@@ -128,5 +123,15 @@ public class ReservationService {
         }
     
         return resRepo.save(existingReservation);
+    }
+
+    //[GET] all OPC approved
+    public List<ReservationEntity> getOpcApprovedReservation() {
+        return resRepo.findByOpcIsApproved(true);
+    }
+
+    //[GET] all reservations that is approved by HEAD
+    public List<ReservationEntity> getHeadApprovedReservations() {
+        return resRepo.findByHeadIsApproved(true);
     }
 }
