@@ -9,19 +9,38 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
   const [minDate, setMinDate] = useState('');
 
   useEffect(() => {
-    
     const today = new Date();
     const minDate = new Date(today.setDate(today.getDate() + 2)).toISOString().split('T')[0];
     setMinDate(minDate);
   }, []);
 
-  const onSave = () => {
+  const onSave = async () => {
     const eventData = {
-      date: eventDate,
-      title: eventTitle,
-      description: eventDescription,
+      eventDate,
+      eventTitle,
+      eventDescription,
     };
-    handleSave(eventData);
+
+    try {
+      const response = await fetch('http://localhost:8080/opc/events/post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Event added successfully:', result);
+        handleSave(result); // Optionally call the handleSave function with the result
+      } else {
+        console.error('Failed to add event:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
     handleClose();
   };
 

@@ -7,6 +7,8 @@ import { FaSortAlphaDown } from "react-icons/fa";
 import { BsPersonFillAdd } from "react-icons/bs";
 import { PiSteeringWheelFill } from "react-icons/pi";
 import { IoIosCloseCircle } from "react-icons/io";
+import { MdOutlineSystemUpdateAlt } from "react-icons/md";
+import { FaRegTrashAlt } from "react-icons/fa";
 import '../../CSS/OpcCss/DriverManagement.css';
 
 const DriverManagement = () => {
@@ -213,10 +215,12 @@ const DriverManagement = () => {
                     <tr key={driver.id}>
                       <td>{driver.driverName}</td>
                       <td>{driver.contactNumber}</td>
-                      <td>{driver.status}</td>
+                      <td style={{ fontWeight: '700',color: driver.status === 'Available' ? 'green' : vehicle.status === 'Reserved' ? 'red' : 'black' }}>
+                      {driver.status}
+                      </td>
                       <td className='td-action'>
-                        <button className="update-button" onClick={() => openUpdateModal(driver)}>Update</button>
-                        <button className="delete-button" onClick={() => openDeleteModal(driver.id)}>Delete</button>
+                        <button className="update-button" onClick={() => openUpdateModal(driver)}><MdOutlineSystemUpdateAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Update</button>
+                        <button className="delete-button" onClick={() => openDeleteModal(driver.id)}><FaRegTrashAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Delete</button>
                       </td>
                     </tr>
                   ))

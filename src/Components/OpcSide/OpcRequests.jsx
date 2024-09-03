@@ -5,6 +5,9 @@ import SideNavbar from './OpcNavbar';
 import { FaSwatchbook } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
+import { FaCircleCheck } from "react-icons/fa6";
+import { IoCloseCircle } from "react-icons/io5";
+import { FaFileAlt } from "react-icons/fa";
 import '../../CSS/OpcCss/OpcRequests.css';
 
 const OpcRequests = () => {
@@ -206,6 +209,7 @@ const OpcRequests = () => {
             </div>
           </div>
           <div className='opc-request-container1'>
+          <div class="table-container">
             <table className="opc-requests-table">
               <thead>
                 <tr>
@@ -246,9 +250,9 @@ const OpcRequests = () => {
                      </td>
                       <td>
                         <div className="opc-action-buttons">
-                          <button className="approve-button" onClick={() => handleOpenModal(request, 'approve')}>Accept</button>
-                          <button className="reject-button" onClick={() => handleOpenModal(request, 'reject')}>Reject</button>
-                          <button className="view-file-button">View File</button>
+                          <button className="approve-button" onClick={() => handleOpenModal(request, 'approve')}><FaCircleCheck  style={{marginBottom: "-2px", marginRight: "5px"}}/> Accept</button>
+                          <button className="reject-button" onClick={() => handleOpenModal(request, 'reject')}><IoCloseCircle  style={{marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize:"16px"}}/> Reject</button>
+                          <button className="view-file-button"><FaFileAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> View File</button>
                         </div>
                       </td>
                     </tr>
@@ -256,6 +260,7 @@ const OpcRequests = () => {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
           <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />
         </div>

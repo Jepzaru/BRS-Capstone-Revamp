@@ -3,6 +3,7 @@ import Header from './Header';
 import logoImage1 from '../../Images/citbglogo.png';
 import SideNavbar from './SideNavbar';
 import Skeleton from 'react-loading-skeleton';
+import { useNavigate } from 'react-router-dom';
 import { FaLocationCrosshairs, FaLocationDot } from "react-icons/fa6";
 import { FaFileSignature, FaUserGroup, FaBuildingUser } from "react-icons/fa6";
 import { FaCalendarDay, FaBus, FaFileAlt } from "react-icons/fa";
@@ -27,6 +28,7 @@ const Reservation = () => {
   const [modalMessage, setModalMessage] = useState('');
   const [modalType, setModalType] = useState('error');
   const location = useLocation();
+  const navigate = useNavigate();
   const { vehicle } = location.state || {}; 
   const token = localStorage.getItem('token');
   const email = localStorage.getItem('email');
@@ -190,42 +192,46 @@ const Reservation = () => {
     }
 
     try {
-        const response = await fetch('http://localhost:8080/user/reservations/add', {
-            method: 'POST',
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
-            body: reservationFormData, 
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setModalMessage('Reservation submitted successfully!');
-        setModalType('success');
-    } catch (error) {
-        console.error('Error submitting reservation:', error);
-        setModalMessage('Failed to submit reservation. Please try again.');
-        setModalType('error');
-    } finally {
-        setFormData({
-            to: '',
-            from: '',
-            capacity: '',
-            department: '',
-            vehicleType: vehicle ? vehicle.vehicleType : '', 
-            plateNumber: vehicle ? vehicle.plateNumber : '',
-            departureTime: '',
-            pickUpTime: '', 
-            reservationReason: '',
-            approvalProof: null,
-            fileName: '',
-        });
-        setSelectedDate(null);
-        document.getElementById('fileInput').value = '';
-    }
+      const response = await fetch('http://localhost:8080/user/reservations/add', {
+          method: 'POST',
+          headers: {
+              "Authorization": `Bearer ${token}`
+          },
+          body: reservationFormData, 
+      });
+  
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      setModalMessage('Reservation submitted successfully!');
+      setModalType('success');
+      
+      // Redirect to /user-side upon success
+      navigate('/user-side');
+  } catch (error) {
+      console.error('Error submitting reservation:', error);
+      setModalMessage('Failed to submit reservation. Please try again.');
+      setModalType('error');
+  } finally {
+      // Reset form and clear selected date
+      setFormData({
+          to: '',
+          from: '',
+          capacity: '',
+          department: '',
+          vehicleType: vehicle ? vehicle.vehicleType : '', 
+          plateNumber: vehicle ? vehicle.plateNumber : '',
+          departureTime: '',
+          pickUpTime: '', 
+          reservationReason: '',
+          approvalProof: null,
+          fileName: '',
+      });
+      setSelectedDate(null);
+      document.getElementById('fileInput').value = '';
+  }
   };
 
   const closeModal = () => {

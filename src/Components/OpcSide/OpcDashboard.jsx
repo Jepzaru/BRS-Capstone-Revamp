@@ -98,31 +98,63 @@ const OpcDashboard = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const requestsCount = useCounter(42, 2000, !isLoading);
-  const vehiclesCount = useCounter(10, 2000, !isLoading);
 
   const data = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    labels: ['CCS', 'CEA', 'CMBA', 'CASE', 'CNAHS', 'CCJ'],
     datasets: [
       {
-        label: 'Number of Requests',
-        data: [12, 19, 3, 5, 2, 3, 10, 15, 8, 12, 7, 6], 
-        backgroundColor: (context) => {
-          const value = context.dataset.data[context.dataIndex];
-          return value < 10 ? 'gold' : '#782324';
-        },
+        label: 'Usage per department',
+        data: [12, 19, 3, 5, 2, 3], 
+        backgroundColor: [
+          'orange', // CCS
+          'green',  // CEA
+          'violet', // CMBA
+          'gold',   // CASE
+          'red',    // CNAHS
+          'blue'    // CCJ
+        ],
       },
     ],
   };
-
+  
+  const departmentFullNames = {
+    CCS: 'College of Computer Studies',
+    CEA: 'College of Engineering and Architecture',
+    CMBA: 'College of Management, Business, and Accountancy',
+    CASE: 'College of Arts, Sciences, and Education',
+    CNAHS: 'College of Nursing and Allied Health Sciences',
+    CCJ: 'College of Criminal Justice'
+  };
+  
   const options = {
     scales: {
       y: {
         beginAtZero: true,
       },
     },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',  
+        align: 'center',  
+        labels: {
+          color: 'black',
+          font: {
+            size: 12,
+          },
+          generateLabels: (chart) => {
+            const datasets = chart.data.datasets;
+            return datasets[0].backgroundColor.map((color, index) => ({
+              text: departmentFullNames[chart.data.labels[index]], // Display full names
+              fillStyle: color,
+              strokeStyle: color,
+              lineWidth: 1,
+            }));
+          },
+        },
+      },
+    },
   };
-
   return (
     <div className="dashboard">
       {isLoading ? <LoadingScreen /> : (
@@ -165,7 +197,7 @@ const OpcDashboard = () => {
                 </div>
               </div>
               <div className="full-width-container">
-                <h3><FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />Number of Requests per Month</h3>
+                <h3><FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />Usage Per Department</h3>
                 <Bar data={data} options={options} />
               </div>
             </div>

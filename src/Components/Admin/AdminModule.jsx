@@ -4,7 +4,6 @@ import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './AdminNavbar';
 import { FaUserGroup } from "react-icons/fa6";
 import { MdGroupAdd } from "react-icons/md";
-// import { departments } from '../Department';
 import { user_roles } from '../Roles'; 
 import '../../CSS/AdminCss/AdminModule.css';
 
@@ -17,6 +16,8 @@ const AdminModule = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRole, setSelectedRole] = useState(''); // Add state for role
+  const [selectedDepartment, setSelectedDepartment] = useState(''); // Add state for department
 
   const openAddModal = () => setIsAddAccountModalOpen(true);
   const closeAddModal = () => setIsAddAccountModalOpen(false);
@@ -56,14 +57,24 @@ const AdminModule = () => {
     fetchDepartments();
   }, [token])
 
+  const handleRoleChange = (event) => {
+    const selectedRole = event.target.value;
+    setSelectedRole(selectedRole);
+
+    // Automatically set the department to "Staff" if role is "OPC" or "ADMIN"
+    if (selectedRole === 'OPC' || selectedRole === 'ADMIN') {
+      setSelectedDepartment('Staff');
+    }
+  };
+
   const handleAddAccount = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const newUser = {
       email: formData.get('email'),
       password: formData.get('password'),
-      department: formData.get('department'),
-      role: formData.get('role'),
+      department: selectedDepartment || formData.get('department'),
+      role: selectedRole,
     };
   
     try {
@@ -87,30 +98,13 @@ const AdminModule = () => {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/admin/users/delete/${userToDelete.id}`, {
-        method: "DELETE",
-        headers: {"Authorization": `Bearer ${token}`}
-      });
-      if (response.ok) {
-        closeDeleteModal();
-        fetchUsers(); 
-      } else {
-        console.error("Failed to delete user");
-      }
-    } catch (error) {
-      console.error("Failed to delete user", error);
-    }
-  };  
-
   const handleUpdateAccount = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const updatedUser = {
-      department: formData.get('department'),
+      department: selectedDepartment || formData.get('department'),
       email: formData.get('email'),
-      role: formData.get('role')
+      role: selectedRole || formData.get('role'),
     };
   
     try {
@@ -136,6 +130,8 @@ const AdminModule = () => {
 
   const openUpdateModal = (user) => {
     setSelectedUser(user);
+    setSelectedRole(user.role); // Set the role when opening the update modal
+    setSelectedDepartment(user.department); // Set the department when opening the update modal
     setIsUpdateAccountModalOpen(true);
   };
 
@@ -247,16 +243,16 @@ const AdminModule = () => {
               <input type="email" name="email" />
               <label>Password:</label>
               <input type="password" name="password" />
-              <label>Department:</label>
-              <select name="department">
-                {department.map(departments =>(
-                  <option key={departments.id} value={departments.name}>{departments.name}</option>
-                ))}
-              </select>
               <label>Role:</label>
-              <select name="role">
+              <select name="role" onChange={handleRoleChange}>
                 {user_roles.map((role, index) => (
                   <option key={index} value={role}>{role}</option>
+                ))}
+              </select>
+              <label>Department:</label>
+              <select name="department" value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.target.value)} disabled={selectedRole === 'OPC' || selectedRole === 'ADMIN'}>
+                {department.map(departments =>(
+                  <option key={departments.id} value={departments.name}>{departments.name}</option>
                 ))}
               </select>
               <div className="addacc-modal-buttons">
@@ -276,13 +272,13 @@ const AdminModule = () => {
               <label>Email:</label>
               <input type="email" name="email" defaultValue={selectedUser.email} />
               <label>Department:</label>
-              <select name="department" defaultValue={selectedUser.department}>
+              <select name="department" value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.target.value)} disabled={selectedRole === 'OPC' || selectedRole === 'ADMIN'}>
                 {department.map(departments =>(
                   <option key={departments.id} value={departments.name}>{departments.name}</option>
                 ))}
               </select>
               <label>Role:</label>
-              <select name="role" defaultValue={selectedUser.role}>
+              <select name="role" defaultValue={selectedUser.role} onChange={handleRoleChange}>
                 {user_roles.map((role, index) => (
                   <option key={index} value={role}>{role}</option>
                 ))}

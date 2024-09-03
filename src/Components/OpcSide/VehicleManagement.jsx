@@ -7,6 +7,8 @@ import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
 import { MdAddCircle } from "react-icons/md";
 import { IoIosCloseCircle } from "react-icons/io";
+import { MdOutlineSystemUpdateAlt } from "react-icons/md";
+import { FaRegTrashAlt } from "react-icons/fa";
 import '../../CSS/OpcCss/VehicleManagement.css';
 
 const VehicleManagement = () => {
@@ -283,10 +285,12 @@ const VehicleManagement = () => {
                       <td>{vehicle.vehicleType}</td>
                       <td>{vehicle.plateNumber}</td>
                       <td>{vehicle.capacity}</td>
-                      <td>{vehicle.status}</td>
+                      <td style={{ fontWeight: '700',color: vehicle.status === 'Available' ? 'green' : vehicle.status === 'Reserved' ? 'red' : 'black' }}>
+                      {vehicle.status}
+                      </td>
                       <td className='td-action'>
-                        <button className="update-button" onClick={() => openUpdateModal(vehicle)}>Update</button>
-                        <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}>Delete</button>
+                        <button className="update-button" onClick={() => openUpdateModal(vehicle)}><MdOutlineSystemUpdateAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Update</button>
+                        <button className="delete-button" onClick={() => openDeleteModal(vehicle.id)}><FaRegTrashAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Delete</button>
                       </td>
                     </tr>
                   ))

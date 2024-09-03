@@ -1,8 +1,8 @@
 body, html {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
-  
+
 body {
   background-color: white;
   font-family: 'Poppins', sans-serif;
@@ -19,9 +19,6 @@ body {
 .opc-request-content1 {
   display: flex;
   flex: 1;
-}
-
-.opc-request-content1 {
   padding: 20px;
   flex: 1;
   margin-left: 300px;
@@ -37,6 +34,19 @@ body {
   align-items: center;
   justify-content: flex-start; 
   margin-bottom: 20px;
+  background-color: #CBC3C3;
+  height: 690px;
+  width: 1500px;
+  border-radius: 10px;
+  padding: 20px;
+  margin-right: 20px;
+  z-index: 999;
+}
+
+.table-container {
+  max-height: 670px; 
+  overflow-y: auto;
+  margin-top: 10px;
 }
 
 .search-container {
@@ -90,22 +100,11 @@ body {
   opacity: 0.2;
 }
 
-.opc-request-container1 {
-  background-color: #CBC3C3;
-  height: 690px;
-  width: 1500px;
-  border-radius: 10px;
-  padding: 20px;
-  margin-right: 20px;
-  z-index: 999;
-}
-
 .opc-requests-table {
   width: 100%;
+  width: 1490px;
   border-collapse: collapse;
-  margin-top: 10px;
   background-color: white;
-  height: 670px;
 }
 
 .opc-requests-table th, .opc-requests-table td {
@@ -119,6 +118,7 @@ body {
   color: black;
   font-size: 12px;
   font-weight: 700;
+  position: sticky;
   top: 0;
 }
 
@@ -196,7 +196,8 @@ body {
   border-radius: 4px;
   cursor: pointer;
 }
-.feedback-input{
+
+.feedback-input {
   width: 320px;
   padding: 10px;
 }
@@ -207,39 +208,37 @@ body {
   word-break: break-word; 
 }
 
-
 @media (max-width: 767px) {
   .opc-request-content1 {
-    margin-left: 10px;
+      margin-left: 10px;
   }
   .opc-request-container1 {
-    width: 530px;
-    height: 650px;
+      width: 530px;
+      height: 650px;
   }
   .opc-requests-table th {
-    font-size: 7px;
+      font-size: 7px;
   }
   .opc-requests-table {
-    height: 630px;
+      width: 100%;
   }
   .header-container {
-    flex-direction: column;
-    align-items: flex-start;
+      flex-direction: column;
+      align-items: flex-start;
   }
   .search-container {
-    margin-left: 0; 
-    width: 100%;
+      margin-left: 0; 
+      width: 100%;
   }
   .search-bar {
-    margin-top: 10px;
-    width: 100%; 
+      margin-top: 10px;
+      width: 100%; 
   }
   .search-button {
-    width: 10%;
-    margin-right: 0; 
+      width: 10%;
+      margin-right: 0; 
   }
   .sort-dropdown {
-    width: 50%;
+      width: 50%;
   }
 }
-  

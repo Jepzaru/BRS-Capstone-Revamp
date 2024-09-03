@@ -94,6 +94,7 @@ const ManageRequest = () => {
             </div>
           </div>
           <div className='container1'>
+            <div className='table-container'>
             <table className="requests-table">
               <thead>
                 <tr>
@@ -106,7 +107,7 @@ const ManageRequest = () => {
                   <th>Departure Time</th>
                   <th>Pick Up Time</th>
                   <th>Department</th>
-                  <th>Reason</th>
+                  <th className="reason-column">Reason</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -127,13 +128,16 @@ const ManageRequest = () => {
                       <td>{request.departureTime}</td>
                       <td>{request.pickUpTime}</td>
                       <td>{request.department}</td>
-                      <td>{request.reason}</td>
-                      <td>{request.status}</td>
+                      <td className="reason-column">{request.reason}</td>
+                      <td className={request.status === 'Pending' ? 'status-pending' : ''}>
+                        {request.status}
+                     </td>
                     </tr>
                   ))
                 )}
               </tbody>
             </table>
+            </div>
           </div>
           <img src={logoImage1} alt="Logo" className="logo-image2" />
         </div>

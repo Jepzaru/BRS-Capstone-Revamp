@@ -206,21 +206,34 @@ body {
   border-radius: 4px;
   cursor: pointer;
   width: 100px;
+  transition: background-color 0.3s;
 }
 
 .approve-button {
-  background-color: #4CAF50;
+  background-color: #2a612c;  
   color: white;
 }
 
-.reject-button {
-  background-color: #f44336;
+.approve-button:hover{
+  background-color: #4CAF50;
+}
+
+.reject-button{
+  background-color: #972b24;
   color: white;
+}
+
+.reject-button:hover {
+  background-color: #f44336;
 }
 
 .view-file-button {
   background-color: gold;
   color: black;
+}
+
+.view-file-button:hover {
+  background-color: rgb(253, 224, 58);
 }
 
 .head-requests-table th:nth-child(5),
