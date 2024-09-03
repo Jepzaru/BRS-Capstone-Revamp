@@ -1,5 +1,6 @@
 package com.brscapstone1.brscapstone1.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,13 +11,17 @@ import com.brscapstone1.brscapstone1.Repository.EventsRepository;
 
 @Service
 public class EventsService {
-	
-	@Autowired
-	EventsRepository eventsRepo;
 
-	public List<EventsEntity> events() {
-	    return eventsRepo.findAll();
-	}
+    @Autowired
+    private EventsRepository eventsRepo;
+
+    public List<EventsEntity> events() {
+        return eventsRepo.findAll();
+    }
+
+    public List<EventsEntity> findByDate(Date date) {
+        return eventsRepo.findByEventDate(date);
+    }
 
     // Create a new event
     public EventsEntity post(EventsEntity event) {
@@ -33,14 +38,12 @@ public class EventsService {
             existingEvent.setEventTitle(updatedEvent.getEventTitle());
             return eventsRepo.save(existingEvent);
         } else {
-            return null;  // Or throw an exception if preferred
+            throw new RuntimeException("Event with id " + id + " not found.");
         }
     }
 
-    //soft delete
+    // Soft delete
     public String delete(int id) {
-        String msg = "";
-
         Optional<EventsEntity> existingEventOpt = eventsRepo.findById(id);
 
         if (existingEventOpt.isPresent()) {
@@ -48,14 +51,12 @@ public class EventsService {
             if (!existingEvent.isDeleted()) {
                 existingEvent.setDeleted(true);  // Mark as deleted
                 eventsRepo.save(existingEvent);
-                msg = "Event with id " + id + " is successfully soft deleted.";
+                return "Event with id " + id + " is successfully soft deleted.";
             } else {
-                msg = "Event with id " + id + " was already deleted.";
+                return "Event with id " + id + " was already deleted.";
             }
         } else {
-            msg = "Event with id " + id + " does not exist.";
+            return "Event with id " + id + " does not exist.";
         }
-        return msg;
     }
-
 }

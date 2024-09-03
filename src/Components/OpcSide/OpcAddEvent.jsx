@@ -7,6 +7,7 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [minDate, setMinDate] = useState('');
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const today = new Date();
@@ -26,6 +27,7 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(eventData),
       });
@@ -59,7 +61,7 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
                 value={eventDate}
                 min={minDate}
                 onChange={(e) => setEventDate(e.target.value)}
-                className="form-control"
+                className="form-control"  
               />
             </Form.Group>
 
@@ -70,7 +72,7 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
                 placeholder="Enter event title" 
                 value={eventTitle}
                 onChange={(e) => setEventTitle(e.target.value)}
-                className="form-control"
+                className="form-control"  
               />
             </Form.Group>
 
@@ -82,7 +84,7 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
                 placeholder="Enter event description" 
                 value={eventDescription}
                 onChange={(e) => setEventDescription(e.target.value)}
-                className="form-control"
+                className="form-control"  
               />
             </Form.Group>
           </Form>
@@ -91,14 +93,14 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
           <Button 
             variant="secondary" 
             onClick={handleClose} 
-            className="modal-close-btn"
+            className="modal-close-btn" 
           >
             Close
           </Button>
           <Button 
             variant="primary" 
             onClick={onSave} 
-            className="modal-save-btn"
+            className="modal-save-btn"  // Use className here
           >
             Save Event
           </Button>
