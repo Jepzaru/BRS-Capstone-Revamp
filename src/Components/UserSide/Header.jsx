@@ -65,7 +65,7 @@ const Header = () => {
         <div className="logout-modal-overlay">
           <div className="logout-modal">
             <p>Are you sure you want to log out?</p>
-            <button className="yes-modal-button" onClick={handleLogout}>Yes, I would like to log out</button>
+            <button className="yes-modal-button" onClick={handleLogout}>Logout</button>
             <button className="no-modal-button" onClick={handleCloseModal}>Cancel</button>
           </div>
         </div>

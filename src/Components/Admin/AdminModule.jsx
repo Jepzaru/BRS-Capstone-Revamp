@@ -16,8 +16,8 @@ const AdminModule = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRole, setSelectedRole] = useState(''); // Add state for role
-  const [selectedDepartment, setSelectedDepartment] = useState(''); // Add state for department
+  const [selectedRole, setSelectedRole] = useState(''); 
+  const [selectedDepartment, setSelectedDepartment] = useState('');
 
   const openAddModal = () => setIsAddAccountModalOpen(true);
   const closeAddModal = () => setIsAddAccountModalOpen(false);
@@ -61,42 +61,68 @@ const AdminModule = () => {
     const selectedRole = event.target.value;
     setSelectedRole(selectedRole);
 
-    // Automatically set the department to "Staff" if role is "OPC" or "ADMIN"
     if (selectedRole === 'OPC' || selectedRole === 'ADMIN') {
       setSelectedDepartment('Staff');
     }
   };
 
-  const handleAddAccount = async (event) => {
+const handleAddAccount = async (event) => {
     event.preventDefault();
+    
+    // Capture form data
     const formData = new FormData(event.target);
+    const email = formData.get('email');
+    const password = formData.get('password');
+    const role = selectedRole || formData.get('role');
+    const department = selectedDepartment || formData.get('department');
+    
+    // Logging form data for debugging
+    console.log("Form Data:", [...formData.entries()]);
+    console.log("Email:", email);
+    console.log("Password:", password);
+    console.log("Role:", role);
+    console.log("Department:", department);
+
+    // Validate email, password, role, and department
+    if (!email || !password) {
+        console.error("Email and Password are required.");
+        return;
+    }
+    if (!role || !department) {
+        console.error("Role and Department are required.");
+        return;
+    }
+
+    // Prepare new user data
     const newUser = {
-      email: formData.get('email'),
-      password: formData.get('password'),
-      department: selectedDepartment || formData.get('department'),
-      role: selectedRole,
+        email: email,  // Correctly assigning email
+        password: password,  // Correctly assigning password
+        department: department,
+        role: role,
     };
   
     try {
-      const response = await fetch("http://localhost:8080/admin/users/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(newUser),
-      });
+        // Make API call to add new user
+        const response = await fetch("http://localhost:8080/admin/users/add", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(newUser),
+        });
   
-      if (response.ok) {
-        closeAddModal();
-        fetchUsers();
-      } else {
-        console.error("Failed to add user");
-      }
+        if (response.ok) {
+            // Close the modal and refresh user list on success
+            closeAddModal();
+            fetchUsers();
+        } else {
+            console.error("Failed to add user");
+        }
     } catch (error) {
-      console.error("Failed to add user", error);
+        console.error("Failed to add user", error);
     }
-  };
+};
 
   const handleUpdateAccount = async (event) => {
     event.preventDefault();
@@ -128,10 +154,30 @@ const AdminModule = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/admin/users/delete/${userToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+  
+      if (response.ok) {
+        closeDeleteModal();
+        fetchUsers();
+      } else {
+        console.error("Failed to delete user");
+      }
+    } catch (error) {
+      console.error("Failed to delete user", error);
+    }
+  };
+
   const openUpdateModal = (user) => {
     setSelectedUser(user);
-    setSelectedRole(user.role); // Set the role when opening the update modal
-    setSelectedDepartment(user.department); // Set the department when opening the update modal
+    setSelectedRole(user.role); 
+    setSelectedDepartment(user.department); 
     setIsUpdateAccountModalOpen(true);
   };
 
@@ -240,17 +286,19 @@ const AdminModule = () => {
             <h2>Add New Account</h2>
             <form className="addacc-modal-form" onSubmit={handleAddAccount}>
               <label>Email:</label>
-              <input type="email" name="email" />
+              <input type="email" name="email" required/>
               <label>Password:</label>
-              <input type="password" name="password" />
+              <input type="password" name="password" required/>
               <label>Role:</label>
-              <select name="role" onChange={handleRoleChange}>
+              <select name="role" onChange={handleRoleChange} required>
+              <option value="">Select Department</option>
                 {user_roles.map((role, index) => (
                   <option key={index} value={role}>{role}</option>
                 ))}
               </select>
               <label>Department:</label>
-              <select name="department" value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.target.value)} disabled={selectedRole === 'OPC' || selectedRole === 'ADMIN'}>
+              <select name="department" required value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.target.value)} disabled={selectedRole === 'OPC' || selectedRole === 'ADMIN'}>
+                <option value="">Select Department</option>
                 {department.map(departments =>(
                   <option key={departments.id} value={departments.name}>{departments.name}</option>
                 ))}
@@ -271,16 +319,16 @@ const AdminModule = () => {
             <form className="addacc-modal-form" onSubmit={handleUpdateAccount}>
               <label>Email:</label>
               <input type="email" name="email" defaultValue={selectedUser.email} />
-              <label>Department:</label>
-              <select name="department" value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.target.value)} disabled={selectedRole === 'OPC' || selectedRole === 'ADMIN'}>
-                {department.map(departments =>(
-                  <option key={departments.id} value={departments.name}>{departments.name}</option>
-                ))}
-              </select>
               <label>Role:</label>
               <select name="role" defaultValue={selectedUser.role} onChange={handleRoleChange}>
                 {user_roles.map((role, index) => (
                   <option key={index} value={role}>{role}</option>
+                ))}
+              </select>
+              <label>Department:</label>
+              <select name="department" value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.target.value)} disabled={selectedRole === 'OPC' || selectedRole === 'ADMIN'}>
+                {department.map(departments =>(
+                  <option key={departments.id} value={departments.name}>{departments.name}</option>
                 ))}
               </select>
               <div className="addacc-modal-buttons">
