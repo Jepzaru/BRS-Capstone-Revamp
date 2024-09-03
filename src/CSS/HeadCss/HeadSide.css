@@ -111,16 +111,11 @@ body {
   overflow-x: hidden;
 }
 
-.head-requests-table thead {
-  display: table;
-  width: calc(100% - 17px); 
-  table-layout: fixed;
-}
+
 
 .head-requests-table tbody {
   display: block;
   max-height: 630px;
-  overflow-y: auto;
   width: 100%;
 }
 

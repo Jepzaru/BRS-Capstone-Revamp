@@ -85,6 +85,7 @@ const OpcApprovedRequests = () => {
             </div>
           </div>
           <div className='opc-request-container1'>
+            <div className='table-container'>
             <table className="opc-requests-table">
               <thead>
                 <tr>
@@ -129,6 +130,7 @@ const OpcApprovedRequests = () => {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
           <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />
         </div>

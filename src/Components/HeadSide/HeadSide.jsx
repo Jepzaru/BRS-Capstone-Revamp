@@ -5,6 +5,9 @@ import SideNavbar from './HeadNavbar';
 import { FaSwatchbook } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
+import { FaCircleCheck } from "react-icons/fa6";
+import { IoCloseCircle } from "react-icons/io5";
+import { FaFileAlt } from "react-icons/fa";
 import '../../CSS/HeadCss/HeadSide.css';
 
 const HeadSide = () => {
@@ -157,6 +160,7 @@ const HeadSide = () => {
             </div>
           </div>
           <div className='head-container1'>
+            <div className='table-container'>
             <table className="head-requests-table">
               <thead>
                 <tr>
@@ -193,9 +197,9 @@ const HeadSide = () => {
                       <td>{splitText(requests.reason, 15)}</td>
                       <td>
                         <div className="head-action-buttons">
-                          <button className="approve-button" onClick={() => openModal(requests)}>Approve</button>
-                          <button className="reject-button" onClick={() => openModalForRejection(requests)}>Reject</button>
-                          <button className="view-file-button">View File</button>
+                          <button className="approve-button" onClick={() => openModal(requests)}><FaCircleCheck  style={{marginBottom: "-2px", marginRight: "5px"}}/> Approve</button>
+                          <button className="reject-button" onClick={() => openModalForRejection(requests)}><IoCloseCircle  style={{marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize:"16px"}}/> Reject</button>
+                          <button className="view-file-button"><FaFileAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> View File</button>
                         </div>
                       </td>
                     </tr>
@@ -203,6 +207,7 @@ const HeadSide = () => {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
           <img src={logoImage1} alt="Logo" className="head-logo-image" />
         </div>
