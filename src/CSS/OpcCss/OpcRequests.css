@@ -141,6 +141,18 @@ body {
   font-weight: 600;
 }
 
+.status-pending {
+  color: orange;
+  font-weight: 800;
+}
+
+.opc-action-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; 
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -184,6 +196,17 @@ body {
   border-radius: 4px;
   cursor: pointer;
 }
+.feedback-input{
+  width: 320px;
+  padding: 10px;
+}
+
+.opc-requests-table .reason-column {
+  max-width: 150px; 
+  white-space: normal; 
+  word-break: break-word; 
+}
+
 
 @media (max-width: 767px) {
   .opc-request-content1 {

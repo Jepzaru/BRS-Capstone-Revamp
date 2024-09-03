@@ -245,6 +245,11 @@ body, html {
     transition: background-color 0.3s;
   }
   
+  .addacc-modal-buttons{
+    margin-top: 30px;
+  }
+
+
   @media (max-width: 767px) {
     .admin-content1 {
       margin-left: -300px;

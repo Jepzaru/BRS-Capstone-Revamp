@@ -14,6 +14,9 @@ const OpcRequests = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [modalAction, setModalAction] = useState('');
+  const [drivers, setDrivers] = useState([]);
+  const [selectedDriver, setSelectedDriver] = useState('');
+  const [feedback, setFeedback] = useState('');
 
   const token = localStorage.getItem('token');
 
@@ -41,6 +44,25 @@ const OpcRequests = () => {
   useEffect(() => {
     fetchHeadIsApprovedRequests();
   }, []);
+
+  useEffect(() => {
+    if (modalAction === 'approve') {
+      fetchDrivers();
+    }
+  }, [modalAction]);
+
+  const fetchDrivers = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/opc/driver/getAll", {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setDrivers(data);
+    } catch (error) {
+      console.error("Failed to fetch drivers.", error);
+      setDrivers([]);
+    }
+  };
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -71,19 +93,30 @@ const OpcRequests = () => {
     setSelectedRequest(request);
     setModalAction(action);
     setShowModal(true);
+    if (action === 'reject') {
+      setFeedback('');
+    }
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedRequest(null);
     setModalAction('');
+    setSelectedDriver('');
+    setFeedback('');
   };
 
   const handleReject = async () => {
+    if (!feedback.trim()) {
+      alert('Please provide feedback.');
+      return;
+    }
+
     try {
       const reservationData = {
         rejected: true,
-        status: 'Rejected'
+        status: 'Rejected',
+        feedback
       };
 
       const formData = new FormData();
@@ -110,9 +143,15 @@ const OpcRequests = () => {
   };
 
   const handleApprove = async () => {
+    if (!selectedDriver) {
+      alert('Please select a driver.');
+      return;
+    }
+
     try {
       const reservationData = {
         opcIsApproved: true,
+        assignedDriver: selectedDriver
       };
 
       const formData = new FormData();
@@ -128,7 +167,7 @@ const OpcRequests = () => {
 
       if (response.ok) {
         console.log("Reservation approved successfully.");
-        fetchHeadIsApprovedRequests(); 
+        fetchHeadIsApprovedRequests();
         handleCloseModal();
       } else {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -179,7 +218,7 @@ const OpcRequests = () => {
                   <th>Schedule</th>
                   <th>Departure Time</th>
                   <th>Pick Up Time</th>
-                  <th>Reason</th>
+                  <th className="reason-column">Reason</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -201,13 +240,15 @@ const OpcRequests = () => {
                       <td>{request.schedule}</td>
                       <td>{request.departureTime}</td>
                       <td>{request.pickUpTime}</td>
-                      <td>{request.reason}</td>
-                      <td>{request.status}</td>
+                      <td className="reason-column">{request.reason}</td>
+                      <td className={request.status === 'Pending' ? 'status-pending' : ''}>
+                        {request.status}
+                     </td>
                       <td>
-                        <div className="action-buttons">
-                          <button className="accept-button" onClick={() => handleOpenModal(request, 'approve')}>Accept</button>
+                        <div className="opc-action-buttons">
+                          <button className="approve-button" onClick={() => handleOpenModal(request, 'approve')}>Accept</button>
                           <button className="reject-button" onClick={() => handleOpenModal(request, 'reject')}>Reject</button>
-                          <button className="view-file-button">View Attached File</button>
+                          <button className="view-file-button">View File</button>
                         </div>
                       </td>
                     </tr>
@@ -225,8 +266,38 @@ const OpcRequests = () => {
           <div className="modal-content">
             <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
             <p>Are you sure you want to {modalAction} this request?</p>
+            {modalAction === 'approve' ? (
+              <div className="modal-driver-selection">
+                <label htmlFor="driver-select">Select Driver:</label>
+                <select
+                  id="driver-select"
+                  value={selectedDriver}
+                  onChange={(e) => setSelectedDriver(e.target.value)}
+                >
+                  <option value="">Select Driver</option>
+                  {drivers.map(driver => (
+                    <option key={driver.id} value={driver.id}>{driver.driverName}</option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <div className="modal-feedback">
+                <input
+                  id="feedback-input"
+                  className='feedback-input'
+                  type="text"
+                  placeholder="Enter feedback"
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                />
+              </div>
+            )}
             <div className="modal-buttons">
-              <button className="modal-accept-button" onClick={modalAction === 'approve' ? handleApprove : handleReject}>
+              <button
+                className="modal-accept-button"
+                onClick={modalAction === 'approve' ? handleApprove : handleReject}
+                disabled={modalAction === 'approve' ? !selectedDriver : !feedback.trim()}
+              >
                 {modalAction === 'approve' ? 'Yes, Approve' : 'Yes, Reject'}
               </button>
               <button className="modal-close-button" onClick={handleCloseModal}>Cancel</button>

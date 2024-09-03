@@ -12,7 +12,7 @@ const ReservationModal = ({ isOpen, onClose, onConfirm, message, type }) => {
           {type === 'confirmation' && (
             <>
               <button onClick={onClose} className="modal-button-cancel-button">Cancel</button>
-              <button onClick={onConfirm} className=".modal-button-confirm-button">Confirm</button>
+              <button onClick={onConfirm} className="modal-button-confirm-button">Yes, I confirm</button>
             </>
           )}
           {type === 'success' && (

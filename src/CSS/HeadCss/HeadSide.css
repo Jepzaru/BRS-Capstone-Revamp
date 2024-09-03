@@ -13,7 +13,7 @@ body {
 .head1 {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  max-height: 100vh;
 }
 
 .head-content1 {
@@ -98,6 +98,7 @@ body {
   padding: 20px;
   margin-right: 20px;
   z-index: 999;
+  overflow: hidden; 
 }
 
 .head-requests-table {
@@ -105,13 +106,30 @@ body {
   border-collapse: collapse;
   margin-top: 10px;
   background-color: white;
-  height: 670px;
+  max-height: 600px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+}
+
+.head-requests-table thead {
+  display: table;
+  width: calc(100% - 17px); 
+  table-layout: fixed;
+}
+
+.head-requests-table tbody {
+  display: block;
+  max-height: 630px;
+  overflow-y: auto;
+  width: 100%;
 }
 
 .head-requests-table th, .head-requests-table td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: center;
+  width: 150px;
+  box-sizing: border-box; 
 }
 
 .head-requests-table th {
@@ -119,11 +137,19 @@ body {
   color: black;
   font-size: 12px;
   font-weight: 500;
+  position: sticky; 
   top: 0;
+  z-index: 2; 
 }
 
-.head-requests-table tbody {
+.head-requests-table td {
   background-color: white;
+}
+
+.head-requests-table tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .head-requests-table tr:nth-child(even) {
@@ -138,6 +164,7 @@ body {
   text-align: center;
   padding: 20px;
 }
+
 
 .modal-overlay {
   position: fixed;
@@ -166,11 +193,19 @@ body {
   justify-content: space-between;
 }
 
-.approve-button, .close-button {
-  padding: 10px 20px;
+.head-action-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; 
+}
+
+.approve-button, .reject-button, .view-file-button {
+  padding: 10px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  width: 100px;
 }
 
 .approve-button {
@@ -178,10 +213,33 @@ body {
   color: white;
 }
 
-.close-button {
+.reject-button {
   background-color: #f44336;
   color: white;
 }
+
+.view-file-button {
+  background-color: gold;
+  color: black;
+}
+
+.head-requests-table th:nth-child(5),
+.head-requests-table td:nth-child(5) {
+  width: 100px; 
+}
+
+.head-requests-table th:nth-child(8),
+.head-requests-table td:nth-child(8) {
+  width: 100px; 
+}
+
+
+.head-requests-table th:nth-child(9),
+.head-requests-table td:nth-child(9) {
+  width: 100px; 
+}
+
+
 
 
 @media (max-width: 767px) {

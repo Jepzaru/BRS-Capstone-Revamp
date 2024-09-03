@@ -17,31 +17,31 @@ const HeadSide = () => {
   const token = localStorage.getItem('token');
 
   const fetchRequestsData = async () => {
-  try {
-    const department = localStorage.getItem('department');
-  
-    const response = await fetch("http://localhost:8080/reservations/getAll", {
-      headers: { "Authorization": `Bearer ${token}` },
-    });  
-    const data = await response.json();
-    const matchingReservations = data.filter(reservation => 
-      reservation.department === department && !reservation.headIsApproved && !reservation.rejected
-    );
-    setRequests(matchingReservations); 
-  } catch (error) {
-    console.error("Failed to fetch requests.", error);
+    try {
+      const department = localStorage.getItem('department');
+
+      const response = await fetch("http://localhost:8080/reservations/getAll", {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      const data = await response.json();
+      const matchingReservations = data.filter(reservation =>
+        reservation.department === department && !reservation.headIsApproved && !reservation.rejected
+      );
+      setRequests(matchingReservations);
+    } catch (error) {
+      console.error("Failed to fetch requests.", error);
+    }
   }
-}
 
   const handleApproveRequests = async () => {
     try {
       const reservationData = {
         headIsApproved: true,
       };
-  
+
       const formData = new FormData();
       formData.append("reservation", JSON.stringify(reservationData));
-  
+
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
@@ -49,10 +49,10 @@ const HeadSide = () => {
         },
         body: formData,
       });
-  
+
       if (response.ok) {
         console.log("Reservation approved successfully.");
-        fetchRequestsData(); 
+        fetchRequestsData();
         closeModal();
       } else {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -68,10 +68,10 @@ const HeadSide = () => {
         rejected: true,
         status: 'Rejected'
       };
-  
+
       const formData = new FormData();
       formData.append("reservation", JSON.stringify(reservationData));
-  
+
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
@@ -79,10 +79,10 @@ const HeadSide = () => {
         },
         body: formData,
       });
-  
+
       if (response.ok) {
         console.log("Reservation rejected successfully.");
-        fetchRequestsData(); 
+        fetchRequestsData();
         closeModal();
       } else {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -94,20 +94,20 @@ const HeadSide = () => {
 
   const openModal = (request) => {
     setSelectedRequest(request);
-    setModalAction('approve'); 
+    setModalAction('approve');
     setIsModalOpen(true);
   };
 
   const openModalForRejection = (request) => {
     setSelectedRequest(request);
-    setModalAction('reject'); 
+    setModalAction('reject');
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedRequest(null);
-    setModalAction(null); 
+    setModalAction(null);
   };
 
   useEffect(() => {
@@ -122,6 +122,12 @@ const HeadSide = () => {
   };
 
   const handleSortChange = (event) => {
+  };
+
+  // Helper function to split long text
+  const splitText = (text, maxLength) => {
+    const regex = new RegExp(`.{1,${maxLength}}`, 'g');
+    return text.match(regex).join('\n');
   };
 
   return (
@@ -184,14 +190,14 @@ const HeadSide = () => {
                       <td>{requests.schedule}</td>
                       <td>{requests.departureTime}</td>
                       <td>{requests.pickUpTime}</td>
-                      <td>{requests.reason}</td>
+                      <td>{splitText(requests.reason, 15)}</td>
                       <td>
-                        <div className="action-buttons">
+                        <div className="head-action-buttons">
                           <button className="approve-button" onClick={() => openModal(requests)}>Approve</button>
                           <button className="reject-button" onClick={() => openModalForRejection(requests)}>Reject</button>
-                          <button className="view-file-button">View Attached File</button>
+                          <button className="view-file-button">View File</button>
                         </div>
-                    </td>
+                      </td>
                     </tr>
                   ))
                 )}
