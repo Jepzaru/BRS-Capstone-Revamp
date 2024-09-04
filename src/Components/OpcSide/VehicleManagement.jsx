@@ -307,81 +307,85 @@ const VehicleManagement = () => {
       </div>
       {isAddModalOpen && (
         <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
-          <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
-            <h2>Add New Vehicle <button className="close-vehicle-btn" onClick={closeAddModal}><IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/></button></h2>
-            <div className='add-vehicle-input'>
-              <label htmlFor='vehicle-name'>Vehicle Name</label>
-              <input
-                type="text"
-                placeholder="Ex. Coaster"
-                value={vehicleType}
-                required
-                onChange={(e) => setVehicleType(e.target.value)}
-              />
-              <label htmlFor='vehicle-plate-number'>Plate Number</label>
-              <input
-                type="text"
-                placeholder="Ex. GAB-1234"
-                value={plateNumber}
-                required
-                onChange={(e) => setPlateNumber(e.target.value)}
-              />
-              <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
-              <input
-                type="number"
-                placeholder="Ex. 30"
-                value={capacity}
-                required
-                min="1"
-                onChange={(e) => setCapacity(e.target.value)}
-              />
+          <form action="" onSubmit={handleAddVehicle}>
+            <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
+              <h2>Add New Vehicle <button className="close-vehicle-btn" onClick={closeAddModal}><IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/></button></h2>
+              <div className='add-vehicle-input'>
+                <label htmlFor='vehicle-name'>Vehicle Name</label>
+                <input
+                  type="text"
+                  placeholder="Ex. Coaster"
+                  value={vehicleType}
+                  required
+                  onChange={(e) => setVehicleType(e.target.value)}
+                />
+                <label htmlFor='vehicle-plate-number'>Plate Number</label>
+                <input
+                  type="text"
+                  placeholder="Ex. TRS-123"
+                  value={plateNumber}
+                  required
+                  onChange={(e) => setPlateNumber(e.target.value)}
+                />
+                <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
+                <input
+                  type="number"
+                  placeholder="Ex. 30"
+                  value={capacity}
+                  required
+                  min="1"
+                  onChange={(e) => setCapacity(e.target.value)}
+                />
+              </div>
+              <div className='add-vehicle-buttons'>
+                <button className='add-vehicle-submit-btn'>Add Vehicle</button>
+              </div>
+              {successMessage && <p className="success-message">{successMessage}</p>}
+              {errorMessage && <p className="error-message">{errorMessage}</p>}
             </div>
-            <div className='add-vehicle-buttons'>
-              <button onClick={handleAddVehicle} className='add-vehicle-submit-btn'>Add Vehicle</button>
-            </div>
-            {successMessage && <p className="success-message">{successMessage}</p>}
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
-          </div>
+          </form>
         </div>
       )}
       {isUpdateModalOpen && (
         <div className={`vehicle-modal-overlay ${isClosing ? 'vehicle-modal-closing' : ''}`}>
-          <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
-            <h2>Update Vehicle 
-              <button className="close-vehicle-btn" onClick={closeUpdateModal}>
-                <IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/>
-              </button>
-            </h2>
-            <div className='add-vehicle-input'>
-              <label htmlFor='vehicle-name'>Vehicle Name</label>
-              <input
-                type="text"
-                placeholder="Vehicle Type"
-                value={updateVehicleType}
-                onChange={(e) => setUpdateVehicleType(e.target.value)}
-              />
-              <label htmlFor='vehicle-plate-number'>Plate Number</label>
-              <input
-                type="text"
-                placeholder="Plate Number"
-                value={updatePlateNumber}
-                onChange={(e) => setUpdatePlateNumber(e.target.value)}
-              />
-              <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
-              <input
-                type="number"
-                placeholder="Maximum Capacity"
-                value={updateCapacity}
-                min="1"
-                onChange={(e) => setUpdateCapacity(e.target.value)}
-              />
+          <form action="" onSubmit={handleUpdateVehicle}>
+            <div className={`vehicle-modal ${isClosing ? 'vehicle-modal-closing' : ''}`}>
+              <h2>Update Vehicle 
+                <button className="close-vehicle-btn" onClick={closeUpdateModal}>
+                  <IoIosCloseCircle style={{fontSize: "32px", marginBottom: "-8px"}}/>
+                </button>
+              </h2>
+              <div className='add-vehicle-input'>
+                <label htmlFor='vehicle-name'>Vehicle Name</label>
+                <input
+                  type="text"
+                  placeholder="Vehicle Type"
+                  value={updateVehicleType}
+                  onChange={(e) => setUpdateVehicleType(e.target.value)}
+                />
+                <label htmlFor='vehicle-plate-number'>Plate Number</label>
+                <input
+                  type="text"
+                  placeholder="Plate Number"
+                  value={updatePlateNumber}
+                  onChange={(e) => setUpdatePlateNumber(e.target.value)}
+                />
+                <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
+                <input
+                  type="number"
+                  placeholder="Maximum Capacity"
+                  value={updateCapacity}
+                  min="1"
+                  onChange={(e) => setUpdateCapacity(e.target.value)}
+                />
+              </div>
+              <div className='add-vehicle-buttons'>
+                <button className="add-vehicle-submit-btn" >Update Vehicle</button>
+              </div>
+              {successMessage && <p className="success-message">{successMessage}</p>}
+              {errorMessage && <p className="error-message">{errorMessage}</p>}
             </div>
-            <div className='add-vehicle-buttons'>
-              <button className="add-vehicle-submit-btn" onClick={handleUpdateVehicle}>Update Vehicle</button>
-            </div>
-            {successMessage && <p className="success-message">{successMessage}</p>}
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
-          </div>
+          </form>
         </div>
       )}
       {isDeleteModalOpen && (

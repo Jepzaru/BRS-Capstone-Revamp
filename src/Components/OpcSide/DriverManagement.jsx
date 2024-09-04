@@ -239,34 +239,36 @@ const DriverManagement = () => {
                 <IoIosCloseCircle style={{ fontSize: "32px", marginBottom: "-8px" }} />
               </button>
             </h2>
-            <div className='add-driver-input'>
-              <label htmlFor='driver-name'>Driver Name</label>
-              <input
-                type="text"
-                placeholder="Ex. John Doe"
-                value={driverName}
-                required
-                onChange={(e) => setDriverName(e.target.value)}
-                className="driver-input"
-              />
-              
-              <label htmlFor='phone number'>Phone Number</label>
-              <input
-                type="text"
-                placeholder="Ex. 09*********"
-                value={phoneNumber}
-                required
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
-                  setPhoneNumber(value);
-                }}
-                pattern="\d{11}"
-                title="Phone number should be exactly 11 digits"
-                maxLength="11"
-                className="driver-input"
-              />
-              <button className="add-driver-btn-modal" onClick={handleAddDriver}>Add Driver</button>
-            </div>
+            <form action="" onSubmit={handleAddDriver}>
+              <div className='add-driver-input'>
+                <label htmlFor='driver-name'>Driver Name</label>
+                <input
+                  type="text"
+                  placeholder="Ex. John Doe"
+                  value={driverName}
+                  onChange={(e) => setDriverName(e.target.value)}
+                  className="driver-input"
+                  required
+                />
+                
+                <label htmlFor='phone number'>Phone Number</label>
+                <input
+                  type="text"
+                  placeholder="Ex. 09*********"
+                  value={phoneNumber}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    setPhoneNumber(value);
+                  }}
+                  pattern="\d{11}"
+                  title="Phone number should be exactly 11 digits"
+                  maxLength="11"
+                  className="driver-input"
+                  required
+                />
+                <button className="add-driver-btn-modal">Add Driver</button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -278,34 +280,36 @@ const DriverManagement = () => {
                 <IoIosCloseCircle style={{ fontSize: "32px", marginBottom: "-8px" }} />
               </button>
             </h2>
-            <div className='add-driver-input'>
-              <label htmlFor='driver-name'>Driver Name</label>
-              <input
-                type="text"
-                placeholder="Ex. John Doe"
-                value={updateDriverName}
-                required
-                onChange={(e) => setUpdateDriverName(e.target.value)}
-                className="driver-input"
-              />
-              
-              <label htmlFor='phone number'>Phone Number</label>
-              <input
-                type="text"
-                placeholder="Ex. 09363882526"
-                value={updatePhoneNumber}
-                required
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
-                  setUpdatePhoneNumber(value);
-                }}
-                pattern="\d{11}"
-                title="Phone number should be exactly 11 digits"
-                maxLength="11"
-                className="driver-input"
-              />
-              <button className="add-driver-btn-modal" onClick={handleUpdateDriver}>Update Driver</button>
-            </div>
+            <form action="" onSubmit={handleUpdateDriver}>
+              <div className='add-driver-input'>
+                <label htmlFor='driver-name'>Driver Name</label>
+                <input
+                  type="text"
+                  placeholder="Ex. John Doe"
+                  value={updateDriverName}
+                  required
+                  onChange={(e) => setUpdateDriverName(e.target.value)}
+                  className="driver-input"
+                />
+                
+                <label htmlFor='phone number'>Phone Number</label>
+                <input
+                  type="text"
+                  placeholder="Ex. 09363882526"
+                  value={updatePhoneNumber}
+                  required
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    setUpdatePhoneNumber(value);
+                  }}
+                  pattern="\d{11}"
+                  title="Phone number should be exactly 11 digits"
+                  maxLength="11"
+                  className="driver-input"
+                />
+                <button className="add-driver-btn-modal">Update Driver</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

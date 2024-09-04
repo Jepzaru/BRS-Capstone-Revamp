@@ -69,21 +69,12 @@ const AdminModule = () => {
 const handleAddAccount = async (event) => {
     event.preventDefault();
     
-    // Capture form data
     const formData = new FormData(event.target);
     const email = formData.get('email');
     const password = formData.get('password');
     const role = selectedRole || formData.get('role');
     const department = selectedDepartment || formData.get('department');
-    
-    // Logging form data for debugging
-    console.log("Form Data:", [...formData.entries()]);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Role:", role);
-    console.log("Department:", department);
 
-    // Validate email, password, role, and department
     if (!email || !password) {
         console.error("Email and Password are required.");
         return;
@@ -93,16 +84,14 @@ const handleAddAccount = async (event) => {
         return;
     }
 
-    // Prepare new user data
     const newUser = {
-        email: email,  // Correctly assigning email
-        password: password,  // Correctly assigning password
+        email: email,  
+        password: password,
         department: department,
         role: role,
     };
   
     try {
-        // Make API call to add new user
         const response = await fetch("http://localhost:8080/admin/users/add", {
             method: "POST",
             headers: {
@@ -113,7 +102,6 @@ const handleAddAccount = async (event) => {
         });
   
         if (response.ok) {
-            // Close the modal and refresh user list on success
             closeAddModal();
             fetchUsers();
         } else {
