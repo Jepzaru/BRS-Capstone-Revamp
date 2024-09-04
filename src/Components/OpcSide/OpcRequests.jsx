@@ -18,7 +18,7 @@ const OpcRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [modalAction, setModalAction] = useState('');
   const [drivers, setDrivers] = useState([]);
-  const [selectedDriver, setSelectedDriver] = useState('');
+  const [selectedDriver, setSelectedDriver] = useState(null);
   const [feedback, setFeedback] = useState('');
 
   const token = localStorage.getItem('token');
@@ -114,17 +114,17 @@ const OpcRequests = () => {
       alert('Please provide feedback.');
       return;
     }
-
+  
+    const reservationData = {
+      rejected: true,
+      status: 'Rejected',
+      feedback: feedback
+    };
+  
+    const formData = new FormData();
+    formData.append("reservation", JSON.stringify(reservationData));
+  
     try {
-      const reservationData = {
-        rejected: true,
-        status: 'Rejected',
-        feedback
-      };
-
-      const formData = new FormData();
-      formData.append("reservation", JSON.stringify(reservationData));
-
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
@@ -132,16 +132,18 @@ const OpcRequests = () => {
         },
         body: formData,
       });
-
+  
       if (response.ok) {
         console.log("Reservation rejected successfully.");
         fetchHeadIsApprovedRequests();
         handleCloseModal();
       } else {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text(); 
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
     } catch (error) {
       console.error("Failed to reject the request.", error);
+      alert(`An error occurred while rejecting the request: ${error.message}`);
     }
   };
 
@@ -150,16 +152,17 @@ const OpcRequests = () => {
       alert('Please select a driver.');
       return;
     }
-
+  
+    const reservationData = {
+      opcIsApproved: true,
+      driverId: selectedDriver.id,
+      driverName: selectedDriver.driverName 
+    };
+  
+    const formData = new FormData();
+    formData.append("reservation", JSON.stringify(reservationData));
+  
     try {
-      const reservationData = {
-        opcIsApproved: true,
-        assignedDriver: selectedDriver
-      };
-
-      const formData = new FormData();
-      formData.append("reservation", JSON.stringify(reservationData));
-
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
@@ -167,16 +170,18 @@ const OpcRequests = () => {
         },
         body: formData,
       });
-
+  
       if (response.ok) {
         console.log("Reservation approved successfully.");
         fetchHeadIsApprovedRequests();
         handleCloseModal();
       } else {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
     } catch (error) {
       console.error("Failed to approve the request.", error);
+      alert(`An error occurred while approving the request: ${error.message}`);
     }
   };
 
@@ -276,8 +281,8 @@ const OpcRequests = () => {
                 <label htmlFor="driver-select">Select Driver:</label>
                 <select
                   id="driver-select"
-                  value={selectedDriver}
-                  onChange={(e) => setSelectedDriver(e.target.value)}
+                  value={selectedDriver ? selectedDriver.id : ""}
+                  onChange={(e) => setSelectedDriver(drivers.find(driver => driver.id === parseInt(e.target.value)))}
                 >
                   <option value="">Select Driver</option>
                   {drivers.map(driver => (
@@ -303,7 +308,7 @@ const OpcRequests = () => {
                 onClick={modalAction === 'approve' ? handleApprove : handleReject}
                 disabled={modalAction === 'approve' ? !selectedDriver : !feedback.trim()}
               >
-                {modalAction === 'approve' ? 'Yes, Approve' : 'Yes, Reject'}
+                {modalAction === 'approve' ? 'Approve' : 'Reject'}
               </button>
               <button className="modal-close-button" onClick={handleCloseModal}>Cancel</button>
             </div>

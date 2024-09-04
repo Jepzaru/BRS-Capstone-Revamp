@@ -96,7 +96,7 @@ public class ReservationService {
     public ReservationEntity updateReservation(int reservationId, ReservationEntity updatedReservation, MultipartFile file) throws IOException {
         ReservationEntity existingReservation = resRepo.findById(reservationId)
             .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
-    
+        
         if (updatedReservation.getTypeOfTrip() != null) existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
         if (updatedReservation.getDestinationTo() != null) existingReservation.setDestinationTo(updatedReservation.getDestinationTo());
         if (updatedReservation.getDestinationFrom() != null) existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());

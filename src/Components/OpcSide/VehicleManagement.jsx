@@ -362,6 +362,7 @@ const VehicleManagement = () => {
                   placeholder="Vehicle Type"
                   value={updateVehicleType}
                   onChange={(e) => setUpdateVehicleType(e.target.value)}
+                  required
                 />
                 <label htmlFor='vehicle-plate-number'>Plate Number</label>
                 <input
@@ -369,6 +370,7 @@ const VehicleManagement = () => {
                   placeholder="Plate Number"
                   value={updatePlateNumber}
                   onChange={(e) => setUpdatePlateNumber(e.target.value)}
+                  required
                 />
                 <label htmlFor='vehicle-capacity'>Maximum Capacity</label>
                 <input
@@ -377,6 +379,7 @@ const VehicleManagement = () => {
                   value={updateCapacity}
                   min="1"
                   onChange={(e) => setUpdateCapacity(e.target.value)}
+                  required
                 />
               </div>
               <div className='add-vehicle-buttons'>

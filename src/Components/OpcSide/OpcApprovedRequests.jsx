@@ -98,6 +98,7 @@ const OpcApprovedRequests = () => {
                   <th>Schedule</th>
                   <th>Departure Time</th>
                   <th>Pick Up Time</th>
+                  <th>Assigned Driver</th>
                   <th>Reason</th>
                   <th>Action</th>
                 </tr>
@@ -119,6 +120,7 @@ const OpcApprovedRequests = () => {
                       <td>{request.schedule}</td>
                       <td>{request.departureTime}</td>
                       <td>{request.pickUpTime}</td>
+                      <td>{request.driverName}</td>
                       <td>{request.reason}</td>
                       <td>
                         <div className="action-buttons">
