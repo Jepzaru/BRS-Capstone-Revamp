@@ -39,7 +39,7 @@ public class SecurityConfig {
                 registry.requestMatchers("/admin/**").hasRole("ADMIN");
                 registry.requestMatchers("/user/**").hasRole("USER");
                 registry.requestMatchers("/opc/**").hasRole("OPC");
-                registry.requestMatchers("/opc/events/**").permitAll();  // Ensure this is correctly placed
+                registry.requestMatchers("/opc/events/**").permitAll();  
                 registry.anyRequest().authenticated();
             })
             .exceptionHandling(exceptions -> exceptions

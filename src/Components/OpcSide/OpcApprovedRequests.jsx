@@ -5,6 +5,7 @@ import SideNavbar from './OpcNavbar';
 import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
 import { FaClipboardCheck } from "react-icons/fa6";
+import * as XLSX from 'xlsx'; // Import XLSX
 import '../../CSS/OpcCss/OpcRequests.css';
 
 const OpcApprovedRequests = () => {
@@ -58,6 +59,21 @@ const OpcApprovedRequests = () => {
 
   const sortedRequests = sortRequests(requests);
 
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(sortedRequests, {
+      header: [
+        "userName", "typeOfTrip", "destinationFrom", "destinationTo", 
+        "capacity", "vehicleType", "schedule", "departureTime", 
+        "pickUpTime", "driverName", "reason"
+      ]
+    });
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Approved Requests");
+    
+    XLSX.writeFile(wb, "Approved_Requests.xlsx");
+  };
+
   return (
     <div className="opcrequest">
       <Header />
@@ -86,50 +102,47 @@ const OpcApprovedRequests = () => {
           </div>
           <div className='opc-request-container1'>
             <div className='table-container'>
-            <table className="opc-requests-table">
-              <thead>
-                <tr>
-                  <th>Requestor Name</th>
-                  <th>Type of Trip</th>
-                  <th>From</th>
-                  <th>To</th>
-                  <th>Capacity</th>
-                  <th>Vehicle Type</th>
-                  <th>Schedule</th>
-                  <th>Departure Time</th>
-                  <th>Pick Up Time</th>
-                  <th>Reason</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {requests.length === 0 ? (
+              <button onClick={exportToExcel} className="generate-report-button">Generate Report</button>
+              <table className="opc-requests-table">
+                <thead>
                   <tr>
-                    <td colSpan="11" className="no-requests">No Requests Available</td>
+                    <th>Requestor Name</th>
+                    <th>Type of Trip</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Capacity</th>
+                    <th>Vehicle Type</th>
+                    <th>Schedule</th>
+                    <th>Departure Time</th>
+                    <th>Pick Up Time</th>
+                    <th>Assigned Driver</th>
+                    <th>Reason</th>
                   </tr>
-                ) : (
-                  sortedRequests.map((request, index) => (
-                    <tr key={index}>
-                      <td>{request.userName}</td>
-                      <td>{request.typeOfTrip}</td>
-                      <td>{request.destinationFrom}</td>
-                      <td>{request.destinationTo}</td>
-                      <td>{request.capacity}</td>
-                      <td>{request.vehicleType}</td>
-                      <td>{request.schedule}</td>
-                      <td>{request.departureTime}</td>
-                      <td>{request.pickUpTime}</td>
-                      <td>{request.reason}</td>
-                      <td>
-                        <div className="action-buttons">
-                          <button className="approve-button">Export to Excel</button>
-                        </div>
-                      </td>
+                </thead>
+                <tbody>
+                  {requests.length === 0 ? (
+                    <tr>
+                      <td colSpan="11" className="no-requests">No Requests Available</td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    sortedRequests.map((request, index) => (
+                      <tr key={index}>
+                        <td>{request.userName}</td>
+                        <td>{request.typeOfTrip}</td>
+                        <td>{request.destinationFrom}</td>
+                        <td>{request.destinationTo}</td>
+                        <td>{request.capacity}</td>
+                        <td>{request.vehicleType}</td>
+                        <td>{request.schedule}</td>
+                        <td>{request.departureTime}</td>
+                        <td>{request.pickUpTime}</td>
+                        <td>{request.driverName}</td>
+                        <td>{request.reason}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />
