@@ -16,6 +16,7 @@ const HeadSide = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [modalAction, setModalAction] = useState(null);
+  const [feedback, setFeedback] = useState('');
 
   const token = localStorage.getItem('token');
 
@@ -34,7 +35,7 @@ const HeadSide = () => {
     } catch (error) {
       console.error("Failed to fetch requests.", error);
     }
-  }
+  };
 
   const handleApproveRequests = async () => {
     try {
@@ -66,10 +67,16 @@ const HeadSide = () => {
   };
 
   const handleRejectRequest = async () => {
+    if (!feedback.trim()) {
+      alert('Please provide feedback.');
+      return;
+    }
+
     try {
       const reservationData = {
         rejected: true,
-        status: 'Rejected'
+        status: 'Rejected',
+        feedback: feedback
       };
 
       const formData = new FormData();
@@ -91,26 +98,25 @@ const HeadSide = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
     } catch (error) {
-      console.error("Failed to approve the request.", error);
+      console.error("Failed to reject the request.", error);
+      alert(`An error occurred while rejecting the request: ${error.message}`);
     }
   };
 
-  const openModal = (request) => {
+  const openModal = (request, action) => {
     setSelectedRequest(request);
-    setModalAction('approve');
+    setModalAction(action);
     setIsModalOpen(true);
-  };
-
-  const openModalForRejection = (request) => {
-    setSelectedRequest(request);
-    setModalAction('reject');
-    setIsModalOpen(true);
+    if (action === 'reject') {
+      setFeedback('');
+    }
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedRequest(null);
     setModalAction(null);
+    setFeedback('');
   };
 
   useEffect(() => {
@@ -197,9 +203,9 @@ const HeadSide = () => {
                       <td>{splitText(requests.reason, 15)}</td>
                       <td>
                         <div className="head-action-buttons">
-                          <button className="approve-button" onClick={() => openModal(requests)}><FaCircleCheck  style={{marginBottom: "-2px", marginRight: "5px"}}/> Approve</button>
-                          <button className="reject-button" onClick={() => openModalForRejection(requests)}><IoCloseCircle  style={{marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize:"16px"}}/> Reject</button>
-                          <button className="view-file-button"><FaFileAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> View File</button>
+                          <button className="approve-button" onClick={() => openModal(requests, 'approve')}><FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve</button>
+                          <button className="reject-button" onClick={() => openModal(requests, 'reject')}><IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject</button>
+                          <button className="view-file-button"><FaFileAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> View File</button>
                         </div>
                       </td>
                     </tr>
@@ -218,13 +224,31 @@ const HeadSide = () => {
           <div className="modal-content">
             <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
             <p>Are you sure you want to {modalAction} this request?</p>
+            {modalAction === 'approve' ? (
+              <div className="modal-approve">
+                {/* No additional fields for approval */}
+              </div>
+            ) : (
+              <div className="modal-feedback">
+                <input
+                  id="feedback-input"
+                  className='feedback-input'
+                  type="text"
+                  placeholder="Enter feedback"
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                />
+              </div>
+            )}
             <div className="modal-buttons">
-              {modalAction === 'approve' ? (
-                <button onClick={handleApproveRequests} className="approve-button">Approve</button>
-              ) : (
-                <button onClick={handleRejectRequest} className="reject-button">Reject</button>
-              )}
-              <button onClick={closeModal} className="close-button">Cancel</button>
+              <button
+                className="modal-accept-button"
+                onClick={modalAction === 'approve' ? handleApproveRequests : handleRejectRequest}
+                disabled={modalAction === 'approve' ? !selectedRequest : !feedback.trim()}
+              >
+                {modalAction === 'approve' ? 'Approve' : 'Reject'}
+              </button>
+              <button className="modal-cancel-button" onClick={closeModal}>Cancel</button>
             </div>
           </div>
         </div>
