@@ -7,16 +7,17 @@ import { useNavigate } from 'react-router-dom';
 import { FaLocationCrosshairs, FaLocationDot } from "react-icons/fa6";
 import { FaFileSignature, FaUserGroup, FaBuildingUser } from "react-icons/fa6";
 import { FaCalendarDay, FaBus, FaFileAlt } from "react-icons/fa";
-import { MdAccessTime } from "react-icons/md";
 import { IoTime } from "react-icons/io5";
 import { RiSendPlaneFill, RiArrowGoBackLine } from "react-icons/ri";
 import { IoTrash } from "react-icons/io5";
-import { ImPriceTags } from "react-icons/im";
+import { TbBus } from "react-icons/tb";
+import { IoMdAddCircle } from "react-icons/io";
 import { CgDetailsMore } from "react-icons/cg";
 import { useLocation } from 'react-router-dom';
 import Calendar from './Calendar'; 
 import '../../CSS/UserCss/Reservation.css';
 import ReservationModal from './ReservationModal'; 
+import AddVehicleModal from './AddVehicleModal';
 
 const Reservation = () => {
   const [departments, setDepartments] = useState([]);
@@ -24,6 +25,11 @@ const Reservation = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [tripType, setTripType] = useState('oneWay');
+  const [isMultipleVehicles, setIsMultipleVehicles] = useState(false);
+  const [showVehicleContainer, setShowVehicleContainer] = useState(false);
+  const [isAddVehicleModalOpen, setAddVehicleModalOpen] = useState(false);
+  const [returnScheduleDate, setReturnScheduleDate] = useState(null);
+  const [isSelectingReturn, setIsSelectingReturn] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalType, setModalType] = useState('error');
@@ -50,6 +56,22 @@ const Reservation = () => {
     fileName: ''
   });
 
+  const handleAddVehicleClick = () => {
+    setAddVehicleModalOpen(true);
+  };
+  
+  const handleCloseModal = () => {
+    setAddVehicleModalOpen(false);
+  };
+  
+  const handleAddVehicle = () => {
+    handleCloseModal(); 
+  };
+
+  const handleVehicleModeToggle = () => {
+    setIsMultipleVehicles(prevState => !prevState); 
+    setShowVehicleContainer(prevState => !prevState); 
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -103,17 +125,24 @@ const Reservation = () => {
   };
 
   const handleDateSelect = (date) => {
-    setSelectedDate(date);
+    if (isSelectingReturn) {
+      setReturnScheduleDate(date);
+    } else {
+      setSelectedDate(date);
+    }
     setShowCalendar(false);
   };
+  
 
   const formatDate = (date) => {
     return date ? new Date(date).toLocaleDateString('en-US') : '';
 };
 
-  const handleTripTypeChange = (event) => {
-    setTripType(event.target.value);
-  };
+const handleTripTypeChange = (event) => {
+  const selectedTripType = event.target.value;
+  setTripType(selectedTripType);
+  setShowReturnSchedule(selectedTripType === 'roundTrip'); 
+};
 
   const formatTime = (time) => {
     if (!time) return '';
@@ -245,7 +274,8 @@ const Reservation = () => {
         <SideNavbar />
         <div className="reservation-content">
           <h1><FaFileSignature style={{ marginRight: "15px", marginBottom: "-3px", color: "#782324" }} />Reservation Form</h1>
-          <p>Please fill out all necessary fields <button className='back-btn' onClick={handleBackClick}><RiArrowGoBackLine style={{marginRight: "10px", marginBottom: "-3px"}}/>Back to previous page</button></p>
+          <p>Please fill out all necessary fields <button className='back-btn' onClick={handleBackClick}>
+            <RiArrowGoBackLine style={{marginRight: "10px", marginBottom: "-3px", color: "gold"}}/>Back to previous page</button></p>
           <div className='reservation-container'>
             {vehicle ? (
               <form className="reservation-form">
@@ -272,6 +302,19 @@ const Reservation = () => {
                     <span>Round Trip</span>
                   </label>
                 </div>
+                <div className='mult-vehicle'>
+                <button type='button' className='mult-vehicle-btn' onClick={handleVehicleModeToggle}>
+                    {isMultipleVehicles ? (
+                      <>
+                        <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Single vehicle
+                      </>
+                    ) : (
+                      <>
+                        <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Multiple vehicles
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
               <br/>
               <div className="form-group-inline">
@@ -288,28 +331,39 @@ const Reservation = () => {
                   <input type="number" id="capacity" name="capacity" value={formData.capacity} required onChange={handleInputChange}/>
                 </div>
                 <div className="form-group">
-                  <label htmlFor="Plate number"><ImPriceTags style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Plate number:</label>
-                  <input type="text" id="plateNumber" name="plateNumber" value={vehicle.plateNumber} onChange={handleInputChange} disabled={true}/>
+                <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Type of Vehicle:</label>
+                <input type="text" id="vehicleType" name="vehicleType" value={`${vehicle.vehicleType} - ${vehicle.plateNumber}`} onChange={handleInputChange} disabled={true}/>
                 </div>
               </div>
               <div className="form-group-inline">
                 <div className="form-group">
-                <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Type of Vehicle:</label>
-                <input type="text" id="vehicleType" name="vehicleType" value={vehicle.vehicleType} onChange={handleInputChange} disabled={true}/>
-                </div>
-                <div className="form-group">
                   <label htmlFor="schedule"><FaCalendarDay style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Schedule:</label>
                   <input
-                    type="text"
-                    id="schedule"
-                    name="schedule"
-                    value={selectedDate ? selectedDate.toLocaleDateString('en-US') : ''}
-                    onClick={() => setShowCalendar(true)}
-                    readOnly
-                    onChange={handleInputChange}
-                    required
-                  />
+                      type="text"
+                      id="schedule"
+                      name="schedule"
+                      value={selectedDate ? selectedDate.toLocaleDateString('en-US') : ''}
+                      onClick={() => { setShowCalendar(true); setIsSelectingReturn(false); }}
+                      readOnly
+                      required
+                    />
                 </div>
+                {tripType === 'roundTrip' && (
+                    <div className="form-group">
+                      <label htmlFor="returnSchedule">
+                        <FaCalendarDay style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Return Schedule:
+                      </label>
+                      <input
+                        type="text"
+                        id="returnSchedule"
+                        name="returnSchedule"
+                        value={returnScheduleDate ? returnScheduleDate.toLocaleDateString('en-US') : ''}
+                        onClick={() => { setShowCalendar(true); setIsSelectingReturn(true); }}
+                        readOnly
+                        required
+                      />
+                    </div>
+                  )}
                 <div className="form-group">
                   <label htmlFor="departureTime"><IoTime style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Departure Time:</label>
                   <input type="time" id="departureTime" name="departureTime" value={formData.departureTime} required onChange={handleInputChange}/>
@@ -342,6 +396,7 @@ const Reservation = () => {
                   <input type="file" id="approvalProof" name="approvalProof" onChange={handleInputChange} />
                 </div>
               </div>
+              <div className="form-group-inline">
               <div className="form-group">
                   <label htmlFor="reservationReason">
                     <CgDetailsMore style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}} /> Reason of Reservation:
@@ -352,10 +407,22 @@ const Reservation = () => {
                     name="reservationReason" 
                     className="reservation-reason-textarea" 
                     placeholder="State the reason of your reservation"
-                    value={formData.reservationReason} 
+                    value={formData.reservationReason}
                     required 
                     onChange={handleInputChange}
                   />
+                </div>
+                {isMultipleVehicles && (
+                <div className="form-group">
+                  <label htmlFor="addedVehicle">
+                    <FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle Added: 
+                    <button className='add-another-vehicle'  onClick={handleAddVehicleClick}><IoMdAddCircle style={{color: "gold", marginRight: "5px", marginBottom: "-2px"}}/>
+                    Add another vehicle</button></label> 
+                 <div className='vehicle-added-container'>
+
+                 </div>
+                </div>
+                 )}
                 </div>
             </form>
             ) : (
@@ -363,6 +430,9 @@ const Reservation = () => {
             )}
             <div className="summary-container">
               <h2>Reservation Summary</h2>
+              <div className="summary-item">
+                <strong>Reservation Type:</strong> 
+              </div>
               <div className="summary-item">
                 <strong>Trip Type:</strong> {tripType === 'oneWay' ? 'One Way' : 'Round Trip'}
               </div>
@@ -382,7 +452,9 @@ const Reservation = () => {
                 <strong>Vehicle Type:</strong> {vehicle.vehicleType}
               </div>
               <div className="summary-item">
-                <strong>Schedule:</strong> {selectedDate ? selectedDate.toLocaleDateString('en-US') : ''}
+              <strong>Schedule: </strong>
+              {selectedDate ? selectedDate.toLocaleDateString('en-US') : ''} 
+              {tripType === 'roundTrip' && returnScheduleDate ? ` - ${returnScheduleDate.toLocaleDateString('en-US')}` : ''}
               </div>
               <div className="summary-item">
                 <strong>Departure Time:</strong> {formatTime(formData.departureTime)}
@@ -403,7 +475,8 @@ const Reservation = () => {
               <button type="button" className="reset-button" onClick={handleClear}>
                     <IoTrash style={{ marginBottom: "-2px", marginRight: "5px" }} /> Clear Entities
                   </button>
-                <button type="button" className="submit-button" onClick={handleSubmit}><RiSendPlaneFill style={{marginBottom: "-3px", marginRight: "10px"}}/>Submit</button>
+                <button type="button" className="submit-button" onClick={handleSubmit}>
+                  <RiSendPlaneFill style={{marginBottom: "-3px", marginRight: "10px", color: "gold"}}/>Submit</button>
               </div>
             </div>
           </div>
@@ -411,13 +484,18 @@ const Reservation = () => {
         </div>
       </div>
 
-      {showCalendar && (
-        <div className="calendar-modal">
-          <div className="calendar-modal-content">
-            <Calendar onDateSelect={handleDateSelect} />
-          </div>
+          {showCalendar && (
+      <div className="calendar-modal">
+        <div className="calendar-modal-content">
+          <Calendar 
+            onDateSelect={handleDateSelect} 
+            minDate={tripType === 'roundTrip' && isSelectingReturn ? selectedDate : null}
+            returnScheduleDate={returnScheduleDate}
+          />
         </div>
-      )}
+      </div>
+    )}
+
       <ReservationModal 
         isOpen={isModalOpen} 
         onClose={closeModal} 
@@ -425,6 +503,12 @@ const Reservation = () => {
         message={modalMessage} 
         type={modalType} 
     />
+
+    <AddVehicleModal 
+          isOpen={isAddVehicleModalOpen}
+          onClose={handleCloseModal}
+          onAdd={handleAddVehicle}
+        />
     </div>
   );
 };

@@ -133,18 +133,48 @@ body {
     display: inline-flex;
     align-items: center;
     margin-right: 20px;
-    cursor: pointer; /* Change cursor to pointer for better UX */
+    cursor: pointer; 
   }
   
   .trip-type input[type="radio"] {
-    display: none; /* Hide the default radio button */
+    display: none; 
   }
   
   .trip-type input[type="radio"] + span {
     position: relative;
-    padding-left: 30px; /* Space for custom radio button */
-    font-size: 16px; /* Text size */
+    padding-left: 30px; 
+    font-size: 16px; 
   }
+
+  .mult-vehicle-btn{
+    background-color: #782324;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: 700;
+    transition: background-color 0.3s color 0.3s;
+  }
+  .mult-vehicle-btn:hover{
+    background-color: #431314;
+  }
+
+  .add-another-vehicle{
+    background-color: #782324;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px;
+    font-weight: 700;
+    transition: background-color 0.3s color 0.3s;
+  }
+  .add-another-vehicle:hover{
+    background-color: #431314;
+  }
+  
   
   .trip-type input[type="radio"] + span:before {
     content: '';
@@ -157,7 +187,7 @@ body {
     border: 2px solid #782324;
     border-radius: 50%;
     background-color: #fff;
-    transition: border-color 0.3s; /* Smooth transition for border color */
+    transition: border-color 0.3s;
   }
   
   .trip-type input[type="radio"]:checked + span:before {
@@ -172,18 +202,23 @@ body {
     transform: translateY(-50%);
     width: 8px;
     height: 8px;
-    background-color: gold; /* Inner dot color */
-    border-radius: 50%; /* Inner dot shape */
+    background-color: gold; 
+    border-radius: 50%; 
   }
   
   .trip-type label:hover span:before {
-    border-color: #782324; /* Border color on hover */
+    border-color: #782324; 
   }
   
   .trip-type label:hover span {
     color: #782324; /* Text color on hover */
   }
   
+  .vehicle-added-container{
+    background-color: #fff;
+    height: 170px;
+    border-radius: 5px;
+  }
 
 @media (max-width: 767px) {
     .reservation-content {

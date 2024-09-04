@@ -1,19 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/calendar.css';
 import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
 
-const Calendar = ({ onDateSelect }) => {
+const Calendar = ({ onDateSelect, minDate, returnDate }) => {
   const currentDate = new Date();
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
-  const [currentDay] = useState(currentDate.getDate());
-  const [selectedDay, setSelectedDay] = useState(currentDay);
+  const [selectedDay, setSelectedDay] = useState(null);
+
+  useEffect(() => {
+    if (minDate) {
+      // Reset the selected day if it's before the minDate
+      const minDay = minDate.getDate();
+      if (selectedDay && new Date(currentYear, currentMonth, selectedDay) < minDate) {
+        setSelectedDay(null);
+      }
+    }
+  }, [minDate, currentMonth, currentYear]);
 
   const prevMonth = () => {
     if (currentMonth === 0) {
-      return;
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
     }
-    setCurrentMonth(currentMonth - 1);
   };
 
   const nextMonth = () => {
@@ -40,22 +51,32 @@ const Calendar = ({ onDateSelect }) => {
 
     for (let i = 1; i <= totalDays; i++) {
       const date = new Date(currentYear, currentMonth, i);
-      const isPast = date < currentDate && date.getMonth() === currentDate.getMonth() && date.getFullYear() === currentDate.getFullYear();
-      days.push({ day: i, selected: selectedDay === i, disabled: isPast, isPast });
+      const isPast = date < currentDate;
+      const isBeforeMinDate = minDate && date < minDate;
+      const isAfterReturnDate = returnDate && date > returnDate;
+      days.push({ 
+        day: i, 
+        selected: selectedDay === i, 
+        disabled: isPast || isBeforeMinDate || isAfterReturnDate, 
+        isPast 
+      });
     }
 
     return days;
   };
 
   const handleDayClick = (day) => {
+    const date = new Date(currentYear, currentMonth, day);
+    if (!date) return;
+
     setSelectedDay(day);
-    onDateSelect(new Date(currentYear, currentMonth, day));
+    onDateSelect(date);
   };
 
   return (
     <div className="calendar">
       <div className="calendar-nav">
-        <button className='previous' onClick={prevMonth} disabled={currentMonth === currentDate.getMonth()}><BiSolidLeftArrow /></button>
+        <button className='previous' onClick={prevMonth} disabled={currentMonth === new Date().getMonth()}><BiSolidLeftArrow /></button>
         <div className="calendar-month">{new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
         <button className='next' onClick={nextMonth}><BiSolidRightArrow /></button>
       </div>

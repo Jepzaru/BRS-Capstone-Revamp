@@ -1,0 +1,70 @@
+
+.addvehicle-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .addvehicle-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 600px;
+    text-align: center;
+  }
+  
+  .addvehicle-content h2 {
+    margin-top: 0;
+  }
+ 
+  .addvehilcle-close{
+    color: #782324;
+    font-size: 24px;
+    border: none;
+    background: none;
+    margin-left: 30px;
+    cursor: pointer;
+  }
+
+.addvehicle-content table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .addvehicle-content th, .addvehicle-content td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .addvehicle-content th {
+    background-color: #f4f4f4;
+  }
+  
+  .addvehicle-select-btn {
+    background-color: #782324;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .addvehicle-select-btn:hover {
+    background-color: #5a1a1a;
+  }
+  .status-available {
+    color: green;
+    font-weight: 700;
+  }
+  
+  .status-reserved {
+    color: red;
+    font-weight: 700;
+  }
+  
