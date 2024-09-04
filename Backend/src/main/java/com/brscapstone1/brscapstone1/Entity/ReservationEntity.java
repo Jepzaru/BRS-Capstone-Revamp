@@ -29,7 +29,7 @@ public class ReservationEntity {
     private long fileSize;
     private String status;
     private Boolean opcIsApproved; 
-    private Boolean isRejected;
+    private Boolean isRejected = false;
     private Boolean headIsApproved;
     private String userName;
     private String feedback;

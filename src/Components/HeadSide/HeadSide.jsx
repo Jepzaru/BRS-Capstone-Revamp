@@ -133,7 +133,6 @@ const HeadSide = () => {
   const handleSortChange = (event) => {
   };
 
-  // Helper function to split long text
   const splitText = (text, maxLength) => {
     const regex = new RegExp(`.{1,${maxLength}}`, 'g');
     return text.match(regex).join('\n');
