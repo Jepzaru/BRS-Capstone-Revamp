@@ -19,7 +19,7 @@ public class ReservationEntity {
     private String destinationFrom;
     private int capacity;
     private String department;
-    private LocalDate schedule;  
+    private LocalDate schedule;
     private String vehicleType;
     private String pickUpTime;
     private String departureTime;

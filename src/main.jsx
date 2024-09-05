@@ -28,7 +28,6 @@ const Main = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    console.log('Token:', token);
     if (token && isTokenExpired(token)) {
       console.log('Token expired');
       setIsLoggedIn(false);
@@ -38,7 +37,7 @@ const Main = () => {
       localStorage.removeItem('department');
       localStorage.removeItem('userId');
     }
-  }, [token]);
+  }, []);
 
   if (!isLoggedIn) {
     return null; 

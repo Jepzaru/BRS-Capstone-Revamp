@@ -1,12 +1,18 @@
 package com.brscapstone1.brscapstone1.Controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.brscapstone1.brscapstone1.DTO.ReservedDateDTO;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
 import com.brscapstone1.brscapstone1.Service.ReservationService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -131,5 +137,12 @@ public class ReservationController {
     @GetMapping("/reservations/head-approved")
     public List<ReservationEntity> getApprovedReservations() {
         return resServ.getHeadApprovedReservations();
+    }
+
+    //[GET] all reserved dates
+    @GetMapping("/reservations/reserved-dates")
+    public ResponseEntity<List<ReservedDateDTO>> getReservedDates() {
+        List<ReservedDateDTO> reservedDateDTOs = resServ.getReservedDates();
+        return ResponseEntity.ok(reservedDateDTOs);
     }
 }

@@ -18,6 +18,7 @@ import Calendar from './Calendar';
 import '../../CSS/UserCss/Reservation.css';
 import ReservationModal from './ReservationModal'; 
 import AddVehicleModal from './AddVehicleModal';
+import TimeDropdown from './TimeDropdown';
 
 const Reservation = () => {
   const [departments, setDepartments] = useState([]);
@@ -41,6 +42,99 @@ const Reservation = () => {
   const localPart = email.split('@')[0];
   const [firstName, lastName] = localPart.split('.');
   const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+  const [reservedDates, setReservedDates] = useState([]);
+
+
+  const fetchReservedDates = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/reservations/reserved-dates", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setReservedDates(data);
+    } catch (error) {
+      console.error("Failed to fetch reserved dates.", error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchReservedDates();
+  }, [token]);
+
+
+  const convertTo12HourFormat = (time24) => {
+    const [hours, minutes] = time24.split(':');
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = (hours % 12) || 12;
+    return `${formattedHours}:${minutes} ${period}`;
+  };
+
+  const generateTimeOptions = (reservedTimes) => {
+    const timeOptions = [];
+    for (let hours = 0; hours < 24; hours++) {
+        for (let minutes = 0; minutes < 60; minutes += 30) {
+            const time = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            timeOptions.push(time); // Always add the time option
+        }
+    }
+    return timeOptions;
+};
+
+  const timeOptions = generateTimeOptions(reservedDates);
+
+  const isTimeReserved = (date, time) => {
+    if (!date || !time) return false; 
+    const formattedTime = convertTo12HourFormat(time);
+    return reservedDates.some(reservation =>
+        reservation.schedule === date &&
+        reservation.departureTime === formattedTime
+    );
+};
+
+  const isTimeReservedForCurrentDate = () => {
+    const formattedDate = selectedDate ? selectedDate.toISOString().split('T')[0] : null;
+    console.log("Formatted Date:", formattedDate);
+    console.log("Departure Time:", formData.departureTime);
+    return formattedDate && formData.departureTime && isTimeReserved(
+      formattedDate,
+      formData.departureTime
+    );
+  };
+  
+
+  const departureTimeStyle = () => {
+    if (selectedDate && formData.departureTime) {
+      const formattedDate = selectedDate.toISOString().split('T')[0];
+      const isReserved = isTimeReserved(formattedDate, formData.departureTime);
+      return {
+        borderColor: isReserved ? 'red' : '', 
+        borderWidth: isReserved ? '2px' : '', 
+        color: isReserved ? 'red' : ''
+      };
+    }
+    return {};
+  };
+
+  const formatTime = (time) => {
+    if (!time) return '';
+    
+    const [hours, minutes] = time.split(':');
+    const formattedHours = (hours % 12) || 12;
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+    
+    return `${formattedHours}:${minutes} ${amPm}`;
+  };
+
+  // const convertTo12HourFormat = (time24) => {
+  //   const [hours, minutes] = time24.split(':');
+  //   const period = hours >= 12 ? 'PM' : 'AM';
+  //   const formattedHours = (hours % 12) || 12;
+  //   return `${formattedHours}:${minutes} ${period}`;
+  // };
+
 
   const [formData, setFormData] = useState({
     to: '',
@@ -78,7 +172,7 @@ const Reservation = () => {
     setFormData({
       ...formData,
       [name]: type === 'file' ? files[0] : value,
-      fileName: type === 'file' ? files[0].name : formData.fileName, 
+      fileName: type === 'file' ? files[0].name : formData.fileName,
     });
   };
 
@@ -132,84 +226,69 @@ const Reservation = () => {
     }
     setShowCalendar(false);
   };
-  
 
-  const formatDate = (date) => {
-    return date ? new Date(date).toLocaleDateString('en-US') : '';
-};
-
-const handleTripTypeChange = (event) => {
-  const selectedTripType = event.target.value;
-  setTripType(selectedTripType);
-  setShowReturnSchedule(selectedTripType === 'roundTrip'); 
-};
-
-  const formatTime = (time) => {
-    if (!time) return '';
-    
-    const [hours, minutes] = time.split(':');
-    const formattedHours = (hours % 12) || 12;
-    const amPm = hours >= 12 ? 'PM' : 'AM';
-    
-    return `${formattedHours}:${minutes} ${amPm}`;
+  const handleTripTypeChange = (event) => {
+    const selectedTripType = event.target.value;
+    setTripType(selectedTripType);
+    setShowReturnSchedule(selectedTripType === 'roundTrip'); 
   };
 
   const handleSubmit = () => {
     const {
-        from,
-        to,
-        capacity,
-        vehicleType,
-        plateNumber,
-        departureTime,
-        department,
-        reservationReason
+      from,
+      to,
+      capacity,
+      vehicleType,
+      plateNumber,
+      departureTime,
+      department,
+      reservationReason
     } = formData;
 
     const isFormValid = [
-        from,
-        to,
-        capacity,
-        vehicleType,
-        plateNumber,
-        departureTime,
-        department,
-        reservationReason
+      from,
+      to,
+      capacity,
+      vehicleType,
+      plateNumber,
+      departureTime,
+      department,
+      reservationReason
     ].every(value => value.trim() !== '') && selectedDate;
 
     const isTripTypeValid = tripType === 'oneWay' || (tripType === 'roundTrip' && formData.pickUpTime.trim() !== '');
     const isValid = isFormValid && isTripTypeValid;
 
     if (isValid) {
-        setModalMessage('Are you sure you want to submit this reservation?');
-        setModalType('confirmation');
-        setIsModalOpen(true);
+      setModalMessage('Are you sure you want to submit this reservation?');
+      setModalType('confirmation');
+      setIsModalOpen(true);
     } else {
-        setModalMessage('Please fill out all required fields.');
-        setModalType('error');
-        setIsModalOpen(true);
+      setModalMessage('Please fill out all required fields.');
+      setModalType('error');
+      setIsModalOpen(true);
     }
   };
 
   const handleConfirm = async () => {
     const reservation = {
-        typeOfTrip: tripType,
-        destinationTo: formData.to,
-        destinationFrom: formData.from,
-        capacity: parseInt(formData.capacity, 10),
-        department: formData.department,
-        schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
-        vehicleType: formData.vehicleType,
-        pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : "N/A",
-        departureTime: formatTime(formData.departureTime),
-        reason: formData.reservationReason,
-        status: "Pending",
-        opcIsApproved: false,
-        isRejected: false,
-        headIsApproved: false,
-        feedback: "",
-        driverId: 0,
-        driverName: "",
+      typeOfTrip: tripType,
+      destinationTo: formData.to,
+      destinationFrom: formData.from,
+      capacity: parseInt(formData.capacity, 10),
+      department: formData.department,
+      schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
+      vehicleType: formData.vehicleType,
+      pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : "N/A",
+      departureTime: formatTime(formData.departureTime),
+      reason: formData.reservationReason,
+      status: "Pending",
+      opcIsApproved: false,
+      isRejected: false,
+      headIsApproved: false,
+      feedback: "",
+      driverId: 0,
+      driverName: "",
     };
 
     const reservationFormData = new FormData();
@@ -217,50 +296,34 @@ const handleTripTypeChange = (event) => {
     reservationFormData.append('userName', `${formatName(firstName)} ${formatName(lastName)}`);
 
     if (formData.approvalProof) {
-        reservationFormData.append('file', formData.approvalProof);
+      reservationFormData.append('file', formData.approvalProof);
     }
 
     try {
       const response = await fetch('http://localhost:8080/user/reservations/add', {
-          method: 'POST',
-          headers: {
-              "Authorization": `Bearer ${token}`
-          },
-          body: reservationFormData, 
+        method: 'POST',
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        body: reservationFormData,
       });
-  
+
       if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       setModalMessage('Reservation submitted successfully!');
       setModalType('success');
       
-      // Redirect to /user-side upon success
       navigate('/user-side');
-  } catch (error) {
+    } catch (error) {
       console.error('Error submitting reservation:', error);
       setModalMessage('Failed to submit reservation. Please try again.');
       setModalType('error');
-  } finally {
-      // Reset form and clear selected date
-      setFormData({
-          to: '',
-          from: '',
-          capacity: '',
-          department: '',
-          vehicleType: vehicle ? vehicle.vehicleType : '', 
-          plateNumber: vehicle ? vehicle.plateNumber : '',
-          departureTime: '',
-          pickUpTime: '', 
-          reservationReason: '',
-          approvalProof: null,
-          fileName: '',
-      });
-      setSelectedDate(null);
-      document.getElementById('fileInput').value = '';
-  }
+    } finally {
+      setIsModalOpen(true);
+    }
   };
 
   const closeModal = () => {
@@ -365,8 +428,17 @@ const handleTripTypeChange = (event) => {
                     </div>
                   )}
                 <div className="form-group">
-                  <label htmlFor="departureTime"><IoTime style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Departure Time:</label>
-                  <input type="time" id="departureTime" name="departureTime" value={formData.departureTime} required onChange={handleInputChange}/>
+                  <label htmlFor="departureTime">
+                    <IoTime style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} />
+                    Departure Time:
+                  </label>
+                  <TimeDropdown
+                    times={timeOptions}
+                    selectedTime={formData.departureTime}
+                    onChange={handleInputChange}
+                    isReserved={(time) => selectedDate ? isTimeReserved(selectedDate.toISOString().split('T')[0], time) : false} // Add null check for selectedDate
+                  />
+
                 </div>
                 {tripType === 'roundTrip' && (
                     <div className="form-group">

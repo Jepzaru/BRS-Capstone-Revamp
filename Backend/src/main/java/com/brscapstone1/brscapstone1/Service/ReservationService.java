@@ -1,10 +1,15 @@
 package com.brscapstone1.brscapstone1.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.brscapstone1.brscapstone1.DTO.ReservedDateDTO;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
 import com.brscapstone1.brscapstone1.Repository.ReservationRepository;
 
@@ -133,5 +138,19 @@ public class ReservationService {
     //[GET] all reservations that is approved by HEAD
     public List<ReservationEntity> getHeadApprovedReservations() {
         return resRepo.findByHeadIsApproved(true);
+    }
+
+    //[GET] all reserved dates
+    public List<ReservedDateDTO> getReservedDates() {
+        List<ReservationEntity> reservations = resRepo.findAll();
+        return reservations.stream()
+            .filter(res -> "Approved".equals(res.getStatus()))
+            .map(res -> new ReservedDateDTO(
+                res.getSchedule(),
+                res.getPickUpTime(),
+                res.getDepartureTime(),
+                res.getStatus()
+            ))
+            .collect(Collectors.toList());
     }
 }

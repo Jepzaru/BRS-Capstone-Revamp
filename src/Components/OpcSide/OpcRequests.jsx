@@ -156,7 +156,8 @@ const OpcRequests = () => {
     const reservationData = {
       opcIsApproved: true,
       driverId: selectedDriver.id,
-      driverName: selectedDriver.driverName 
+      driverName: selectedDriver.driverName,
+      status: 'Approved'
     };
   
     const formData = new FormData();
