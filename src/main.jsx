@@ -22,6 +22,7 @@ import OpcSettings from './Components/OpcSide/OpcSettings';
 import Error404 from './Components/Error404';
 import ProtectedRoute from './Components/ProtectedRoute';
 import { isTokenExpired  } from './Components/TokenUtils';
+import OpcBigCalendar from './Components/OpcSide/OpcBigCalendar';
 
 const Main = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true); 
@@ -55,6 +56,7 @@ const Main = () => {
         <Route path="/user-side" element={<ProtectedRoute path="/user-side" element={<UserSide />} />} />
         <Route path="/user-side/reservation" element={<ProtectedRoute path="/user-side/reservation" element={<Reservation />} />} />
         <Route path="/manage-requests" element={<ProtectedRoute path="/manage-requests" element={<ManageRequests />} />} />
+        <Route path="/opc-bigcalendar" element={<OpcBigCalendar />} />
         <Route path="/settings" element={<ProtectedRoute path="/settings" element={<Settings />} />} />
         <Route path="/head-side" element={<ProtectedRoute path="/head-side" element={<HeadSide />} />} />
         <Route path="/head-approved-requests" element={<ProtectedRoute path="/head-approved-requests" element={<HeadApprovedRequests />} />} />
