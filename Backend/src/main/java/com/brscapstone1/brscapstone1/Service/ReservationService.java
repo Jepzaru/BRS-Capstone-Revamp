@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +20,12 @@ public class ReservationService {
     
     @Autowired
     private ReservationRepository resRepo;
+
+    public String generateTransactionId() {
+    return UUID.randomUUID().toString().substring(0, 8).toUpperCase() + "-" +
+           UUID.randomUUID().toString().substring(0, 8).toUpperCase() + "-" +
+           UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+}
 
     //[POST] approved reservations by HEAD
     public void headApproveReservation(int reservationId) {
@@ -69,7 +77,11 @@ public class ReservationService {
         if(reservation.getDriverName() == null || reservation.getDriverName().isEmpty()){
             reservation.setDriverName("No assigned driver");
         }
+        if (reservation.getPlateNumber() != null && !reservation.getPlateNumber().isEmpty()) {
+            reservation.setVehicleType(reservation.getVehicleType() + "-" + reservation.getPlateNumber());
+        }
         reservation.setUserName(userName);
+        reservation.setTransactionId(generateTransactionId()); 
         return resRepo.save(reservation);
     }
 

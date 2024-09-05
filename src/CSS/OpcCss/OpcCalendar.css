@@ -74,22 +74,7 @@
     height: 210px;
     border-radius: 10px;
   }
-  .event-btn{
-    background-color: #782324;
-    border: none;
-    color: white;
-    padding: 8px 15px;
-    margin-left: 70px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  .event-btn:hover{
-    background-color: gold;
-    color: #782324;
-  }
+
   
   .previous{
     font-weight: 900;

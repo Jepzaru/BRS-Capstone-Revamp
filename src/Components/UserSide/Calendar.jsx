@@ -84,6 +84,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
     }
   };
 
+
   const nextMonth = () => {
     if (currentMonth === 11) {
       setCurrentMonth(0);
@@ -102,10 +103,11 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
     date.setHours(0, 0, 0, 0); 
   
     if (!date) return;
-  
+
     setSelectedDay(day);
     onDateSelect(date);
   };
+  
 
   return (
     <div className="calendar">

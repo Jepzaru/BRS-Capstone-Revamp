@@ -14,13 +14,16 @@ public class ReservationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private String transactionId;
     private String typeOfTrip;
     private String destinationTo;
     private String destinationFrom;
     private int capacity;
     private String department;
     private LocalDate schedule;
+    private LocalDate returnSchedule;  
     private String vehicleType;
+    private String plateNumber;
     private String pickUpTime;
     private String departureTime;
     private String reason;
@@ -43,6 +46,15 @@ public class ReservationEntity {
     public void setId(int id) {
         this.id = id;
     }
+
+     public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
 
     public String getTypeOfTrip() {
         return typeOfTrip;
@@ -92,12 +104,28 @@ public class ReservationEntity {
         this.schedule = schedule;
     }
 
+    public LocalDate getReturnSchedule() {
+        return returnSchedule;
+    }
+
+    public void setReturnSchedule(LocalDate returnSchedule) {
+        this.returnSchedule = returnSchedule;
+    }
+
     public String getVehicleType() {
         return vehicleType;
     }
 
     public void setVehicleType(String vehicleType) {
         this.vehicleType = vehicleType;
+    }
+
+    public String getPlateNumber() {
+        return plateNumber;
+    }
+    
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
     }
 
     public String getPickUpTime() {
@@ -217,7 +245,7 @@ public class ReservationEntity {
     }
 
     public ReservationEntity(String typeOfTrip, String destinationTo, String destinationFrom, int capacity,
-                            String department, LocalDate schedule, String vehicleType, String pickUpTime,
+                            String department, LocalDate schedule, String vehicleType, String plateNumber, String pickUpTime,
                             String departureTime, String reason, String fileName, String fileType, long fileSize,
                             String status, Boolean opcIsApproved, Boolean isRejected, Boolean headIsApproved,
                             String userName, String feedback, int driverId, String driverName) {
@@ -228,6 +256,7 @@ public class ReservationEntity {
         this.department = department;
         this.schedule = schedule;
         this.vehicleType = vehicleType;
+        this.plateNumber = plateNumber;
         this.pickUpTime = pickUpTime;
         this.departureTime = departureTime;
         this.reason = reason;

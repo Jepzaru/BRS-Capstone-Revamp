@@ -42,7 +42,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd }) => {
     switch (status) {
       case 'Available':
         return 'status-available';
-      case 'reserved':
+      case 'Reserved':
         return 'status-reserved';
       default:
         return '';

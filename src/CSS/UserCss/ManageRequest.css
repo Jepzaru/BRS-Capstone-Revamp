@@ -115,6 +115,9 @@ body {
   padding: 8px;
   text-align: center;
 }
+.requests-table td{
+  font-size: 12px;
+}
 
 .requests-table th {
   background-color: #ddd;

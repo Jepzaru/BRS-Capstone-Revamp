@@ -272,23 +272,24 @@ const Reservation = () => {
 
   const handleConfirm = async () => {
     const reservation = {
-      typeOfTrip: tripType,
-      destinationTo: formData.to,
-      destinationFrom: formData.from,
-      capacity: parseInt(formData.capacity, 10),
-      department: formData.department,
-      schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
-      vehicleType: formData.vehicleType,
-      pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : "N/A",
-      departureTime: formatTime(formData.departureTime),
-      reason: formData.reservationReason,
-      status: "Pending",
-      opcIsApproved: false,
-      isRejected: false,
-      headIsApproved: false,
-      feedback: "",
-      driverId: 0,
-      driverName: "",
+        typeOfTrip: tripType,
+        destinationTo: formData.to,
+        destinationFrom: formData.from,
+        capacity: parseInt(formData.capacity, 10),
+        department: formData.department,
+        schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
+        returnSchedule: tripType === 'roundTrip' ? returnScheduleDate.toISOString().split('T')[0] : null,
+        vehicleType: formData.vehicleType,
+        pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : "N/A",
+        departureTime: formatTime(formData.departureTime),
+        reason: formData.reservationReason,
+        status: "Pending",
+        opcIsApproved: false,
+        isRejected: false,
+        headIsApproved: false,
+        feedback: "",
+        driverId: 0,
+        driverName: "",
     };
 
     const reservationFormData = new FormData();
@@ -417,13 +418,13 @@ const Reservation = () => {
                         <FaCalendarDay style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Return Schedule:
                       </label>
                       <input
-                        type="text"
-                        id="returnSchedule"
-                        name="returnSchedule"
-                        value={returnScheduleDate ? returnScheduleDate.toLocaleDateString('en-US') : ''}
-                        onClick={() => { setShowCalendar(true); setIsSelectingReturn(true); }}
-                        readOnly
-                        required
+                         type="text"
+                         id="returnSchedule"
+                         name="returnSchedule"
+                         value={returnScheduleDate ? returnScheduleDate.toLocaleDateString('en-US') : ''}
+                         onClick={() => { setShowCalendar(true); setIsSelectingReturn(true); }}
+                         readOnly
+                         required
                       />
                     </div>
                   )}

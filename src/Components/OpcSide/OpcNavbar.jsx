@@ -37,6 +37,12 @@ const OpcNavbar = () => {
             </NavLink>
           </li>
           <li>
+            <NavLink to="/opc-bigcalendar" activeClassName="active-link">
+              < FaClipboardCheck style={{ marginRight: "15px", marginBottom: "-2px" }} />Calendar Events
+            </NavLink>
+          </li>
+
+          <li>
             <NavLink to="/vehicle-management" activeClassName="active-link">
               <FaBus  style={{ marginRight: "15px", marginBottom: "-2px" }} />Vehicle Management
             </NavLink>
