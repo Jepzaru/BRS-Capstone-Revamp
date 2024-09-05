@@ -10,7 +10,6 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
 
   useEffect(() => {
     if (minDate) {
-      // Reset the selected day if it's before the minDate
       const minDay = minDate.getDate();
       if (selectedDay && new Date(currentYear, currentMonth, selectedDay) < minDate) {
         setSelectedDay(null);
@@ -26,6 +25,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
       setCurrentMonth(currentMonth - 1);
     }
   };
+
 
   const nextMonth = () => {
     if (currentMonth === 11) {
@@ -66,12 +66,16 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
   };
 
   const handleDayClick = (day) => {
-    const date = new Date(currentYear, currentMonth, day);
+    const date = new Date(currentYear, currentMonth, day, 12, 0, 0); 
+    
     if (!date) return;
-
+  
+    console.log("Selected date:", date);  
+    
     setSelectedDay(day);
     onDateSelect(date);
   };
+  
 
   return (
     <div className="calendar">
