@@ -1,14 +1,5 @@
-/* Main Calendar Container */
-.opc-big-calendar {
-    display: flex;
-    flex-direction: row; /* Align calendar and events content side by side */
-    width: 80%; /* Adjust to fit the full width of the parent container */
-    margin-top: -300px;
-    margin-left: 310px;
-    background-color: #ddd;
-    border-radius: 15px;
-    padding: 30px;
-  }
+/* 
+
 
 .opc-big-calendar-container{
     display: flex;
@@ -20,17 +11,17 @@
 
 .opc-big-calendar-container h1 {
     margin: 330px;
-    font-size: 2.5rem; /* Adjust size if needed */
-    color: black; /* Ensure color is visible on the background */
+    font-size: 2.5rem; 
+    color: black; 
   }
 
-  /* Calendar Container */
+
   .big-calendar {
-    flex: 1; /* Allow this section to take up available space */
+    flex: 1; 
     padding: 10px;
   }
   
-  /* Calendar Header */
+
   .calendar-header {
     display: flex;
     justify-content: space-between;
@@ -47,23 +38,23 @@
     font-size: 30px;
   }
   
-  /* Calendar Grid */
+  
   .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 1px;
-    background-color: #ccc; /* Light border color between days */
+    background-color: #ccc; 
   }
   
   .calendar-day-name, .calendar-day {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 60px; /* Smaller height for compact calendar */
+    height: 60px; 
     border: 1px solid #ddd;
     font-size: 14px;
     text-align: center;
-    position: relative; /* For positioning events inside the day */
+    position: relative; 
   }
   
   .calendar-day {
@@ -72,7 +63,7 @@
   }
   
   .calendar-day.selected {
-    background-color: #ffcc00; /* Highlight selected day */
+    background-color: #ffcc00;
     color: #fff;
   }
   
@@ -80,20 +71,20 @@
     background-color: #fff;
   }
   
-  /* Day Number */
+
   .day-number {
     font-size: 16px;
     font-weight: bold;
   }
   
-  /* Events Content Container */
+
   .big-calendar-events-content {
-    width: 35%; /* Adjust width as needed */
+    width: 35%; 
     padding: 25px;
     background-color: #f9f9f9;
     border-left: 1px solid #ddd;
     border-radius: 15px;
-    overflow-y: auto; /* Allow scrolling if content overflows */
+    overflow-y: auto; 
   }
 
   .event-btn{
@@ -113,7 +104,7 @@
     color: #782324;
   }
   
-/* Event Item */
+
 .event-item {
     display: flex;
     justify-content: space-between;
@@ -121,9 +112,9 @@
     background-color: #e0e0e0;
     padding: 10px;
     border-radius: 3px;
-    margin-bottom: 10px; /* Space between events */
-    text-overflow: ellipsis; /* Ensure text does not overflow */
-    white-space: normal; /* Allow text to wrap */
+    margin-bottom: 10px; 
+    text-overflow: ellipsis; 
+    white-space: normal; 
     overflow: hidden;
   }
   .delete-icon {
@@ -140,13 +131,13 @@
     font-size: 15px;
   }
   
-  /* Selected Date Display */
+
   .selected-date {
     margin-top: 15px;
     font-size: 14px;
   }
   
-  /* Add Event Modal */
+
   .add-event-modal {
     position: fixed;
     top: 20%;
@@ -191,7 +182,7 @@
     color: #782324;
   }
   
-  /* Styles for the edit event modal */
+
   .edit-event-modal {
     position: fixed;
     top: 50%;
@@ -267,3 +258,4 @@
     color: #782324;
     border-color: none;
   }
+*/
