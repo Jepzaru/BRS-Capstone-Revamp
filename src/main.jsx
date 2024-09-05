@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './Components/Homepage';
@@ -21,8 +21,29 @@ import DriverManagement from './Components/OpcSide/DriverManagement';
 import OpcSettings from './Components/OpcSide/OpcSettings';
 import Error404 from './Components/Error404';
 import ProtectedRoute from './Components/ProtectedRoute';
+import { isTokenExpired  } from './Components/TokenUtils';
 
 const Main = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(true); 
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    console.log('Token:', token);
+    if (token && isTokenExpired(token)) {
+      console.log('Token expired');
+      setIsLoggedIn(false);
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      localStorage.removeItem('email');
+      localStorage.removeItem('department');
+      localStorage.removeItem('userId');
+    }
+  }, [token]);
+
+  if (!isLoggedIn) {
+    return null; 
+  }
+
   return (
     <BrowserRouter>
       <Routes>

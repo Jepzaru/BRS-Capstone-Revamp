@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/Login.css';
-import { Link } from 'react-router-dom';
-import { FaUser, FaLock, FaEye, FaEyeSlash, FaHome } from 'react-icons/fa';
-import { MdAdminPanelSettings } from "react-icons/md"; 
+import { Link, useNavigate } from 'react-router-dom';
+import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import logoImage from "../../Images/citlogo1.png";
 import logoImage1 from "../../Images/citbglogo.png";
 import LoadingScreen from './LoadingScreen'; 
-import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -135,8 +133,8 @@ const Login = () => {
           <button type="submit" className="login-button">LOGIN</button>
           <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTITIES</button>
           <p className='admin-path'>
-                  Are you an admin? <Link to="/admin-authentication">Click Here</Link>
-                </p>
+            Are you an admin? <Link to="/admin-authentication">Click Here</Link>
+          </p>
         </form>
       </div>
       <img src={logoImage1} alt="Logo" className="logo-image1" />
