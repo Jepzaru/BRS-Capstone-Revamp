@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import Header from './Header';
-import logoImage1 from "../../Images/citbglogo.png";
-import SideNavbar from './SideNavbar';
-import { FaSwatchbook } from "react-icons/fa";
+import { FaSortAlphaDown, FaSwatchbook } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
-import { FaSortAlphaDown } from "react-icons/fa";
 import '../../CSS/UserCss/ManageRequest.css';
+import logoImage1 from "../../Images/citbglogo.png";
+import Header from './Header';
+import SideNavbar from './SideNavbar';
 
 const ManageRequest = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -65,6 +64,30 @@ const ManageRequest = () => {
   const filteredRequests = sortedRequests.filter(request =>
     request.reason.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getApprovalStatus = (request) => {
+    const statuses = [];
+  
+    if (request.headIsApproved) {
+      statuses.push(<span className="mr-status-approved">Approved (Head)</span>);
+    } else if (!request.headIsApproved && request.status === 'Pending') {
+      statuses.push(<span className="mr-status-pending">Pending (Head)</span>);
+    } else if  (request.rejected) {
+      statuses.push(<span className="mr-status-rejected">Rejected (Head)</span>);
+    }
+  
+    if (request.opcIsApproved) {
+      statuses.push(<span className="mr-status-approved">Approved (OPC)</span>);
+    } else if (!request.opcIsApproved && request.status === 'Pending') {
+      statuses.push(<span className="mr-status-pending">Pending (OPC)</span>);
+    } else if (request.rejected) {
+      statuses.push(<span className="mr-status-rejected">Rejected (OPC)</span>);
+    }
+  
+    return statuses;
+  };
+  
+
 
   return (
     <div className="app1">
@@ -133,9 +156,11 @@ const ManageRequest = () => {
                       <td>{request.pickUpTime}</td>
                       <td>{request.department}</td>
                       <td className="reason-column">{request.reason}</td>
-                      <td className={request.status === 'Pending' ? 'status-pending' : ''}>
-                        {request.status}
-                     </td>
+                      <td>
+                          {getApprovalStatus(request).map((status, index) => (
+                            <div key={index}>{status}</div>
+                          ))}
+                        </td>
                     </tr>
                   ))
                 )}
