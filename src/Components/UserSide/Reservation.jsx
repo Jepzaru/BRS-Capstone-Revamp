@@ -169,6 +169,9 @@ const Reservation = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
+    if (name === 'capacity' && parseInt(value, 10) < 0) {
+      return; 
+  }
     setFormData({
       ...formData,
       [name]: type === 'file' ? files[0] : value,
@@ -245,6 +248,7 @@ const Reservation = () => {
       reservationReason
     } = formData;
 
+    
     const isFormValid = [
       from,
       to,
@@ -395,7 +399,7 @@ const Reservation = () => {
                 </div>
                 <div className="form-group">
                   <label htmlFor="capacity"><FaUserGroup style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Capacity:</label>
-                  <input type="number" id="capacity" name="capacity" value={formData.capacity} required onChange={handleInputChange}/>
+                  <input type="number" id="capacity" name="capacity" value={formData.capacity} required min="0" onChange={handleInputChange}/>
                 </div>
                 <div className="form-group">
                 <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle:</label>

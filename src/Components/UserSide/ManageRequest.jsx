@@ -138,35 +138,34 @@ const ManageRequest = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredRequests.length === 0 ? (
-                  <tr>
-                    <td colSpan="13" className="no-requests">No Requests Made</td>
-                  </tr>
-                ) : (
-                  filteredRequests.map(request => (
-                    <tr key={request.id}>
-                      <td>{request.transactionId}</td>
-                      <td>{request.typeOfTrip}</td>
-                      <td>{request.destinationFrom}</td>
-                      <td>{request.destinationTo}</td>
-                      <td>{request.capacity}</td>
-                      <td>{request.vehicleType}</td>
-                      <td>{request.plateNumber}</td>
-                      <td>{request.schedule}</td>
-                      <td>{request.returnSchedule}</td>
-                      <td>{request.departureTime}</td>
-                      <td>{request.pickUpTime}</td>
-                      <td style={{ wordWrap: 'break-word', whiteSpace: 'normal', maxWidth: '100px' }}>{request.department}</td>
-                      <td className="reason-column">{request.reason}</td>
-                      <td>
+                  {filteredRequests.length === 0 ? (
+                    <tr>
+                      <td colSpan="13" className="no-requests">No Requests Made</td>
+                    </tr>
+                  ) : (
+                    filteredRequests.reverse().map(request => (
+                      <tr key={request.id}>
+                        <td>{request.transactionId}</td>
+                        <td>{request.typeOfTrip}</td>
+                        <td>{request.destinationFrom}</td>
+                        <td>{request.destinationTo}</td>
+                        <td>{request.capacity}</td>
+                        <td>{request.vehicleType}-{request.plateNumber}</td>
+                        <td>{request.schedule}</td>
+                        <td>{request.returnSchedule}</td>
+                        <td>{request.departureTime}</td>
+                        <td>{request.pickUpTime}</td>
+                        <td>{request.department}</td>
+                        <td className="reason-column">{request.reason}</td>
+                        <td>
                           {getApprovalStatus(request).map((status, index) => (
                             <div key={index}>{status}</div>
                           ))}
                         </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
             </table>
             </div>
           </div>
