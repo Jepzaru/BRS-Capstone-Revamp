@@ -137,7 +137,7 @@ body {
 }
 
 .requests-table tr:hover {
-  background-color: #ddd;
+  background-color: gold;
 }
 
 .no-requests {

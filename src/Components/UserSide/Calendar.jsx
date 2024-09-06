@@ -99,18 +99,33 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
   };
 
   const handleDayClick = (day) => {
-    const date = new Date(currentYear, currentMonth, day);
-    date.setHours(0, 0, 0, 0); 
-  
+    // Create a new Date object using the current year, current month, and the selected day
+    // We set the time to noon (12:00 PM) to avoid time zone issues that may shift the date
+    const date = new Date(currentYear, currentMonth, day, 12, 0, 0); 
+    
+   
     if (!date) return;
+  
+   
+    console.log("Selected date:", date);
+    
 
     setSelectedDay(day);
+  
+   
     onDateSelect(date);
   };
+  
+  
   
 
   return (
     <div className="calendar">
+      <div><h2>Select Schedule</h2></div>
+      <div className="calendar-indicator">
+        <p>🟡 Pending</p>
+        <p>🔴 Fully booked</p>
+      </div>
       <div className="calendar-nav">
         <button className='previous' onClick={prevMonth} disabled={currentMonth === new Date().getMonth()}><BiSolidLeftArrow /></button>
         <div className="calendar-month">{new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>

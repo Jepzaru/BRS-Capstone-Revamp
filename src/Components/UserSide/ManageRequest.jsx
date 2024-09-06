@@ -133,9 +133,9 @@ const ManageRequest = () => {
                       <td>{request.pickUpTime}</td>
                       <td>{request.department}</td>
                       <td className="reason-column">{request.reason}</td>
-                      <td className={request.status === 'Pending' ? 'status-pending' : ''}>
+                      <td className={request.status === 'Pending' ? 'status-pending' : request.status === 'Approved' ? 'status-approved' : ''}>
                         {request.status}
-                     </td>
+                      </td>
                     </tr>
                   ))
                 )}

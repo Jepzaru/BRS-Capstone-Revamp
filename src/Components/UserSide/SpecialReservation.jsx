@@ -20,7 +20,7 @@ import ReservationModal from './ReservationModal';
 import AddVehicleModal from './AddVehicleModal';
 import TimeDropdown from './TimeDropdown';
 
-const Reservation = () => {
+const SpecialReservation = () => {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -141,9 +141,9 @@ const Reservation = () => {
     from: '',
     capacity: '',
     department: '',
-    vehicleType: vehicle ? vehicle.vehicleType : '', 
-    plateNumber: vehicle ? vehicle.plateNumber : '',
+    vehicleType: '',
     departureTime: '',
+    plateNumber: '',
     pickUpTime: '', 
     reservationReason: '',
     approvalProof: null,
@@ -217,6 +217,16 @@ const Reservation = () => {
   const handleBackClick = () => {
     window.history.back();
   };
+
+  useEffect(() => {
+    if (vehicle) {
+      setFormData((prevData) => ({
+        ...prevData,
+        plateNumber: vehicle.plateNumber || '' // Assuming vehicle has plateNumber
+      }));
+    }
+  }, [vehicle]);
+  
 
   const handleDateSelect = (date) => {
     if (isSelectingReturn) {
@@ -396,7 +406,10 @@ const Reservation = () => {
                 </div>
                 <div className="form-group">
                 <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Type of Vehicle:</label>
-                <input type="text" id="vehicleType" name="vehicleType" value={`${vehicle.vehicleType} - ${vehicle.plateNumber}`} onChange={handleInputChange} disabled={true}/>
+                <select>
+                    <p>Car ra gud</p>
+                </select>
+                
                 </div>
               </div>
               <div className="form-group-inline">
@@ -447,27 +460,6 @@ const Reservation = () => {
                       <input type="time" id="pickUpTime" name="pickUpTime" value={formData.pickUpTime} onChange={handleInputChange} />
                     </div>
                   )}
-              </div>
-              <div className="form-group-inline">
-                <div className="form-group">
-                <label htmlFor="department"><FaBuildingUser style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Department:</label>
-                  {loading ? (
-                    <Skeleton height={40} width={300} />
-                  ) : (
-                    <select id="department" name="department" required className="dropdown-field" value={formData.department} onChange={handleInputChange}>
-                      <option value="">Select Department</option>
-                      {departments.map(department => (
-                        <option key={department.id} value={department.name}>
-                          {department.name}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-                <div className="form-group">
-                  <label htmlFor="approvalProof"><FaFileAlt style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Proof of Approval (optional):</label>
-                  <input type="file" id="approvalProof" name="approvalProof" onChange={handleInputChange} />
-                </div>
               </div>
               <div className="form-group-inline">
               <div className="form-group">
@@ -586,4 +578,4 @@ const Reservation = () => {
   );
 };
 
-export default Reservation;
+export default SpecialReservation;
