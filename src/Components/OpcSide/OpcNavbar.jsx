@@ -7,6 +7,7 @@ import { FaBus } from "react-icons/fa";
 import { GiCarSeat } from "react-icons/gi";
 import { FaGear } from "react-icons/fa6";
 import { FaClipboardCheck } from "react-icons/fa6";
+import { FaCalendarDay } from "react-icons/fa";
 import { NavLink } from 'react-router-dom';
 
 const OpcNavbar = () => {
@@ -38,7 +39,7 @@ const OpcNavbar = () => {
           </li>
           <li>
             <NavLink to="/opc-bigcalendar" activeClassName="active-link">
-              < FaClipboardCheck style={{ marginRight: "15px", marginBottom: "-2px" }} />Calendar Events
+              < FaCalendarDay style={{ marginRight: "15px", marginBottom: "-2px" }} />Calendar Events
             </NavLink>
           </li>
 

@@ -280,6 +280,7 @@ const Reservation = () => {
         schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
         returnSchedule: tripType === 'roundTrip' ? returnScheduleDate.toISOString().split('T')[0] : null,
         vehicleType: formData.vehicleType,
+        plateNumber: formData.plateNumber,
         pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : "N/A",
         departureTime: formatTime(formData.departureTime),
         reason: formData.reservationReason,
@@ -314,6 +315,8 @@ const Reservation = () => {
       }
 
       const data = await response.json();
+
+      console.log('Inserted data:', data);
       setModalMessage('Reservation submitted successfully!');
       setModalType('success');
       
@@ -395,8 +398,12 @@ const Reservation = () => {
                   <input type="number" id="capacity" name="capacity" value={formData.capacity} required onChange={handleInputChange}/>
                 </div>
                 <div className="form-group">
-                <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Type of Vehicle:</label>
-                <input type="text" id="vehicleType" name="vehicleType" value={`${vehicle.vehicleType} - ${vehicle.plateNumber}`} onChange={handleInputChange} disabled={true}/>
+                <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle:</label>
+                <input type="text" id="vehicleType" name="vehicleType" value={vehicle.vehicleType} onChange={handleInputChange} disabled={true}/>
+                </div>
+                <div className="form-group">
+                <label htmlFor="plateNumber"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Plate Number:</label>
+                <input type="text" id="plateNumber" name="plateNumber" value={vehicle.plateNumber} onChange={handleInputChange} disabled={true}/>
                 </div>
               </div>
               <div className="form-group-inline">

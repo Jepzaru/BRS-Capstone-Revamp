@@ -56,6 +56,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 1px;/* Light border color between days */
+    font-size: 24px;
   }
 
   .opc-big-calendar-day-name{
@@ -98,8 +99,9 @@
   
   /* Day Number */
   .opc-big-calendar-day-number {
-    font-size: 16px;
+    font-size: 24px;
     font-weight: bold;
+
   }
   
   /* Events Content Container */

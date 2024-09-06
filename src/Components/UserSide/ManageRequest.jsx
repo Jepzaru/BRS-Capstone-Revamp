@@ -126,7 +126,8 @@ const ManageRequest = () => {
                   <th>From</th>
                   <th>To</th>
                   <th>Capacity</th>
-                  <th>Vehicle Type</th>
+                  <th>Vehicle</th>
+                  <th>Plate Number</th>
                   <th>Schedule</th>
                   <th>Return Schedule</th>
                   <th>Departure Time</th>
@@ -149,12 +150,13 @@ const ManageRequest = () => {
                       <td>{request.destinationFrom}</td>
                       <td>{request.destinationTo}</td>
                       <td>{request.capacity}</td>
-                      <td>{request.vehicleType}-{request.plateNumber}</td>
+                      <td>{request.vehicleType}</td>
+                      <td>{request.plateNumber}</td>
                       <td>{request.schedule}</td>
                       <td>{request.returnSchedule}</td>
                       <td>{request.departureTime}</td>
                       <td>{request.pickUpTime}</td>
-                      <td>{request.department}</td>
+                      <td style={{ wordWrap: 'break-word', whiteSpace: 'normal', maxWidth: '100px' }}>{request.department}</td>
                       <td className="reason-column">{request.reason}</td>
                       <td>
                           {getApprovalStatus(request).map((status, index) => (

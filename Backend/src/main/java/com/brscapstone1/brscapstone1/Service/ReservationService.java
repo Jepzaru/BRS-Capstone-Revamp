@@ -77,9 +77,6 @@ public class ReservationService {
         if(reservation.getDriverName() == null || reservation.getDriverName().isEmpty()){
             reservation.setDriverName("No assigned driver");
         }
-        if (reservation.getPlateNumber() != null && !reservation.getPlateNumber().isEmpty()) {
-            reservation.setVehicleType(reservation.getVehicleType() + "-" + reservation.getPlateNumber());
-        }
         reservation.setUserName(userName);
         reservation.setTransactionId(generateTransactionId()); 
         return resRepo.save(reservation);

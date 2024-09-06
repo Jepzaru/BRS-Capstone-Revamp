@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import '../../CSS/OpcCss/OpcCalendar.css';
 import { BsCalendar2EventFill } from "react-icons/bs";
-import { IoMdAddCircle } from "react-icons/io";
 import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
-import OpcAddEvent from './OpcAddEvent';
 
-const OpcCalendar = ({ onDateSelect = () => {} }) => {
+const OpcCalendar = () => {
   const currentDate = new Date();
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
   const [selectedDay, setSelectedDay] = useState(currentDate.getDate());
-  const [showModal, setShowModal] = useState(false);
   const [events, setEvents] = useState([]);
 
   const prevMonth = () => {
@@ -59,7 +56,6 @@ const OpcCalendar = ({ onDateSelect = () => {} }) => {
     if (day !== null) {
       const selectedDate = new Date(currentYear, currentMonth, day);
       setSelectedDay(day);
-      onDateSelect(selectedDate);
   
       // Format date as yyyy/MM/dd
       const year = selectedDate.getFullYear();
@@ -69,18 +65,22 @@ const OpcCalendar = ({ onDateSelect = () => {} }) => {
   
       // Fetch events for the selected date
       try {
-        const token = localStorage.getItem('authToken'); // Replace with your token retrieval method
-        const response = await fetch(`http://localhost:8080/opc/events/date/${formattedDate}`, {
+        const token = localStorage.getItem('token'); // Adjust token retrieval method if needed
+        console.log('Token:', token); // Log token for debugging
+        const response = await fetch(`http://localhost:8080/opc/events/getAll`, {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` // Include the token in the headers
+            'Authorization': `Bearer ${token}`
           }
         });
   
         if (response.ok) {
-          const data = await response.json();
-          setEvents(data);
+          const allEvents = await response.json();
+          const dateEvents = allEvents.filter(event => {
+            const eventDate = new Date(event.eventDate).toLocaleDateString();
+            return eventDate === selectedDate.toLocaleDateString();
+          });
+          setEvents(dateEvents);
         } else {
           console.error('Failed to fetch events:', response.statusText);
         }
@@ -90,47 +90,9 @@ const OpcCalendar = ({ onDateSelect = () => {} }) => {
     }
   };
 
-  const handleShowModal = () => {
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  const handleSaveEvent = async (eventData) => {
-    try {
-      const token = localStorage.getItem('authToken'); // Replace with your token retrieval method
-      const response = await fetch('http://localhost:8080/opc/events/post', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Include the token in the headers
-        },
-        body: JSON.stringify(eventData),
-      });
-
-      if (response.ok) {
-        const newEvent = await response.json();
-        console.log('Event added successfully:', newEvent);
-        // Refresh events for the selected date
-        handleDayClick(selectedDay);
-      } else {
-        console.error('Failed to add event:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-    handleCloseModal();
-  };
-
-  const isCurrentMonthYear = () => {
-    return currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear();
-  };
-
   useEffect(() => {
     // Automatically select the present day when the current month and year are selected
-    if (isCurrentMonthYear() && !generateDays().some(day => day.day === currentDate.getDate())) {
+    if (currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear()) {
       setSelectedDay(currentDate.getDate());
     }
   }, [currentMonth, currentYear]);
@@ -172,9 +134,6 @@ const OpcCalendar = ({ onDateSelect = () => {} }) => {
       <div className='calendar-events'>
         <h2>
           <BsCalendar2EventFill style={{ marginBottom: "-2px", marginRight: "10px" }} /> Calendar Events
-          <button className='event-btn' onClick={handleShowModal}>
-            <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> Add Event
-          </button>
         </h2>
         <div className='calendar-events-content'>
           {events.length > 0 ? (
@@ -189,11 +148,6 @@ const OpcCalendar = ({ onDateSelect = () => {} }) => {
             <p>No events for this date.</p>
           )}
         </div>
-        <OpcAddEvent 
-          show={showModal} 
-          handleClose={handleCloseModal} 
-          handleSave={handleSaveEvent} 
-        />
       </div>
     </div>
   );

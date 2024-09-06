@@ -248,7 +248,7 @@ const OpcBigCalendar = () => {
   return (
     <div className="opc-big-calendar-container">
       <h1>
-        <MdEvent style={{ color: '#782324' }} /> Events
+        <MdEvent style={{ color: '#782324', marginBottom: '-3px', marginRight: '8px' }} /> Calendar Events
       </h1>
       <div className="opc-big-calendar">
         <Header />
