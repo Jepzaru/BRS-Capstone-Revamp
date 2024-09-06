@@ -1,93 +1,118 @@
-/* 
-
+/* Main Calendar Container */
+.opc-big-calendar {
+  display: flex;
+  flex-direction: row; /* Align calendar and events content side by side */
+  width: 79%; /* Adjust to fit the full width of the parent container */
+  margin-top: -320px;
+  margin-left: 310px;
+  background-color: #ddd;
+  border-radius: 15px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  padding-right: 30px;
+  padding-left: 30px;
+  height: 600px; /* Manually set the height (adjust as needed) */
+  overflow-y: auto; /* Enable scrolling if content exceeds the height */
+}
 
 .opc-big-calendar-container{
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-top: 20px;
-    margin-top: -250px;
+    padding-top: 5px;
+    margin-top: -240px;
 }
 
 .opc-big-calendar-container h1 {
     margin: 330px;
-    font-size: 2.5rem; 
-    color: black; 
+    font-size: 2.5rem; /* Adjust size if needed */
+    color: black; /* Ensure color is visible on the background */
   }
 
-
+  /* Calendar Container */
   .big-calendar {
-    flex: 1; 
+    flex: 1; /* Allow this section to take up available space */
     padding: 10px;
   }
   
-
-  .calendar-header {
+  /* Calendar Header */
+  .opc-big-calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
     margin-top: -20px;
   }
   
-  .calendar-header button {
+  .opc-big-calendar-header button {
     font-size: 16px;
   }
   
-  .calendar-header h2 {
+  .opc-big-calendar-header h2 {
     font-size: 30px;
   }
   
-  
-  .calendar-grid {
+  /* Calendar Grid */
+  .opc-big-calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
-    background-color: #ccc; 
+    gap: 1px;/* Light border color between days */
+  }
+
+  .opc-big-calendar-day-name{
+    background-color:#782324;
+    color: white;
+    font-weight: bold;
   }
   
-  .calendar-day-name, .calendar-day {
+  .opc-big-calendar-day-name, 
+  .opc-big-calendar-day {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 60px; 
+    height: 83px; /* Smaller height for compact calendar */
     border: 1px solid #ddd;
     font-size: 14px;
     text-align: center;
-    position: relative; 
+    position: relative; /* For positioning events inside the day */
   }
   
-  .calendar-day {
+  .opc-big-calendar-day {
     background-color: #f9f9f9;
     cursor: pointer;
+    color: #782324;
+  }
+
+  .opc-big-calendar-day:hover{
+    background-color: #782324;
+    color: #ffcc00;
   }
   
-  .calendar-day.selected {
-    background-color: #ffcc00;
-    color: #fff;
+  .opc-big-calendar-day.selected {
+    background-color: #ffcc00; /* Highlight selected day */
+    color: #782324;
   }
   
-  .calendar-day.empty {
+  .opc-big-calendar-day.empty {
     background-color: #fff;
   }
   
-
-  .day-number {
+  /* Day Number */
+  .opc-big-calendar-day-number {
     font-size: 16px;
     font-weight: bold;
   }
   
-
-  .big-calendar-events-content {
-    width: 35%; 
+  /* Events Content Container */
+  .opc-big-calendar-events-content {
+    width: 35%; /* Adjust width as needed */
     padding: 25px;
     background-color: #f9f9f9;
     border-left: 1px solid #ddd;
     border-radius: 15px;
-    overflow-y: auto; 
+    overflow-y: auto; /* Allow scrolling if content overflows */
   }
 
-  .event-btn{
+  .opc-big-calendar-event-btn{
     background-color: #782324;
     border: none;
     color: white;
@@ -99,46 +124,52 @@
     cursor: pointer;
     transition: background-color 0.3s;
   }
-  .event-btn:hover{
+  .opc-big-calendar-event-btn:hover{
     background-color: gold;
     color: #782324;
   }
   
-
-.event-item {
+/* Event Item */
+.opc-big-calendar-event-item {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
     background-color: #e0e0e0;
     padding: 10px;
     border-radius: 3px;
-    margin-bottom: 10px; 
-    text-overflow: ellipsis; 
-    white-space: normal; 
+    margin-bottom: 10px; /* Space between events */
+    text-overflow: ellipsis; /* Ensure text does not overflow */
+    white-space: normal; /* Allow text to wrap */
     overflow: hidden;
   }
-  .delete-icon {
+
+.opc-big-calendar-events-content-header{
+  display: flex;
+  margin-top: -20px;
+}
+
+  .opc-big-calendar-delete-icon {
     font-size: 20px;
   }
   
-  .event-title {
+  .opc-big-calendar-event-title {
     font-weight: bold;
     font-size: 20px;
   }
   
-  .event-description {
+  .opc-big-calendar-event-description {
     margin-top: 5px;
     font-size: 15px;
   }
   
-
-  .selected-date {
+  /* Selected Date Display */
+  .opc-big-calendar-selected-date {
     margin-top: 15px;
     font-size: 14px;
   }
   
-
-  .add-event-modal {
+  /* Add Event Modal */
+  .opc-big-calendar-add-event-modal {
     position: fixed;
     top: 20%;
     left: 50%;
@@ -150,40 +181,41 @@
     z-index: 1000;
   }
   
-  .add-event-modal h3 {
+  .opc-big-calendar-add-event-modal h3 {
     margin-top: 0;
   }
   
-  .add-event-modal input, 
-  .add-event-modal textarea {
+  .opc-big-calendar-add-event-modal input, 
+  .opc-big-calendar-add-event-modal textarea {
     width: 100%;
     margin-bottom: 10px;
   }
   
-  .add-event-modal button {
+  .opc-big-calendar-add-event-modal button {
     margin-right: 10px;
   }
   
-  .event-actions {
+  .opc-big-calendar-event-actions {
     display: flex;
     align-items: center;
   }
   
-  .edit-icon, .delete-icon {
+  .opc-big-calendar-edit-icon, 
+  .opc-big-calendar-delete-icon {
     font-size: 24px;
     margin-left: 10px;
   }
   
-  .edit-icon:hover {
+  .opc-big-calendar-edit-icon:hover {
     color: #ffcc00;
   }
   
-  .delete-icon:hover {
+  .opc-big-calendar-delete-icon:hover {
     color: #782324;
   }
   
-
-  .edit-event-modal {
+  /* Styles for the edit event modal */
+  .opc-big-calendar-edit-event-modal {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -196,11 +228,12 @@
     z-index: 1000;
   }
   
-  .edit-event-modal h3 {
+  .opc-big-calendar-edit-event-modal h3 {
     margin-bottom: 20px;
   }
   
-  .edit-event-modal input, .edit-event-modal textarea {
+  .opc-big-calendar-edit-event-modal input, 
+  .opc-big-calendar-edit-event-modal textarea {
     width: 90%;
     padding: 10px;
     margin-bottom: 10px;
@@ -208,12 +241,12 @@
     border-radius: 4px;
   }
   
-  .edit-event-modal textarea {
+  .opc-big-calendar-edit-event-modal textarea {
     height: 100px;
     resize: vertical;
   }
   
-  .edit-event-modal button {
+  .opc-big-calendar-edit-event-modal button {
     padding: 10px 20px;
     margin-right: 10px;
     border: none;
@@ -221,41 +254,41 @@
     cursor: pointer;
   }
   
-  .edit-event-modal button:first-of-type {
+  .opc-big-calendar-edit-event-modal button:first-of-type {
     background-color: #007bff;
     color: #fff;
   }
   
-  .edit-event-modal button:last-of-type {
+  .opc-big-calendar-edit-event-modal button:last-of-type {
     background-color: #6c757d;
     color: #fff;
   }
   
-  .edit-event-modal button:first-of-type:hover {
+  .opc-big-calendar-edit-event-modal button:first-of-type:hover {
     background-color: #0056b3;
   }
   
-  .edit-event-modal button:last-of-type:hover {
+  .opc-big-calendar-edit-event-modal button:last-of-type:hover {
     background-color: #5a6268;
   }
 
-  .opc-calendar-previous,
-  .opc-calendar-next
+  .opc-big-calendar-previous,
+  .opc-big-calendar-next
   {
     background-color: #782324;
     color: #ffcc00;
     width: 8%;
+    height:50px;
     font-size: 100px;
     font-weight: bold;
-    border-radius: 5px;
+    border-radius: 15px;
     border-color: none;
   }
 
-  .opc-calendar-previous:hover,
-  .opc-calendar-next:hover
+  .opc-big-calendar-previous:hover,
+  .opc-big-calendar-next:hover
   {
     background-color: #ffcc00;
     color: #782324;
     border-color: none;
   }
-*/

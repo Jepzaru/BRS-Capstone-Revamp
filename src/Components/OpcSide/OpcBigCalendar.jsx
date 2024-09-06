@@ -188,10 +188,10 @@ const OpcBigCalendar = () => {
       return (
         <div
           key={index}
-          className={`calendar-day${day ? '' : ' empty'}${selectedDate && selectedDate.getDate() === day ? ' selected' : ''}`}
+          className={`opc-big-calendar-day${day ? '' : ' empty'}${selectedDate && selectedDate.getDate() === day ? ' selected' : ''}`}
           onClick={() => handleDayClick(day)}
         >
-          <div className="day-number">{day}</div>
+          <div className="opc-big-calendar-day-number">{day}</div>
         </div>
       );
     });
@@ -205,18 +205,20 @@ const OpcBigCalendar = () => {
     );
 
     return (
-      <div className="big-calendar-events-content">
-        <h2>Events on {selectedDate.toDateString()}</h2>
+      <div className="opc-big-calendar-events-content">
+        <div className="opc-big-calendar-events-content-header">
+           <h2>Events on {selectedDate.toDateString()}</h2>
+        </div>
         {dayEvents.length > 0 ? (
           dayEvents.map((event, index) => (
-            <div key={index} className="event-item">
-              <div className="event-details">
-                <div className="event-title">{event.eventTitle}</div>
-                <div className="event-description">{event.eventDescription}</div>
+            <div key={index} className="opc-big-calendar-event-item">
+              <div className="opc-big-calendar-event-details">
+                <div className="opc-big-calendar-event-title">{event.eventTitle}</div>
+                <div className="opc-big-calendar-event-description">{event.eventDescription}</div>
               </div>
-              <div className="event-actions">
+              <div className="opc-big-calendar-event-actions">
                 <MdEdit
-                  className="edit-icon"
+                  className="opc-big-calendar-edit-icon"
                   style={{ cursor: 'pointer', color: '#ffcc00' }}
                   onClick={() => {
                     setEditingEvent(event);
@@ -225,7 +227,7 @@ const OpcBigCalendar = () => {
                   }}
                 />
                 <MdDelete
-                  className="delete-icon"
+                  className="opc-big-calendar-delete-icon"
                   style={{ cursor: 'pointer', color: '#782324' }}
                   onClick={() => deleteEvent(event.eventId)}
                 />
@@ -236,7 +238,7 @@ const OpcBigCalendar = () => {
           <p>No events for this day.</p>
         )}
         
-        <button className='event-btn' onClick={() => setShowAddEvent(true)}>
+        <button className='opc-big-calendar-event-btn' onClick={() => setShowAddEvent(true)}>
           <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> Add Event
         </button>
       </div>
@@ -252,27 +254,27 @@ const OpcBigCalendar = () => {
         <Header />
         <SideNavbar />
         <div className="big-calendar">
-          <div className="calendar-header">
-            <button className='opc-calendar-previous' onClick={prevMonth}>&lt;</button>
+          <div className="opc-big-calendar-header">
+            <button className='opc-big-calendar-previous' onClick={prevMonth}>&lt;</button>
             <h2>
               {currentDate.toLocaleString('default', { month: 'long' })} {currentDate.getFullYear()}
             </h2>
-            <button className='opc-calendar-next' onClick={nextMonth}>&gt;</button>
+            <button className='opc-big-calendar-next' onClick={nextMonth}>&gt;</button>
           </div>
-          <div className="calendar-grid">
-            <div className="calendar-day-name">Sun</div>
-            <div className="calendar-day-name">Mon</div>
-            <div className="calendar-day-name">Tue</div>
-            <div className="calendar-day-name">Wed</div>
-            <div className="calendar-day-name">Thu</div>
-            <div className="calendar-day-name">Fri</div>
-            <div className="calendar-day-name">Sat</div>
+          <div className="opc-big-calendar-grid">
+            <div className="opc-big-calendar-day-name">Sun</div>
+            <div className="opc-big-calendar-day-name">Mon</div>
+            <div className="opc-big-calendar-day-name">Tue</div>
+            <div className="opc-big-calendar-day-name">Wed</div>
+            <div className="opc-big-calendar-day-name">Thu</div>
+            <div className="opc-big-calendar-day-name">Fri</div>
+            <div className="opc-big-calendar-day-name">Sat</div>
             {renderDays()}
           </div>
         </div>
         {renderEvents()}
         {showAddEvent && (
-          <div className="add-event-modal">
+          <div className="opc-big-calendar-add-event-modal">
             <h3>Add Event</h3>
             <input
               type="text"
@@ -290,7 +292,7 @@ const OpcBigCalendar = () => {
           </div>
         )}
         {editingEvent && (
-          <div className="edit-event-modal">
+          <div className="opc-big-calendar-edit-event-modal">
             <h3>Edit Event</h3>
             <input
               type="text"
