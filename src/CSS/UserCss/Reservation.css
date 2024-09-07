@@ -96,8 +96,7 @@ body {
 }
 
 .form-group input[type="text"],
-.form-group input[type="number"],
-.form-group input[type="time"] {
+.form-group input[type="number"]{
     width: 100%;
     padding: 8px;
     box-sizing: border-box;
@@ -108,7 +107,7 @@ body {
     font-size: 14px;
     font-weight: 600;
 }
-.dropdown-field {
+.dropdown-field, .form-group select {
     padding: 8px; 
     border-radius: 5px; 
     border: 1px solid #ccc; 

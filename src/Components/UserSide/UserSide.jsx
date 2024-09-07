@@ -62,11 +62,9 @@ const UserSide = () => {
     if (/coaster/.test(lowerCaseType)) {
       return vehicleImage2;
     }
-  
     return defaultVehicleImage; 
   };
   
-
   const imageGrids = [
     [vehiclesubImage1, vehiclesubImage2, vehiclesubImage3],
     [vehiclesubImage4, vehiclesubImage5, vehiclesubImage6],
@@ -81,6 +79,7 @@ const UserSide = () => {
   }, [imageGrids.length]);
 
   const handleSelectVehicle = (vehicle) => {
+    console.log("Selected Vehicle Plate Number:", vehicle.plateNumber);
     navigate('/user-side/reservation', { state: { vehicle } });
   };  
 
@@ -128,44 +127,44 @@ const UserSide = () => {
                 </Link>
               </div>
               <div className="container">
-                <div className="vehicle-list">
-                  {vehicles.map(vehicle => (
-                    <div key={vehicle.id} className="vehicle-item">
-                      <div className="vehicle-info">
-                        <img src={getVehicleImage(vehicle.vehicleType)} alt={vehicle.vehicleType} className="vehicle-image" />
-                        <div className="vehicle-text">
-                          <h2 style={{marginBottom: "20px"}}>
-                            <FaBus style={{marginBottom: "-2px", marginRight: "10px"}}/>
-                            {vehicle.vehicleType}
-                          </h2>
-                          <p>Plate Number: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.plateNumber}</span></p>
-                          <p>👥 Capacity: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.capacity}</span></p>
-                          <p>{vehicle.status === 'Available' ? '🟢' : '🔴'} Status: <span style={{color: vehicle.status === 'Available' ? 'green' : 'red', marginLeft: "5px"}}>{vehicle.status}</span></p>
-                        </div>
-                        <button className="btn-right-corner" onClick={() => handleSelectVehicle(vehicle)}>
+              <div className="vehicle-list">
+                {vehicles.map(vehicle => (
+                  <div key={vehicle.id} className="vehicle-item">
+                    <div className="vehicle-info">
+                      <img src={getVehicleImage(vehicle.vehicleType)} alt={vehicle.vehicleType} className="vehicle-image" />
+                      <div className="vehicle-text">
+                        <h2 style={{marginBottom: "20px"}}>
                           <FaBus style={{marginBottom: "-2px", marginRight: "10px"}}/>
-                          Select Vehicle
-                        </button>
+                          {vehicle.vehicleType}
+                        </h2>
+                        <p>Plate Number: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.plateNumber}</span></p>
+                        <p>👥 Capacity: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.capacity}</span></p>
+                        <p>{vehicle.status === 'Available' ? '🟢' : '🔴'} Status: <span style={{color: vehicle.status === 'Available' ? 'green' : 'red', marginLeft: "5px"}}>{vehicle.status}</span></p>
                       </div>
+                      <button className="btn-right-corner" onClick={() => handleSelectVehicle(vehicle)}>
+                        <FaBus style={{marginBottom: "-2px", marginRight: "10px"}}/>
+                        Select Vehicle
+                      </button>
                     </div>
-                  ))}
-                </div>
-                <div className="another-container">
-                  <div className="inner-container">
-                    <label className="events-label">📣 Events and Updates</label>
                   </div>
-                  <div className="events-list">
-                    {events.length > 0 ? (
-                      events.map((event, index) => (
-                        <div key={index} className="event-item">
-                          <p>{event.title}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="no-events-label">No Events</p>
-                    )}
-                  </div>
+                ))}
+              </div>
+              <div className="another-container">
+                <div className="inner-container">
+                  <label className="events-label">📣 Events and Updates</label>
                 </div>
+                <div className="events-list">
+                  {events.length > 0 ? (
+                    events.map((event, index) => (
+                      <div key={index} className="event-item">
+                        <p>{event.title}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="no-events-label">No Events</p>
+                  )}
+                </div>
+              </div>
               </div>
               <img src={logoImage1} alt="Logo" className="logo-image1" />
             </div>

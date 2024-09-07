@@ -94,6 +94,7 @@
   color: black;
   font-weight: bold;
   border: 2px solid black;
+  min-height: 0vh
 }
 
 .calendar-day.reserved:hover {
@@ -132,5 +133,14 @@
 
 .calendar-day.past {
   opacity: 0.5;
+}
+
+.reserved-times {
+  margin-top: 5px;
+  font-size: 0.9rem;
+}
+
+.reserved-time {
+  color: red;
 }
 

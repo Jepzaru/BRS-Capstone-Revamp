@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/calendar.css';
 import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
 
-const Calendar = ({ onDateSelect, minDate, returnDate }) => {
+const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   const currentDate = new Date();
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
   const [selectedDay, setSelectedDay] = useState(null);
   const [reservedDates, setReservedDates] = useState([]);
+  const [reservedTimes, setReservedTimes] = useState([]);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchReservedDates = async () => {
       try {
-        const response = await fetch('http://localhost:8080/reservations/check-vehicle', {
+        const response = await fetch(`http://localhost:8080/reservations/vehicle-availability?plateNumber=${encodeURIComponent(plateNumber)}`, {
           headers: { "Authorization": `Bearer ${token}` },
         });
 
@@ -30,11 +31,10 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
         const parsedDates = data.map(d => ({
           schedule: new Date(d.schedule),
           returnSchedule: d.returnSchedule ? new Date(d.returnSchedule) : null,
+          pickUpTime: d.pickUpTime,
+          departureTime: d.departureTime,
           status: d.status,
-          vehicleType: d.vehicleType
         }));
-
-        console.log('Fetched Reserved Dates:', parsedDates); 
 
         setReservedDates(parsedDates);
       } catch (error) {
@@ -42,8 +42,10 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
       }
     };
 
-    fetchReservedDates();
-  }, [token]);
+    if (plateNumber) {
+      fetchReservedDates();
+    }
+  }, [plateNumber, token]);
 
   useEffect(() => {
     if (minDate) {
@@ -70,9 +72,8 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
       const isAfterReturnDate = returnDate && date > returnDate;
 
       const reservedInfo = reservedDates.find(res =>
-        res.schedule.getFullYear() === date.getFullYear() &&
-        res.schedule.getMonth() === date.getMonth() &&
-        res.schedule.getDate() === date.getDate()
+        res.schedule.toDateString() === date.toDateString() ||
+        (res.returnSchedule && res.returnSchedule.toDateString() === date.toDateString())
       );
 
       const isReserved = reservedInfo !== undefined;
@@ -84,7 +85,9 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
         disabled: isPast || isBeforeMinDate || isAfterReturnDate,
         isPast,
         reserved: isReserved,
-        status
+        status,
+        pickUpTime: isReserved ? reservedInfo.pickUpTime : '',
+        departureTime: isReserved ? reservedInfo.departureTime : ''
       });
     }
     return days;
@@ -114,8 +117,24 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
 
   const handleDayClick = (day) => {
     const date = new Date(currentYear, currentMonth, day, 12, 0, 0); 
-    if (!date) return;
-    setSelectedDay(day);   
+    setSelectedDay(day);
+
+    const reservedInfo = reservedDates.find(res =>
+      res.schedule.getFullYear() === date.getFullYear() &&
+      res.schedule.getMonth() === date.getMonth() &&
+      res.schedule.getDate() === date.getDate()
+    );
+
+    if (reservedInfo) {
+      setReservedTimes([reservedInfo.pickUpTime, reservedInfo.departureTime]);
+      console.log(`Reserved times for ${date.toDateString()}:`);
+      console.log(`Pick-up Time: ${reservedInfo.pickUpTime}`);
+      console.log(`Departure Time: ${reservedInfo.departureTime}`);
+    } else {
+      setReservedTimes([]);
+      console.log(`No reservations for ${date.toDateString()}`);
+    }
+
     onDateSelect(date);
   };
 
@@ -141,11 +160,28 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
             onClick={() => !item.disabled && handleDayClick(item.day)}
           >
             {item.day}
+            {item.selected && item.reserved && reservedTimes.length > 0 && (
+              <div className="reserved-times">
+                {reservedTimes.map((time, idx) => (
+                  <div key={idx} className="reserved-time" style={{ color: 'red' }}>
+                    {formatTime(time)}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
     </div>
   );
+};
+
+const formatTime = (time) => {
+  if (!time || time === "N/A") return '';
+  const [hours, minutes] = time.split(':');
+  const formattedHours = (parseInt(hours, 10) % 12) || 12;
+  const amPm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
+  return `${formattedHours}:${minutes} ${amPm}`;
 };
 
 export default Calendar;

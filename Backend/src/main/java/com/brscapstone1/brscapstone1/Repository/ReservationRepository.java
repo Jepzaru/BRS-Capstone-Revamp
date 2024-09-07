@@ -13,5 +13,5 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
   List<ReservationEntity> findByUserName(String userName);
   List<ReservationEntity> findByOpcIsApproved(boolean opcIsApproved);
   List<ReservationEntity> findByScheduleBetween(LocalDate startDate, LocalDate endDate);
-  List<ReservationEntity> findByPlateNumberAndSchedule(String plateNumber, LocalDate schedule);
+  List<ReservationEntity> findByPlateNumber(String plateNumber);
 }

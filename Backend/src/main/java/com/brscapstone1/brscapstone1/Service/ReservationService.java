@@ -157,33 +157,18 @@ public class ReservationService {
     public List<ReservationEntity> getHeadApprovedReservations() {
         return resRepo.findByHeadIsApproved(true);
     }
-
-    public List<ReservedDateDTO> getReservedDates() {
-        List<ReservationEntity> reservations = resRepo.findAll();
-        return reservations.stream()
-            .filter(res -> "Approved".equals(res.getStatus()))
-            .map(res -> new ReservedDateDTO(
-                res.getSchedule(),
-                res.getReturnSchedule(), 
-                res.getPickUpTime(),
-                res.getDepartureTime(),
-                res.getStatus(),
-                res.getPlateNumber() 
-            ))
-            .collect(Collectors.toList());
-    }
     
-    public List<ReservedDateDTO> getReservedDates(String plateNumber, LocalDate date) {
-        List<ReservationEntity> reservations = resRepo.findByPlateNumberAndSchedule(plateNumber, date);
+    public List<ReservedDateDTO> getAllReservedDatesByPlateNumber(String plateNumber) {
+        List<ReservationEntity> reservations = resRepo.findByPlateNumber(plateNumber);
         return reservations.stream()
             .filter(res -> "Approved".equals(res.getStatus()))
             .map(res -> new ReservedDateDTO(
                 res.getSchedule(),
-                res.getReturnSchedule(), 
+                res.getReturnSchedule(),
                 res.getPickUpTime(),
                 res.getDepartureTime(),
                 res.getStatus(),
-                res.getPlateNumber() 
+                res.getPlateNumber()
             ))
             .collect(Collectors.toList());
     }

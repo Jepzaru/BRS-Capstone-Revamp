@@ -43,25 +43,13 @@ const Reservation = () => {
   const [firstName, lastName] = localPart.split('.');
   const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const [reservedDates, setReservedDates] = useState([]);
+  const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState('');
 
-  const fetchReservedDates = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/reservations/reserved-dates", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      setReservedDates(data);
-    } catch (error) {
-      console.error("Failed to fetch reserved dates.", error);
-    }
-  };
-  
   useEffect(() => {
-    fetchReservedDates();
-  }, [token]);
+    if (vehicle && vehicle.plateNumber) {
+      setSelectedVehiclePlateNumber(vehicle.plateNumber);
+    }
+  }, [vehicle]);
 
   const convertTo12HourFormat = (time24) => {
     const [hours, minutes] = time24.split(':');
@@ -571,6 +559,7 @@ const Reservation = () => {
             onDateSelect={handleDateSelect} 
             minDate={tripType === 'roundTrip' && isSelectingReturn ? selectedDate : null}
             returnScheduleDate={returnScheduleDate}
+            plateNumber={selectedVehiclePlateNumber}
           />
         </div>
       </div>

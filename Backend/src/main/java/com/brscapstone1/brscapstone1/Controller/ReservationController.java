@@ -140,18 +140,11 @@ public class ReservationController {
         return resServ.getHeadApprovedReservations();
     }
 
-    @GetMapping("/reservations/reserved-dates")
-    public ResponseEntity<List<ReservedDateDTO>> getReservedDates() {
-        List<ReservedDateDTO> reservedDateDTOs = resServ.getReservedDates();
-        return ResponseEntity.ok(reservedDateDTOs);
-    }
-
-    @GetMapping("/reservations/check-vehicle")
+    @GetMapping("/reservations/vehicle-availability")
     public ResponseEntity<List<ReservedDateDTO>> checkVehicleReservation(
-        @RequestParam String plateNumber,
-        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        @RequestParam String plateNumber) {
 
-        List<ReservedDateDTO> filteredDates = resServ.getReservedDates(plateNumber, date);
+        List<ReservedDateDTO> filteredDates = resServ.getAllReservedDatesByPlateNumber(plateNumber);
         return ResponseEntity.ok(filteredDates);
     }
 }
