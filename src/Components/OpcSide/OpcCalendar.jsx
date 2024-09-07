@@ -146,7 +146,7 @@ const OpcCalendar = () => {
                 <h4 onClick={() => toggleDescription(event.eventId)}>
                 🚩 {event.eventTitle} 
                 <span style={{fontSize: "14px", fontWeight: '400', marginLeft: '85px'}}>
-                  Click to view description <FaSortDown />
+                  Click to view<FaSortDown />
                 </span>
                 </h4>
                 {expandedEvent === event.eventId && (

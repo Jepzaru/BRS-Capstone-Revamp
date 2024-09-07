@@ -124,6 +124,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-left: 15px;
   }
   .opc-big-calendar-event-btn:hover{
     background-color: gold;
@@ -284,9 +285,6 @@
     border-radius: 15px;
     border: none;
     cursor: pointer;
-  }
-  .opc-big-calendar-event-btn{
-    margin-left: 85px;
   }
 
   .opc-big-calendar-previous:hover,

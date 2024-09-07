@@ -210,7 +210,7 @@ const OpcBigCalendar = () => {
         <div className="opc-big-calendar-events-content-header">
            <h2>Events on {selectedDate.toDateString()}   
             <button className='opc-big-calendar-event-btn' onClick={() => setShowAddEvent(true)}>
-          <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> Add Event
+          <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> Add New Event
         </button></h2>
         </div>
         {dayEvents.length > 0 ? (
@@ -277,7 +277,7 @@ const OpcBigCalendar = () => {
         {renderEvents()}
         {showAddEvent && (
           <div className="opc-big-calendar-add-event-modal">
-            <h3>Add Event</h3>
+            <h3>Add New Event</h3>
             <input
               type="text"
               placeholder="Event Title"
@@ -289,7 +289,7 @@ const OpcBigCalendar = () => {
               value={eventDescription}
               onChange={(e) => setEventDescription(e.target.value)}
             ></textarea>
-            <button onClick={handleEventSubmit}>Add Event</button>
+            <button onClick={handleEventSubmit}>Add New Event</button>
             <button onClick={() => setShowAddEvent(false)}>Cancel</button>
           </div>
         )}

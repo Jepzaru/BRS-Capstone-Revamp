@@ -57,7 +57,7 @@ const Main = () => {
         <Route path="/user-side/reservation" element={<ProtectedRoute path="/user-side/reservation" element={<Reservation />} />} />
         <Route path="/user-side/special-reservation" element={<ProtectedRoute path="/user-side/special-reservation" element={<SpecialReservation />} />} />
         <Route path="/manage-requests" element={<ProtectedRoute path="/manage-requests" element={<ManageRequests />} />} />
-        <Route path="/opc-bigcalendar" element={<OpcBigCalendar />} />
+        <Route path="/opc-bigcalendar" element={<ProtectedRoute path="/opc-bigcalendar" element={<OpcBigCalendar />} />} />
         <Route path="/settings" element={<ProtectedRoute path="/settings" element={<Settings />} />} />
         <Route path="/head-side" element={<ProtectedRoute path="/head-side" element={<HeadSide />} />} />
         <Route path="/head-approved-requests" element={<ProtectedRoute path="/head-approved-requests" element={<HeadApprovedRequests />} />} />
