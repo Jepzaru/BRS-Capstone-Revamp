@@ -102,13 +102,9 @@ body {
 }
 
 .head-requests-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background-color: white;
-  max-height: 600px; 
-  overflow-y: auto; 
-  overflow-x: hidden;
+  width: 100%; /* Fixed width for the table */
+  table-layout: fixed; /* Ensures the table doesn't overflow */
+  border-collapse: collapse; /* Combines borders */
 }
 
 
@@ -119,12 +115,13 @@ body {
   width: 100%;
 }
 
-.head-requests-table th, .head-requests-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+.head-requests-table th,
+.head-requests-table td {
+  padding: 10px; /* Adds padding to table cells */
+  text-align: left;
+  border: 1px solid #ccc; /* Adds borders for a clean look */
+  word-wrap: break-word; /* Prevents overflow by wrapping long text */
   text-align: center;
-  width: 150px;
-  box-sizing: border-box; 
 }
 
 .head-requests-table th {
@@ -145,6 +142,7 @@ body {
   display: table;
   width: 100%;
   table-layout: fixed;
+  font-size: 14px;
 }
 
 .head-requests-table tr:nth-child(even) {
@@ -160,6 +158,11 @@ body {
   padding: 20px;
 }
 
+.head-table-container {
+  height: 670px; 
+  overflow-y: auto;
+  background-color: white;
+}
 
 .modal-overlay {
   position: fixed;
@@ -191,8 +194,7 @@ body {
 .head-action-buttons {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 10px; 
+  gap: 5px; 
 }
 
 .approve-button, .reject-button, .view-file-button {
@@ -245,6 +247,11 @@ body {
 .head-requests-table th:nth-child(9),
 .head-requests-table td:nth-child(9) {
   width: 100px; 
+}
+
+.head-requests-table th:nth-child(11),
+.head-requests-table td:nth-child(11) {
+  width: 150px; 
 }
 
 

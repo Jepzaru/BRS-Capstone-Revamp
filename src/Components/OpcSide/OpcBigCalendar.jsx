@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import '../../CSS/OpcCss/OpcBigCalendar.css'; // Import CSS for styling
+import '../../CSS/OpcCss/OpcBigCalendar.css'; 
 import SideNavbar from './OpcNavbar';
+import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
 import Header from '../../Components/UserSide/Header';
 import { MdEvent, MdDelete, MdEdit } from 'react-icons/md';
 import { IoMdAddCircle } from "react-icons/io";
@@ -207,14 +208,19 @@ const OpcBigCalendar = () => {
     return (
       <div className="opc-big-calendar-events-content">
         <div className="opc-big-calendar-events-content-header">
-           <h2>Events on {selectedDate.toDateString()}</h2>
+           <h2>Events on {selectedDate.toDateString()}   
+            <button className='opc-big-calendar-event-btn' onClick={() => setShowAddEvent(true)}>
+          <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> Add Event
+        </button></h2>
         </div>
         {dayEvents.length > 0 ? (
           dayEvents.map((event, index) => (
             <div key={index} className="opc-big-calendar-event-item">
               <div className="opc-big-calendar-event-details">
-                <div className="opc-big-calendar-event-title">{event.eventTitle}</div>
-                <div className="opc-big-calendar-event-description">{event.eventDescription}</div>
+                <div className="opc-big-calendar-event-title">🚩 {event.eventTitle}</div>
+                <div className="opc-big-calendar-event-description">
+                 {event.eventDescription}
+                  </div>
               </div>
               <div className="opc-big-calendar-event-actions">
                 <MdEdit
@@ -237,10 +243,6 @@ const OpcBigCalendar = () => {
         ) : (
           <p>No events for this day.</p>
         )}
-        
-        <button className='opc-big-calendar-event-btn' onClick={() => setShowAddEvent(true)}>
-          <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> Add Event
-        </button>
       </div>
     );
   };
@@ -255,11 +257,11 @@ const OpcBigCalendar = () => {
         <SideNavbar />
         <div className="big-calendar">
           <div className="opc-big-calendar-header">
-            <button className='opc-big-calendar-previous' onClick={prevMonth}>&lt;</button>
+            <button className='opc-big-calendar-previous' onClick={prevMonth}><BiSolidLeftArrow style={{marginBottom: '-2px'}}/></button>
             <h2>
               {currentDate.toLocaleString('default', { month: 'long' })} {currentDate.getFullYear()}
             </h2>
-            <button className='opc-big-calendar-next' onClick={nextMonth}>&gt;</button>
+            <button className='opc-big-calendar-next' onClick={nextMonth}><BiSolidRightArrow  style={{marginBottom: '-2px'}}/></button>
           </div>
           <div className="opc-big-calendar-grid">
             <div className="opc-big-calendar-day-name">Sun</div>

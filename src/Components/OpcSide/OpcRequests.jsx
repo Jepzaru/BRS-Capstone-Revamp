@@ -219,13 +219,16 @@ const OpcRequests = () => {
             <table className="opc-requests-table">
               <thead>
                 <tr>
+                  <th>Transaction ID</th>
                   <th>Requestor Name</th>
+                  <th>Department</th>
                   <th>Type of Trip</th>
                   <th>From</th>
                   <th>To</th>
                   <th>Capacity</th>
-                  <th>Vehicle Type</th>
+                  <th>Vehicle</th>
                   <th>Schedule</th>
+                  <th>Return Schedule</th>
                   <th>Departure Time</th>
                   <th>Pick Up Time</th>
                   <th className="reason-column">Reason</th>
@@ -236,18 +239,21 @@ const OpcRequests = () => {
               <tbody>
                 {getFilteredAndSortedRequests().length === 0 ? (
                   <tr>
-                    <td colSpan="12" className="no-requests">No Requests Available</td>
+                    <td colSpan="16" className="no-requests">No Requests Available</td>
                   </tr>
                 ) : (
                   getFilteredAndSortedRequests().map((request, index) => (
                     <tr key={index}>
+                       <td>{request.transactionId}</td>
                       <td>{request.userName}</td>
+                      <td>{request.department}</td>
                       <td>{request.typeOfTrip}</td>
                       <td>{request.destinationFrom}</td>
                       <td>{request.destinationTo}</td>
                       <td>{request.capacity}</td>
                       <td>{request.vehicleType}</td>
                       <td>{request.schedule}</td>
+                      <td>{request.returnSchedule}</td>
                       <td>{request.departureTime}</td>
                       <td>{request.pickUpTime}</td>
                       <td className="reason-column">{request.reason}</td>

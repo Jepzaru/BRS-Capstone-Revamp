@@ -72,7 +72,6 @@
     justify-content: center;
     height: 83px; /* Smaller height for compact calendar */
     border: 1px solid #ddd;
-    font-size: 14px;
     text-align: center;
     position: relative; /* For positioning events inside the day */
   }
@@ -279,12 +278,15 @@
   {
     background-color: #782324;
     color: #ffcc00;
-    width: 8%;
-    height:50px;
+    padding: 15px 20px;
     font-size: 100px;
     font-weight: bold;
     border-radius: 15px;
-    border-color: none;
+    border: none;
+    cursor: pointer;
+  }
+  .opc-big-calendar-event-btn{
+    margin-left: 85px;
   }
 
   .opc-big-calendar-previous:hover,

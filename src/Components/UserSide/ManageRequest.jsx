@@ -127,7 +127,6 @@ const ManageRequest = () => {
                   <th>To</th>
                   <th>Capacity</th>
                   <th>Vehicle</th>
-                  <th>Plate Number</th>
                   <th>Schedule</th>
                   <th>Return Schedule</th>
                   <th>Departure Time</th>

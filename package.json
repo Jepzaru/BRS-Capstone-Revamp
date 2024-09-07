@@ -12,6 +12,9 @@
   "dependencies": {
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.3",
+    "framer": "^2.4.1",
+    "framer-motion": "^11.5.4",
+    "motion": "^10.18.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.4",
     "react-chartjs-2": "^5.2.0",

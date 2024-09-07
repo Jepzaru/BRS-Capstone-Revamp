@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../../CSS/OpcCss/OpcCalendar.css';
 import { BsCalendar2EventFill } from "react-icons/bs";
+import { FaCalendarDay } from "react-icons/fa";
+import { FaSortDown } from "react-icons/fa";
 import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
 
 const OpcCalendar = () => {
@@ -9,6 +11,7 @@ const OpcCalendar = () => {
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
   const [selectedDay, setSelectedDay] = useState(currentDate.getDate());
   const [events, setEvents] = useState([]);
+  const [expandedEvent, setExpandedEvent] = useState(null); // Add state for toggling description
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -57,16 +60,14 @@ const OpcCalendar = () => {
       const selectedDate = new Date(currentYear, currentMonth, day);
       setSelectedDay(day);
   
-      // Format date as yyyy/MM/dd
       const year = selectedDate.getFullYear();
-      const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); 
       const dayOfMonth = String(selectedDate.getDate()).padStart(2, '0');
       const formattedDate = `${year}/${month}/${dayOfMonth}`;
   
-      // Fetch events for the selected date
       try {
-        const token = localStorage.getItem('token'); // Adjust token retrieval method if needed
-        console.log('Token:', token); // Log token for debugging
+        const token = localStorage.getItem('token');
+        console.log('Token:', token); 
         const response = await fetch(`http://localhost:8080/opc/events/getAll`, {
           method: 'GET',
           headers: {
@@ -91,11 +92,14 @@ const OpcCalendar = () => {
   };
 
   useEffect(() => {
-    // Automatically select the present day when the current month and year are selected
     if (currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear()) {
       setSelectedDay(currentDate.getDate());
     }
   }, [currentMonth, currentYear]);
+
+  const toggleDescription = (eventId) => {
+    setExpandedEvent(expandedEvent === eventId ? null : eventId);
+  };
 
   return (
     <div className="opc-calendar">
@@ -139,9 +143,23 @@ const OpcCalendar = () => {
           {events.length > 0 ? (
             events.map(event => (
               <div key={event.eventId} className="event-item">
-                <h5>{event.eventTitle}</h5>
-                <p>{event.eventDescription}</p>
-                <p>{new Date(event.eventDate).toLocaleDateString()}</p>
+                <h4 onClick={() => toggleDescription(event.eventId)}>
+                🚩 {event.eventTitle} 
+                <span style={{fontSize: "14px", fontWeight: '400', marginLeft: '85px'}}>
+                  Click to view description <FaSortDown />
+                </span>
+                </h4>
+                {expandedEvent === event.eventId && (
+                  <div className="event-description">
+                    <div className='details'>
+                    <p><span style={{fontWeight: '700', marginRight: '5px'}}>
+                      <FaCalendarDay style={{marginRight: '10px'}}/>                    
+                      Date: </span> {new Date(event.eventDate).toLocaleDateString()}</p>
+                    <p><span style={{fontWeight: '700', marginRight: '5px'}}>Description: </span>{event.eventDescription}
+                    </p>
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           ) : (

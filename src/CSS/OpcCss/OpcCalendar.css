@@ -73,9 +73,35 @@
     background-color: white;
     height: 210px;
     border-radius: 10px;
+    overflow-y: auto;
+  }
+  
+  .event-item{
+    cursor: pointer;
+    background-color: #ddd;
+    color: black;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 15px;
+    
+
+  }
+  .event-item:hover{
+    background-color: #ffcc00;
+    color: #782324;
+    transition: background-color 0.3s;
   }
 
-  
+  .event-description{
+    background-color: white;
+    color: rgb(33, 33, 33);
+    border-radius: 8px;
+  }
+
+  .details{
+   padding: 10px;
+  }
+
   .previous{
     font-weight: 900;
   }
@@ -95,4 +121,5 @@
   .calendar-day.past {
     opacity: 0.5;
   }
+  
   
