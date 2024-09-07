@@ -63,7 +63,6 @@ const Reservation = () => {
     fetchReservedDates();
   }, [token]);
 
-
   const convertTo12HourFormat = (time24) => {
     const [hours, minutes] = time24.split(':');
     const period = hours >= 12 ? 'PM' : 'AM';
@@ -250,6 +249,7 @@ const Reservation = () => {
       schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
       returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null, 
       vehicleType: formData.vehicleType,
+      plateNumber: formData.plateNumber,
       pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
       departureTime: formatTime(formData.departureTime),
       reason: formData.reservationReason,

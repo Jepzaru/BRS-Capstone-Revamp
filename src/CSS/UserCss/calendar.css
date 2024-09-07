@@ -9,8 +9,6 @@
   border-radius: 15px;
 }
 
-/* Navigation bar styles */
-
 .calendar-nav {
   display: flex;
   justify-content: space-between;
@@ -35,9 +33,6 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-
-
-/* Month header styles */
 .calendar-month {
   font-weight: bold;
   font-size: 18px;
@@ -48,14 +43,12 @@
   padding: 10px 50px;
 }
 
-/* Grid styles */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
 }
 
-/* Day name styles */
 .calendar-day-name{
   text-align: center;
   padding: 5px;
@@ -65,6 +58,7 @@
   background-color: #782324;
   color: white;
 }
+
 .calendar-indicator{
   display: flex;
   flex-direction: row; 
@@ -73,8 +67,6 @@
   
 }
 
-
-/* Day cell styles */
 .calendar-day{
   text-align: center;
   padding: 5px;
@@ -97,16 +89,15 @@
   color: white
 }
 
-/* Reserved dates styles */
 .calendar-day.reserved {
-  background-color: gold; /* Light red background */
+  background-color: gold; 
   color: black;
   font-weight: bold;
   border: 2px solid black;
 }
 
 .calendar-day.reserved:hover {
-  background-color: #ffcc00; /* Darker red on hover */
+  background-color: #ffcc00; 
 }
 
 .subheader {
@@ -118,22 +109,27 @@
   margin: 0;
   font-size: 24px;
 }
+
 .previous{
   font-weight: 900;
 }
+
 .next{
   font-weight: 900;
 }
+
 .previous:hover{
   background-color: #782324;
   transition: background-color 0.3s;
   color: #ffcc00;
 }
+
 .next:hover{
   background-color: #782324;
   transition: background-color 0.3s;
   color: #ffcc00;
 }
+
 .calendar-day.past {
   opacity: 0.5;
 }

@@ -8,25 +8,40 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
   const [selectedDay, setSelectedDay] = useState(null);
   const [reservedDates, setReservedDates] = useState([]);
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchReservedDates = async () => {
       try {
-        const response = await fetch('http://localhost:8080/reservations/reserved-dates', {
-          headers: { "Authorization": `Bearer ${token}` }
+        const response = await fetch('http://localhost:8080/reservations/check-vehicle', {
+          headers: { "Authorization": `Bearer ${token}` },
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
         const data = await response.json();
-        setReservedDates(data.map(d => ({
+
+        if (!Array.isArray(data)) {
+          throw new Error("Expected data to be an array");
+        }
+
+        const parsedDates = data.map(d => ({
           schedule: new Date(d.schedule),
           returnSchedule: d.returnSchedule ? new Date(d.returnSchedule) : null,
-          status: d.status
-        })));
+          status: d.status,
+          vehicleType: d.vehicleType
+        }));
+
+        console.log('Fetched Reserved Dates:', parsedDates); 
+
+        setReservedDates(parsedDates);
       } catch (error) {
         console.error("Error fetching reserved dates:", error);
       }
     };
-  
+
     fetchReservedDates();
   }, [token]);
 
@@ -43,36 +58,33 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
     const totalDays = daysInMonth(currentMonth, currentYear);
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const days = [];
-  
+
     for (let i = 0; i < firstDay; i++) {
       days.push({ day: '', selected: false, disabled: true, reserved: false, status: '' });
     }
-  
+
     for (let i = 1; i <= totalDays; i++) {
-      const date = new Date(currentYear, currentMonth, i); 
+      const date = new Date(currentYear, currentMonth, i);
       const isPast = date < currentDate;
       const isBeforeMinDate = minDate && date < minDate;
       const isAfterReturnDate = returnDate && date > returnDate;
-  
+
       const reservedInfo = reservedDates.find(res =>
-        (res.schedule.getFullYear() === date.getFullYear() &&
+        res.schedule.getFullYear() === date.getFullYear() &&
         res.schedule.getMonth() === date.getMonth() &&
-        res.schedule.getDate() === date.getDate()) ||
-        (res.returnSchedule && res.returnSchedule.getFullYear() === date.getFullYear() &&
-        res.returnSchedule.getMonth() === date.getMonth() &&
-        res.returnSchedule.getDate() === date.getDate())
+        res.schedule.getDate() === date.getDate()
       );
-  
+
       const isReserved = reservedInfo !== undefined;
       const status = isReserved ? reservedInfo.status : '';
-  
-      days.push({ 
-        day: i, 
-        selected: selectedDay === i, 
-        disabled: isPast || isBeforeMinDate || isAfterReturnDate, 
+
+      days.push({
+        day: i,
+        selected: selectedDay === i,
+        disabled: isPast || isBeforeMinDate || isAfterReturnDate,
         isPast,
         reserved: isReserved,
-        status 
+        status
       });
     }
     return days;
@@ -125,7 +137,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
         {generateDays().map((item, index) => (
           <div
             key={index}
-            className={`calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.isPast ? ' past' : ''}${item.reserved ? ' reserved' : ''}${item.status === 'approved' ? ' approved' : ''}`}
+            className={`calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.isPast ? ' past' : ''}${item.reserved ? ' reserved' : ''}${item.status === 'Approved' ? ' approved' : ''}`}
             onClick={() => !item.disabled && handleDayClick(item.day)}
           >
             {item.day}

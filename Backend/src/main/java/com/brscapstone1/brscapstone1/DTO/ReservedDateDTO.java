@@ -14,6 +14,7 @@ public class ReservedDateDTO {
     private String pickUpTime;
     private String departureTime;
     private String status;
+    private String plateNumber;
 
     public LocalDate getSchedule() {
         return schedule;
@@ -55,14 +56,23 @@ public class ReservedDateDTO {
         this.status = status;
     }
 
+    public String getPlateNumber() {
+        return plateNumber;
+    }
+
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
+    }
+
     public ReservedDateDTO() {
     }
 
-    public ReservedDateDTO(LocalDate schedule, LocalDate returnSchedule, String pickUpTime, String departureTime, String status) {
+    public ReservedDateDTO(LocalDate schedule, LocalDate returnSchedule, String pickUpTime, String departureTime, String status, String plateNumber) {
         this.schedule = schedule;
         this.returnSchedule = returnSchedule;
         this.pickUpTime = pickUpTime;
         this.departureTime = departureTime;
         this.status = status;
+        this.plateNumber = plateNumber;
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.brscapstone1.brscapstone1.DTO.ReservedDateDTO;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
 import com.brscapstone1.brscapstone1.Service.ReservationService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -105,27 +106,27 @@ public class ReservationController {
          }
      }
      
-      //[PUT] update reservation
-      @PutMapping("/reservations/update/{reservationId}")
-      public ResponseEntity<ReservationEntity> updateReservation(@PathVariable int reservationId, 
-                                                                  @RequestParam(value = "file", required = false) MultipartFile file,
-                                                                  @RequestParam("reservation") String reservationJson) {
-          try {
-              ObjectMapper objectMapper = new ObjectMapper();
-              ReservationEntity updatedReservation = objectMapper.readValue(reservationJson, ReservationEntity.class);
-              ReservationEntity updatedEntity = resServ.updateReservation(reservationId, updatedReservation, file);
-              return ResponseEntity.ok(updatedEntity);
-          } catch (IOException e) {
-              e.printStackTrace();
-              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-          } catch (IllegalArgumentException e) {
-              e.printStackTrace();
-              return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-          } catch (Exception e) {
-              e.printStackTrace();
-              return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-          }
-      }
+    //[PUT] update reservation
+    @PutMapping("/reservations/update/{reservationId}")
+    public ResponseEntity<ReservationEntity> updateReservation(@PathVariable int reservationId, 
+                                                                @RequestParam(value = "file", required = false) MultipartFile file,
+                                                                @RequestParam("reservation") String reservationJson) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ReservationEntity updatedReservation = objectMapper.readValue(reservationJson, ReservationEntity.class);
+            ReservationEntity updatedEntity = resServ.updateReservation(reservationId, updatedReservation, file);
+            return ResponseEntity.ok(updatedEntity);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
     //[GET] all OPC approved
     @GetMapping("/reservations/opc-approved")
@@ -139,10 +140,18 @@ public class ReservationController {
         return resServ.getHeadApprovedReservations();
     }
 
-    //[GET] all reserved dates
     @GetMapping("/reservations/reserved-dates")
     public ResponseEntity<List<ReservedDateDTO>> getReservedDates() {
         List<ReservedDateDTO> reservedDateDTOs = resServ.getReservedDates();
         return ResponseEntity.ok(reservedDateDTOs);
+    }
+
+    @GetMapping("/reservations/check-vehicle")
+    public ResponseEntity<List<ReservedDateDTO>> checkVehicleReservation(
+        @RequestParam String plateNumber,
+        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+
+        List<ReservedDateDTO> filteredDates = resServ.getReservedDates(plateNumber, date);
+        return ResponseEntity.ok(filteredDates);
     }
 }
