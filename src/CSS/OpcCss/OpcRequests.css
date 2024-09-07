@@ -44,9 +44,10 @@ body {
 }
 
 .table-container {
-  max-height: 670px; 
+  height: 670px; 
   overflow-y: auto;
   margin-top: 10px;
+  background-color: white;
 }
 
 .search-container {
@@ -112,6 +113,9 @@ body {
   padding: 8px;
   text-align: center;
 }
+.opc-requests-table td{
+  font-size: 14px;
+}
 
 .opc-requests-table th {
   background-color: #ddd;
@@ -126,13 +130,6 @@ body {
   background-color: white;
 }
 
-.opc-requests-table tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-.opc-requests-table tr:hover {
-  background-color: #ddd;
-}
 
 .no-requests {
   text-align: center;
@@ -145,6 +142,11 @@ body {
   color: orange;
   font-weight: 800;
 }
+.status-approved {
+  color: green;
+  font-weight: 800;
+}
+
 
 .opc-action-buttons {
   display: flex;
@@ -206,6 +208,25 @@ body {
   max-width: 150px; 
   white-space: normal; 
   word-break: break-word; 
+}
+.generate-report-button{
+  background-color: rgb(1, 87, 1);
+  color: white;
+  padding: 10px; 
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.generate-report-button:hover{
+  background-color: #4CAF50;
+  transition: background-color 0.3s;
+}
+
+.selected-row {
+  background-color: #4CAF50; 
+  color: white;
 }
 
 @media (max-width: 767px) {

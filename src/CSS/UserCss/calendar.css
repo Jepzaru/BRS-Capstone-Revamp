@@ -35,10 +35,7 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.calendar-nav button:hover {
-  background-color: #d32f2f;
-  color: #fff;
-}
+
 
 /* Month header styles */
 .calendar-month {
@@ -68,6 +65,14 @@
   background-color: #782324;
   color: white;
 }
+.calendar-indicator{
+  display: flex;
+  flex-direction: row; 
+  gap: 20px;
+  font-weight: 700;
+  
+}
+
 
 /* Day cell styles */
 .calendar-day{
@@ -94,13 +99,14 @@
 
 /* Reserved dates styles */
 .calendar-day.reserved {
-  background-color: #e57373; /* Light red background */
-  color: #fff;
+  background-color: gold; /* Light red background */
+  color: black;
   font-weight: bold;
+  border: 2px solid black;
 }
 
 .calendar-day.reserved:hover {
-  background-color: #c62828; /* Darker red on hover */
+  background-color: #ffcc00; /* Darker red on hover */
 }
 
 .subheader {
@@ -131,3 +137,4 @@
 .calendar-day.past {
   opacity: 0.5;
 }
+

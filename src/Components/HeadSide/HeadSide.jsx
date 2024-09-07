@@ -165,7 +165,7 @@ const HeadSide = () => {
             </div>
           </div>
           <div className='head-container1'>
-            <div className='table-container'>
+            <div className='head-table-container'>
             <table className="head-requests-table">
               <thead>
                 <tr>
@@ -176,6 +176,7 @@ const HeadSide = () => {
                   <th>Capacity</th>
                   <th>Vehicle Type</th>
                   <th>Schedule</th>
+                  <th>Return Schedule</th>
                   <th>Departure Time</th>
                   <th>Pick Up Time</th>
                   <th>Reason</th>
@@ -185,7 +186,7 @@ const HeadSide = () => {
               <tbody>
                 {request.length === 0 ? (
                   <tr>
-                    <td colSpan="12" className="no-requests">No Requests Available</td>
+                    <td colSpan="13" className="no-requests">No Requests Available</td>
                   </tr>
                 ) : (
                   request.map((requests, index) => (
@@ -197,6 +198,7 @@ const HeadSide = () => {
                       <td>{requests.capacity}</td>
                       <td>{requests.vehicleType}</td>
                       <td>{requests.schedule}</td>
+                      <td>{requests.returnSchedule}</td>
                       <td>{requests.departureTime}</td>
                       <td>{requests.pickUpTime}</td>
                       <td>{splitText(requests.reason, 15)}</td>

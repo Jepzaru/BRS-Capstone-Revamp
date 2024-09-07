@@ -1,110 +1,146 @@
-/* UserSide.css */
-
 body, html {
-    margin: 0;
-    padding: 0;
-  }
-  
-  body {
-    background-color: white;
-    font-family: 'Poppins', sans-serif;
-    color: black;
-    z-index: -999;
-  }
-  
-  .approved {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: white;
+  font-family: 'Poppins', sans-serif;
+  color: black;
+}
+
+.approved {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.approved-content1 {
+  display: flex;
+  flex: 1;
+}
+
+.approved1 {
+  padding: 20px;
+  flex: 1;
+  margin-left: 300px;
+  margin-top: 50px;
+}
+
+.title-search-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align the search bar beside the title */
+  gap: 20px; /* Add some space between title and search bar */
+}
+
+.approved1 h1 {
+  font-size: 32px;
+  margin-right: 20px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
+
+.search-bar {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.search-button {
+  background-color: #782324;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.sort-dropdown {
+  padding: 6px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.approved-logo-image {
+  position: fixed;
+  top: 150px;
+  right: -100px;
+  height: 1000px;
+  max-width: 1000px;
+  z-index: -1;
+  filter: grayscale(100%);
+  opacity: 0.2;
+}
+
+.approved-container1 {
+  background-color: #CBC3C3;
+  height: 690px;
+  width: 1500px;
+  border-radius: 10px;
+  padding: 20px;
+  margin-right: 20px;
+  z-index: 999;
+}
+
+.approved-requests-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background-color: white;
+  height: 680px;
+  overflow: auto;
+}
+
+.approved-requests-table th, .approved-requests-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+.approved-requests-table td{
+  font-size: 14px;
+}
+
+.approved-requests-table th {
+  background-color: #ddd;
+  color: black;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.approved-requests-table tbody {
+  background-color: white;
+}
+
+.approved-requests-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.approved-requests-table tr:hover {
+  background-color: #ddd;
+}
+
+@media (max-width: 767px) {
   .approved-content1 {
-    display: flex;
-    flex: 1;
-  }
-  
-  .approved1 {
-    padding: 20px;
-    flex: 1;
-    margin-left: 300px;
-    margin-top: 50px;
-  }
-  
-  .approved1 h1 {
-    font-size: 32px;
-  }
-  
-  .approved-logo-image {
-    position: fixed;
-    top: 150px;
-    right: -100px;
-    height: 1000px;
-    max-width: 1000px;
-    z-index: -1;
-    filter: grayscale(100%);
-    opacity: 0.2;
+    margin-left: -300px;
   }
   
   .approved-container1 {
-    background-color: #CBC3C3;
-    height: 690px;
-    width: 1500px;
-    border-radius: 10px;
-    padding: 20px;
-    margin-right: 20px;
-    z-index: 999;
+    width: 530px;
+    height: 650px;
   }
-  
-  .approved-requests-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    background-color: white;
-    height: 680px;
-    overflow: auto;
-  
-  }
-  
-  .approved-requests-table th, .approved-requests-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-  }
-  
+
   .approved-requests-table th {
-    background-color: #ddd;
-    color: black;
-    font-size: 12px;
-    font-weight: 500;
-    top: 0;
+    font-size: 7px;
   }
-  .approved-requests-table tbody {
-    background-color: white;
-    
+
+  .approved-requests-table {
+    height: 630px;
   }
-  
-  .approved-requests-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  .approved-requests-table tr:hover {
-    background-color: #ddd;
-  }
-  
-  
-  @media (max-width: 767px) {
-    .approved-content1 {
-      margin-left: -300px;
-    }
-    .approved-container1 {
-      width: 530px;
-      height: 650px;
-    }
-    .approved-requests-table th{
-      font-size: 7px;
-    }
-    .approved-requests-table{
-      height: 630px;
-    }
-  }
-  
+}

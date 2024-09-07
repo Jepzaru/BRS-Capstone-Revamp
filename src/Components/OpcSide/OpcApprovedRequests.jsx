@@ -5,6 +5,7 @@ import SideNavbar from './OpcNavbar';
 import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
 import { FaClipboardCheck } from "react-icons/fa6";
+import { RiFileExcel2Fill } from "react-icons/ri";
 import * as XLSX from 'xlsx'; // Import XLSX
 import '../../CSS/OpcCss/OpcRequests.css';
 
@@ -12,6 +13,8 @@ const OpcApprovedRequests = () => {
   const [requests, setRequests] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("");
+  const [selectedRows, setSelectedRows] = useState(new Set());
+  const [confirmMode, setConfirmMode] = useState(false);
 
   const token = localStorage.getItem('token');
 
@@ -35,9 +38,6 @@ const OpcApprovedRequests = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSearchClick = () => {
-  };
-
   const handleSortChange = (event) => {
     setSortOption(event.target.value);
   };
@@ -59,8 +59,21 @@ const OpcApprovedRequests = () => {
 
   const sortedRequests = sortRequests(requests);
 
+  const handleRowSelection = (transactionId) => {
+    setSelectedRows((prevSelectedRows) => {
+      const updatedSelectedRows = new Set(prevSelectedRows);
+      if (updatedSelectedRows.has(transactionId)) {
+        updatedSelectedRows.delete(transactionId);
+      } else {
+        updatedSelectedRows.add(transactionId);
+      }
+      return updatedSelectedRows;
+    });
+  };
+
   const exportToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(sortedRequests, {
+    const selectedRequests = requests.filter(request => selectedRows.has(request.transactionId));
+    const ws = XLSX.utils.json_to_sheet(selectedRequests, {
       header: [
         "userName", "typeOfTrip", "destinationFrom", "destinationTo", 
         "capacity", "vehicleType", "schedule", "departureTime", 
@@ -72,6 +85,11 @@ const OpcApprovedRequests = () => {
     XLSX.utils.book_append_sheet(wb, ws, "Approved Requests");
     
     XLSX.writeFile(wb, "Approved_Requests.xlsx");
+  };
+
+  const handleCancel = () => {
+    setSelectedRows(new Set());
+    setConfirmMode(false);
   };
 
   return (
@@ -90,7 +108,7 @@ const OpcApprovedRequests = () => {
                 onChange={handleSearchChange}
                 className="search-bar"
               />
-              <button onClick={handleSearchClick} className="search-button"><IoSearch style={{ marginBottom: "-3px" }} /> Search</button>
+              <button onClick={handleSearchChange} className="search-button"><IoSearch style={{ marginBottom: "-3px" }} /> Search</button>
               <FaSortAlphaDown style={{ color: "#782324" }} />
               <select onChange={handleSortChange} className="sort-dropdown">
                 <option value="">Sort By</option>
@@ -98,14 +116,35 @@ const OpcApprovedRequests = () => {
                 <option value="ascending">Capacity Ascending</option>
                 <option value="descending">Capacity Descending</option>
               </select>
+              <button
+                onClick={() => {
+                  if (confirmMode) {
+                    exportToExcel();
+                  }
+                  setConfirmMode(!confirmMode);
+                }}
+                className="generate-report-button"
+              >
+                <RiFileExcel2Fill style={{marginRight: '10px'}}/>
+                {confirmMode ? 'Confirm' : 'Generate Report'}
+              </button>
+              {confirmMode && (
+                <button
+                  onClick={handleCancel}
+                  className="cancel-button"
+                >
+                  Cancel
+                </button>
+              )}
             </div>
           </div>
           <div className='opc-request-container1'>
             <div className='table-container'>
-              <button onClick={exportToExcel} className="generate-report-button">Generate Report</button>
               <table className="opc-requests-table">
                 <thead>
                   <tr>
+                    {confirmMode && <th>Select</th>}
+                    <th>Transaction ID</th>
                     <th>Requestor Name</th>
                     <th>Type of Trip</th>
                     <th>From</th>
@@ -113,6 +152,7 @@ const OpcApprovedRequests = () => {
                     <th>Capacity</th>
                     <th>Vehicle Type</th>
                     <th>Schedule</th>
+                    <th>Return Schedule</th>
                     <th>Departure Time</th>
                     <th>Pick Up Time</th>
                     <th>Assigned Driver</th>
@@ -122,11 +162,24 @@ const OpcApprovedRequests = () => {
                 <tbody>
                   {requests.length === 0 ? (
                     <tr>
-                      <td colSpan="11" className="no-requests">No Requests Available</td>
+                      <td colSpan={confirmMode ? "14" : "13"} className="no-requests">No Requests Available</td>
                     </tr>
                   ) : (
                     sortedRequests.map((request, index) => (
-                      <tr key={index}>
+                      <tr
+                        key={index}
+                        className={selectedRows.has(request.transactionId) ? 'selected-row' : ''}
+                      >
+                        {confirmMode && (
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedRows.has(request.transactionId)}
+                              onChange={() => handleRowSelection(request.transactionId)}
+                            />
+                          </td>
+                        )}
+                        <td>{request.transactionId}</td>
                         <td>{request.userName}</td>
                         <td>{request.typeOfTrip}</td>
                         <td>{request.destinationFrom}</td>
@@ -134,10 +187,11 @@ const OpcApprovedRequests = () => {
                         <td>{request.capacity}</td>
                         <td>{request.vehicleType}</td>
                         <td>{request.schedule}</td>
+                        <td>{request.returnSchedule}</td>
                         <td>{request.departureTime}</td>
                         <td>{request.pickUpTime}</td>
                         <td>{request.driverName}</td>
-                        <td>{request.reason}</td>
+                        <td className="reason-column">{request.reason}</td>
                       </tr>
                     ))
                   )}

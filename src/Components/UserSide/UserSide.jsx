@@ -17,7 +17,7 @@ import { BiSolidDiamond } from "react-icons/bi";
 import { FaBook } from "react-icons/fa";
 import { FaBus } from "react-icons/fa";
 import '../../CSS/UserCss/UserSide.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const UserSide = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -54,15 +54,18 @@ const UserSide = () => {
   }, [token]);
 
   const getVehicleImage = (vehicleType) => {
-    switch (vehicleType) {
-      case 'Bus':
-        return vehicleImage;
-      case 'Coaster':
-        return vehicleImage2;
-      default:
-        return defaultVehicleImage; 
+    const lowerCaseType = vehicleType.toLowerCase();
+  
+    if (/bus/.test(lowerCaseType)) {
+      return vehicleImage;
     }
+    if (/coaster/.test(lowerCaseType)) {
+      return vehicleImage2;
+    }
+  
+    return defaultVehicleImage; 
   };
+  
 
   const imageGrids = [
     [vehiclesubImage1, vehiclesubImage2, vehiclesubImage3],
@@ -117,10 +120,12 @@ const UserSide = () => {
               <h1><FaBook style={{marginBottom: "-3px,", marginRight: "5px", color: "#782324"}}/> Reservation</h1>
               <div className="instruction-and-button">
                 <p>Please choose the right capacity of your vehicle</p>
+                <Link to= '/user-side/special-reservation'>
                 <button className="btn-beside-text">
                   <BiSolidDiamond style={{marginRight: "10px", marginBottom: "-3px"}}/>
                   Special Reservation
                 </button>
+                </Link>
               </div>
               <div className="container">
                 <div className="vehicle-list">

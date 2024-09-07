@@ -81,27 +81,29 @@ const HeadApprovedRequests = () => {
       <div className="approved-content1">
         <SideNavbar />
         <div className="approved1">
-          <h1>
-            <FaFileCircleCheck style={{ marginRight: "15px", color: "#782324" }} />
-            Approved Requests
-          </h1>
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder="Search by Reason or Name"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="search-bar"
-            />
-            <button onClick={() => {}} className="search-button">
-              <FaFileCircleCheck style={{ marginBottom: "-3px" }} />
-            </button>
-            <select onChange={handleSortChange} className="sort-dropdown">
-              <option value="">Sort By</option>
-              <option value="alphabetical">Alphabetical</option>
-              <option value="ascending">Capacity Ascending</option>
-              <option value="descending">Capacity Descending</option>
-            </select>
+        <div className="title-search-container">
+            <h1>
+              <FaFileCircleCheck style={{ marginRight: "15px", color: "#782324" }} />
+              Approved Requests
+            </h1>
+            <div className="search-container">
+              <input
+                type="text"
+                placeholder="Search by Reason or Name"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-bar"
+              />
+              <button onClick={() => {}} className="search-button">
+                <FaFileCircleCheck style={{ marginBottom: "-3px" }} />
+              </button>
+              <select onChange={handleSortChange} className="sort-dropdown">
+                <option value="">Sort By</option>
+                <option value="alphabetical">Alphabetical</option>
+                <option value="ascending">Capacity Ascending</option>
+                <option value="descending">Capacity Descending</option>
+              </select>
+            </div>
           </div>
           <div className="approved-container1">
             {loading ? (
@@ -112,6 +114,7 @@ const HeadApprovedRequests = () => {
               <table className="approved-requests-table">
                 <thead>
                   <tr>
+                    <th>Transaction ID</th>
                     <th>Requestor Name</th>
                     <th>Type of Trip</th>
                     <th>From</th>
@@ -119,6 +122,7 @@ const HeadApprovedRequests = () => {
                     <th>Capacity</th>
                     <th>Vehicle Type</th>
                     <th>Schedule</th>
+                    <th>Return Schedule</th>
                     <th>Departure Time</th>
                     <th>Pick Up Time</th>
                     <th>Reason</th>
@@ -128,11 +132,12 @@ const HeadApprovedRequests = () => {
                 <tbody>
                   {getDisplayedRequests().length === 0 ? (
                     <tr>
-                      <td colSpan="11" className="no-requests">No Approved Requests Available</td>
+                      <td colSpan="12" className="no-requests">No Approved Requests Available</td>
                     </tr>
                   ) : (
                     getDisplayedRequests().map((request, index) => (
                       <tr key={request.id || index}>
+                        <td>{request.transactionId}</td>
                         <td>{request.userName}</td>
                         <td>{request.typeOfTrip}</td>
                         <td>{request.destinationFrom}</td>
@@ -140,10 +145,13 @@ const HeadApprovedRequests = () => {
                         <td>{request.capacity}</td>
                         <td>{request.vehicleType}</td>
                         <td>{request.schedule}</td>
+                        <td>{request.returnSchedule}</td>
                         <td>{request.departureTime}</td>
                         <td>{request.pickUpTime}</td>
                         <td>{request.reason}</td>
-                        <td>{request.status}</td>
+                        <td className={request.status === 'Pending' ? 'status-pending' : request.status === 'Approved' ? 'status-approved' : ''}>
+                        {request.status}
+                      </td>
                       </tr>
                     ))
                   )}

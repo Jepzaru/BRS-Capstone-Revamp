@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import Header from './Header';
-import logoImage1 from "../../Images/citbglogo.png";
-import SideNavbar from './SideNavbar';
-import { FaSwatchbook } from "react-icons/fa";
+import { FaSortAlphaDown, FaSwatchbook } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
-import { FaSortAlphaDown } from "react-icons/fa";
 import '../../CSS/UserCss/ManageRequest.css';
+import logoImage1 from "../../Images/citbglogo.png";
+import Header from './Header';
+import SideNavbar from './SideNavbar';
 
 const ManageRequest = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -66,6 +65,30 @@ const ManageRequest = () => {
     request.reason.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const getApprovalStatus = (request) => {
+    const statuses = [];
+  
+    if (request.headIsApproved) {
+      statuses.push(<span className="mr-status-approved">Approved (Head)</span>);
+    } else if (!request.headIsApproved && request.status === 'Pending') {
+      statuses.push(<span className="mr-status-pending">Pending (Head)</span>);
+    } else if  (request.rejected) {
+      statuses.push(<span className="mr-status-rejected">Rejected (Head)</span>);
+    }
+  
+    if (request.opcIsApproved) {
+      statuses.push(<span className="mr-status-approved">Approved (OPC)</span>);
+    } else if (!request.opcIsApproved && request.status === 'Pending') {
+      statuses.push(<span className="mr-status-pending">Pending (OPC)</span>);
+    } else if (request.rejected) {
+      statuses.push(<span className="mr-status-rejected">Rejected (OPC)</span>);
+    }
+  
+    return statuses;
+  };
+  
+
+
   return (
     <div className="app1">
       <Header />
@@ -103,7 +126,7 @@ const ManageRequest = () => {
                   <th>From</th>
                   <th>To</th>
                   <th>Capacity</th>
-                  <th>Vehicle Type</th>
+                  <th>Vehicle</th>
                   <th>Schedule</th>
                   <th>Return Schedule</th>
                   <th>Departure Time</th>
@@ -114,32 +137,34 @@ const ManageRequest = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredRequests.length === 0 ? (
-                  <tr>
-                    <td colSpan="13" className="no-requests">No Requests Made</td>
-                  </tr>
-                ) : (
-                  filteredRequests.map(request => (
-                    <tr key={request.id}>
-                      <td>{request.transactionId}</td>
-                      <td>{request.typeOfTrip}</td>
-                      <td>{request.destinationFrom}</td>
-                      <td>{request.destinationTo}</td>
-                      <td>{request.capacity}</td>
-                      <td>{request.vehicleType}-{request.plateNumber}</td>
-                      <td>{request.schedule}</td>
-                      <td>{request.returnSchedule}</td>
-                      <td>{request.departureTime}</td>
-                      <td>{request.pickUpTime}</td>
-                      <td>{request.department}</td>
-                      <td className="reason-column">{request.reason}</td>
-                      <td className={request.status === 'Pending' ? 'status-pending' : ''}>
-                        {request.status}
-                     </td>
+                  {filteredRequests.length === 0 ? (
+                    <tr>
+                      <td colSpan="13" className="no-requests">No Requests Made</td>
                     </tr>
-                  ))
-                )}
-              </tbody>
+                  ) : (
+                    filteredRequests.reverse().map(request => (
+                      <tr key={request.id}>
+                        <td>{request.transactionId}</td>
+                        <td>{request.typeOfTrip}</td>
+                        <td>{request.destinationFrom}</td>
+                        <td>{request.destinationTo}</td>
+                        <td>{request.capacity}</td>
+                        <td>{request.vehicleType}-{request.plateNumber}</td>
+                        <td>{request.schedule}</td>
+                        <td>{request.returnSchedule}</td>
+                        <td>{request.departureTime}</td>
+                        <td>{request.pickUpTime}</td>
+                        <td>{request.department}</td>
+                        <td className="reason-column">{request.reason}</td>
+                        <td>
+                          {getApprovalStatus(request).map((status, index) => (
+                            <div key={index}>{status}</div>
+                          ))}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
             </table>
             </div>
           </div>

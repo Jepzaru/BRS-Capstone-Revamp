@@ -114,6 +114,10 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
         <div className="calendar-month">{new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
         <button className='next' onClick={nextMonth}><BiSolidRightArrow /></button>
       </div>
+      <div className="calendar-indicator">
+        <p>🟡 Pending</p>
+        <p>🔴 Fully booked</p>
+      </div>
       <div className="calendar-grid">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
           <div key={day} className="calendar-day-name">{day}</div>
