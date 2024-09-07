@@ -77,6 +77,12 @@ public class ReservationService {
         if(reservation.getDriverName() == null || reservation.getDriverName().isEmpty()){
             reservation.setDriverName("No assigned driver");
         }
+        if(reservation.getReturnSchedule() == null){
+            reservation.setReturnSchedule(LocalDate.of(0001, 1, 1));
+        }
+        if(reservation.getPickUpTime() == null || reservation.getPickUpTime().isEmpty()){
+            reservation.setPickUpTime("N/A");
+        }
         if (reservation.getPlateNumber() != null && !reservation.getPlateNumber().isEmpty()) {
             reservation.setVehicleType(reservation.getVehicleType() + "-" + reservation.getPlateNumber());
         }
@@ -159,6 +165,7 @@ public class ReservationService {
             .filter(res -> "Approved".equals(res.getStatus()))
             .map(res -> new ReservedDateDTO(
                 res.getSchedule(),
+                res.getReturnSchedule(), 
                 res.getPickUpTime(),
                 res.getDepartureTime(),
                 res.getStatus()

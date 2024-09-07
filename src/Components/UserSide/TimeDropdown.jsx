@@ -1,16 +1,16 @@
 import React from 'react';
 import '../../CSS/UserCss/TimeDropdown.css'; 
 
-const TimeDropdown = ({ times, selectedTime, onChange, isReserved }) => {
+const TimeDropdown = ({ times, selectedTime, onChange, isReserved, name }) => {
   return (
     <div className="custom-dropdown">
       <select
-        id="departureTime"
-        name="departureTime"
+        id={name}
+        name={name}
         value={selectedTime}
         onChange={onChange}
       >
-        <option value="" disabled>Select Departure Time</option>
+        <option value="" disabled>Select {name === "departureTime" ? 'Departure' : 'Pick-up'} Time</option>
         {times.map(time => (
           <option
             key={time}

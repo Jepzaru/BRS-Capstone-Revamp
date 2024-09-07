@@ -1,13 +1,16 @@
 package com.brscapstone1.brscapstone1.DTO;
 
 import java.time.LocalDate;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ReservedDateDTO {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate schedule;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate returnSchedule;
+
     private String pickUpTime;
     private String departureTime;
     private String status;
@@ -18,6 +21,14 @@ public class ReservedDateDTO {
 
     public void setSchedule(LocalDate schedule) {
         this.schedule = schedule;
+    }
+
+    public LocalDate getReturnSchedule() {
+        return returnSchedule;
+    }
+
+    public void setReturnSchedule(LocalDate returnSchedule) {
+        this.returnSchedule = returnSchedule;
     }
 
     public String getPickUpTime() {
@@ -47,11 +58,11 @@ public class ReservedDateDTO {
     public ReservedDateDTO() {
     }
 
-    public ReservedDateDTO(LocalDate schedule, String pickUpTime, String departureTime, String status) {
+    public ReservedDateDTO(LocalDate schedule, LocalDate returnSchedule, String pickUpTime, String departureTime, String status) {
         this.schedule = schedule;
+        this.returnSchedule = returnSchedule;
         this.pickUpTime = pickUpTime;
         this.departureTime = departureTime;
         this.status = status;
     }
-
 }

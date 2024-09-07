@@ -1,28 +1,28 @@
 .custom-dropdown {
-    position: relative;
-    display: inline-block;
-  }
-  
-  .custom-dropdown select {
-    appearance: none; 
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background: #fff;
-    cursor: pointer;
-    width: 100%;
-  }
-  
-  .custom-dropdown option {
-    padding: 10px;
-  }
-  
-  .custom-dropdown .reserved {
-    color: red; 
-  }
+  position: relative;
+  display: inline-block;
+}
 
-  .reserved {
-    color: red;
-    font-weight: bold;
-  }
+.custom-dropdown select {
+  appearance: none; 
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  width: 100%;
+}
+
+.custom-dropdown option {
+  padding: 10px;
+}
+
+.custom-dropdown .reserved {
+  color: red; 
+}
+
+.reserved {
+  color: red;
+  font-weight: bold;
+}

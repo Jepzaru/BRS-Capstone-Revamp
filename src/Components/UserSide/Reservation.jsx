@@ -44,7 +44,6 @@ const Reservation = () => {
   const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const [reservedDates, setReservedDates] = useState([]);
 
-
   const fetchReservedDates = async () => {
     try {
       const response = await fetch("http://localhost:8080/reservations/reserved-dates", {
@@ -77,7 +76,7 @@ const Reservation = () => {
     for (let hours = 0; hours < 24; hours++) {
         for (let minutes = 0; minutes < 60; minutes += 30) {
             const time = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-            timeOptions.push(time); // Always add the time option
+            timeOptions.push(time);
         }
     }
     return timeOptions;
@@ -85,37 +84,13 @@ const Reservation = () => {
 
   const timeOptions = generateTimeOptions(reservedDates);
 
-  const isTimeReserved = (date, time) => {
-    if (!date || !time) return false; 
+  const isTimeReserved = (date, time, type) => {
+    if (!date || !time) return false;
     const formattedTime = convertTo12HourFormat(time);
     return reservedDates.some(reservation =>
-        reservation.schedule === date &&
-        reservation.departureTime === formattedTime
+      reservation.schedule === date &&
+      reservation[type] === formattedTime
     );
-};
-
-  const isTimeReservedForCurrentDate = () => {
-    const formattedDate = selectedDate ? selectedDate.toISOString().split('T')[0] : null;
-    console.log("Formatted Date:", formattedDate);
-    console.log("Departure Time:", formData.departureTime);
-    return formattedDate && formData.departureTime && isTimeReserved(
-      formattedDate,
-      formData.departureTime
-    );
-  };
-  
-
-  const departureTimeStyle = () => {
-    if (selectedDate && formData.departureTime) {
-      const formattedDate = selectedDate.toISOString().split('T')[0];
-      const isReserved = isTimeReserved(formattedDate, formData.departureTime);
-      return {
-        borderColor: isReserved ? 'red' : '', 
-        borderWidth: isReserved ? '2px' : '', 
-        color: isReserved ? 'red' : ''
-      };
-    }
-    return {};
   };
 
   const formatTime = (time) => {
@@ -127,14 +102,6 @@ const Reservation = () => {
     
     return `${formattedHours}:${minutes} ${amPm}`;
   };
-
-  // const convertTo12HourFormat = (time24) => {
-  //   const [hours, minutes] = time24.split(':');
-  //   const period = hours >= 12 ? 'PM' : 'AM';
-  //   const formattedHours = (hours % 12) || 12;
-  //   return `${formattedHours}:${minutes} ${period}`;
-  // };
-
 
   const [formData, setFormData] = useState({
     to: '',
@@ -172,7 +139,7 @@ const Reservation = () => {
     setFormData({
       ...formData,
       [name]: type === 'file' ? files[0] : value,
-      fileName: type === 'file' ? files[0].name : formData.fileName,
+      fileName: type === 'file' ? files[0]?.name || '' : formData.fileName,
     });
   };
 
@@ -230,8 +197,8 @@ const Reservation = () => {
   const handleTripTypeChange = (event) => {
     const selectedTripType = event.target.value;
     setTripType(selectedTripType);
-    setShowReturnSchedule(selectedTripType === 'roundTrip'); 
-  };
+    setIsSelectingReturn(selectedTripType === 'roundTrip'); 
+  };  
 
   const handleSubmit = () => {
     const {
@@ -244,7 +211,7 @@ const Reservation = () => {
       department,
       reservationReason
     } = formData;
-
+  
     const isFormValid = [
       from,
       to,
@@ -255,10 +222,10 @@ const Reservation = () => {
       department,
       reservationReason
     ].every(value => value.trim() !== '') && selectedDate;
-
-    const isTripTypeValid = tripType === 'oneWay' || (tripType === 'roundTrip' && formData.pickUpTime.trim() !== '');
+  
+    const isTripTypeValid = tripType === 'oneWay' || (tripType === 'roundTrip' && returnScheduleDate && formData.pickUpTime.trim() !== '');
     const isValid = isFormValid && isTripTypeValid;
-
+  
     if (isValid) {
       setModalMessage('Are you sure you want to submit this reservation?');
       setModalType('confirmation');
@@ -272,34 +239,34 @@ const Reservation = () => {
 
   const handleConfirm = async () => {
     const reservation = {
-        typeOfTrip: tripType,
-        destinationTo: formData.to,
-        destinationFrom: formData.from,
-        capacity: parseInt(formData.capacity, 10),
-        department: formData.department,
-        schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
-        returnSchedule: tripType === 'roundTrip' ? returnScheduleDate.toISOString().split('T')[0] : null,
-        vehicleType: formData.vehicleType,
-        pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : "N/A",
-        departureTime: formatTime(formData.departureTime),
-        reason: formData.reservationReason,
-        status: "Pending",
-        opcIsApproved: false,
-        isRejected: false,
-        headIsApproved: false,
-        feedback: "",
-        driverId: 0,
-        driverName: "",
+      typeOfTrip: tripType,
+      destinationTo: formData.to,
+      destinationFrom: formData.from,
+      capacity: parseInt(formData.capacity, 10),
+      department: formData.department,
+      schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
+      returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null, 
+      vehicleType: formData.vehicleType,
+      pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
+      departureTime: formatTime(formData.departureTime),
+      reason: formData.reservationReason,
+      status: "Pending",
+      opcIsApproved: false,
+      isRejected: false,
+      headIsApproved: false,
+      feedback: "",
+      driverId: 0,
+      driverName: "",
     };
-
+  
     const reservationFormData = new FormData();
     reservationFormData.append('reservation', JSON.stringify(reservation));
     reservationFormData.append('userName', `${formatName(firstName)} ${formatName(lastName)}`);
-
+  
     if (formData.approvalProof) {
       reservationFormData.append('file', formData.approvalProof);
     }
-
+  
     try {
       const response = await fetch('http://localhost:8080/user/reservations/add', {
         method: 'POST',
@@ -308,11 +275,11 @@ const Reservation = () => {
         },
         body: reservationFormData,
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+  
       const data = await response.json();
       setModalMessage('Reservation submitted successfully!');
       setModalType('success');
@@ -326,7 +293,7 @@ const Reservation = () => {
       setIsModalOpen(true);
     }
   };
-
+  
   const closeModal = () => {
     setIsModalOpen(false);
   };
@@ -401,7 +368,9 @@ const Reservation = () => {
               </div>
               <div className="form-group-inline">
                 <div className="form-group">
-                  <label htmlFor="schedule"><FaCalendarDay style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Schedule:</label>
+                  <label htmlFor="schedule">
+                    <FaCalendarDay style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Schedule:
+                  </label>
                   <input
                       type="text"
                       id="schedule"
@@ -428,25 +397,54 @@ const Reservation = () => {
                       />
                     </div>
                   )}
-                <div className="form-group">
-                  <label htmlFor="departureTime">
-                    <IoTime style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} />
-                    Departure Time:
-                  </label>
-                  <TimeDropdown
-                    times={timeOptions}
-                    selectedTime={formData.departureTime}
-                    onChange={handleInputChange}
-                    isReserved={(time) => selectedDate ? isTimeReserved(selectedDate.toISOString().split('T')[0], time) : false} // Add null check for selectedDate
-                  />
-
-                </div>
-                {tripType === 'roundTrip' && (
+                  <div className="form-group">
+                    <label htmlFor="departureTime">
+                      <IoTime
+                        style={{
+                          backgroundColor: "white",
+                          color: "#782324",
+                          borderRadius: "20px",
+                          padding: "3px",
+                          marginBottom: "-5px",
+                        }}
+                      />
+                      Departure Time:
+                    </label>
+                    <TimeDropdown
+                      times={timeOptions}
+                      name="departureTime"
+                      selectedTime={formData.departureTime}
+                      onChange={handleInputChange}
+                      isReserved={(time) =>
+                        selectedDate ? isTimeReserved(selectedDate.toISOString().split("T")[0], time, 'departureTime') : false
+                      }
+                    />
+                  </div>
+                  {tripType === "roundTrip" && (
                     <div className="form-group">
-                      <label htmlFor="pickUpTime"><IoTime style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Pick-Up Time:</label>
-                      <input type="time" id="pickUpTime" name="pickUpTime" value={formData.pickUpTime} onChange={handleInputChange} />
+                      <label htmlFor="pickUpTime">
+                        <IoTime
+                          style={{
+                            backgroundColor: "white",
+                            color: "#782324",
+                            borderRadius: "20px",
+                            padding: "3px",
+                            marginBottom: "-5px",
+                          }}
+                        />
+                        Pick-Up Time:
+                      </label>
+                      <TimeDropdown
+                        times={timeOptions}
+                        name="pickUpTime"
+                        selectedTime={formData.pickUpTime}
+                        onChange={handleInputChange}
+                        isReserved={(time) =>
+                          selectedDate ? isTimeReserved(selectedDate.toISOString().split("T")[0], time, 'pickUpTime') : false
+                        }
+                      />
                     </div>
-                  )}
+                  )} 
               </div>
               <div className="form-group-inline">
                 <div className="form-group">

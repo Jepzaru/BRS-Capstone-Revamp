@@ -18,7 +18,8 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
         });
         const data = await response.json();
         setReservedDates(data.map(d => ({
-          date: new Date(d.schedule),
+          schedule: new Date(d.schedule),
+          returnSchedule: d.returnSchedule ? new Date(d.returnSchedule) : null,
           status: d.status
         })));
       } catch (error) {
@@ -54,9 +55,12 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
       const isAfterReturnDate = returnDate && date > returnDate;
   
       const reservedInfo = reservedDates.find(res =>
-        res.date.getFullYear() === date.getFullYear() &&
-        res.date.getMonth() === date.getMonth() &&
-        res.date.getDate() === date.getDate()
+        (res.schedule.getFullYear() === date.getFullYear() &&
+        res.schedule.getMonth() === date.getMonth() &&
+        res.schedule.getDate() === date.getDate()) ||
+        (res.returnSchedule && res.returnSchedule.getFullYear() === date.getFullYear() &&
+        res.returnSchedule.getMonth() === date.getMonth() &&
+        res.returnSchedule.getDate() === date.getDate())
       );
   
       const isReserved = reservedInfo !== undefined;
@@ -71,7 +75,6 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
         status 
       });
     }
-  
     return days;
   };
 
@@ -83,7 +86,6 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
       setCurrentMonth(currentMonth - 1);
     }
   };
-
 
   const nextMonth = () => {
     if (currentMonth === 11) {
@@ -99,15 +101,11 @@ const Calendar = ({ onDateSelect, minDate, returnDate }) => {
   };
 
   const handleDayClick = (day) => {
-    const date = new Date(currentYear, currentMonth, day);
-    date.setHours(0, 0, 0, 0); 
-  
+    const date = new Date(currentYear, currentMonth, day, 12, 0, 0); 
     if (!date) return;
-
-    setSelectedDay(day);
+    setSelectedDay(day);   
     onDateSelect(date);
   };
-  
 
   return (
     <div className="calendar">
