@@ -19,20 +19,7 @@
   padding: 10px;
 }
 
-.custom-dropdown .reserved {
-  color: red; 
-}
-
-.reserved {
+.custom-dropdown option.reserved {
   color: red;
   font-weight: bold;
-}
-
-.reserved-times {
-  margin-top: 5px;
-  font-size: 0.9rem;
-}
-
-.reserved-time {
-  color: red;
 }

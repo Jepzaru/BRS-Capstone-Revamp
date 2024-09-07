@@ -118,25 +118,23 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   const handleDayClick = (day) => {
     const date = new Date(currentYear, currentMonth, day, 12, 0, 0); 
     setSelectedDay(day);
-
+  
     const reservedInfo = reservedDates.find(res =>
       res.schedule.getFullYear() === date.getFullYear() &&
       res.schedule.getMonth() === date.getMonth() &&
       res.schedule.getDate() === date.getDate()
     );
-
+  
     if (reservedInfo) {
-      setReservedTimes([reservedInfo.pickUpTime, reservedInfo.departureTime]);
-      console.log(`Reserved times for ${date.toDateString()}:`);
-      console.log(`Pick-up Time: ${reservedInfo.pickUpTime}`);
-      console.log(`Departure Time: ${reservedInfo.departureTime}`);
+      const times = [reservedInfo.pickUpTime, reservedInfo.departureTime];
+      setReservedTimes(times);
+  
+      onDateSelect(date, times);
     } else {
       setReservedTimes([]);
-      console.log(`No reservations for ${date.toDateString()}`);
+      onDateSelect(date, []); 
     }
-
-    onDateSelect(date);
-  };
+  }; 
 
   return (
     <div className="calendar">

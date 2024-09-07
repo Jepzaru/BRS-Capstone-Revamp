@@ -44,6 +44,7 @@ const Reservation = () => {
   const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const [reservedDates, setReservedDates] = useState([]);
   const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState('');
+  const [reservedTimes, setReservedTimes] = useState([]);
 
   useEffect(() => {
     if (vehicle && vehicle.plateNumber) {
@@ -81,12 +82,10 @@ const Reservation = () => {
   };
 
   const formatTime = (time) => {
-    if (!time) return '';
-    
+    if (!time || time === "N/A") return '';
     const [hours, minutes] = time.split(':');
-    const formattedHours = (hours % 12) || 12;
-    const amPm = hours >= 12 ? 'PM' : 'AM';
-    
+    const formattedHours = (parseInt(hours, 10) % 12) || 12;
+    const amPm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
     return `${formattedHours}:${minutes} ${amPm}`;
   };
 
@@ -175,15 +174,16 @@ const Reservation = () => {
     window.history.back();
   };
 
-  const handleDateSelect = (date) => {
+  const handleDateSelect = (date, reservedTimesArray) => {
     if (isSelectingReturn) {
       setReturnScheduleDate(date);
     } else {
       setSelectedDate(date);
     }
     setShowCalendar(false);
+    setReservedTimes(reservedTimesArray); 
   };
-
+  
   const handleTripTypeChange = (event) => {
     const selectedTripType = event.target.value;
     setTripType(selectedTripType);
@@ -415,6 +415,7 @@ const Reservation = () => {
                       isReserved={(time) =>
                         selectedDate ? isTimeReserved(selectedDate.toISOString().split("T")[0], time, 'departureTime') : false
                       }
+                      reservedTimes={reservedTimes} 
                     />
                   </div>
                   {tripType === "roundTrip" && (
@@ -432,14 +433,15 @@ const Reservation = () => {
                         Pick-Up Time:
                       </label>
                       <TimeDropdown
-                        times={timeOptions}
-                        name="pickUpTime"
-                        selectedTime={formData.pickUpTime}
-                        onChange={handleInputChange}
-                        isReserved={(time) =>
-                          selectedDate ? isTimeReserved(selectedDate.toISOString().split("T")[0], time, 'pickUpTime') : false
-                        }
-                      />
+                      times={timeOptions}
+                      name="pickUpTime"
+                      selectedTime={formData.pickUpTime}
+                      onChange={handleInputChange}
+                      isReserved={(time) =>
+                        selectedDate ? isTimeReserved(selectedDate.toISOString().split("T")[0], time, 'pickUpTime') : false
+                      }
+                      reservedTimes={reservedTimes}
+                    />
                     </div>
                   )} 
               </div>
@@ -552,7 +554,7 @@ const Reservation = () => {
         </div>
       </div>
 
-          {showCalendar && (
+      {showCalendar && (
       <div className="calendar-modal">
         <div className="calendar-modal-content">
           <Calendar 
@@ -563,7 +565,7 @@ const Reservation = () => {
           />
         </div>
       </div>
-    )}
+      )}
 
       <ReservationModal 
         isOpen={isModalOpen} 
