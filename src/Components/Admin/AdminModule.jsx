@@ -279,7 +279,7 @@ const handleAddAccount = async (event) => {
               <input type="password" name="password" required/>
               <label>Role:</label>
               <select name="role" onChange={handleRoleChange} required>
-              <option value="">Select Department</option>
+              <option value="">Select Role</option>
                 {user_roles.map((role, index) => (
                   <option key={index} value={role}>{role}</option>
                 ))}
