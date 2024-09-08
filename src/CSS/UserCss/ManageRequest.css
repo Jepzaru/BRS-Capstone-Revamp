@@ -107,8 +107,9 @@ body {
   border-collapse: collapse;
   margin-top: 10px;
   background-color: white;
-  height: 690px;
+  table-layout: fixed; 
 }
+
 
 .requests-table th, .requests-table td {
   border: 1px solid #ddd;

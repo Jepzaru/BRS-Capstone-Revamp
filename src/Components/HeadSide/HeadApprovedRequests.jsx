@@ -31,7 +31,7 @@ const HeadApprovedRequests = () => {
 
       console.log("Approved Reservations:", approvedReservations);
 
-      setRequests(approvedReservations); 
+      setRequests(approvedReservations.reverse()); 
       setLoading(false);
     } catch (error) {
       console.error("Failed to fetch approved requests.", error);
