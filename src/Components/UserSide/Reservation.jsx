@@ -48,6 +48,7 @@ const Reservation = () => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [addedVehicles, setAddedVehicles] = useState([]);
   const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
+  const [userDepartment, setUserDepartment] = useState('');
   
   
 
@@ -181,26 +182,13 @@ const calculateTotalCapacity = () => {
     setSelectedDate(null); 
   };
 
-  const fetchDepartments = async () => {
-    try {
-        const response = await fetch("http://localhost:8080/department/getAll", {
-            headers: {"Authorization" : `Bearer ${token}`}
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        setDepartments(data);
-    } catch (error) {
-        console.error("Failed to fetch departments.", error);
-    } finally {
-        setLoading(false);
-    }
-};
+ 
 
   useEffect(() =>{
-    fetchDepartments();
-  }, [token])
+    const departmentFromStorage = localStorage.getItem('department');
+    setUserDepartment(departmentFromStorage || '');
+    setLoading(false);
+  }, []);
 
   const handleBackClick = () => {
     window.history.back();
@@ -226,11 +214,9 @@ const calculateTotalCapacity = () => {
     const {
         from,
         to,
-        capacity,
         vehicleType,
         plateNumber,
         departureTime,
-        department,
         reservationReason
     } = formData;
 
@@ -240,7 +226,6 @@ const calculateTotalCapacity = () => {
         vehicleType,
         plateNumber,
         departureTime,
-        department,
         reservationReason
     ].every(value => value.trim() !== '') && selectedDate;
 
@@ -264,7 +249,7 @@ const handleConfirm = async () => {
         destinationTo: formData.to,
         destinationFrom: formData.from,
         capacity: vehicle.capacity,
-        department: formData.department,
+        department: userDepartment,
         schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
         returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null, 
         vehicleType: formData.vehicleType,
@@ -477,21 +462,10 @@ const handleConfirm = async () => {
                   )} 
               </div>
               <div className="form-group-inline">
-                <div className="form-group">
-                <label htmlFor="department"><FaBuildingUser style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Department:</label>
-                  {loading ? (
-                    <Skeleton height={40} width={300} />
-                  ) : (
-                    <select id="department" name="department" required className="dropdown-field" value={formData.department} onChange={handleInputChange}>
-                      <option value="">Select Department</option>
-                      {departments.map(department => (
-                        <option key={department.id} value={department.name}>
-                          {department.name}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
+              <div className="form-group">
+                    <label htmlFor="department"><FaBuildingUser style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Department:</label>
+                    <input type="text" id="department" name="department" value={userDepartment} disabled />
+                  </div>
                 <div className="form-group">
                   <label htmlFor="approvalProof"><FaFileAlt style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Proof of Approval (optional):</label>
                   <input type="file" id="approvalProof" name="approvalProof" onChange={handleInputChange} />
@@ -571,7 +545,7 @@ const handleConfirm = async () => {
                 <strong>Pick Up Time:</strong> {formatTime(formData.pickUpTime)}
               </div>
               <div className="summary-item">
-                <strong>Department:</strong> {formData.department}
+                <strong>Department:</strong> {userDepartment}
               </div>
               <div className="summary-item">
                 <strong>Proof of Approval:</strong> {formData.fileName || 'Not Attached'}
