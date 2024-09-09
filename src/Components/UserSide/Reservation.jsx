@@ -47,11 +47,15 @@ const Reservation = () => {
   const [reservedTimes, setReservedTimes] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [addedVehicles, setAddedVehicles] = useState([]);
+  const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
+  
+  
 
 
   useEffect(() => {
     if (vehicle && vehicle.plateNumber) {
       setSelectedVehiclePlateNumber(vehicle.plateNumber);
+      
     }
   }, [vehicle]);
 
@@ -125,13 +129,23 @@ const Reservation = () => {
   };
   
   const handleAddVehicle = (vehicle) => {
+    setAddedVehiclePlates(prev => [...prev, vehicle.plateNumber]);
     setSelectedVehicle(vehicle); 
     setAddedVehicles(prevVehicles => [...prevVehicles, vehicle]);
     setAddVehicleModalOpen(false); 
 };
+
 const handleRemoveVehicle = (plateNumber) => {
-  setAddedVehicles(prevVehicles => prevVehicles.filter(vehicle => vehicle.plateNumber !== plateNumber));
+  setAddedVehicles(prev => prev.filter(v => v.plateNumber !== plateNumber));
+  setAddedVehiclePlates(prev => prev.filter(p => p !== plateNumber));
 };
+
+const calculateTotalCapacity = () => {
+  const selectedVehicleCapacity = vehicle ? vehicle.capacity : 0;
+  const addedVehiclesCapacity = addedVehicles.reduce((total, v) => total + v.capacity, 0);
+  return selectedVehicleCapacity + addedVehiclesCapacity;
+};
+
 
   const handleVehicleModeToggle = () => {
     setIsMultipleVehicles(prevState => !prevState); 
@@ -369,7 +383,7 @@ const handleConfirm = async () => {
                 </div>
                 <div className="form-group">
                   <label htmlFor="capacity"><FaUserGroup style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Capacity:</label>
-                  <input type="number" id="capacity" name="capacity" value={vehicle.capacity} required min="0" onChange={handleInputChange}/>
+                  <input type="number" id="capacity" name="capacity" value={calculateTotalCapacity()}required min="0" onChange={handleInputChange}/>
                 </div>
                 <div className="form-group">
                 <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle:</label>
@@ -505,10 +519,10 @@ const handleConfirm = async () => {
                     <FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle Added: 
                     <button className='add-another-vehicle'  onClick={handleAddVehicleClick}><IoMdAddCircle style={{color: "gold", marginRight: "5px", marginBottom: "-2px"}}/>
                     Add another vehicle</button></label> 
-                    <div className="vehicle-added-container">
+                    <div className="reserved-vehicle-added-container">
                     {addedVehicles.map(vehicle => (
-              <div key={vehicle.plateNumber} className="vehicle-item">
-                <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</p>
+              <div key={vehicle.plateNumber} className="reserved-vehicle-item">
+                <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity} </p>
                        <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
                             Remove
                         </button>
@@ -537,7 +551,7 @@ const handleConfirm = async () => {
                 <strong>To:</strong> {formData.to}
               </div>
               <div className="summary-item">
-                <strong>Capacity:</strong> {vehicle.capacity}
+              <strong>Capacity:</strong> {calculateTotalCapacity()}
               </div>
               <div className="summary-item">
                 <strong>Plate Number:</strong> {vehicle.plateNumber}
@@ -599,12 +613,13 @@ const handleConfirm = async () => {
         type={modalType} 
     />
 
-  <AddVehicleModal 
-    isOpen={isAddVehicleModalOpen} 
-    onClose={handleCloseModal} 
-    onAdd={handleAddVehicle} 
-    selectedPlateNumber={vehicle.plateNumber}  // Pass the selected plate number
-  />
+<AddVehicleModal 
+  isOpen={isAddVehicleModalOpen} 
+  onClose={handleCloseModal} 
+  onAdd={handleAddVehicle} 
+  selectedPlateNumber={vehicle.plateNumber}
+  addedVehiclePlates={addedVehiclePlates} 
+/>
     </div>
   );
 };

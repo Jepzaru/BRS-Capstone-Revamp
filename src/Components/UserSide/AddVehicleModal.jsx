@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/AddVehicleModal.css';
 import { IoMdCloseCircle } from "react-icons/io";
 
-const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber }) => {
+const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber, addedVehiclePlates }) => {
   const [vehicles, setVehicles] = useState([]);
   const token = localStorage.getItem('token');
 
@@ -19,14 +19,16 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber }) => {
           "Authorization": `Bearer ${token}`
         }
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
+  
       const data = await response.json();
       // Filter out the vehicle with the selected plate number
-      const filteredVehicles = data.filter(vehicle => vehicle.plateNumber !== selectedPlateNumber);
+      const filteredVehicles = data.filter(vehicle => 
+        vehicle.plateNumber !== selectedPlateNumber && !addedVehiclePlates.includes(vehicle.plateNumber)
+      );
       setVehicles(filteredVehicles);
     } catch (error) {
       console.error('Failed to fetch vehicles:', error);

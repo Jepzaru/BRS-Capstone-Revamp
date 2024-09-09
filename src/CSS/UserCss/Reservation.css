@@ -210,14 +210,46 @@ body {
   }
   
   .trip-type label:hover span {
-    color: #782324; /* Text color on hover */
+    color: #782324; 
   }
   
-  .vehicle-added-container{
+  .reserved-vehicle-added-container{
     background-color: #fff;
     height: 170px;
     border-radius: 5px;
+    overflow-y: auto;
+
   }
+
+  .reserved-vehicle-item {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 10px; 
+  border-bottom: 1px solid #ddd; 
+  margin-bottom: 5px; 
+  background-color: #f9f9f9; 
+}
+
+.reserved-vehicle-item p {
+  margin: 0; 
+  flex-grow: 1; 
+}
+
+
+.reserved-vehicle-item button {
+  background-color: #782324; 
+  color: white; 
+  border: none; 
+  padding: 10px 10px; 
+  border-radius: 4px; 
+  cursor: pointer;  
+  transition: background-color 0.3s; 
+}
+
+.reserved-vehicle-item button:hover {
+  background-color: #5b1e1e; 
+}
 
 @media (max-width: 767px) {
     .reservation-content {
