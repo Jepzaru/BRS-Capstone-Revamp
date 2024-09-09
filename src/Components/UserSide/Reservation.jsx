@@ -223,7 +223,6 @@ const handleRemoveVehicle = (plateNumber) => {
     const isFormValid = [
         from,
         to,
-        capacity,
         vehicleType,
         plateNumber,
         departureTime,
@@ -250,7 +249,7 @@ const handleConfirm = async () => {
         typeOfTrip: tripType,
         destinationTo: formData.to,
         destinationFrom: formData.from,
-        capacity: parseInt(formData.capacity, 10),
+        capacity: vehicle.capacity,
         department: formData.department,
         schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
         returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null, 
@@ -538,7 +537,7 @@ const handleConfirm = async () => {
                 <strong>To:</strong> {formData.to}
               </div>
               <div className="summary-item">
-                <strong>Capacity:</strong> {formData.capacity}
+                <strong>Capacity:</strong> {vehicle.capacity}
               </div>
               <div className="summary-item">
                 <strong>Plate Number:</strong> {vehicle.plateNumber}
