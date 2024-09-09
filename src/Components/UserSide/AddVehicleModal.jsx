@@ -10,7 +10,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber }) => {
     if (isOpen) {
       fetchVehicles();
     }
-  }, [isOpen, selectedPlateNumber]); // Make sure selectedPlateNumber is a dependency
+  }, [isOpen]);
 
   const fetchVehicles = async () => {
     try {
@@ -25,7 +25,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber }) => {
       }
 
       const data = await response.json();
-      // Ensure selectedPlateNumber is correctly used
+      // Filter out the vehicle with the selected plate number
       const filteredVehicles = data.filter(vehicle => vehicle.plateNumber !== selectedPlateNumber);
       setVehicles(filteredVehicles);
     } catch (error) {
@@ -73,7 +73,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber }) => {
           </thead>
           <tbody>
             {vehicles.map(vehicle => (
-              <tr key={vehicle.plateNumber}>
+              <tr key={vehicle.id}>
                 <td>{vehicle.vehicleType}</td>
                 <td>{vehicle.plateNumber}</td>
                 <td>{vehicle.capacity}</td>

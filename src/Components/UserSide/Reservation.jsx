@@ -47,7 +47,6 @@ const Reservation = () => {
   const [reservedTimes, setReservedTimes] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [addedVehicles, setAddedVehicles] = useState([]);
-  const [selectedPlateNumber, setSelectedPlateNumber] = useState('');
 
 
   useEffect(() => {
@@ -126,12 +125,10 @@ const Reservation = () => {
   };
   
   const handleAddVehicle = (vehicle) => {
+    setSelectedVehicle(vehicle); 
     setAddedVehicles(prevVehicles => [...prevVehicles, vehicle]);
-    setSelectedPlateNumber(vehicle.plateNumber);
-    setAddVehicleModalOpen(false);
-  };
-
-
+    setAddVehicleModalOpen(false); 
+};
 const handleRemoveVehicle = (plateNumber) => {
   setAddedVehicles(prevVehicles => prevVehicles.filter(vehicle => vehicle.plateNumber !== plateNumber));
 };
@@ -513,7 +510,7 @@ const handleConfirm = async () => {
                     {addedVehicles.map(vehicle => (
               <div key={vehicle.plateNumber} className="vehicle-item">
                 <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</p>
-                <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
+                       <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
                             Remove
                         </button>
               </div>
@@ -607,7 +604,7 @@ const handleConfirm = async () => {
     isOpen={isAddVehicleModalOpen} 
     onClose={handleCloseModal} 
     onAdd={handleAddVehicle} 
-    selectedPlateNumber={selectedPlateNumber} // Pass the selected plate number
+    selectedPlateNumber={vehicle.plateNumber}  // Pass the selected plate number
   />
     </div>
   );
