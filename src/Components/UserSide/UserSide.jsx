@@ -14,27 +14,25 @@ import vehiclesubImage5 from "../../Images/coasterimage2.jpg";
 import vehiclesubImage6 from "../../Images/coasterimage3.jpg";
 import defaultVehicleImage from "../../Images/defualtVehicle.png";
 import { BiSolidDiamond } from "react-icons/bi";
-import { FaBook } from "react-icons/fa";
-import { FaBus } from "react-icons/fa";
+import { FaBook, FaBus } from "react-icons/fa";
 import '../../CSS/UserCss/UserSide.css';
 import { Link, useNavigate } from 'react-router-dom';
 
 const UserSide = () => {
   const [vehicles, setVehicles] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState([]); 
+  const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0); 
   const navigate = useNavigate();
-
   const token = localStorage.getItem('token');
 
+  // Fetch vehicle details
   useEffect(() => {
-    const fetchVehicleDetails = async () =>{
+    const fetchVehicleDetails = async () => {
       try {
         const response = await fetch("http://localhost:8080/vehicle/getAll", {
-          headers: { "Authorization" : `Bearer ${token}` }
+          headers: { "Authorization": `Bearer ${token}` }
         });
-        
         const data = await response.json();
         if (Array.isArray(data)) {
           setVehicles(data);
@@ -42,20 +40,40 @@ const UserSide = () => {
           console.error("Expected an array from API but got:", data);
           setVehicles([]);
         }
-        
         setLoading(false); 
       } catch (error) {
         console.error("Failed to fetch vehicle details", error);
         setLoading(false);
       }
     };
-    
+
     fetchVehicleDetails();
+  }, [token]);
+
+  // Fetch events
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/opc/events/getAll", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setEvents(data);
+        } else {
+          console.error("Expected an array from API but got:", data);
+          setEvents([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch events", error);
+      }
+    };
+
+    fetchEvents();
   }, [token]);
 
   const getVehicleImage = (vehicleType) => {
     const lowerCaseType = vehicleType.toLowerCase();
-  
     if (/bus/.test(lowerCaseType)) {
       return vehicleImage;
     }
@@ -64,7 +82,7 @@ const UserSide = () => {
     }
     return defaultVehicleImage; 
   };
-  
+
   const imageGrids = [
     [vehiclesubImage1, vehiclesubImage2, vehiclesubImage3],
     [vehiclesubImage4, vehiclesubImage5, vehiclesubImage6],
@@ -119,7 +137,7 @@ const UserSide = () => {
               <h1><FaBook style={{marginBottom: "-3px,", marginRight: "5px", color: "#782324"}}/> Reservation</h1>
               <div className="instruction-and-button">
                 <p>Please choose the right capacity of your vehicle</p>
-                <Link to= '/user-side/special-reservation'>
+                <Link to='/user-side/special-reservation'>
                 <button className="btn-beside-text">
                   <BiSolidDiamond style={{marginRight: "10px", marginBottom: "-3px"}}/>
                   Special Reservation
@@ -127,44 +145,46 @@ const UserSide = () => {
                 </Link>
               </div>
               <div className="container">
-              <div className="vehicle-list">
-                {vehicles.map(vehicle => (
-                  <div key={vehicle.id} className="vehicle-item">
-                    <div className="vehicle-info">
-                      <img src={getVehicleImage(vehicle.vehicleType)} alt={vehicle.vehicleType} className="vehicle-image" />
-                      <div className="vehicle-text">
-                        <h2 style={{marginBottom: "20px"}}>
+                <div className="vehicle-list">
+                  {vehicles.map(vehicle => (
+                    <div key={vehicle.id} className="vehicle-item">
+                      <div className="vehicle-info">
+                        <img src={getVehicleImage(vehicle.vehicleType)} alt={vehicle.vehicleType} className="vehicle-image" />
+                        <div className="vehicle-text">
+                          <h2 style={{marginBottom: "20px"}}>
+                            <FaBus style={{marginBottom: "-2px", marginRight: "10px"}}/>
+                            {vehicle.vehicleType}
+                          </h2>
+                          <p>Plate Number: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.plateNumber}</span></p>
+                          <p>👥 Capacity: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.capacity}</span></p>
+                          <p>{vehicle.status === 'Available' ? '🟢' : '🔴'} Status: <span style={{color: vehicle.status === 'Available' ? 'green' : 'red', marginLeft: "5px"}}>{vehicle.status}</span></p>
+                        </div>
+                        <button className="btn-right-corner" onClick={() => handleSelectVehicle(vehicle)}>
                           <FaBus style={{marginBottom: "-2px", marginRight: "10px"}}/>
-                          {vehicle.vehicleType}
-                        </h2>
-                        <p>Plate Number: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.plateNumber}</span></p>
-                        <p>👥 Capacity: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.capacity}</span></p>
-                        <p>{vehicle.status === 'Available' ? '🟢' : '🔴'} Status: <span style={{color: vehicle.status === 'Available' ? 'green' : 'red', marginLeft: "5px"}}>{vehicle.status}</span></p>
+                          Select Vehicle
+                        </button>
                       </div>
-                      <button className="btn-right-corner" onClick={() => handleSelectVehicle(vehicle)}>
-                        <FaBus style={{marginBottom: "-2px", marginRight: "10px"}}/>
-                        Select Vehicle
-                      </button>
                     </div>
+                  ))}
+                </div>
+                <div className="another-container">
+                  <div className="inner-container">
+                    <label className="events-label">📣 Events and Updates</label>
                   </div>
-                ))}
-              </div>
-              <div className="another-container">
-                <div className="inner-container">
-                  <label className="events-label">📣 Events and Updates</label>
+                  <div className="events-list">
+                    {events.length > 0 ? (
+                      events.map((event, index) => (
+                        <div key={index} className="event-item">
+                          <p>{event.eventTitle}</p>
+                          <p>{event.eventDate}</p>
+                          <p>{event.eventDescription}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="no-events-label">No Events</p>
+                    )}
+                  </div>
                 </div>
-                <div className="events-list">
-                  {events.length > 0 ? (
-                    events.map((event, index) => (
-                      <div key={index} className="event-item">
-                        <p>{event.title}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="no-events-label">No Events</p>
-                  )}
-                </div>
-              </div>
               </div>
               <img src={logoImage1} alt="Logo" className="logo-image1" />
             </div>

@@ -13,6 +13,7 @@ const OpcBigCalendar = () => {
   const [eventDescription, setEventDescription] = useState('');
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [events, setEvents] = useState([]);
+  const [approvedReservations, setApprovedReservations] = useState([]);
   const [editingEvent, setEditingEvent] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
@@ -21,11 +22,13 @@ const OpcBigCalendar = () => {
 
   useEffect(() => {
     fetchEventsForMonth();
+    fetchApprovedReservationsForMonth();
   }, [currentDate]);
 
   useEffect(() => {
     if (selectedDate) {
       fetchEventsForMonth(); // Fetch events for the selected date
+      fetchApprovedReservationsForMonth(); // Fetch approved reservations for the selected date
     }
   }, [selectedDate]);
 
@@ -46,6 +49,26 @@ const OpcBigCalendar = () => {
       }
     } catch (error) {
       console.error('Error fetching events:', error);
+    }
+  };
+
+  const fetchApprovedReservationsForMonth = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/reservations/opc-approved`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setApprovedReservations(result);
+      } else {
+        console.error('Failed to fetch approved reservations');
+      }
+    } catch (error) {
+      console.error('Error fetching approved reservations:', error);
     }
   };
 
@@ -205,13 +228,18 @@ const OpcBigCalendar = () => {
       (event) => new Date(event.eventDate).toDateString() === selectedDate.toDateString()
     );
 
+    const dayApprovedReservations = approvedReservations.filter(
+      (res) => new Date(res.schedule).toDateString() === selectedDate.toDateString()
+    );
+
     return (
       <div className="opc-big-calendar-events-content">
         <div className="opc-big-calendar-events-content-header">
-           <h2>Events on {selectedDate.toDateString()}   
+          <h2>Events on {selectedDate.toDateString()}   
             <button className='opc-big-calendar-event-btn' onClick={() => setShowAddEvent(true)}>
-          <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> Add New Event
-        </button></h2>
+              <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> Add New Event
+            </button>
+          </h2>
         </div>
         {dayEvents.length > 0 ? (
           dayEvents.map((event, index) => (
@@ -219,8 +247,8 @@ const OpcBigCalendar = () => {
               <div className="opc-big-calendar-event-details">
                 <div className="opc-big-calendar-event-title">🚩 {event.eventTitle}</div>
                 <div className="opc-big-calendar-event-description">
-                 {event.eventDescription}
-                  </div>
+                  {event.eventDescription}
+                </div>
               </div>
               <div className="opc-big-calendar-event-actions">
                 <MdEdit
@@ -242,6 +270,24 @@ const OpcBigCalendar = () => {
           ))
         ) : (
           <p>No events for this day.</p>
+        )}
+
+        {dayApprovedReservations.length > 0 ? (
+          dayApprovedReservations.map((res, index) => (
+            <div key={index} className="opc-big-calendar-event-item">
+              <div className="opc-big-calendar-event-details">
+                <div className="opc-big-calendar-event-title">🚩 {res.reason} (Departure)</div>
+                <div className="opc-big-calendar-event-description">
+                  <p><strong>Date:</strong> {new Date(res.schedule).toLocaleDateString()}</p>
+                  <p><strong>Time:</strong> {new Date(res.schedule).toLocaleTimeString()}</p>
+                  <p><strong>Reason:</strong> {res.reason}</p>
+                </div>
+              </div>
+              {/* Add actions if needed */}
+            </div>
+          ))
+        ) : (
+          <p>No approved reservations for this day.</p>
         )}
       </div>
     );

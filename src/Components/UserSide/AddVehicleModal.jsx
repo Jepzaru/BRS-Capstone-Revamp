@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/AddVehicleModal.css';
 import { IoMdCloseCircle } from "react-icons/io";
 
-const AddVehicleModal = ({ isOpen, onClose, onAdd }) => {
+const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber }) => {
   const [vehicles, setVehicles] = useState([]);
   const token = localStorage.getItem('token');
 
@@ -10,7 +10,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd }) => {
     if (isOpen) {
       fetchVehicles();
     }
-  }, [isOpen]);
+  }, [isOpen, selectedPlateNumber]); // Make sure selectedPlateNumber is a dependency
 
   const fetchVehicles = async () => {
     try {
@@ -25,17 +25,17 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd }) => {
       }
 
       const data = await response.json();
-      setVehicles(data);
+      // Ensure selectedPlateNumber is correctly used
+      const filteredVehicles = data.filter(vehicle => vehicle.plateNumber !== selectedPlateNumber);
+      setVehicles(filteredVehicles);
     } catch (error) {
       console.error('Failed to fetch vehicles:', error);
     }
   };
 
   const handleSelectVehicle = (vehicle) => {
-    // Handle selecting vehicle
-    console.log('Selected vehicle:', vehicle);
-    onAdd(vehicle);
-    onClose();
+    onAdd(vehicle); // Pass the selected vehicle to the parent component
+    onClose(); // Close the modal
   };
 
   const getStatusClass = (status) => {
@@ -56,7 +56,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd }) => {
       <div className="addvehicle-content">
         <h2>
           Select Vehicle
-          <button className="addvehilcle-close" onClick={onClose}>
+          <button className="addvehicle-close" onClick={onClose}>
             <IoMdCloseCircle />
           </button>
         </h2>
@@ -73,7 +73,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd }) => {
           </thead>
           <tbody>
             {vehicles.map(vehicle => (
-              <tr key={vehicle.id}>
+              <tr key={vehicle.plateNumber}>
                 <td>{vehicle.vehicleType}</td>
                 <td>{vehicle.plateNumber}</td>
                 <td>{vehicle.capacity}</td>

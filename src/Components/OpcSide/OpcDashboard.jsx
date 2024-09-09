@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useSyncExternalStore } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -44,51 +44,50 @@ const OpcDashboard = () => {
 
   const token = localStorage.getItem('token');
 
-  useEffect(() =>{
-    const fetchNumberOfDrivers = async () =>{
+  useEffect(() => {
+    const fetchNumberOfDrivers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/opc/driver/getAll",{
+        const response = await fetch("http://localhost:8080/opc/driver/getAll", {
           headers: {"Authorization" : `Bearer ${token}`}
-        })
+        });
         const data = await response.json();
         setDrivers(data);
       } catch (error) {
         console.error("Failed to fetch driver details.", error);
       }
-    }
+    };
     fetchNumberOfDrivers();
   }, [token]);
 
-  useEffect(() =>{
-    const fetchNumberOfVehicles = async () =>{
+  useEffect(() => {
+    const fetchNumberOfVehicles = async () => {
       try {
-        const response = await fetch("http://localhost:8080/vehicle/getAll",{
+        const response = await fetch("http://localhost:8080/vehicle/getAll", {
           headers: {"Authorization" : `Bearer ${token}`}
-        })
+        });
         const data = await response.json();
         setVehicles(data);
       } catch (error) {
         console.error("Failed to fetch vehicle data", error);
       }
-    }
+    };
     fetchNumberOfVehicles();
   }, [token]);
 
-  useEffect(() =>{
+  useEffect(() => {
     const fetchNumbersOfRequests = async () => {
       try {
         const response = await fetch("http://localhost:8080/reservations/getAll", {
           headers: {"Authorization" : `Bearer ${token}`}
-        })
+        });
         const data = await response.json();
         setRequests(data);
       } catch (error) {
         console.error("Failed to fetch numbers of requests.", error);
       }
-    }
-
+    };
     fetchNumbersOfRequests();
-  }, [token])
+  }, [token]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -98,25 +97,19 @@ const OpcDashboard = () => {
     return () => clearTimeout(timer);
   }, []);
 
-
-  const data = {
-    labels: ['CCS', 'CEA', 'CMBA', 'CASE', 'CNAHS', 'CCJ'],
-    datasets: [
-      {
-        label: 'Usage per department',
-        data: [12, 19, 3, 5, 2, 3], 
-        backgroundColor: [
-          'orange', // CCS
-          'green',  // CEA
-          'violet', // CMBA
-          'gold',   // CASE
-          'red',    // CNAHS
-          'blue'    // CCJ
-        ],
-      },
-    ],
+  const countReservationsPerDepartment = (reservations) => {
+    const counts = {};
+    reservations.forEach(request => {
+      const department = request.department; // Adjust according to your data structure
+      if (counts[department]) {
+        counts[department]++;
+      } else {
+        counts[department] = 1;
+      }
+    });
+    return counts;
   };
-  
+
   const departmentFullNames = {
     CCS: 'College of Computer Studies',
     CEA: 'College of Engineering and Architecture',
@@ -125,7 +118,22 @@ const OpcDashboard = () => {
     CNAHS: 'College of Nursing and Allied Health Sciences',
     CCJ: 'College of Criminal Justice'
   };
-  
+
+  const reservationCounts = countReservationsPerDepartment(requests);
+
+  const data = {
+    labels: Object.keys(reservationCounts),
+    datasets: [
+      {
+        label: 'Number of Reservations per Department',
+        data: Object.values(reservationCounts),
+        backgroundColor: [
+          'orange', 'green', 'violet', 'gold', 'red', 'blue'
+        ],
+      },
+    ],
+  };
+
   const options = {
     scales: {
       y: {
@@ -135,8 +143,8 @@ const OpcDashboard = () => {
     plugins: {
       legend: {
         display: true,
-        position: 'top',  
-        align: 'center',  
+        position: 'top',
+        align: 'center',
         labels: {
           color: 'black',
           font: {
@@ -145,7 +153,7 @@ const OpcDashboard = () => {
           generateLabels: (chart) => {
             const datasets = chart.data.datasets;
             return datasets[0].backgroundColor.map((color, index) => ({
-              text: departmentFullNames[chart.data.labels[index]], // Display full names
+              text: departmentFullNames[chart.data.labels[index]] || chart.data.labels[index],
               fillStyle: color,
               strokeStyle: color,
               lineWidth: 1,
@@ -155,6 +163,7 @@ const OpcDashboard = () => {
       },
     },
   };
+
   return (
     <div className="dashboard">
       {isLoading ? <LoadingScreen /> : (
