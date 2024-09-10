@@ -159,7 +159,11 @@ const UserSide = () => {
                           <p>👥 Capacity: <span style={{marginLeft: "5px", color: "#782324"}}>{vehicle.capacity}</span></p>
                           <p>{vehicle.status === 'Available' ? '🟢' : '🔴'} Status: <span style={{color: vehicle.status === 'Available' ? 'green' : 'red', marginLeft: "5px"}}>{vehicle.status}</span></p>
                         </div>
-                        <button className="btn-right-corner" onClick={() => handleSelectVehicle(vehicle)}>
+                        <button
+                          className={`btn-right-corner ${vehicle.status !== 'Available' ? 'disabled' : ''}`}
+                          onClick={() => handleSelectVehicle(vehicle)}
+                          disabled={vehicle.status !== 'Available'}
+                        >
                           <FaBus style={{marginBottom: "-2px", marginRight: "10px"}}/>
                           Select Vehicle
                         </button>

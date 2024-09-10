@@ -60,12 +60,15 @@ const OpcRequests = () => {
         headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await response.json();
-      setDrivers(data);
+      // Convert driver status and comparison string to lowercase for case-insensitive comparison
+      const availableDrivers = data.filter(driver => driver.status.toLowerCase() === 'available');
+      setDrivers(availableDrivers);
     } catch (error) {
       console.error("Failed to fetch drivers.", error);
       setDrivers([]);
     }
   };
+  
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);

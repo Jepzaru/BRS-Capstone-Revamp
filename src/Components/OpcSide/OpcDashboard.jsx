@@ -41,6 +41,10 @@ const OpcDashboard = () => {
   const [vehicles, setVehicles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [requests, setRequests] = useState([]);
+  const [startCounting, setStartCounting] = useState(false);
+  const requestCount = useCounter(requests.length, 2000, startCounting);
+  const driverCount = useCounter(drivers.length, 2000, startCounting);
+  const vehicleCount = useCounter(vehicles.length, 2000, startCounting);
 
   const token = localStorage.getItem('token');
 
@@ -92,6 +96,7 @@ const OpcDashboard = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
+      setStartCounting(true); // Start counting once loading is done
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -164,6 +169,7 @@ const OpcDashboard = () => {
     },
   };
 
+
   return (
     <div className="dashboard">
       {isLoading ? <LoadingScreen /> : (
@@ -184,21 +190,21 @@ const OpcDashboard = () => {
                       <FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Requests
                     </h3>
-                    <span className="number-badge">{requests.length}</span>
+                    <span className="number-badge">{requestCount}</span> {/* Animated count */}
                   </div>
                   <div className="dashcontainer2">
                     <h3 style={{ fontWeight: "700", marginLeft: "10px" }}>
                       <GiCarSeat style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Drivers
                     </h3>
-                    <span className="number-badge">{drivers.length}</span>
+                    <span className="number-badge">{driverCount}</span> {/* Animated count */}
                   </div>
                   <div className="dashcontainer3">
                     <h3 style={{ fontWeight: "700", marginLeft: "10px" }}>
                       <FaBus style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Vehicles
                     </h3>
-                    <span className="number-badge">{vehicles.length}</span>
+                    <span className="number-badge">{vehicleCount}</span> {/* Animated count */}
                   </div>
                 </div>
                 <div className="calendar-container">

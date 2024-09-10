@@ -177,17 +177,17 @@ const OpcCalendar = () => {
           {/* Show general events for the selected date */}
           {generalEvents.length > 0 && (
             <>
-              <h3>General Events</h3>
+              <h3 style={{marginLeft: '15px'}}>📅 General Events</h3>
               {generalEvents.map((event, index) => (
                 <div key={index} className="event-item">
-                  <h4 onClick={() => toggleDescription(event.eventId)}>
-                    📅 {event.eventTitle} 
+                  <h4 onClick={() => toggleDescription(event.eventId)} style={{marginLeft: '15px'}}>
+                    {event.eventTitle} 
                   </h4>
                   {expandedEvent === event.eventId && (
                     <div className="event-description">
-                      <p><strong>Date:</strong> {new Date(event.eventDate).toLocaleDateString()}</p>
-                      <p><strong>Time:</strong> {new Date(event.eventDate).toLocaleTimeString()}</p>
-                      <p><strong>Description:</strong> {event.eventDescription}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Date:</strong> {new Date(event.eventDate).toLocaleDateString()}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Time:</strong> {new Date(event.eventDate).toLocaleTimeString()}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Description:</strong> {event.eventDescription}</p>
                     </div>
                   )}
                 </div>
@@ -198,17 +198,17 @@ const OpcCalendar = () => {
           {/* Show reservations for selected date */}
           {(reservationEvents.length > 0 || returnEvents.length > 0) && (
             <>
-              <h3>Approved Reservations</h3>
+              <h3 style={{marginLeft: '15px'}}>🚩 Approved Reservations</h3>
               {reservationEvents.map((event, index) => (
                 <div key={index} className="event-item">
-                  <h4 onClick={() => toggleDescription(event.eventId)}>
-                    🚩 {event.reason} (Departure)
+                  <h4 onClick={() => toggleDescription(event.eventId)} style={{marginLeft: '15px'}}>
+                     {event.reason} (Departure)
                   </h4>
                   {expandedEvent === event.eventId && (
                     <div className="event-description">
-                      <p><strong>Date:</strong> {new Date(event.schedule).toLocaleDateString()}</p>
-                      <p><strong>Time:</strong> {new Date(event.schedule).toLocaleTimeString()}</p>
-                      <p><strong>Reason:</strong> {event.reason}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Date:</strong> {new Date(event.schedule).toLocaleDateString()}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Time:</strong> {new Date(event.schedule).toLocaleTimeString()}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Reason:</strong> {event.reason}</p>
                     </div>
                   )}
                 </div>
@@ -216,13 +216,13 @@ const OpcCalendar = () => {
               {returnEvents.map((event, index) => (
                 <div key={index} className="event-item">
                   <h4 onClick={() => toggleDescription(event.eventId)}>
-                    🚩 {event.reason} (Return)
+                     {event.reason} (Return)
                   </h4>
                   {expandedEvent === event.eventId && (
                     <div className="event-description">
-                      <p><strong>Return Date:</strong> {new Date(event.returnSchedule).toLocaleDateString()}</p>
-                      <p><strong>Pickup Time:</strong> {new Date(event.returnSchedule).toLocaleTimeString()}</p>
-                      <p><strong>Reason:</strong> {event.reason}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Return Date:</strong> {new Date(event.returnSchedule).toLocaleDateString()}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Pickup Time:</strong> {new Date(event.returnSchedule).toLocaleTimeString()}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Reason:</strong> {event.reason}</p>
                     </div>
                   )}
                 </div>
@@ -231,7 +231,7 @@ const OpcCalendar = () => {
           )}
 
           {generalEvents.length === 0 && reservationEvents.length === 0 && returnEvents.length === 0 && (
-            <p>No events for this date.</p>
+            <p style={{marginLeft: '15px'}}>No events for this date.</p>
           )}
         </div>
       </div>

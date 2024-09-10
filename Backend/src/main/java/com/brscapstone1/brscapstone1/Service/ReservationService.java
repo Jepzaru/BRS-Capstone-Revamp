@@ -83,9 +83,6 @@ public class ReservationService {
         if(reservation.getPickUpTime() == null || reservation.getPickUpTime().isEmpty()){
             reservation.setPickUpTime("N/A");
         }
-        if (reservation.getPlateNumber() != null && !reservation.getPlateNumber().isEmpty()) {
-            reservation.setVehicleType(reservation.getVehicleType() + "-" + reservation.getPlateNumber());
-        }
         reservation.setUserName(userName);
         reservation.setTransactionId(generateTransactionId()); 
         return resRepo.save(reservation);

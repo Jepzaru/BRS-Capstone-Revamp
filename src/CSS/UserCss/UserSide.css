@@ -236,6 +236,16 @@ body {
   color: #782324;
 }
 
+.btn-right-corner.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-right-corner:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 @media (max-width: 767px) {
   .content {
     margin-left: 0;

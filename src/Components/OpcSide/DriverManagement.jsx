@@ -20,6 +20,7 @@ const DriverManagement = () => {
   const [driverName, setDriverName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [updateDriverName, setUpdateDriverName] = useState('');
+  const [updateDriverStatus, setUpdateDriverStatus] = useState('');
   const [updatePhoneNumber, setUpdatePhoneNumber] = useState('');
   const [selectedDriverId, setSelectedDriverId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,6 +59,7 @@ const DriverManagement = () => {
 
   const openUpdateModal = (driver) => {
     setUpdateDriverName(driver.driverName);
+    setUpdateDriverStatus(driver.status);
     setUpdatePhoneNumber(driver.contactNumber);
     setSelectedDriverId(driver.id);
     setIsUpdateModalOpen(true);
@@ -113,7 +115,7 @@ const DriverManagement = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ driverName: updateDriverName, contactNumber: updatePhoneNumber })
+        body: JSON.stringify({ driverName: updateDriverName, contactNumber: updatePhoneNumber, status: updateDriverStatus })
       });
       if (response.ok) {
         const updatedDriver = await response.json();
@@ -215,9 +217,12 @@ const DriverManagement = () => {
                     <tr key={driver.id}>
                       <td>{driver.driverName}</td>
                       <td>{driver.contactNumber}</td>
-                      <td style={{ fontWeight: '700',color: driver.status === 'Available' ? 'green' : vehicle.status === 'Reserved' ? 'red' : 'black' }}>
-                      {driver.status}
-                      </td>
+                      <td style={{ 
+                          fontWeight: '700', 
+                          color: driver.status === 'Available' ? 'green' : 'orange' 
+                        }}>
+                          {driver.status}
+                        </td>
                       <td className='td-action'>
                         <button className="update-button" onClick={() => openUpdateModal(driver)}><MdOutlineSystemUpdateAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Update</button>
                         <button className="delete-button" onClick={() => openDeleteModal(driver.id)}><FaRegTrashAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Delete</button>
@@ -307,6 +312,16 @@ const DriverManagement = () => {
                   maxLength="11"
                   className="driver-input"
                 />
+               <label htmlFor='driver-status'>Status</label>
+                <input
+                  type="text"
+                  placeholder="Status"
+                  value={updateDriverStatus}
+                  required
+                  onChange={(e) => setUpdateDriverStatus(e.target.value)} // Correct state updater function used here
+                  className="driver-input"
+                />
+                
                 <button className="add-driver-btn-modal">Update Driver</button>
               </div>
             </form>

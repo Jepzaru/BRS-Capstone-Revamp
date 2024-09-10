@@ -25,6 +25,7 @@ const VehicleManagement = () => {
   const plateNumberPattern = /^[A-Z0-9]{3}-[A-Z0-9]{3}$/;
   const [updateVehicleType, setUpdateVehicleType] = useState('');
   const [updatePlateNumber, setUpdatePlateNumber] = useState('');
+  const [updateStatus, setUpdateStatus] = useState('');
   const [updateCapacity, setUpdateCapacity] = useState('');
   const [selectedVehicleId, setSelectedVehicleId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,6 +99,7 @@ const VehicleManagement = () => {
     setUpdateVehicleType(vehicle.vehicleType);
     setUpdatePlateNumber(vehicle.plateNumber);
     setUpdateCapacity(vehicle.capacity);
+    setUpdateStatus(vehicle.status);
     setSelectedVehicleId(vehicle.id);
     setIsUpdateModalOpen(true);
     setIsClosing(false);
@@ -175,7 +177,8 @@ const VehicleManagement = () => {
       const requestData = {
         vehicleType: updateVehicleType,
         plateNumber: updatePlateNumber,
-        capacity: capacityNumber, 
+        capacity: capacityNumber,
+        status: updateStatus
       };
   
       const response = await fetch(`http://localhost:8080/opc/vehicle/update/${selectedVehicleId}`, {
@@ -285,7 +288,7 @@ const VehicleManagement = () => {
                       <td>{vehicle.vehicleType}</td>
                       <td>{vehicle.plateNumber}</td>
                       <td>{vehicle.capacity}</td>
-                      <td style={{ fontWeight: '700',color: vehicle.status === 'Available' ? 'green' : vehicle.status === 'Reserved' ? 'red' : 'black' }}>
+                      <td style={{ fontWeight: '700',color: vehicle.status === 'Available' ? 'green' : vehicle.status === 'Reserved' ? 'red' : 'orange' }}>
                       {vehicle.status}
                       </td>
                       <td className='td-action'>
@@ -379,6 +382,14 @@ const VehicleManagement = () => {
                   value={updateCapacity}
                   min="1"
                   onChange={(e) => setUpdateCapacity(e.target.value)}
+                  required
+                />
+                 <label htmlFor='vehicle-status'>Status</label>
+                <input
+                  type="text"
+                  placeholder="Status"
+                  value={updateStatus}
+                  onChange={(e) => setUpdateStatus(e.target.value)}
                   required
                 />
               </div>
