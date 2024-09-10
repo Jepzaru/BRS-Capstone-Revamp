@@ -24,6 +24,7 @@ import Error404 from './Components/Error404';
 import ProtectedRoute from './Components/ProtectedRoute';
 import { isTokenExpired  } from './Components/TokenUtils';
 import OpcBigCalendar from './Components/OpcSide/OpcBigCalendar';
+import TitleManager from './TitleManager';
 
 const Main = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true); 
@@ -47,6 +48,7 @@ const Main = () => {
 
   return (
     <BrowserRouter>
+     <TitleManager />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/user-authentication" element={<Login />} />
