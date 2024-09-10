@@ -490,9 +490,14 @@ const handleConfirm = async () => {
                 {isMultipleVehicles && (
                 <div className="form-group">
                   <label htmlFor="addedVehicle">
-                    <FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle Added: 
-                    <button className='add-another-vehicle'  onClick={handleAddVehicleClick}><IoMdAddCircle style={{color: "gold", marginRight: "5px", marginBottom: "-2px"}}/>
-                    Add another vehicle</button></label> 
+                    <FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle Added:
+                    <button 
+                    type="button" // Prevents form submission
+                    className="add-another-vehicle" 
+                    onClick={handleAddVehicleClick}>
+                    <IoMdAddCircle style={{color: "gold", marginRight: "5px", marginBottom: "-2px"}}/> Add another vehicle
+                  </button>
+                   </label> 
                     <div className="reserved-vehicle-added-container">
                     {addedVehicles.map(vehicle => (
               <div key={vehicle.plateNumber} className="reserved-vehicle-item">
