@@ -60,15 +60,12 @@ const OpcRequests = () => {
         headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await response.json();
-      // Convert driver status and comparison string to lowercase for case-insensitive comparison
-      const availableDrivers = data.filter(driver => driver.status.toLowerCase() === 'available');
-      setDrivers(availableDrivers);
+      setDrivers(data); // Removed the filter for 'available' status
     } catch (error) {
       console.error("Failed to fetch drivers.", error);
       setDrivers([]);
     }
   };
-  
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -96,7 +93,11 @@ const OpcRequests = () => {
   };
 
   const handleOpenModal = (request, action) => {
-    setSelectedRequest(request);
+    setSelectedRequest({
+      ...request,
+      schedule: request.schedule,
+      returnSchedule: request.returnSchedule,
+    });
     setModalAction(action);
     setShowModal(true);
     if (action === 'reject') {
@@ -108,7 +109,7 @@ const OpcRequests = () => {
     setShowModal(false);
     setSelectedRequest(null);
     setModalAction('');
-    setSelectedDriver('');
+    setSelectedDriver(null);
     setFeedback('');
   };
 
@@ -117,16 +118,16 @@ const OpcRequests = () => {
       alert('Please provide feedback.');
       return;
     }
-  
+
     const reservationData = {
       rejected: true,
       status: 'Rejected',
       feedback: feedback
     };
-  
+
     const formData = new FormData();
     formData.append("reservation", JSON.stringify(reservationData));
-  
+
     try {
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
@@ -135,13 +136,13 @@ const OpcRequests = () => {
         },
         body: formData,
       });
-  
+
       if (response.ok) {
         console.log("Reservation rejected successfully.");
         fetchHeadIsApprovedRequests();
         handleCloseModal();
       } else {
-        const errorText = await response.text(); 
+        const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
     } catch (error) {
@@ -155,17 +156,17 @@ const OpcRequests = () => {
       alert('Please select a driver.');
       return;
     }
-  
+
     const reservationData = {
       opcIsApproved: true,
       driverId: selectedDriver.id,
       driverName: selectedDriver.driverName,
       status: 'Approved'
     };
-  
+
     const formData = new FormData();
     formData.append("reservation", JSON.stringify(reservationData));
-  
+
     try {
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
@@ -174,7 +175,7 @@ const OpcRequests = () => {
         },
         body: formData,
       });
-  
+
       if (response.ok) {
         console.log("Reservation approved successfully.");
         fetchHeadIsApprovedRequests();
@@ -188,6 +189,31 @@ const OpcRequests = () => {
       alert(`An error occurred while approving the request: ${error.message}`);
     }
   };
+
+  // Helper function to filter out drivers based on leave dates
+  const filterDriversByLeaveDates = (drivers, requestSchedule, returnSchedule) => {
+    return drivers.filter(driver => {
+      const { leaveStartDate, leaveEndDate } = driver;
+  
+      if (!leaveStartDate || !leaveEndDate) {
+        return true; // Driver has no leave dates
+      }
+  
+      const leaveStart = new Date(leaveStartDate);
+      const leaveEnd = new Date(leaveEndDate);
+      const schedule = new Date(requestSchedule);
+      const returnDate = returnSchedule === "0001-01-01" ? null : new Date(returnSchedule);
+  
+      // If returnDate is null, only check the schedule
+      if (!returnDate) {
+        return (schedule > leaveEnd || schedule < leaveStart);
+      }
+  
+      // Check if request schedule or return schedule overlaps with leave dates
+      return (schedule > leaveEnd || returnDate < leaveStart);
+    });
+  };
+  
 
   return (
     <div className="opcrequest">
@@ -218,66 +244,65 @@ const OpcRequests = () => {
             </div>
           </div>
           <div className='opc-request-container1'>
-          <div class="table-container">
-            <table className="opc-requests-table">
-              <thead>
-                <tr>
-                  <th>Transaction ID</th>
-                  <th>Requestor Name</th>
-                  <th>Department</th>
-                  <th>Type of Trip</th>
-                  <th>From</th>
-                  <th>To</th>
-                  <th>Capacity</th>
-                  <th>Vehicle</th>
-                  <th>Schedule</th>
-                  <th>Return Schedule</th>
-                  <th>Departure Time</th>
-                  <th>Pick Up Time</th>
-                  <th className="reason-column">Reason</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {getFilteredAndSortedRequests().length === 0 ? (
+            <div className="table-container">
+              <table className="opc-requests-table">
+                <thead>
                   <tr>
-                    <td colSpan="16" className="no-requests">No Requests Available</td>
+                    <th>Transaction ID</th>
+                    <th>Requestor Name</th>
+                    <th>Department</th>
+                    <th>Type of Trip</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Capacity</th>
+                    <th>Vehicle</th>
+                    <th>Schedule</th>
+                    <th>Return Schedule</th>
+                    <th>Departure Time</th>
+                    <th>Pick Up Time</th>
+                    <th className="reason-column">Reason</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
-                ) : (
-                  getFilteredAndSortedRequests().map((request, index) => (
-                    <tr key={index}>
-                       <td>{request.transactionId}</td>
-                      <td>{request.userName}</td>
-                      <td>{request.department}</td>
-                      <td>{request.typeOfTrip}</td>
-                      <td>{request.destinationFrom}</td>
-                      <td>{request.destinationTo}</td>
-                      <td>{request.capacity}</td>
-                      <td>{request.vehicleType}</td>
-                      <td>{request.schedule}</td>
-                      <td>{request.returnSchedule}</td>
-                      <td>{request.departureTime}</td>
-                      <td>{request.pickUpTime}</td>
-                      <td className="reason-column">{request.reason}</td>
-                      <td className={request.status === 'Pending' ? 'status-pending' : ''}>
+                </thead>
+                <tbody>
+                  {getFilteredAndSortedRequests().length === 0 ? (
+                    <tr>
+                      <td colSpan="16" className="no-requests">No Requests Available</td>
+                    </tr>
+                  ) : (
+                    getFilteredAndSortedRequests().map((request, index) => (
+                      <tr key={index}>
+                        <td>{request.transactionId}</td>
+                        <td>{request.userName}</td>
+                        <td>{request.department}</td>
+                        <td>{request.typeOfTrip}</td>
+                        <td>{request.destinationFrom}</td>
+                        <td>{request.destinationTo}</td>
+                        <td>{request.capacity}</td>
+                        <td>{request.vehicleType}</td>
+                        <td>{request.schedule}</td>
+                        <td>{request.returnSchedule}</td>
+                        <td>{request.departureTime}</td>
+                        <td>{request.pickUpTime}</td>
+                        <td className="reason-column">{request.reason}</td>
+                        <td className={request.status === 'Pending' ? 'status-pending' : ''}>
                         {request.status}
-                     </td>
-                      <td>
+                        </td>
+                          <td>
                         <div className="opc-action-buttons">
                           <button className="approve-button" onClick={() => handleOpenModal(request, 'approve')}><FaCircleCheck  style={{marginBottom: "-2px", marginRight: "5px"}}/> Approve</button>
                           <button className="reject-button" onClick={() => handleOpenModal(request, 'reject')}><IoCloseCircle  style={{marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize:"16px"}}/> Reject</button>
                           <button className="view-file-button"><FaFileAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> View File</button>
                         </div>
                       </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-          <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />
         </div>
       </div>
 
@@ -289,17 +314,19 @@ const OpcRequests = () => {
             {modalAction === 'approve' ? (
               <div className="modal-driver-selection">
                 <label htmlFor="driver-select">Select Driver:</label>
-                <select
-                  id="driver-select"
-                  value={selectedDriver ? selectedDriver.id : ""}
-                  onChange={(e) => setSelectedDriver(drivers.find(driver => driver.id === parseInt(e.target.value)))}
-                >
-                  <option value="">Select Driver</option>
-                  {drivers.map(driver => (
-                    <option key={driver.id} value={driver.id}>{driver.driverName}</option>
-                  ))}
-                </select>
-              </div>
+               <select
+                    id="driver"
+                    value={selectedDriver ? selectedDriver.id : ''}
+                    onChange={(e) => setSelectedDriver(drivers.find(driver => driver.id === e.target.value))}
+                  >
+                    <option value="">Select Driver</option>
+                    {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
+                      .map(driver => (
+                        <option key={driver.id} value={driver.id}>
+                          {driver.driverName}
+                        </option>
+                      ))}
+                  </select>              </div>
             ) : (
               <div className="modal-feedback">
                 <input

@@ -43,4 +43,8 @@ public class DriverController {
   public String delete(@PathVariable int id){
     return driverService.delete(id);
   }
+  @PostMapping("/update-status")
+  public void updateDriverStatuses() {
+      driverService.updateDriverStatuses();
+  }
 }

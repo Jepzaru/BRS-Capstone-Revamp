@@ -11,6 +11,22 @@ import { MdOutlineSystemUpdateAlt } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import '../../CSS/OpcCss/DriverManagement.css';
 
+const getCurrentDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const minDate = getCurrentDate(); 
+
+ 
+  const handleUpdateDriver = (event) => {
+    event.preventDefault();
+   
+  };
+
 const DriverManagement = () => {
   const [drivers, setDrivers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,7 +38,10 @@ const DriverManagement = () => {
   const [updateDriverName, setUpdateDriverName] = useState('');
   const [updateDriverStatus, setUpdateDriverStatus] = useState('');
   const [updatePhoneNumber, setUpdatePhoneNumber] = useState('');
+  const [updateLeaveStartDate, setUpdateLeaveStartDate] = useState('');
+  const [updateLeaveEndDate, setUpdateLeaveEndDate] = useState('');
   const [selectedDriverId, setSelectedDriverId] = useState(null);
+  const minDate = getCurrentDate();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('');
 
@@ -61,6 +80,8 @@ const DriverManagement = () => {
     setUpdateDriverName(driver.driverName);
     setUpdateDriverStatus(driver.status);
     setUpdatePhoneNumber(driver.contactNumber);
+    setUpdateLeaveStartDate(driver.leaveStartDate || '');
+    setUpdateLeaveEndDate(driver.leaveEndDate || '');
     setSelectedDriverId(driver.id);
     setIsUpdateModalOpen(true);
     setIsClosing(false);
@@ -115,7 +136,13 @@ const DriverManagement = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ driverName: updateDriverName, contactNumber: updatePhoneNumber, status: updateDriverStatus })
+        body: JSON.stringify({
+          driverName: updateDriverName,
+          contactNumber: updatePhoneNumber,
+          status: updateDriverStatus,
+          leaveStartDate: updateLeaveStartDate,
+          leaveEndDate: updateLeaveEndDate
+        })
       });
       if (response.ok) {
         const updatedDriver = await response.json();
@@ -127,7 +154,7 @@ const DriverManagement = () => {
     } catch (error) {
       console.error("Failed to update driver", error);
     }
-  };  
+  };
 
   const handleDeleteDriver = async () => {
     try {
@@ -202,13 +229,15 @@ const DriverManagement = () => {
                   <th>Driver Name</th>
                   <th>Phone Number</th>
                   <th>Status</th>
+                  <th>Start Leave Date</th>
+                  <th>End Leave Date</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredDrivers.length === 0 ? (
                   <tr>
-                    <td colSpan="4" className="no-driver">
+                    <td colSpan="6" className="no-driver">
                       <PiSteeringWheelFill style={{ fontSize: "24px", marginBottom: "-2px" }} /> No Driver Registered
                     </td>
                   </tr>
@@ -222,10 +251,16 @@ const DriverManagement = () => {
                           color: driver.status === 'Available' ? 'green' : 'orange' 
                         }}>
                           {driver.status}
-                        </td>
+                      </td>
+                      <td>{driver.leaveStartDate ? driver.leaveStartDate : 'N/A'}</td>
+                      <td>{driver.leaveEndDate ? driver.leaveEndDate : 'N/A'}</td>
                       <td className='td-action'>
-                        <button className="update-button" onClick={() => openUpdateModal(driver)}><MdOutlineSystemUpdateAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Update</button>
-                        <button className="delete-button" onClick={() => openDeleteModal(driver.id)}><FaRegTrashAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> Delete</button>
+                        <button className="update-button" onClick={() => openUpdateModal(driver)}>
+                          <MdOutlineSystemUpdateAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Update
+                        </button>
+                        <button className="delete-button" onClick={() => openDeleteModal(driver.id)}>
+                          <FaRegTrashAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Delete
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -278,56 +313,104 @@ const DriverManagement = () => {
         </div>
       )}
       {isUpdateModalOpen && (
-        <div className={`driver-modal-overlay ${isClosing ? 'driver-modal-closing' : ''}`}>
-          <div className={`driver-modal ${isClosing ? 'driver-modal-closing' : ''}`}>
-            <h2>Update Driver 
-              <button className="close-driver-btn" onClick={closeUpdateModal}>
-                <IoIosCloseCircle style={{ fontSize: "32px", marginBottom: "-8px" }} />
-              </button>
-            </h2>
-            <form action="" onSubmit={handleUpdateDriver}>
-              <div className='add-driver-input'>
-                <label htmlFor='driver-name'>Driver Name</label>
-                <input
-                  type="text"
-                  placeholder="Ex. John Doe"
-                  value={updateDriverName}
-                  required
-                  onChange={(e) => setUpdateDriverName(e.target.value)}
-                  className="driver-input"
-                />
-                
-                <label htmlFor='phone number'>Phone Number</label>
-                <input
-                  type="text"
-                  placeholder="Ex. 09363882526"
-                  value={updatePhoneNumber}
-                  required
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '');
-                    setUpdatePhoneNumber(value);
-                  }}
-                  pattern="\d{11}"
-                  title="Phone number should be exactly 11 digits"
-                  maxLength="11"
-                  className="driver-input"
-                />
-               <label htmlFor='driver-status'>Status</label>
-                <input
-                  type="text"
-                  placeholder="Status"
-                  value={updateDriverStatus}
-                  required
-                  onChange={(e) => setUpdateDriverStatus(e.target.value)} // Correct state updater function used here
-                  className="driver-input"
-                />
-                
-                <button className="add-driver-btn-modal">Update Driver</button>
-              </div>
-            </form>
+  <div className={`driver-modal-overlay ${isClosing ? 'driver-modal-closing' : ''}`}>
+    <div className={`driver-modal ${isClosing ? 'driver-modal-closing' : ''}`}>
+      <h2>Update Driver 
+        <button className="close-driver-btn" onClick={closeUpdateModal}>
+          <IoIosCloseCircle style={{ fontSize: "32px", marginBottom: "-8px" }} />
+        </button>
+      </h2>
+      <form action="" onSubmit={handleUpdateDriver}>
+        <div className='add-driver-input'>
+          <label htmlFor='driver-name'>Driver Name</label>
+          <input
+            type="text"
+            placeholder="Ex. John Doe"
+            value={updateDriverName}
+            required
+            onChange={(e) => setUpdateDriverName(e.target.value)}
+            className="driver-input"
+          />
+          
+          <label htmlFor='phone number'>Phone Number</label>
+          <input
+            type="text"
+            placeholder="Ex. 09363882526"
+            value={updatePhoneNumber}
+            required
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, '');
+              setUpdatePhoneNumber(value);
+            }}
+            pattern="\d{11}"
+            title="Phone number should be exactly 11 digits"
+            maxLength="11"
+            className="driver-input"
+          />
+
+          <label htmlFor='driver-status'>Status</label>
+          <select
+            id="updateStatus"
+            value={updateDriverStatus}
+            onChange={(e) => {
+              setUpdateDriverStatus(e.target.value);
+              if (e.target.value !== 'On leave') {
+                setUpdateLeaveStartDate('');
+                setUpdateLeaveEndDate('');
+              }
+            }}
+            className="driver-input"
+            required
+            style={{
+              color: updateDriverStatus === 'Available' ? 'green' 
+                : updateDriverStatus === 'On leave' ? 'orange' 
+                : updateDriverStatus === 'Unavailable' ? 'red' 
+                : 'black', 
+              fontWeight: '700' 
+            }}
+          >
+            <option value="">Select Status</option>
+            <option value="Available">Available</option>
+            <option value="On leave">On leave</option>
+            <option value="Unavailable">Unavailable</option>
+          </select>
+
+          {updateDriverStatus === 'On leave' && (
+          <div className="leave-date-container">
+            <div>
+              <label htmlFor='leave-start-date'>Start Leave Date</label>
+              <input
+                type="date"
+                id="leave-start-date"
+                value={updateLeaveStartDate}
+                onChange={(e) => setUpdateLeaveStartDate(e.target.value)}
+                className="driver-input"
+                min={minDate}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor='leave-end-date'>End Leave Date</label>
+              <input
+                type="date"
+                id="leave-end-date"
+                value={updateLeaveEndDate}
+                onChange={(e) => setUpdateLeaveEndDate(e.target.value)}
+                className="driver-input"
+                min={minDate}
+                required
+              />
+            </div>
           </div>
+        )}
+
+          <button className="add-driver-btn-modal">Update Driver</button>
         </div>
-      )}
+      </form>
+    </div>
+  </div>
+)}
+
       {isDeleteModalOpen && (
         <div className="delete-modal-overlay">
           <div className="delete-modal-content">

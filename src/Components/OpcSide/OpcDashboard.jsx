@@ -42,9 +42,9 @@ const OpcDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [requests, setRequests] = useState([]);
   const [startCounting, setStartCounting] = useState(false);
-  const requestCount = useCounter(requests.length, 2000, startCounting);
-  const driverCount = useCounter(drivers.length, 2000, startCounting);
-  const vehicleCount = useCounter(vehicles.length, 2000, startCounting);
+  const requestCount = useCounter(requests.length, 1000, startCounting);
+  const driverCount = useCounter(drivers.length, 1000, startCounting);
+  const vehicleCount = useCounter(vehicles.length, 1000, startCounting);
 
   const token = localStorage.getItem('token');
 
@@ -96,7 +96,7 @@ const OpcDashboard = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-      setStartCounting(true); // Start counting once loading is done
+      setStartCounting(true); 
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -105,7 +105,7 @@ const OpcDashboard = () => {
   const countReservationsPerDepartment = (reservations) => {
     const counts = {};
     reservations.forEach(request => {
-      const department = request.department; // Adjust according to your data structure
+      const department = request.department;
       if (counts[department]) {
         counts[department]++;
       } else {
@@ -190,21 +190,21 @@ const OpcDashboard = () => {
                       <FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Requests
                     </h3>
-                    <span className="number-badge">{requestCount}</span> {/* Animated count */}
+                    <span className="number-badge">{requestCount}</span> 
                   </div>
                   <div className="dashcontainer2">
                     <h3 style={{ fontWeight: "700", marginLeft: "10px" }}>
                       <GiCarSeat style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Drivers
                     </h3>
-                    <span className="number-badge">{driverCount}</span> {/* Animated count */}
+                    <span className="number-badge">{driverCount}</span>
                   </div>
                   <div className="dashcontainer3">
                     <h3 style={{ fontWeight: "700", marginLeft: "10px" }}>
                       <FaBus style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Vehicles
                     </h3>
-                    <span className="number-badge">{vehicleCount}</span> {/* Animated count */}
+                    <span className="number-badge">{vehicleCount}</span> 
                   </div>
                 </div>
                 <div className="calendar-container">

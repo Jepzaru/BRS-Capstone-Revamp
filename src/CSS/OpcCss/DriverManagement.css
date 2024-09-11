@@ -296,3 +296,17 @@ body {
   color: green;
   font-weight: bold;
 }
+
+.leave-date-container {
+  display: flex;
+  gap: 20px; 
+
+}
+
+.leave-date-container label {
+  margin-right: 5px; 
+}
+
+.driver-input {
+  flex: 1;
+}
