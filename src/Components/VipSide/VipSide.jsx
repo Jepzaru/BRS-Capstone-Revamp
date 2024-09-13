@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Header from './Header';
-import SideNavbar from './SideNavbar';
+import Header from '../UserSide/Header';
+import VipSideNavbar from './VipSideNavbar';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import logoImage1 from '../../Images/citbglogo.png';
@@ -18,7 +18,7 @@ import { FaBook, FaBus } from "react-icons/fa";
 import '../../CSS/UserCss/UserSide.css';
 import { Link, useNavigate } from 'react-router-dom';
 
-const UserSide = () => {
+const VipSide = () => {
   const [vehicles, setVehicles] = useState([]);
   const [events, setEvents] = useState([]); 
   const [loading, setLoading] = useState(true);
@@ -98,14 +98,14 @@ const UserSide = () => {
 
   const handleSelectVehicle = (vehicle) => {
     console.log("Selected Vehicle Plate Number:", vehicle.plateNumber);
-    navigate('/user-side/reservation', { state: { vehicle } });
+    navigate('/vip-side/special-reservation', { state: { vehicle } });
   };  
 
   return (
     <div className="app">
       <Header />
       <div className="main-content">
-        <SideNavbar />
+        <VipSideNavbar />
         <div className="content">
           {loading ? (
             <div>
@@ -193,4 +193,4 @@ const UserSide = () => {
   );
 };
 
-export default UserSide;
+export default VipSide;

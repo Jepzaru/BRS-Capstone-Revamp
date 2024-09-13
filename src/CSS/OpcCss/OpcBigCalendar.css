@@ -1,8 +1,7 @@
-/* Main Calendar Container */
 .opc-big-calendar {
   display: flex;
-  flex-direction: row; /* Align calendar and events content side by side */
-  width: 79%; /* Adjust to fit the full width of the parent container */
+  flex-direction: row; 
+  width: 79%; 
   margin-top: -320px;
   margin-left: 310px;
   background-color: #ddd;
@@ -11,8 +10,8 @@
   padding-bottom: 30px;
   padding-right: 30px;
   padding-left: 30px;
-  height: 600px; /* Manually set the height (adjust as needed) */
-  overflow-y: auto; /* Enable scrolling if content exceeds the height */
+  height: 600px;
+  overflow-y: auto; 
 }
 
 .opc-big-calendar-container{
@@ -25,17 +24,15 @@
 
 .opc-big-calendar-container h1 {
     margin: 330px;
-    font-size: 2.5rem; /* Adjust size if needed */
-    color: black; /* Ensure color is visible on the background */
+    font-size: 2.5rem;
+    color: black;
   }
 
-  /* Calendar Container */
   .big-calendar {
-    flex: 1; /* Allow this section to take up available space */
+    flex: 1; 
     padding: 10px;
   }
-  
-  /* Calendar Header */
+
   .opc-big-calendar-header {
     display: flex;
     justify-content: space-between;
@@ -55,7 +52,7 @@
   .opc-big-calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 1px;/* Light border color between days */
+    gap: 4px;
     font-size: 24px;
   }
 
@@ -70,10 +67,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 83px; /* Smaller height for compact calendar */
+    height: 80px; 
     border: 1px solid #ddd;
     text-align: center;
-    position: relative; /* For positioning events inside the day */
+    position: relative;
   }
   
   .opc-big-calendar-day {

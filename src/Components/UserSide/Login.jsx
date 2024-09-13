@@ -67,6 +67,9 @@ const Login = () => {
           case 'ROLE_ADMIN':
             navigate('/admin');
             break;
+          case 'ROLE_VIP':
+            navigate('/vip-side');
+            break;
           default:
             navigate('/');
             break;
