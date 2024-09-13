@@ -137,12 +137,6 @@ const UserSide = () => {
               <h1><FaBook style={{marginBottom: "-3px,", marginRight: "5px", color: "#782324"}}/> Reservation</h1>
               <div className="instruction-and-button">
                 <p>Please choose the right capacity of your vehicle</p>
-                <Link to='/user-side/special-reservation'>
-                <button className="btn-beside-text">
-                  <BiSolidDiamond style={{marginRight: "10px", marginBottom: "-3px"}}/>
-                  Special Reservation
-                </button>
-                </Link>
               </div>
               <div className="container">
                 <div className="vehicle-list">
