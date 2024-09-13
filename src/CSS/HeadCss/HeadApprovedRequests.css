@@ -121,9 +121,7 @@ body {
   background-color: #f2f2f2;
 }
 
-.approved-requests-table tr:hover {
-  background-color: #ddd;
-}
+
 
 @media (max-width: 767px) {
   .approved-content1 {

@@ -147,4 +147,13 @@ public class ReservationController {
         List<ReservedDateDTO> filteredDates = resServ.getAllReservedDatesByPlateNumber(plateNumber);
         return ResponseEntity.ok(filteredDates);
     }
+
+    @GetMapping("/reservations/by-plate-and-date")
+        public ResponseEntity<List<ReservedDateDTO>> getReservationsByPlateAndDate(
+        @RequestParam String plateNumber,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        List<ReservedDateDTO> reservations = resServ.getReservationsByPlateAndDate(plateNumber, date);
+        return ResponseEntity.ok(reservations);
+}
 }

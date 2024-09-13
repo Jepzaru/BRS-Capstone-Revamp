@@ -148,9 +148,6 @@ body {
   background-color: #f9f9f9;
 }
 
-.vehicle-table tbody tr:hover {
-  background-color: #ddd;
-}
 
 .delete-button {
   background-color: #782324;

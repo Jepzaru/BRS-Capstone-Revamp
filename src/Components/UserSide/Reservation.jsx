@@ -18,7 +18,8 @@ import Calendar from './Calendar';
 import '../../CSS/UserCss/Reservation.css';
 import ReservationModal from './ReservationModal'; 
 import AddVehicleModal from './AddVehicleModal';
-import TimeDropdown from './TimeDropdown';
+import DepartTimeDropdown from './DepartTimeDropdown';
+import PickUpDropdown from './PickUpDropdown';
 
 const Reservation = () => {
   const [departments, setDepartments] = useState([]);
@@ -43,12 +44,11 @@ const Reservation = () => {
   const [firstName, lastName] = localPart.split('.');
   const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const [reservedDates, setReservedDates] = useState([]);
-  const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState('');
-  const [reservedTimes, setReservedTimes] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [addedVehicles, setAddedVehicles] = useState([]);
   const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
   const [userDepartment, setUserDepartment] = useState('');
+  const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState(vehicle ? vehicle.plateNumber : '');
   
   
 
@@ -60,34 +60,6 @@ const Reservation = () => {
     }
   }, [vehicle]);
 
-  const convertTo12HourFormat = (time24) => {
-    const [hours, minutes] = time24.split(':');
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = (hours % 12) || 12;
-    return `${formattedHours}:${minutes} ${period}`;
-  };
-
-  const generateTimeOptions = (reservedTimes) => {
-    const timeOptions = [];
-    for (let hours = 0; hours < 24; hours++) {
-        for (let minutes = 0; minutes < 60; minutes += 30) {
-            const time = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-            timeOptions.push(time);
-        }
-    }
-    return timeOptions;
-};
-
-  const timeOptions = generateTimeOptions(reservedDates);
-
-  const isTimeReserved = (date, time, type) => {
-    if (!date || !time) return false;
-    const formattedTime = convertTo12HourFormat(time);
-    return reservedDates.some(reservation =>
-      reservation.schedule === date &&
-      reservation[type] === formattedTime
-    );
-  };
 
   const formatTime = (time) => {
     if (!time || time === "N/A") return '';
@@ -179,7 +151,8 @@ const calculateTotalCapacity = () => {
       approvalProof: null,
       fileName: ''
     });
-    setSelectedDate(null); 
+    setSelectedDate(null);
+    setReturnScheduleDate(null);  
   };
 
  
@@ -194,14 +167,13 @@ const calculateTotalCapacity = () => {
     window.history.back();
   };
 
-  const handleDateSelect = (date, reservedTimesArray) => {
+  const handleDateSelect = (date) => {
     if (isSelectingReturn) {
       setReturnScheduleDate(date);
     } else {
       setSelectedDate(date);
     }
     setShowCalendar(false);
-    setReservedTimes(reservedTimesArray); 
   };
   
   const handleTripTypeChange = (event) => {
@@ -423,15 +395,14 @@ const handleConfirm = async () => {
                       />
                       Departure Time:
                     </label>
-                    <TimeDropdown
-                      times={timeOptions}
-                      name="departureTime"
-                      selectedTime={formData.departureTime}
-                      onChange={handleInputChange}
-                      isReserved={(time) =>
-                        selectedDate ? isTimeReserved(selectedDate.toISOString().split("T")[0], time, 'departureTime') : false
-                      }
-                      reservedTimes={reservedTimes} 
+                    <DepartTimeDropdown
+                       selectedTime={formData.departureTime}
+                       onChange={handleInputChange}
+                       name="departureTime"
+                       disabled={!selectedDate}
+                       date={selectedDate}
+                       plateNumber={selectedVehiclePlateNumber}
+                       token={token}
                     />
                   </div>
                   {tripType === "roundTrip" && (
@@ -448,15 +419,15 @@ const handleConfirm = async () => {
                         />
                         Pick-Up Time:
                       </label>
-                      <TimeDropdown
-                      times={timeOptions}
+                      <PickUpDropdown
                       name="pickUpTime"
                       selectedTime={formData.pickUpTime}
                       onChange={handleInputChange}
-                      isReserved={(time) =>
-                        selectedDate ? isTimeReserved(selectedDate.toISOString().split("T")[0], time, 'pickUpTime') : false
-                      }
-                      reservedTimes={reservedTimes}
+                      disabled={!returnScheduleDate}
+                      date={returnScheduleDate}
+                      plateNumber={selectedVehiclePlateNumber}
+                      token={token}
+
                     />
                     </div>
                   )} 

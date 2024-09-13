@@ -67,7 +67,7 @@ const ManageRequest = () => {
 
   const getApprovalStatus = (request) => {
     const statuses = [];
-  
+
     if (request.headIsApproved) {
       statuses.push(<span className="mr-status-approved">Approved (Head)</span>);
     } else if (!request.headIsApproved && request.status === 'Pending') {
@@ -75,7 +75,7 @@ const ManageRequest = () => {
     } else if  (request.rejected) {
       statuses.push(<span className="mr-status-rejected">Rejected (Head)</span>);
     }
-  
+
     if (request.opcIsApproved) {
       statuses.push(<span className="mr-status-approved">Approved (OPC)</span>);
     } else if (!request.opcIsApproved && request.status === 'Pending') {
@@ -83,11 +83,13 @@ const ManageRequest = () => {
     } else if (request.rejected) {
       statuses.push(<span className="mr-status-rejected">Rejected (OPC)</span>);
     }
-  
+
     return statuses;
   };
-  
 
+  const isRejected = (request) => {
+    return request.headIsApproved === 0 && request.opcIsApproved === 0 && request.isRejected === 1;
+  };
 
   return (
     <div className="app1">
@@ -137,34 +139,37 @@ const ManageRequest = () => {
                 </tr>
               </thead>
               <tbody>
-                  {filteredRequests.length === 0 ? (
-                    <tr>
-                      <td colSpan="13" className="no-requests">No Requests Made</td>
-                    </tr>
-                  ) : (
-                    filteredRequests.reverse().map(request => (
-                      <tr key={request.id}>
-                        <td>{request.transactionId}</td>
-                        <td>{request.typeOfTrip}</td>
-                        <td>{request.destinationFrom}</td>
-                        <td>{request.destinationTo}</td>
-                        <td>{request.capacity}</td>
-                        <td>{request.vehicleType}-{request.plateNumber}</td>
-                        <td>{request.schedule}</td>
-                        <td>{request.returnSchedule}</td>
-                        <td>{request.departureTime}</td>
-                        <td>{request.pickUpTime}</td>
-                        <td>{request.department}</td>
-                        <td className="reason-column">{request.reason}</td>
-                        <td>
-                          {getApprovalStatus(request).map((status, index) => (
-                            <div key={index}>{status}</div>
-                          ))}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
+  {filteredRequests.length === 0 ? (
+    <tr>
+      <td colSpan="13" className="no-requests">No Requests Made</td>
+    </tr>
+  ) : (
+    filteredRequests.reverse().map(request => (
+      <tr
+        key={request.id}
+        className={request.rejected ? 'highlight-rejected' : ''}
+      >
+        <td>{request.transactionId}</td>
+        <td>{request.typeOfTrip}</td>
+        <td>{request.destinationFrom}</td>
+        <td>{request.destinationTo}</td>
+        <td>{request.capacity}</td>
+        <td>{request.vehicleType}-{request.plateNumber}</td>
+        <td>{request.schedule}</td>
+        <td>{request.returnSchedule}</td>
+        <td>{request.departureTime}</td>
+        <td>{request.pickUpTime}</td>
+        <td>{request.department}</td>
+        <td className="reason-column">{request.reason}</td>
+        <td>
+          {getApprovalStatus(request).map((status, index) => (
+            <div key={index}>{status}</div>
+          ))}
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
             </table>
             </div>
           </div>

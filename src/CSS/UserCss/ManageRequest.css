@@ -133,15 +133,12 @@ body {
   background-color: white;
 }
 
-.requests-table tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
 
 .requests-table tr:hover {
   background-color: gold;
+  color: #782324;
+  cursor: pointer;
 }
-
-
 
 .no-requests {
   text-align: center;
@@ -194,11 +191,15 @@ body {
 }
 
 .mr-status-pending {
-  color: gold; /* Pending status in black */
+  color: gold; 
   font-weight: bold;
 }
 
 .mr-status-rejected {
-  color: red; /* Rejected status in red */
+  color: red;
   font-weight: bold;
+}
+
+.requests-table .highlight-rejected {
+  background-color: yellow !important;
 }
