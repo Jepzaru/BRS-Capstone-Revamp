@@ -229,6 +229,11 @@ body {
   color: white;
 }
 
+.urgent-request {
+  background-color: yellow; /* or any color that signifies urgency */
+  font-weight: bold;
+}
+
 @media (max-width: 767px) {
   .opc-request-content1 {
       margin-left: 10px;
