@@ -169,9 +169,18 @@ const calculateTotalCapacity = () => {
 
   const handleDateSelect = (date) => {
     if (isSelectingReturn) {
-      setReturnScheduleDate(date);
+      // Ensure returnScheduleDate is not before selectedDate
+      if (date >= selectedDate || !selectedDate) {
+        setReturnScheduleDate(date);
+      } else {
+        alert('Return schedule date cannot be before the schedule date.');
+      }
     } else {
       setSelectedDate(date);
+      // Optionally, reset returnScheduleDate if it is before the selectedDate
+      if (returnScheduleDate && returnScheduleDate < date) {
+        setReturnScheduleDate(null); // or set to the selected date
+      }
     }
     setShowCalendar(false);
   };

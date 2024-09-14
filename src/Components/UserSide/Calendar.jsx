@@ -69,7 +69,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
       const date = new Date(currentYear, currentMonth, i);
       const isPast = date < currentDate;
       const isBeforeMinDate = minDate && date < minDate;
-      const isAfterReturnDate = returnDate && date > returnDate;
+      const isAfterReturnDate = returnDate && date >= returnDate;
 
       const reservedInfo = reservedDates.find(res =>
         res.schedule.toDateString() === date.toDateString() ||
@@ -82,7 +82,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
       days.push({
         day: i,
         selected: selectedDay === i,
-        disabled: isPast || isBeforeMinDate || isAfterReturnDate,
+        disabled: isPast || isBeforeMinDate,
         isPast,
         reserved: isReserved,
         status,
@@ -116,25 +116,30 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   };
 
   const handleDayClick = (day) => {
-    const date = new Date(currentYear, currentMonth, day, 12, 0, 0); 
+    const date = new Date(currentYear, currentMonth, day, 12, 0, 0);
+
+    // Allow selecting the same date for both 'Schedule' and 'Return Schedule'
+    if (returnDate && date < returnDate) {
+      return;
+    }
+
     setSelectedDay(day);
-  
+
     const reservedInfo = reservedDates.find(res =>
       res.schedule.getFullYear() === date.getFullYear() &&
       res.schedule.getMonth() === date.getMonth() &&
       res.schedule.getDate() === date.getDate()
     );
-  
+
     if (reservedInfo) {
       const times = [reservedInfo.pickUpTime, reservedInfo.departureTime];
       setReservedTimes(times);
-  
       onDateSelect(date, times);
     } else {
       setReservedTimes([]);
-      onDateSelect(date, []); 
+      onDateSelect(date, []);
     }
-  }; 
+  };
 
   return (
     <div className="calendar">

@@ -171,7 +171,7 @@ public class ReservationService {
     }
 
     public List<ReservedDateDTO> getReservationsByPlateAndDate(String plateNumber, LocalDate date) {
-        List<ReservationEntity> reservations = resRepo.findByPlateNumberAndSchedule(plateNumber, date);
+        List<ReservationEntity> reservations = resRepo.findByPlateNumberAndDate(plateNumber, date);
         return reservations.stream()
             .filter(res -> "Approved".equals(res.getStatus()))
             .map(res -> new ReservedDateDTO(
@@ -184,4 +184,5 @@ public class ReservationService {
             ))
             .collect(Collectors.toList());
     }
+    
 }
