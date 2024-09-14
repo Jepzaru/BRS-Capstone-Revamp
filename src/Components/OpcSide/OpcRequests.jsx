@@ -9,6 +9,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { IoCloseCircle } from "react-icons/io5";
 import { FaFileAlt } from "react-icons/fa";
 import '../../CSS/OpcCss/OpcRequests.css';
+import { FaFlag } from 'react-icons/fa';
 
 const OpcRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -265,40 +266,69 @@ const OpcRequests = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {getFilteredAndSortedRequests().length === 0 ? (
-                    <tr>
-                      <td colSpan="16" className="no-requests">No Requests Available</td>
-                    </tr>
-                  ) : (
-                    getFilteredAndSortedRequests().map((request, index) => (
-                      <tr key={index}>
-                        <td>{request.transactionId}</td>
-                        <td>{request.userName}</td>
-                        <td>{request.department}</td>
-                        <td>{request.typeOfTrip}</td>
-                        <td>{request.destinationFrom}</td>
-                        <td>{request.destinationTo}</td>
-                        <td>{request.capacity}</td>
-                        <td>{request.vehicleType}</td>
-                        <td>{request.schedule}</td>
-                        <td>{request.returnSchedule}</td>
-                        <td>{request.departureTime}</td>
-                        <td>{request.pickUpTime}</td>
-                        <td className="reason-column">{request.reason}</td>
-                        <td className={request.status === 'Pending' ? 'status-pending' : ''}>
-                        {request.status}
-                        </td>
-                          <td>
-                        <div className="opc-action-buttons">
-                          <button className="approve-button" onClick={() => handleOpenModal(request, 'approve')}><FaCircleCheck  style={{marginBottom: "-2px", marginRight: "5px"}}/> Approve</button>
-                          <button className="reject-button" onClick={() => handleOpenModal(request, 'reject')}><IoCloseCircle  style={{marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize:"16px"}}/> Reject</button>
-                          <button className="view-file-button"><FaFileAlt style={{marginBottom: "-2px", marginRight: "5px"}}/> View File</button>
-                        </div>
-                      </td>
+                    {getFilteredAndSortedRequests().length === 0 ? (
+                      <tr>
+                        <td colSpan="16" className="no-requests">No Requests Available</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
+                    ) : (
+                      getFilteredAndSortedRequests().map((request, index) => (
+                        <tr key={index} className={
+                          request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
+                          request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
+                          'default-highlight'
+                        }>
+                          <td>{request.transactionId}</td>
+                          <td>{request.userName}</td>
+                          <td>{request.department}</td>
+                          <td>{request.typeOfTrip}</td>
+                          <td>{request.destinationFrom}</td>
+                          <td>{request.destinationTo}</td>
+                          <td>{request.capacity}</td>
+                          <td>{request.vehicleType}</td>
+                          <td>{request.schedule}</td>
+                          <td>{request.returnSchedule}</td>
+                          <td>{request.departureTime}</td>
+                          <td>{request.pickUpTime}</td>
+                          <td className="reason-column">{request.reason}</td>
+                          <td className={request.status === 'Pending' ? 'status-pending' : ''}>
+                            <div className="status-container">
+                              <span className="status-text">{request.status}</span>
+                              {console.log(request.department)}
+                              {(request.department.trim().toLowerCase() === 'college of computer studies (ccs)' ||
+                                request.department.trim().toLowerCase() === 'college of engineering and architecture (cae)' ||
+                                request.department.trim().toLowerCase() === 'college of management, business & accountancy (cmba)' ||
+                                request.department.trim().toLowerCase() === 'college of arts, sciences, & education (case)' ||
+                                request.department.trim().toLowerCase() === 'college of criminal justice (ccj)' ||
+                                request.department.trim().toLowerCase() === 'college of nursing & allied health sciences') &&
+                                <span className="normal-request-badge">
+                                  <FaFlag style={{ color: 'blue', marginLeft: '5px' }} /> Normal Request
+                                </span>
+                              }
+                              
+                              {request.department.trim().toLowerCase() === 'office of the president (vip)' && 
+                              <span className="high-priority-badge">
+                                <FaFlag style={{ color: 'red', marginLeft: '5px' }} /> Special Request
+                              </span>
+                            }
+                            </div>
+                          </td>
+                          <td>
+                            <div className="opc-action-buttons">
+                              <button className="approve-button" onClick={() => handleOpenModal(request, 'approve')}>
+                                <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve
+                              </button>
+                              <button className="reject-button" onClick={() => handleOpenModal(request, 'reject')}>
+                                <IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject
+                              </button>
+                              <button className="view-file-button">
+                                <FaFileAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> View File
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
               </table>
             </div>
           </div>

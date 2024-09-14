@@ -167,9 +167,14 @@ const OpcApprovedRequests = () => {
                   ) : (
                     sortedRequests.map((request, index) => (
                       <tr
-                        key={index}
-                        className={selectedRows.has(request.transactionId) ? 'selected-row' : ''}
-                      >
+                      key={index}
+                      className={
+                        selectedRows.has(request.transactionId) ? 'selected-row' :
+                        request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
+                        request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
+                        'default-highlight'
+                      }
+                    >
                         {confirmMode && (
                           <td>
                             <input
