@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReservationModal from '../UserSide/ReservationModal'; 
 import AddVehicleModal from '../UserSide/AddVehicleModal';
-import TimeDropdown from '../UserSide/TimeDropdown';
+import DepartTimeDropdown from '../UserSide/DepartTimeDropdown';
+import PickUpDropdown from '../UserSide/PickUpDropdown';
 import Calendar from '../UserSide/Calendar'; 
 import Header from "../UserSide/Header";
 import logoImage1 from '../../Images/citbglogo.png';
@@ -433,42 +434,41 @@ const closeModal = () => {
                       />
                       Departure Time:
                     </label>
-                    <TimeDropdown
-                      times={timeOptions}
-                      name="departureTime"
-                      selectedTime={formData.departureTime}
-                      onChange={handleInputChange}
-                      isReserved={(time) =>
-                        selectedDate ? isTimeReserved(selectedDate.toISOString().split("T")[0], time, 'departureTime') : false
-                      }
-                      reservedTimes={reservedTimes} 
+                    <DepartTimeDropdown
+                       selectedTime={formData.departureTime}
+                       onChange={handleInputChange}
+                       name="departureTime"
+                       disabled={!selectedDate}
+                       date={selectedDate}
+                       plateNumber={selectedVehiclePlateNumber}
+                       token={token}
                     />
                   </div>
                   {tripType === "roundTrip" && (
                     <div className="form-group">
-                      <label htmlFor="pickUpTime">
-                        <IoTime
-                          style={{
-                            backgroundColor: "white",
-                            color: "#782324",
-                            borderRadius: "20px",
-                            padding: "3px",
-                            marginBottom: "-5px",
-                          }}
-                        />
-                        Pick-Up Time:
-                      </label>
-                      <TimeDropdown
-                      times={timeOptions}
-                      name="pickUpTime"
-                      selectedTime={formData.pickUpTime}
-                      onChange={handleInputChange}
-                      isReserved={(time) =>
-                        selectedDate ? isTimeReserved(selectedDate.toISOString().split("T")[0], time, 'pickUpTime') : false
-                      }
-                      reservedTimes={reservedTimes}
-                    />
-                    </div>
+                    <label htmlFor="pickUpTime">
+                      <IoTime
+                        style={{
+                          backgroundColor: "white",
+                          color: "#782324",
+                          borderRadius: "20px",
+                          padding: "3px",
+                          marginBottom: "-5px",
+                        }}
+                      />
+                      Pick-Up Time:
+                    </label>
+                    <PickUpDropdown
+                    name="pickUpTime"
+                    selectedTime={formData.pickUpTime}
+                    onChange={handleInputChange}
+                    disabled={!returnScheduleDate}
+                    date={returnScheduleDate}
+                    plateNumber={selectedVehiclePlateNumber}
+                    token={token}
+
+                  />
+                  </div>
                   )} 
               </div>
               <div className="form-group-inline">
