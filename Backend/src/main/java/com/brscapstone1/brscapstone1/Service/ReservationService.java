@@ -171,18 +171,18 @@ public class ReservationService {
     }
 
     public List<ReservedDateDTO> getReservationsByPlateAndDate(String plateNumber, LocalDate date) {
-        List<ReservationEntity> reservations = resRepo.findByPlateNumberAndDate(plateNumber, date);
-        return reservations.stream()
-            .filter(res -> "Approved".equals(res.getStatus()))
-            .map(res -> new ReservedDateDTO(
-                res.getSchedule(),
-                res.getReturnSchedule(),
-                res.getPickUpTime(),
-                res.getDepartureTime(),
-                res.getStatus(),
-                res.getPlateNumber()
-            ))
-            .collect(Collectors.toList());
-    }
-    
+    List<ReservationEntity> reservations = resRepo.findByPlateNumberAndDate(plateNumber, date);
+    return reservations.stream()
+        .filter(res -> "Approved".equals(res.getStatus()))
+        .map(res -> new ReservedDateDTO(
+            res.getSchedule(),
+            res.getReturnSchedule(),
+            res.getPickUpTime(),
+            res.getDepartureTime(),
+            res.getStatus(),
+            res.getPlateNumber()
+        ))
+        .collect(Collectors.toList());
+}
+
 }

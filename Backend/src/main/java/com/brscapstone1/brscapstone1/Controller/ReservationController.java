@@ -156,4 +156,5 @@ public class ReservationController {
         List<ReservedDateDTO> reservations = resServ.getReservationsByPlateAndDate(plateNumber, date);
         return ResponseEntity.ok(reservations);
 }
+
 }
