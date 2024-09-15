@@ -61,15 +61,14 @@ const OpcRequests = () => {
         headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await response.json();
-      console.log("Fetched Drivers:", data); // Debugging
-      setDrivers(data); // Make sure this array has drivers with `id`s
+      console.log("Fetched Drivers:", data); 
+      setDrivers(data);
     } catch (error) {
       console.error("Failed to fetch drivers.", error);
       setDrivers([]);
     }
   };
   
-
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -213,7 +212,14 @@ const OpcRequests = () => {
       return (schedule > leaveEnd || returnDate < leaveStart);
     });
   };
-  
+
+  const handleViewFile = (fileUrl) => {
+    if (fileUrl) {
+      window.open(fileUrl, '_blank');
+    } else {
+      alert("No file URL available");
+    }
+  };
 
   return (
     <div className="opcrequest">
@@ -320,9 +326,13 @@ const OpcRequests = () => {
                               <button className="reject-button" onClick={() => handleOpenModal(request, 'reject')}>
                                 <IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject
                               </button>
-                              <button className="view-file-button">
-                                <FaFileAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> View File
-                              </button>
+                              {request.fileUrl === "No file(s) attached" ? (
+                                <button className="view-file-button" style={{fontSize: '10px'}}>No file attached</button>
+                              ) : (
+                                <button onClick={() => handleViewFile(request.fileUrl)} className="view-file-button">
+                                  View File
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -336,58 +346,58 @@ const OpcRequests = () => {
       </div>
 
       {showModal && (
-  <div className="modal-overlay">
-    <div className="modal-content">
-      <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
-      <p>Are you sure you want to {modalAction} this request?</p>
-      {modalAction === 'approve' ? (
-        <div className="modal-driver-selection">
-          <label htmlFor="driver-select">Select Driver:</label>
-          <select
-            id="driver-select"
-            value={selectedDriver ? selectedDriver.id : ''}
-            onChange={(e) => {
-              const driverId = e.target.value;
-              console.log("Selected Driver ID:", driverId);
-              const driver = drivers.find(driver => String(driver.id) === String(driverId));
-              console.log("Found Driver:", driver);
-              setSelectedDriver(driver);
-            }}
-          >
-            <option value="">Select Driver</option>
-            {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
-              .map(driver => (
-                <option key={driver.id} value={driver.id}>
-                  {driver.driverName}
-                </option>
-              ))}
-          </select>
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
+          <p>Are you sure you want to {modalAction} this request?</p>
+          {modalAction === 'approve' ? (
+            <div className="modal-driver-selection">
+              <label htmlFor="driver-select">Select Driver:</label>
+              <select
+                id="driver-select"
+                value={selectedDriver ? selectedDriver.id : ''}
+                onChange={(e) => {
+                  const driverId = e.target.value;
+                  console.log("Selected Driver ID:", driverId);
+                  const driver = drivers.find(driver => String(driver.id) === String(driverId));
+                  console.log("Found Driver:", driver);
+                  setSelectedDriver(driver);
+                }}
+              >
+                <option value="">Select Driver</option>
+                {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
+                  .map(driver => (
+                    <option key={driver.id} value={driver.id}>
+                      {driver.driverName}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          ) : (
+            <div className="modal-feedback">
+              <input
+                id="feedback-input"
+                className='feedback-input'
+                type="text"
+                placeholder="Enter feedback"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+              />
+            </div>
+          )}
+          <div className="modal-buttons">
+            <button
+              className="modal-accept-button"
+              onClick={modalAction === 'approve' ? handleApprove : handleReject}
+              disabled={modalAction === 'approve' ? !selectedDriver : !feedback.trim()}
+            >
+              {modalAction === 'approve' ? 'Approve' : 'Reject'}
+            </button>
+            <button className="modal-close-button" onClick={handleCloseModal}>Cancel</button>
+          </div>
         </div>
-      ) : (
-        <div className="modal-feedback">
-          <input
-            id="feedback-input"
-            className='feedback-input'
-            type="text"
-            placeholder="Enter feedback"
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-          />
-        </div>
-      )}
-      <div className="modal-buttons">
-        <button
-          className="modal-accept-button"
-          onClick={modalAction === 'approve' ? handleApprove : handleReject}
-          disabled={modalAction === 'approve' ? !selectedDriver : !feedback.trim()}
-        >
-          {modalAction === 'approve' ? 'Approve' : 'Reject'}
-        </button>
-        <button className="modal-close-button" onClick={handleCloseModal}>Cancel</button>
       </div>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 };

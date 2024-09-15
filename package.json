@@ -13,6 +13,7 @@
     "bootstrap": "^5.3.3",
     "brs-revamp": "file:",
     "chart.js": "^4.4.3",
+    "firebase": "^10.13.1",
     "framer": "^2.4.1",
     "framer-motion": "^11.5.4",
     "motion": "^10.18.0",

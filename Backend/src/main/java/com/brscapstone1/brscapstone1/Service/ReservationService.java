@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.brscapstone1.brscapstone1.DTO.ReservedDateDTO;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
 import com.brscapstone1.brscapstone1.Repository.ReservationRepository;
@@ -60,14 +57,11 @@ public class ReservationService {
     //[POST] || submits a reservation
     public ReservationEntity saveReservation(String userName, ReservationEntity reservation, MultipartFile file) throws IOException {
         if (file != null && !file.isEmpty()) {
-            reservation.setFileName(file.getOriginalFilename());
-            reservation.setFileType(file.getContentType());
-            reservation.setFileSize(file.getSize());
+            reservation.setFileUrl(reservation.getFileUrl());
         } else {
-            reservation.setFileName("No file(s) attached");
-            reservation.setFileType("No file(s) attached");
-            reservation.setFileSize(0);
+            reservation.setFileUrl("No file(s) attached");
         }
+    
         if (reservation.getStatus() == null || reservation.getStatus().isEmpty()) {
             reservation.setStatus("Pending");
         }
@@ -135,12 +129,6 @@ public class ReservationService {
         if (updatedReservation.getFeedback() != null) existingReservation.setFeedback(updatedReservation.getFeedback());
         if (updatedReservation.getDriverId() > 0) existingReservation.setDriverId(updatedReservation.getDriverId()); 
         if (updatedReservation.getDriverName() != null) existingReservation.setDriverName(updatedReservation.getDriverName());
-    
-        if (file != null && !file.isEmpty()) {
-            existingReservation.setFileName(file.getOriginalFilename());
-            existingReservation.setFileType(file.getContentType());
-            existingReservation.setFileSize(file.getSize());
-        }
     
         return resRepo.save(existingReservation);
     }

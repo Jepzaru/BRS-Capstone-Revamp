@@ -13,8 +13,8 @@ const ManageRequest = () => {
   const [sortOption, setSortOption] = useState("");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [showAddVehicleModal, setShowAddVehicleModal] = useState(false); // State for AddVehicleModal
-  const [selectedVehicle, setSelectedVehicle] = useState(null); // State for selected vehicle
+  const [showAddVehicleModal, setShowAddVehicleModal] = useState(false); 
+  const [selectedVehicle, setSelectedVehicle] = useState(null); 
   const email = localStorage.getItem('email');
   const token = localStorage.getItem('token');
   const localPart = email.split('@')[0];
@@ -22,7 +22,6 @@ const ManageRequest = () => {
   const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const username = formatName(firstName) + " " + formatName(lastName);
   
-
   const fetchUsersRequests = async () => {
     try {
       const response = await fetch(`http://localhost:8080/user/reservations/${username}`, {
@@ -34,7 +33,6 @@ const ManageRequest = () => {
       console.error("Failed to fetch user's requests.", error);
     }
   };
-  
 
   useEffect(() => {
     fetchUsersRequests();
@@ -49,7 +47,7 @@ const ManageRequest = () => {
   };
 
   const handleSearchClick = () => {
-    // Add your search logic here if needed
+
   };
 
   const sortRequests = (requests) => {
@@ -68,9 +66,8 @@ const ManageRequest = () => {
   };
 
   const sortedRequests = sortRequests(requests);
-
   const filteredRequests = sortedRequests.filter(request =>
-    request.reason.toLowerCase().includes(searchTerm.toLowerCase())
+    (request.reason || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getApprovalStatus = (request) => {
@@ -109,7 +106,6 @@ const ManageRequest = () => {
 
   const handleModalSubmit = async (event) => {
     event.preventDefault();
-    // Handle form submission
     try {
       await fetch('/api/resend-request', {
         method: 'POST',
@@ -119,7 +115,6 @@ const ManageRequest = () => {
         body: JSON.stringify({ ...selectedRequest, vehicleType: selectedVehicle?.vehicleType, plateNumber: selectedVehicle?.plateNumber }),
       });
       handleCloseModal();
-      // Refresh or update UI as needed
     } catch (error) {
       console.error('Error submitting request:', error);
     }
@@ -137,7 +132,7 @@ const ManageRequest = () => {
     setSelectedVehicle(vehicle);
     setSelectedRequest(prevRequest => ({
       ...prevRequest,
-      capacity: vehicle.capacity || '' // Set capacity, but allow editing later
+      capacity: vehicle.capacity || '' 
     }));
     setShowAddVehicleModal(false);
   };  
@@ -145,7 +140,6 @@ const ManageRequest = () => {
   const handleCapacityChange = (value) => {
     const capacity = parseInt(value, 10);
   
-    // Validate that the value is greater than 0
     if (capacity < 1) {
       alert('Capacity must be greater than 0.');
       setSelectedRequest(prevRequest => ({ ...prevRequest, capacity: '' }));
@@ -153,7 +147,6 @@ const ManageRequest = () => {
       setSelectedRequest(prevRequest => ({ ...prevRequest, capacity }));
     }
   };
-  
 
   return (
     <div className="app1">
@@ -246,7 +239,6 @@ const ManageRequest = () => {
       {showModal && selectedRequest && (
   <div className="resend-overlay" onClick={handleCloseModal}>
     <div className="resend-content" onClick={e => e.stopPropagation()}>
-      {/* Multiple Vehicle Button */}
       <button 
         type="button" 
         className="multiple-vehicle-button" 
@@ -258,7 +250,6 @@ const ManageRequest = () => {
       <form onSubmit={handleModalSubmit}>
         <h2>Resend Request</h2>
         <div className="form-group1">
-          {/* Form fields */}
           <div className="form-field">
             <label htmlFor="transactionId">Transaction ID</label>
             <input
@@ -310,7 +301,7 @@ const ManageRequest = () => {
                   id="capacity"
                   name="capacity"
                   type="number"
-                  min="1" // Set the minimum capacity to 1
+                  min="1"
                   value={selectedRequest.capacity || ''}
                   onChange={(e) => handleCapacityChange(e.target.value)}
                   required
@@ -431,7 +422,7 @@ const ManageRequest = () => {
         <ResendVehicleModal 
           isOpen={showAddVehicleModal} 
           onClose={handleCloseAddVehicleModal} 
-          onSubmit={handleVehicleSelection} // Pass the handler to receive selected vehicle
+          onSubmit={handleVehicleSelection}
         />
       )}
     </div>
