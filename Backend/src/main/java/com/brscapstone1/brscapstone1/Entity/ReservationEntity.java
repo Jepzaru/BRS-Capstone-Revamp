@@ -27,9 +27,7 @@ public class ReservationEntity {
     private String pickUpTime;
     private String departureTime;
     private String reason;
-    private String fileName;
-    private String fileType;
-    private long fileSize;
+    private String fileUrl;
     private String status;
     private Boolean opcIsApproved; 
     private Boolean isRejected = false;
@@ -152,28 +150,12 @@ public class ReservationEntity {
         this.reason = reason;
     }
 
-    public String getFileName() {
-        return fileName;
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
-    }
-
-    public long getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(long fileSize) {
-        this.fileSize = fileSize;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
     public String getStatus() {
@@ -246,7 +228,7 @@ public class ReservationEntity {
 
     public ReservationEntity(String typeOfTrip, String destinationTo, String destinationFrom, int capacity,
                             String department, LocalDate schedule, String vehicleType, String plateNumber, String pickUpTime,
-                            String departureTime, String reason, String fileName, String fileType, long fileSize,
+                            String departureTime, String reason, String fileUrl,
                             String status, Boolean opcIsApproved, Boolean isRejected, Boolean headIsApproved,
                             String userName, String feedback, int driverId, String driverName) {
         this.typeOfTrip = typeOfTrip;
@@ -260,9 +242,7 @@ public class ReservationEntity {
         this.pickUpTime = pickUpTime;
         this.departureTime = departureTime;
         this.reason = reason;
-        this.fileName = fileName;
-        this.fileType = fileType;
-        this.fileSize = fileSize;
+        this.fileUrl = fileUrl;
         this.status = status;
         this.opcIsApproved = opcIsApproved;
         this.isRejected = isRejected;

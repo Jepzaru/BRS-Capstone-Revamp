@@ -20,9 +20,10 @@ import ReservationModal from './ReservationModal';
 import AddVehicleModal from './AddVehicleModal';
 import DepartTimeDropdown from './DepartTimeDropdown';
 import PickUpDropdown from './PickUpDropdown';
+import { storage } from '../Config/Firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Reservation = () => {
-  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -49,9 +50,6 @@ const Reservation = () => {
   const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
   const [userDepartment, setUserDepartment] = useState('');
   const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState(vehicle ? vehicle.plateNumber : '');
-  
-  
-
 
   useEffect(() => {
     if (vehicle && vehicle.plateNumber) {
@@ -59,7 +57,6 @@ const Reservation = () => {
       
     }
   }, [vehicle]);
-
 
   const formatTime = (time) => {
     if (!time || time === "N/A") return '';
@@ -85,13 +82,13 @@ const Reservation = () => {
 
   useEffect(() => {
     if (selectedVehicle) {
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            vehicleType: selectedVehicle.vehicleType,
-            plateNumber: selectedVehicle.plateNumber,
-        }));
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        vehicleType: selectedVehicle.vehicleType,
+        plateNumber: selectedVehicle.plateNumber,
+      }));
     }
-}, [selectedVehicle]);
+  }, [selectedVehicle]);
 
   const handleAddVehicleClick = () => {
     setAddVehicleModalOpen(true);
@@ -106,18 +103,18 @@ const Reservation = () => {
     setSelectedVehicle(vehicle); 
     setAddedVehicles(prevVehicles => [...prevVehicles, vehicle]);
     setAddVehicleModalOpen(false); 
-};
+  };
 
-const handleRemoveVehicle = (plateNumber) => {
-  setAddedVehicles(prev => prev.filter(v => v.plateNumber !== plateNumber));
-  setAddedVehiclePlates(prev => prev.filter(p => p !== plateNumber));
-};
+  const handleRemoveVehicle = (plateNumber) => {
+    setAddedVehicles(prev => prev.filter(v => v.plateNumber !== plateNumber));
+    setAddedVehiclePlates(prev => prev.filter(p => p !== plateNumber));
+  };
 
-const calculateTotalCapacity = () => {
-  const selectedVehicleCapacity = vehicle ? vehicle.capacity : 0;
-  const addedVehiclesCapacity = addedVehicles.reduce((total, v) => total + v.capacity, 0);
-  return selectedVehicleCapacity + addedVehiclesCapacity;
-};
+  const calculateTotalCapacity = () => {
+    const selectedVehicleCapacity = vehicle ? vehicle.capacity : 0;
+    const addedVehiclesCapacity = addedVehicles.reduce((total, v) => total + v.capacity, 0);
+    return selectedVehicleCapacity + addedVehiclesCapacity;
+  };
 
 
   const handleVehicleModeToggle = () => {
@@ -155,8 +152,6 @@ const calculateTotalCapacity = () => {
     setReturnScheduleDate(null);  
   };
 
- 
-
   useEffect(() =>{
     const departmentFromStorage = localStorage.getItem('department');
     setUserDepartment(departmentFromStorage || '');
@@ -169,7 +164,6 @@ const calculateTotalCapacity = () => {
 
   const handleDateSelect = (date) => {
     if (isSelectingReturn) {
-      // Ensure returnScheduleDate is not before selectedDate
       if (date >= selectedDate || !selectedDate) {
         setReturnScheduleDate(date);
       } else {
@@ -177,9 +171,8 @@ const calculateTotalCapacity = () => {
       }
     } else {
       setSelectedDate(date);
-      // Optionally, reset returnScheduleDate if it is before the selectedDate
       if (returnScheduleDate && returnScheduleDate < date) {
-        setReturnScheduleDate(null); // or set to the selected date
+        setReturnScheduleDate(null);
       }
     }
     setShowCalendar(false);
@@ -222,30 +215,40 @@ const calculateTotalCapacity = () => {
         setModalType('error');
         setIsModalOpen(true);
     }
-};
+  };
 
-const handleConfirm = async () => {
+  const handleConfirm = async () => {
     const reservation = {
-        typeOfTrip: tripType,
-        destinationTo: formData.to,
-        destinationFrom: formData.from,
-        capacity: vehicle.capacity,
-        department: userDepartment,
-        schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
-        returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null, 
-        vehicleType: formData.vehicleType,
-        plateNumber: formData.plateNumber,
-        pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
-        departureTime: formatTime(formData.departureTime),
-        reason: formData.reservationReason,
-        status: "Pending",
-        opcIsApproved: false,
-        isRejected: false,
-        headIsApproved: false,
-        feedback: "",
-        driverId: 0,
-        driverName: "",
-    };
+      typeOfTrip: tripType,
+      destinationTo: formData.to,
+      destinationFrom: formData.from,
+      capacity: vehicle.capacity,
+      department: userDepartment,
+      schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
+      returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null,
+      vehicleType: formData.vehicleType,
+      plateNumber: formData.plateNumber,
+      pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
+      departureTime: formatTime(formData.departureTime),
+      reason: formData.reservationReason,
+      status: "Pending",
+      opcIsApproved: false,
+      isRejected: false,
+      headIsApproved: false,
+      feedback: "",
+      driverId: 0,
+      driverName: "",
+  };
+
+  try {
+    let fileUrl = "No file(s) attached";
+    if (formData.approvalProof) {
+        const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
+        await uploadBytes(fileRef, formData.approvalProof);
+
+        fileUrl = await getDownloadURL(fileRef);
+    }
+    reservation.fileUrl = fileUrl; 
 
     const reservationFormData = new FormData();
     reservationFormData.append('reservation', JSON.stringify(reservation));
@@ -255,34 +258,29 @@ const handleConfirm = async () => {
         reservationFormData.append('file', formData.approvalProof);
     }
 
-    try {
-        const response = await fetch('http://localhost:8080/user/reservations/add', {
-            method: 'POST',
-            headers: {
-                "Authorization": `Bearer ${token}`
-            },
-            body: reservationFormData,
-        });
+    const response = await fetch('http://localhost:8080/user/reservations/add', {
+        method: 'POST',
+        headers: {
+            "Authorization": `Bearer ${token}`
+        },
+        body: reservationFormData,
+    });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        console.log('Inserted data:', data);
-        setModalMessage('Reservation submitted successfully!');
-        setModalType('success');
-
-        navigate('/user-side');
-    } catch (error) {
-        console.error('Error submitting reservation:', error);
-        setModalMessage('Failed to submit reservation. Please try again.');
-        setModalType('error');
-    } finally {
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    setModalMessage('Reservation submitted successfully!');
+    setModalType('success');
+    navigate('/user-side');
+  } catch (error) {
+      console.error('Error submitting reservation:', error);
+      setModalMessage('Failed to submit reservation. Please try again.');
+      setModalType('error');
+  } finally {
         setIsModalOpen(true);
     }
-};
+  };
   
   const closeModal = () => {
     setIsModalOpen(false);

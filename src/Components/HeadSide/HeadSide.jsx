@@ -9,6 +9,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { IoCloseCircle } from "react-icons/io5";
 import { FaFileAlt } from "react-icons/fa";
 import '../../CSS/HeadCss/HeadSide.css';
+import { div } from 'framer-motion/client';
 
 const HeadSide = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,6 +18,7 @@ const HeadSide = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [modalAction, setModalAction] = useState(null);
   const [feedback, setFeedback] = useState('');
+  const [fileUrl, setFileUrl] = useState('');
 
   const token = localStorage.getItem('token');
 
@@ -103,14 +105,15 @@ const HeadSide = () => {
     }
   };
 
-  const openModal = (request, action) => {
+  const openModal = async (request, action) => {
     setSelectedRequest(request);
     setModalAction(action);
+    setFileUrl(request.fileUrl || '');
     setIsModalOpen(true);
     if (action === 'reject') {
       setFeedback('');
     }
-  };
+  };  
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -206,7 +209,20 @@ const HeadSide = () => {
                         <div className="head-action-buttons">
                           <button className="approve-button" onClick={() => openModal(requests, 'approve')}><FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve</button>
                           <button className="reject-button" onClick={() => openModal(requests, 'reject')}><IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject</button>
-                          <button className="view-file-button"><FaFileAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> View File</button>
+                          {
+                            fileUrl === 0 ? 
+                            <button
+                            className="view-file-button"
+                            onClick={() => window.open(requests.fileUrl, '_blank')}
+                            disabled={!requests.fileUrl}
+                          >
+                            <FaFileAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> View File
+                          </button>
+
+                          :
+                          <button className="view-file-button" style={{fontSize: '10px'}}>No file attached </button>
+                          }
+                          
                         </div>
                       </td>
                     </tr>
@@ -227,7 +243,6 @@ const HeadSide = () => {
             <p>Are you sure you want to {modalAction} this request?</p>
             {modalAction === 'approve' ? (
               <div className="modal-approve">
-                {/* No additional fields for approval */}
               </div>
             ) : (
               <div className="modal-feedback">
