@@ -59,13 +59,22 @@ public class ReservationController {
 
     //[POST] || submits a reservation
     @PostMapping("/user/reservations/add")
-    public ReservationEntity addReservation(@RequestParam("userName") String userName, @RequestParam(value = "file", required = false) MultipartFile file, @RequestParam("reservation") String reservationJson) throws IOException {
+    public ReservationEntity addReservation(
+        @RequestParam("userName") String userName, 
+        @RequestParam(value = "file", required = false) MultipartFile file, 
+        @RequestParam("reservation") String reservationJson, 
+        @RequestParam("vehicleIds") List<Integer> vehicleIds
+    ) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false); 
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); 
         objectMapper.registerModule(new JavaTimeModule());
+        
+        // Convert JSON to ReservationEntity
         ReservationEntity reservation = objectMapper.readValue(reservationJson, ReservationEntity.class);
-        return resServ.saveReservation(userName, reservation, file);
+    
+        // Pass vehicle IDs to the service layer
+        return resServ.saveReservation(userName, reservation, vehicleIds, file);
     }
 
     //[GET] all Reservations

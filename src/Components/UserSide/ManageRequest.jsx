@@ -212,60 +212,71 @@ const ManageRequest = () => {
           </div>
           <div className='container1'>
             <div className='table-container'>
-              <table className="requests-table">
-                <thead>
+            <table className="requests-table">
+              <thead>
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Type of Trip</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Capacity</th>
+                  <th>Vehicle(s)</th>
+                  <th>Schedule</th>
+                  <th>Return Schedule</th>
+                  <th>Departure Time</th>
+                  <th>Pick Up Time</th>
+                  <th>Department</th>
+                  <th className="reason-column">Reason</th>
+                  <th>Status</th>
+                  <th>Feedback</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRequests.length === 0 ? (
                   <tr>
-                    <th>Transaction ID</th>
-                    <th>Type of Trip</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Capacity</th>
-                    <th>Vehicle</th>
-                    <th>Schedule</th>
-                    <th>Return Schedule</th>
-                    <th>Departure Time</th>
-                    <th>Pick Up Time</th>
-                    <th>Department</th>
-                    <th className="reason-column">Reason</th>
-                    <th>Status</th>
-                    <th>Feedback</th>
+                    <td colSpan="14" className="no-requests">No Requests Made</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {filteredRequests.length === 0 ? (
-                    <tr>
-                      <td colSpan="13" className="no-requests">No Requests Made</td>
+                ) : (
+                  filteredRequests.reverse().map(request => (
+                    <tr 
+                      key={request.id} 
+                      className={request.rejected ? 'rejected' : ''}
+                      onClick={() => handleRowClick(request)}
+                    >
+                      <td>{request.transactionId}</td>
+                      <td>{request.typeOfTrip}</td>
+                      <td>{request.destinationFrom}</td>
+                      <td>{request.destinationTo}</td>
+                      <td>{request.capacity}</td>
+                      <td className='mrg-t-v-row'>
+                        {request.vehicleType ? (
+                          <div>
+                            {request.vehicleType}
+                          </div>
+                        ) : (
+                          'No main vehicle specified'
+                        )}
+                        {request.vehicles && request.vehicles.length > 0 && (
+                          request.vehicles.map(vehicle => (
+                            <div key={vehicle.id}>
+                              {vehicle.vehicleType}
+                            </div>
+                          ))
+                        )}
+                      </td>
+                      <td>{request.schedule}</td>
+                      <td>{request.returnSchedule ? request.returnSchedule : 'N/A'}</td>
+                      <td>{request.departureTime}</td>
+                      <td>{request.pickUpTime ? request.pickUpTime : 'N/A'}</td>
+                      <td>{request.department}</td>
+                      <td className="reason-column">{request.reason}</td>
+                      <td>{request.status}</td>
+                      <td>{request.feedback ? request.feedback : 'N/A'}</td>
                     </tr>
-                  ) : (
-                    filteredRequests.reverse().map(request => (
-                      <tr 
-                        key={request.id} 
-                        className={request.rejected ? 'rejected' : ''}
-                        onClick={() => handleRowClick(request)}
-                      >
-                        <td>{request.transactionId}</td>
-                        <td>{request.typeOfTrip}</td>
-                        <td>{request.destinationFrom}</td>
-                        <td>{request.destinationTo}</td>
-                        <td>{request.capacity}</td>
-                        <td>{request.vehicleType}-{request.plateNumber}</td>
-                        <td>{request.schedule}</td>
-                        <td>{request.returnSchedule}</td>
-                        <td>{request.departureTime}</td>
-                        <td>{request.pickUpTime}</td>
-                        <td>{request.department}</td>
-                        <td className="reason-column">{request.reason}</td>
-                        <td>
-                          {getApprovalStatus(request).map((status, index) => (
-                            <div key={index}>{status}</div>
-                          ))}
-                        </td>
-                        <td>{request.feedback ? request.feedback : 'N/A'}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                  ))
+                )}
+              </tbody>
+            </table>
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="logo-image2" />

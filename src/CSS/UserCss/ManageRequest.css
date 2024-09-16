@@ -103,9 +103,12 @@ body {
 .requests-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
   background-color: white;
   table-layout: fixed;
+}
+
+.mrg-t-v-row{
+  text-align: left;
 }
 
 .requests-table th, .requests-table td {
@@ -218,17 +221,12 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Close Button */
-
-
-/* Form Labels */
 .resend-content label {
   display: block;
   margin-bottom: 5px;
   margin-top: 20px;
 }
 
-/* Form Inputs */
 .resend-content input[type="text"],
 .resend-content input[type="number"],
 .resend-content textarea {
@@ -239,13 +237,11 @@ body {
   border-radius: 4px;
 }
 
-/* Textarea Specific Styles */
 .resend-content textarea {
   resize: vertical;
   min-height: 100px;
 }
 
-/* Modal Buttons */
 .resend-buttons {
   display: flex;
   justify-content: space-between;
@@ -271,12 +267,12 @@ body {
 .form-group1 {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px; /* Adjust the gap between fields */
+  gap: 16px; 
 }
 
 .form-field {
   flex: 1;
-  min-width: 200px; /* Adjust based on your layout */
+  min-width: 200px; 
 }
 
 .form-field label {
@@ -297,11 +293,11 @@ body {
 }
 
 .rejected {
-  background-color: yellow; /* Light yellow background */
+  background-color: yellow; 
 }
 
 .requests-table tr:hover {
-  background-color: #f5e6d5; /* Slightly darker yellow for hover effect */
+  background-color: #f5e6d5; 
 }
 
 .close-button{
