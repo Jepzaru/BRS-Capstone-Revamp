@@ -5,7 +5,14 @@ import '../../CSS/UserCss/ManageRequest.css';
 import logoImage1 from "../../Images/citbglogo.png";
 import Header from './Header';
 import SideNavbar from './SideNavbar';
-import ResendVehicleModal from './ResendVehicleModal';
+import AddVehicleModal from './AddVehicleModal';
+
+import { FaLocationCrosshairs, FaLocationDot } from "react-icons/fa6";
+import { FaFileSignature, FaUserGroup, FaBuildingUser } from "react-icons/fa6";
+import { FaCalendarDay, FaBus, FaFileAlt } from "react-icons/fa";
+import { IoTime } from "react-icons/io5";
+import { TbBus } from "react-icons/tb";
+import { CgDetailsMore } from "react-icons/cg";
 
 const ManageRequest = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,9 +25,13 @@ const ManageRequest = () => {
   const email = localStorage.getItem('email');
   const token = localStorage.getItem('token');
   const localPart = email.split('@')[0];
+  const [tripType, setTripType] = useState('oneWay');
   const [firstName, lastName] = localPart.split('.');
   const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const username = formatName(firstName) + " " + formatName(lastName);
+  const [isAddVehicleModalOpen, setAddVehicleModalOpen] = useState(false);
+  const [isMultipleVehicles, setIsMultipleVehicles] = useState(false);
+  const [showVehicleContainer, setShowVehicleContainer] = useState(true);
   
   const fetchUsersRequests = async () => {
     try {
@@ -148,6 +159,30 @@ const ManageRequest = () => {
     }
   };
 
+  
+  const handleVehicleModeToggle = () => {
+    setIsMultipleVehicles(prevState => !prevState); 
+    setShowVehicleContainer(prevState => !prevState); // Hide/show container
+  };
+
+  const handleRequestSelect = (request) => {
+    setSelectedRequest(request);
+    // Open the modal
+    setShowModal(true);
+  };
+
+  const handleTripTypeChange = (event) => {
+    const selectedTripType = event.target.value;
+    setTripType(selectedTripType);
+    
+    if (selectedTripType === 'oneWay') {
+      setReturnSchedule(''); // or null
+      setPickUpTime(''); // or null
+    }
+  };
+  
+   
+
   return (
     <div className="app1">
       <Header />
@@ -239,191 +274,171 @@ const ManageRequest = () => {
       {showModal && selectedRequest && (
   <div className="resend-overlay" onClick={handleCloseModal}>
     <div className="resend-content" onClick={e => e.stopPropagation()}>
-      <button 
-        type="button" 
-        className="multiple-vehicle-button" 
-        onClick={handleAddVehicleClick}
-      >
-        Multiple Vehicle
-      </button>
-      
-      <form onSubmit={handleModalSubmit}>
-        <h2>Resend Request</h2>
-        <div className="form-group1">
-          <div className="form-field">
-            <label htmlFor="transactionId">Transaction ID</label>
-            <input
-              id="transactionId"
-              name="transactionId"
-              type="text"
-              value={selectedRequest.transactionId}
-              disabled
-            />
-          </div>
-                <div className="form-field">
-                  <label htmlFor="typeOfTrip">Type of Trip</label>
-                  <select
-                    id="typeOfTrip"
-                    name="typeOfTrip"
-                    value={selectedRequest.typeOfTrip}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, typeOfTrip: e.target.value })}
-                    required
-                  >
-                    <option value="One Way">One Way</option>
-                    <option value="Round Trip">Round Trip</option>
-                  </select>
-                </div>
-                <div className="form-field">
-                  <label htmlFor="destinationFrom">From</label>
-                  <input
-                    id="destinationFrom"
-                    name="destinationFrom"
-                    type="text"
-                    value={selectedRequest.destinationFrom}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, destinationFrom: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-field">
-                  <label htmlFor="destinationTo">To</label>
-                  <input
-                    id="destinationTo"
-                    name="destinationTo"
-                    type="text"
-                    value={selectedRequest.destinationTo}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, destinationTo: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-field">
-                <label htmlFor="capacity">Capacity</label>
-                <input
-                  id="capacity"
-                  name="capacity"
-                  type="number"
-                  min="1"
-                  value={selectedRequest.capacity || ''}
-                  onChange={(e) => handleCapacityChange(e.target.value)}
-                  required
-                />
-              </div>
-                <div className="form-field">
-                  <label htmlFor="vehicleType">
-                    Vehicle Type
-                    <button type="button" onClick={handleAddVehicleClick} className="add-vehicle-button">
-                      select Vehicle
-                    </button>
-                  </label>
-                  <input
-                    id="vehicleType"
-                    name="vehicleType"
-                    type="text"
-                    value={selectedVehicle?.vehicleType || selectedRequest.vehicleType}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, vehicleType: e.target.value })}
-                    readOnly
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="plateNumber">Plate Number</label>
-                  <input
-                    id="plateNumber"
-                    name="plateNumber"
-                    type="text"
-                    value={selectedVehicle?.plateNumber || selectedRequest.plateNumber}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, plateNumber: e.target.value })}
-                    readOnly  
-                  />
-                </div>
-                <div className="form-field">
-                  <label htmlFor="schedule">Schedule</label>
-                  <input
-                    id="schedule"
-                    name="schedule"
-                    type="local-date"
-                    value={selectedRequest.schedule}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, schedule: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-field">
-                  <label htmlFor="returnSchedule">Return Schedule</label>
-                  <input
-                    id="returnSchedule"
-                    name="returnSchedule"
-                    type="local-date"
-                    value={selectedRequest.returnSchedule}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, returnSchedule: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-field">
-                  <label htmlFor="departureTime">Departure Time</label>
-                  <input
-                    id="departureTime"
-                    name="departureTime"
-                    type="time"
-                    value={selectedRequest.departureTime}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, departureTime: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-field">
-                  <label htmlFor="pickUpTime">Pick Up Time</label>
-                  <input
-                    id="pickUpTime"
-                    name="pickUpTime"
-                    type="time"
-                    value={selectedRequest.pickUpTime}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, pickUpTime: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-field">
-                  <label htmlFor="department">Department</label>
-                  <input
-                    id="department"
-                    name="department"
-                    type="text"
-                    value={selectedRequest.department}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, department: e.target.value })}
-                    disabled
-                  />
-                </div>
-                <div className="form-field">
-                  <label htmlFor="reason">Reason</label>
-                  <textarea
-                    id="reason"
-                    name="reason"
-                    value={selectedRequest.reason}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, reason: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-field">
-                  <label htmlFor="reason">Reason</label>
-                  <textarea
-                    id="reason"
-                    name="reason"
-                    value={selectedRequest.reason}
-                    onChange={e => setSelectedRequest({ ...selectedRequest, reason: e.target.value })}
-                    required
-                  />
-                </div>
-                
-              </div>
-              <button type="button" onClick={handleCloseModal} className="close-button">Close</button>
-              <button type="submit" className="submit-button">Submit</button>
-            </form>
+      <form className="reservation-form">
+        <div className="form-group-inline">
+          <div className="trip-type">
+          <label>
+      <input
+        type="radio"
+        value="oneWay"
+        checked={tripType === 'oneWay'}
+        onChange={handleTripTypeChange}
+      />
+      <span>One Way</span>
+    </label>
+    <label>
+      <input
+        type="radio"
+        value="roundTrip"
+        checked={tripType === 'roundTrip'}
+        onChange={handleTripTypeChange}
+      />
+      <span>Round Trip</span>
+    </label>
+    </div>
+          <div className='mult-vehicle'>
+            <button type='button' className='mult-vehicle-btn' onClick={handleVehicleModeToggle}>
+              {isMultipleVehicles ? (
+                <>
+                  <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Single vehicle
+                </>
+              ) : (
+                <>
+                  <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Multiple vehicles
+                </>
+              )}
+            </button>
           </div>
         </div>
-      )}
+        <br/>
+        <div className="form-group-inline">
+          <div className="form-group">
+            <label htmlFor="from">
+              <FaLocationCrosshairs style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> From:
+            </label>
+            <input type="text" id="from" name="from" placeholder='Ex. CIT-University' value={selectedRequest.destinationFrom} required  />
+          </div>
+          <div className="form-group">
+            <label htmlFor="to">
+              <FaLocationDot style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> To:
+            </label>
+            <input type="text" id="to" name="to" placeholder='Ex. SM Seaside' value={selectedRequest.destinationTo} required />
+          </div>
+          <div className="form-group">
+            <label htmlFor="capacity">
+              <FaUserGroup style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Capacity:
+            </label>
+            <input type="number" id="capacity" name="capacity" value={selectedRequest.capacity} required min="0" readOnly />
+          </div>
+          <div className="form-group">
+            <label htmlFor="vehicleType">
+              <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Vehicle:
+            </label>
+            <input type="text" id="vehicleType" name="vehicleType" value={selectedRequest.vehicleType} readOnly />
+          </div>
+          <div className="form-group">
+            <label htmlFor="plateNumber">
+              <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Plate Number:
+            </label>
+            <input type="text" id="plateNumber" name="plateNumber" value={selectedRequest.plateNumber} readOnly />
+          </div>
+        </div>
+        <div className="form-group-inline">
+          <div className="form-group">
+            <label htmlFor="schedule">
+              <FaCalendarDay style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Schedule:
+            </label>
+            <input
+              type="text"
+              id="schedule"
+              name="schedule"
+              value={selectedRequest.schedule}
+              readOnly
+            />
+          </div>
+          {tripType === 'roundTrip' && (
+          <div className="form-group">
+            <label htmlFor="returnSchedule">
+              <FaCalendarDay style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Return Schedule:
+            </label>
+            <input
+              type="text"
+              id="returnSchedule"
+              name="returnSchedule"
+              value={selectedRequest.returnSchedule}
+              readOnly
+            />
+          </div>
+          )}
+          <div className="form-group">
+            <label htmlFor="departureTime">
+              <IoTime style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Departure Time:
+            </label>
+            <input type="text" id="departureTime" name="departureTime" value={selectedRequest.departureTime} readOnly />
+          </div>
+          {tripType === 'roundTrip' && (
+          <div className="form-group">
+            <label htmlFor="pickUpTime">
+              <IoTime style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Pick-Up Time:
+            </label>
+            <input type="text" id="pickUpTime" name="pickUpTime" value={selectedRequest.pickUpTime} readOnly />
+          </div>
+           )}
+        </div>
+        <div className="form-group-inline">
+          <div className="form-group">
+            <label htmlFor="department">
+              <FaBuildingUser style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Department:
+            </label>
+            <input type="text" id="department" name="department" value={selectedRequest.department} disabled />
+          </div>
+          <div className="form-group">
+            <label htmlFor="approvalProof">
+              <FaFileAlt style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Proof of Approval (optional):
+            </label>
+            <input type="file" id="approvalProof" name="approvalProof" disabled />
+          </div>
+        </div>
+        <div className="form-group-inline">
+          <div className="form-group">
+            <label htmlFor="reservationReason">
+              <CgDetailsMore style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Reason of Reservation:
+            </label>
+            <textarea
+              id="reservationReason"
+              name="reservationReason"
+              className="reservation-reason-textarea"
+              placeholder="State the reason of your reservation"
+              value={selectedRequest.reason}
+              readOnly
+            />
+          </div>
+          {showVehicleContainer && (
+            <div className="form-group">
+              <label htmlFor="addedVehicle">
+                <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Vehicle Added:
+              </label>
+              <div className="reserved-vehicle-added-container">
+                <div className="reserved-vehicle-item">
+                  <p>{`${selectedRequest.vehicleType} - ${selectedRequest.plateNumber} - ${selectedRequest.capacity}`}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
       {showAddVehicleModal && (
-        <ResendVehicleModal 
-          isOpen={showAddVehicleModal} 
-          onClose={handleCloseAddVehicleModal} 
-          onSubmit={handleVehicleSelection}
-        />
+        <AddVehicleModal 
+        isOpen={isAddVehicleModalOpen} 
+        onClose={handleCloseModal} 
+        onAdd={handleAddVehicle} 
+        selectedPlateNumber={vehicle.plateNumber}
+        addedVehiclePlates={addedVehiclePlates} 
+      />
       )}
     </div>
   );
