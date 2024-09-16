@@ -1,10 +1,13 @@
 package com.brscapstone1.brscapstone1.Entity;
 
 import java.time.LocalDate;
+import java.util.List;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -36,6 +39,10 @@ public class ReservationEntity {
     private String feedback;
     private int driverId;
     private String driverName;
+
+    @OneToMany(orphanRemoval = true)
+    @JoinColumn(name = "reservation_id")
+    private List<VehicleEntity> vehicles;
     
     public int getId() {
         return id;
@@ -222,21 +229,31 @@ public class ReservationEntity {
         this.driverName = driverName;
     }
 
+    public List<VehicleEntity> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<VehicleEntity> vehicles) {
+        this.vehicles = vehicles;
+    }
+
     public ReservationEntity() {
         super();
     }
 
-    public ReservationEntity(String typeOfTrip, String destinationTo, String destinationFrom, int capacity,
-                            String department, LocalDate schedule, String vehicleType, String plateNumber, String pickUpTime,
-                            String departureTime, String reason, String fileUrl,
-                            String status, Boolean opcIsApproved, Boolean isRejected, Boolean headIsApproved,
-                            String userName, String feedback, int driverId, String driverName) {
+    public ReservationEntity(String transactionId, String typeOfTrip, String destinationTo, String destinationFrom,
+            int capacity, String department, LocalDate schedule, LocalDate returnSchedule, String vehicleType,
+            String plateNumber, String pickUpTime, String departureTime, String reason, String fileUrl, String status,
+            Boolean opcIsApproved, Boolean isRejected, Boolean headIsApproved, String userName, String feedback,
+            int driverId, String driverName, List<VehicleEntity> vehicles) {
+        this.transactionId = transactionId;
         this.typeOfTrip = typeOfTrip;
         this.destinationTo = destinationTo;
         this.destinationFrom = destinationFrom;
         this.capacity = capacity;
         this.department = department;
         this.schedule = schedule;
+        this.returnSchedule = returnSchedule;
         this.vehicleType = vehicleType;
         this.plateNumber = plateNumber;
         this.pickUpTime = pickUpTime;
@@ -251,5 +268,6 @@ public class ReservationEntity {
         this.feedback = feedback;
         this.driverId = driverId;
         this.driverName = driverName;
+        this.vehicles = vehicles;
     }
 }

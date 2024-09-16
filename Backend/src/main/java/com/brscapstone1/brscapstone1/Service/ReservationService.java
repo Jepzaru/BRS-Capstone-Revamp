@@ -10,13 +10,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.brscapstone1.brscapstone1.DTO.ReservedDateDTO;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
+import com.brscapstone1.brscapstone1.Entity.VehicleEntity;
 import com.brscapstone1.brscapstone1.Repository.ReservationRepository;
+import com.brscapstone1.brscapstone1.Repository.VehicleRepository;
 
 @Service
 public class ReservationService {
     
     @Autowired
     private ReservationRepository resRepo;
+
+    @Autowired
+    private VehicleRepository vehicleRepository;
 
     public String generateTransactionId() {
     return UUID.randomUUID().toString().substring(0, 8).toUpperCase() + "-" +
@@ -55,30 +60,31 @@ public class ReservationService {
     }
 
     //[POST] || submits a reservation
-    public ReservationEntity saveReservation(String userName, ReservationEntity reservation, MultipartFile file) throws IOException {
+    public ReservationEntity saveReservation(String userName, ReservationEntity reservation, List<Integer> vehicleIds, MultipartFile file) throws IOException {
+        // Handle file
         if (file != null && !file.isEmpty()) {
-            reservation.setFileUrl(reservation.getFileUrl());
+            reservation.setFileUrl("some-file-url"); // Implement actual file upload logic
         } else {
             reservation.setFileUrl("No file(s) attached");
         }
     
+        // Set default values for reservation
         if (reservation.getStatus() == null || reservation.getStatus().isEmpty()) {
             reservation.setStatus("Pending");
         }
         if (reservation.getFeedback() == null || reservation.getFeedback().isEmpty()) {
             reservation.setFeedback("No feedback");
         }
-        if(reservation.getDriverName() == null || reservation.getDriverName().isEmpty()){
-            reservation.setDriverName("No assigned driver");
-        }
-        if(reservation.getReturnSchedule() == null){
-            reservation.setReturnSchedule(LocalDate.of(0001, 1, 1));
-        }
-        if(reservation.getPickUpTime() == null || reservation.getPickUpTime().isEmpty()){
-            reservation.setPickUpTime("N/A");
-        }
         reservation.setUserName(userName);
-        reservation.setTransactionId(generateTransactionId()); 
+        reservation.setTransactionId(generateTransactionId());
+    
+        // Fetch existing vehicles by IDs from the database
+        List<VehicleEntity> vehicles = vehicleRepository.findAllById(vehicleIds);
+        
+        // Associate fetched vehicles with the reservation
+        reservation.setVehicles(vehicles);
+    
+        // Save and return the reservation
         return resRepo.save(reservation);
     }
 

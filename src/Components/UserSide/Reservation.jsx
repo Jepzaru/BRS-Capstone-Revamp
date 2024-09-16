@@ -20,7 +20,7 @@ import ReservationModal from './ReservationModal';
 import AddVehicleModal from './AddVehicleModal';
 import DepartTimeDropdown from './DepartTimeDropdown';
 import PickUpDropdown from './PickUpDropdown';
-import { storage } from '../Config/Firebase';
+import { storage } from '../Config/FileStorageConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Reservation = () => {
@@ -54,7 +54,6 @@ const Reservation = () => {
   useEffect(() => {
     if (vehicle && vehicle.plateNumber) {
       setSelectedVehiclePlateNumber(vehicle.plateNumber);
-      
     }
   }, [vehicle]);
 
@@ -218,69 +217,78 @@ const Reservation = () => {
   };
 
   const handleConfirm = async () => {
+    const vehicleIds = addedVehicles.map(v => v.id).filter(id => id != null);
+  
     const reservation = {
       typeOfTrip: tripType,
       destinationTo: formData.to,
       destinationFrom: formData.from,
-      capacity: vehicle.capacity,
+      capacity: calculateTotalCapacity(),
       department: userDepartment,
       schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
       returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null,
-      vehicleType: formData.vehicleType,
-      plateNumber: formData.plateNumber,
+      vehicleType: vehicle.vehicleType || null,
+      plateNumber: formData.plateNumber || null,
       pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
       departureTime: formatTime(formData.departureTime),
-      reason: formData.reservationReason,
+      reason: formData.reservationReason || "",
+      fileUrl: "No file(s) attached", 
       status: "Pending",
       opcIsApproved: false,
-      isRejected: false,
-      headIsApproved: false,
-      feedback: "",
+      headIsApproved: null,
+      feedback: formData.feedback || "No feedback",
       driverId: 0,
-      driverName: "",
-  };
-
-  try {
-    let fileUrl = "No file(s) attached";
-    if (formData.approvalProof) {
+      driverName: null,
+      vehicleIds: vehicleIds.join(','),
+      rejected: false
+    };
+  
+    console.log("Reservation Data:", reservation);
+  
+    try {
+      let fileUrl = "No file(s) attached";
+      if (formData.approvalProof) {
         const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
         await uploadBytes(fileRef, formData.approvalProof);
-
         fileUrl = await getDownloadURL(fileRef);
-    }
-    reservation.fileUrl = fileUrl; 
-
-    const reservationFormData = new FormData();
-    reservationFormData.append('reservation', JSON.stringify(reservation));
-    reservationFormData.append('userName', `${formatName(firstName)} ${formatName(lastName)}`);
-
-    if (formData.approvalProof) {
+      }
+      reservation.fileUrl = fileUrl;
+  
+      const reservationFormData = new FormData();
+      reservationFormData.append('reservation', JSON.stringify(reservation));
+      reservationFormData.append('userName', `${formatName(firstName)} ${formatName(lastName)}`);
+  
+      if (formData.approvalProof) {
         reservationFormData.append('file', formData.approvalProof);
-    }
-
-    const response = await fetch('http://localhost:8080/user/reservations/add', {
+      }
+      reservationFormData.append('vehicleIds', vehicleIds.join(','));
+  
+      console.log("Form Data:", [...reservationFormData.entries()]);
+  
+      const response = await fetch('http://localhost:8080/user/reservations/add', {
         method: 'POST',
         headers: {
-            "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${token}`
         },
         body: reservationFormData,
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    
-    setModalMessage('Reservation submitted successfully!');
-    setModalType('success');
-    navigate('/user-side');
-  } catch (error) {
+      });
+  
+      if (!response.ok) {
+        const errorResponse = await response.text(); 
+        throw new Error(`HTTP error! Status: ${response.status}. Response: ${errorResponse}`);
+      }
+  
+      setModalMessage('Reservation submitted successfully!');
+      setModalType('success');
+      navigate('/user-side');
+    } catch (error) {
       console.error('Error submitting reservation:', error);
       setModalMessage('Failed to submit reservation. Please try again.');
       setModalType('error');
-  } finally {
-        setIsModalOpen(true);
+    } finally {
+      setIsModalOpen(true);
     }
-  };
+  };  
   
   const closeModal = () => {
     setIsModalOpen(false);
@@ -470,22 +478,22 @@ const Reservation = () => {
                   <label htmlFor="addedVehicle">
                     <FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle Added:
                     <button 
-                    type="button" // Prevents form submission
+                    type="button"
                     className="add-another-vehicle" 
                     onClick={handleAddVehicleClick}>
                     <IoMdAddCircle style={{color: "gold", marginRight: "5px", marginBottom: "-2px"}}/> Add another vehicle
                   </button>
                    </label> 
                     <div className="reserved-vehicle-added-container">
-                    {addedVehicles.map(vehicle => (
-              <div key={vehicle.plateNumber} className="reserved-vehicle-item">
-                <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity} </p>
-                       <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
+                      {addedVehicles.map(vehicle => (
+                      <div key={vehicle.plateNumber} className="reserved-vehicle-item">
+                        <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity} </p>
+                          <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
                             Remove
-                        </button>
-              </div>
-                ))}
-                 </div>
+                          </button>
+                      </div>
+                      ))}
+                   </div>
                  </div>
                  )}
                 </div>

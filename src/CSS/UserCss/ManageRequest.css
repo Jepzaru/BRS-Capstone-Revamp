@@ -103,9 +103,12 @@ body {
 .requests-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
   background-color: white;
   table-layout: fixed;
+}
+
+.mrg-t-v-row{
+  text-align: left;
 }
 
 .requests-table th, .requests-table td {
