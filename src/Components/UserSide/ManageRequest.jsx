@@ -3,16 +3,15 @@ import { FaSortAlphaDown, FaSwatchbook } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import '../../CSS/UserCss/ManageRequest.css';
 import logoImage1 from "../../Images/citbglogo.png";
+import AddVehicleModal from './AddVehicleModal';
 import Header from './Header';
 import SideNavbar from './SideNavbar';
-import AddVehicleModal from './AddVehicleModal';
 
-import { FaLocationCrosshairs, FaLocationDot } from "react-icons/fa6";
-import { FaFileSignature, FaUserGroup, FaBuildingUser } from "react-icons/fa6";
-import { FaCalendarDay, FaBus, FaFileAlt } from "react-icons/fa";
+import { CgDetailsMore } from "react-icons/cg";
+import { FaBus, FaCalendarDay, FaFileAlt } from "react-icons/fa";
+import { FaBuildingUser, FaLocationCrosshairs, FaLocationDot, FaUserGroup } from "react-icons/fa6";
 import { IoTime } from "react-icons/io5";
 import { TbBus } from "react-icons/tb";
-import { CgDetailsMore } from "react-icons/cg";
 
 const ManageRequest = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -270,7 +269,11 @@ const ManageRequest = () => {
                       <td>{request.pickUpTime ? request.pickUpTime : 'N/A'}</td>
                       <td>{request.department}</td>
                       <td className="reason-column">{request.reason}</td>
-                      <td>{request.status}</td>
+                      <td>
+                          {getApprovalStatus(request).map((status, index) => (
+                            <div key={index}>{status}</div>
+                          ))}
+                        </td>
                       <td>{request.feedback ? request.feedback : 'N/A'}</td>
                     </tr>
                   ))
