@@ -314,12 +314,12 @@ const ManageRequest = () => {
             <button type='button' className='mult-vehicle-btn' onClick={handleVehicleModeToggle}>
               {isMultipleVehicles ? (
                 <>
-                  <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Single vehicle
-                </>
+                      <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Multiple vehicles
+                      </>
               ) : (
                 <>
-                  <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Multiple vehicles
-                </>
+                 <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Single vehicle
+                 </>
               )}
             </button>
           </div>
