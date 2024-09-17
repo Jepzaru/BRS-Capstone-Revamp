@@ -225,6 +225,7 @@ body {
   display: block;
   margin-bottom: 5px;
   margin-top: 20px;
+
 }
 
 .resend-content input[type="text"],
@@ -297,7 +298,10 @@ body {
 }
 
 .requests-table tr:hover {
-  background-color: #f5e6d5; 
+  background-color: #5b1a1a; 
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .close-button{
@@ -326,4 +330,21 @@ body {
 
 .multiple-vehicle-button:hover {
   background-color: #5b1a1a;
+}
+
+.rsnd-button{
+  background-color: #782324;
+  color: #ccc;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: 700;
+  font-size: 18px; 
+  border-radius: 5px;
+}
+
+.rsnd-button:hover{
+  background-color: #5b1a1a;
+  transition: background-color 0.3s;
 }

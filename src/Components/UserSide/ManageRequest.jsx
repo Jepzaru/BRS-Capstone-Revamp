@@ -240,7 +240,7 @@ const ManageRequest = () => {
                   filteredRequests.reverse().map(request => (
                     <tr 
                       key={request.id} 
-                      className={request.rejected ? 'rejected' : ''}
+                      className={request.rejected ? 'rejected' : ''} 
                       onClick={() => handleRowClick(request)}
                     >
                       <td>{request.transactionId}</td>
@@ -250,9 +250,7 @@ const ManageRequest = () => {
                       <td>{request.capacity}</td>
                       <td className='mrg-t-v-row'>
                         {request.vehicleType ? (
-                          <div>
-                            {request.vehicleType}
-                          </div>
+                          <div>{request.vehicleType}</div>
                         ) : (
                           'No main vehicle specified'
                         )}
@@ -286,6 +284,8 @@ const ManageRequest = () => {
   <div className="resend-overlay" onClick={handleCloseModal}>
     <div className="resend-content" onClick={e => e.stopPropagation()}>
       <form className="reservation-form">
+        <h3 style={{backgroundColor : '#782324', color: 'white', padding: '10px', borderRadius: '10px'}}>
+          Transaction ID: <span style={{color: '#ffcc00'}}>{selectedRequest.transactionId}</span></h3>
         <div className="form-group-inline">
           <div className="trip-type">
           <label>
@@ -437,6 +437,11 @@ const ManageRequest = () => {
             </div>
           )}
         </div>
+        <div className="form-group-inline"> 
+        <div className="form-group">
+          <button className='rsnd-button'>Resend Request</button>
+          </div>
+          </div>
       </form>
     </div>
   </div>
