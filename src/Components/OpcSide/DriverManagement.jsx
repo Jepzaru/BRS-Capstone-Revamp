@@ -248,7 +248,7 @@ const DriverManagement = () => {
                       <td>{driver.contactNumber}</td>
                       <td style={{ 
                           fontWeight: '700', 
-                          color: driver.status === 'Available' ? 'green' : 'orange' 
+                          color: driver.status === 'Available' ? 'green' : driver.status === "Unavailable" ? 'red' : 'orange' 
                         }}>
                           {driver.status}
                       </td>
