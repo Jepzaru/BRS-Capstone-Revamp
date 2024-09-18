@@ -17,6 +17,8 @@ public class UserEntity {
 	private String password;
 	private String department;
 	private String role;
+	private String imageFormat;
+	private byte[] profilePic;
 	
 	public int getId() {
 		return id;
@@ -48,6 +50,24 @@ public class UserEntity {
 	public void setRole(String role) {
 		this.role = role;
 	}	
+
+	public String getImageFormat(){
+		return imageFormat;
+	}
+
+	public void setImageFormat(String imageFormat){
+		this.imageFormat = imageFormat;
+	}
+
+	public byte[] getProfilePic() {
+
+		return profilePic;
+	}
+
+	public void setProfilePic(byte[] profilePic){
+		this.profilePic = profilePic;
+	}
+
 	public UserEntity(String email, String password, String department, String role) {
 		super();
 		this.email = email;

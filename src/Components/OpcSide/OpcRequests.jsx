@@ -327,11 +327,7 @@ const OpcRequests = () => {
                                   <FaFlag style={{ color: 'blue', marginLeft: '5px' }} /> Normal Request
                                 </span>
                               }
-                              {request.department.trim().toLowerCase() === 'office of the president (vip)' && 
-                                <span className="high-priority-badge">
-                                  <FaFlag style={{ color: 'red', marginLeft: '5px' }} /> Special Request
-                                </span>
-                              }
+                             
                             </div>
                           </td>
                           <td>
