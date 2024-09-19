@@ -42,6 +42,7 @@
 .side-navbar ul li a.active{
   background-color: #782324;
   font-weight: 800;
+  color: gold;
   transition: background-color 0.3s;
 }
 
