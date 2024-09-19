@@ -1,23 +1,27 @@
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import React, { useEffect, useState } from 'react';
-import { CgDetailsMore } from "react-icons/cg";
-import { FaBus, FaCalendarDay, FaFileAlt } from "react-icons/fa";
-import { FaBuildingUser, FaFileSignature, FaLocationCrosshairs, FaLocationDot, FaUserGroup } from "react-icons/fa6";
-import { IoMdAddCircle } from "react-icons/io";
-import { IoTime, IoTrash } from "react-icons/io5";
-import { RiArrowGoBackLine, RiSendPlaneFill } from "react-icons/ri";
-import { TbBus } from "react-icons/tb";
-import { useLocation, useNavigate } from 'react-router-dom';
-import '../../CSS/UserCss/Reservation.css';
+import React, { useState, useEffect } from 'react';
+import Header from './Header'; 
 import logoImage1 from '../../Images/citbglogo.png';
-import { storage } from '../Config/FileStorageConfig';
-import AddVehicleModal from './AddVehicleModal';
-import Calendar from './Calendar';
-import DepartTimeDropdown from './DepartTimeDropdown';
-import Header from './Header';
-import PickUpDropdown from './PickUpDropdown';
-import ReservationModal from './ReservationModal';
 import SideNavbar from './SideNavbar';
+import Skeleton from 'react-loading-skeleton';
+import { useNavigate } from 'react-router-dom';
+import { FaLocationCrosshairs, FaLocationDot } from "react-icons/fa6";
+import { FaFileSignature, FaUserGroup, FaBuildingUser } from "react-icons/fa6";
+import { FaCalendarDay, FaBus, FaFileAlt } from "react-icons/fa";
+import { IoTime } from "react-icons/io5";
+import { RiSendPlaneFill, RiArrowGoBackLine } from "react-icons/ri";
+import { IoTrash } from "react-icons/io5";
+import { TbBus } from "react-icons/tb";
+import { IoMdAddCircle } from "react-icons/io";
+import { CgDetailsMore } from "react-icons/cg";
+import { useLocation } from 'react-router-dom';
+import Calendar from './Calendar'; 
+import '../../CSS/UserCss/Reservation.css';
+import ReservationModal from './ReservationModal'; 
+import AddVehicleModal from './AddVehicleModal';
+import DepartTimeDropdown from './DepartTimeDropdown';
+import PickUpDropdown from './PickUpDropdown';
+import { storage } from '../Config/FileStorageConfig';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Reservation = () => {
   const [loading, setLoading] = useState(true);
@@ -46,12 +50,10 @@ const Reservation = () => {
   const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
   const [userDepartment, setUserDepartment] = useState('');
   const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState(vehicle ? vehicle.plateNumber : '');
-  const [capacityExceeded, setCapacityExceeded] = useState(false);
 
   useEffect(() => {
     if (vehicle && vehicle.plateNumber) {
       setSelectedVehiclePlateNumber(vehicle.plateNumber);
-      
     }
   }, [vehicle]);
 
@@ -121,26 +123,14 @@ const Reservation = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
-    const totalCapacity = calculateTotalCapacity();
-    const inputValue = parseInt(value, 10);
-
-    if (name === 'capacity') {
-      if (inputValue < 0) {
-        setFormData({ ...formData, capacity: '' });
-        setCapacityExceeded(false); 
-      } else if (inputValue > totalCapacity) {
-        setFormData({...formData,capacity: ''});
-        setCapacityExceeded(true); 
-      } else {
-        setFormData({...formData, capacity: inputValue });
-        setCapacityExceeded(false); 
-      }
-    } else {
-      setFormData({...formData,
-        [name]: type === 'file' ? files[0] : value,
-        fileName: type === 'file' ? files[0]?.name || '' : formData.fileName,
-      });
-    }
+    if (name === 'capacity' && parseInt(value, 10) < 0) {
+      return; 
+  }
+    setFormData({
+      ...formData,
+      [name]: type === 'file' ? files[0] : value,
+      fileName: type === 'file' ? files[0]?.name || '' : formData.fileName,
+    });
   };
 
   const handleClear = () => {
@@ -233,7 +223,7 @@ const Reservation = () => {
       typeOfTrip: tripType,
       destinationTo: formData.to,
       destinationFrom: formData.from,
-      capacity: formData.capacity,
+      capacity: calculateTotalCapacity(),
       department: userDepartment,
       schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
       returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null,
@@ -304,7 +294,6 @@ const Reservation = () => {
     setIsModalOpen(false);
   };
 
-
   return (
     <div className="reservation-app">
       <Header />
@@ -365,9 +354,8 @@ const Reservation = () => {
                   <input type="text" id="to" name="to" placeholder='Ex. SM Seaside' value={formData.to} required onChange={handleInputChange}/>
                 </div>
                 <div className="form-group">
-                  <label htmlFor="capacity"><FaUserGroup style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }}/> Capacity:</label>
-                  <input type="number" id="capacity" name="capacity" value={formData.capacity}required min="0" max={calculateTotalCapacity()} onChange={handleInputChange}/>
-                    {capacityExceeded && ( <p style={{ color: "red", fontSize: "11px" }}>Maximum Capacity: {calculateTotalCapacity()}</p>)}
+                  <label htmlFor="capacity"><FaUserGroup style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Capacity:</label>
+                  <input type="number" id="capacity" name="capacity" value={calculateTotalCapacity()}required min="0" onChange={handleInputChange}/>
                 </div>
                 <div className="form-group">
                 <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle:</label>
@@ -528,30 +516,13 @@ const Reservation = () => {
                 <strong>To:</strong> {formData.to}
               </div>
               <div className="summary-item">
-              <strong>Capacity: {formData.capacity || 0} /</strong> {calculateTotalCapacity()}
+              <strong>Capacity:</strong> {calculateTotalCapacity()}
               </div>
               <div className="summary-item">
                 <strong>Plate Number:</strong> {vehicle.plateNumber}
               </div>
               <div className="summary-item">
                 <strong>Vehicle Type:</strong> {vehicle.vehicleType}
-              </div>
-              <div className="summary-item">
-                {isMultipleVehicles && addedVehicles.length > 0 && (
-              <div className="summary-item">
-                <strong>Added Vehicles:</strong>
-                  <ul> {addedVehicles.map(vehicle => (
-                      <li key={vehicle.plateNumber}>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</li>
-                    ))}
-                  </ul>
-              </div>
-              )}
-              {isMultipleVehicles && addedVehicles.length === 0 && (
-              <div className="summary-item">
-                <strong>Added Vehicles:</strong>
-                  <p>No vehicles added yet.</p>
-              </div>
-                )}
               </div>
               <div className="summary-item">
               <strong>Schedule: </strong>
@@ -617,6 +588,5 @@ const Reservation = () => {
     </div>
   );
 };
-
 
 export default Reservation;

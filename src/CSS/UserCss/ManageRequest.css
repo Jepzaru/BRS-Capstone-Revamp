@@ -298,7 +298,7 @@ body {
 }
 
 .requests-table tr:hover {
-  background-color: #5b1a1a; 
+  background-color: rgb(255, 240, 153); 
   color: white;
   font-weight: 500;
   cursor: pointer;
