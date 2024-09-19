@@ -6,6 +6,8 @@ import logoImage1 from "../../Images/citbglogo.png";
 import AddVehicleModal from './AddVehicleModal';
 import Header from './Header';
 import SideNavbar from './SideNavbar';
+import { IoMdAddCircle } from "react-icons/io";
+
 
 import { CgDetailsMore } from "react-icons/cg";
 import { FaBus, FaCalendarDay, FaFileAlt } from "react-icons/fa";
@@ -31,6 +33,11 @@ const ManageRequest = () => {
   const [isAddVehicleModalOpen, setAddVehicleModalOpen] = useState(false);
   const [isMultipleVehicles, setIsMultipleVehicles] = useState(false);
   const [showVehicleContainer, setShowVehicleContainer] = useState(true);
+  const [addedVehicles, setAddedVehicles] = useState([]);
+  const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
+  const { vehicle } = location.state || {}; 
+  const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState(vehicle ? vehicle.plateNumber : '');
+
   
   const fetchUsersRequests = async () => {
     try {
@@ -131,34 +138,35 @@ const ManageRequest = () => {
   };
 
   const handleAddVehicleClick = () => {
-    setShowAddVehicleModal(true);
+    setAddVehicleModalOpen(true); // Show the modal
   };
 
   const handleCloseAddVehicleModal = () => {
-    setShowAddVehicleModal(false);
+    setAddVehicleModalOpen(false); // Hide the modal
   };
 
-  const handleVehicleSelection = (vehicle) => {
+  const handleAddVehicle = (vehicle) => {
+    setAddedVehiclePlates(prev => [...prev, vehicle.plateNumber]);
     setSelectedVehicle(vehicle);
-    setSelectedRequest(prevRequest => ({
-      ...prevRequest,
-      capacity: vehicle.capacity || '' 
-    }));
-    setShowAddVehicleModal(false);
-  };  
-  
-  const handleCapacityChange = (value) => {
-    const capacity = parseInt(value, 10);
-  
-    if (capacity < 1) {
-      alert('Capacity must be greater than 0.');
-      setSelectedRequest(prevRequest => ({ ...prevRequest, capacity: '' }));
-    } else {
-      setSelectedRequest(prevRequest => ({ ...prevRequest, capacity }));
-    }
+    setAddedVehicles(prevVehicles => [...prevVehicles, vehicle]);
+    setAddVehicleModalOpen(false); // Close the modal
+  }; 
+  const handleRemoveVehicle = (plateNumber) => {
+    setAddedVehiclePlates(prev => prev.filter(plate => plate !== plateNumber));
+    setAddedVehicles(prev => prev.filter(vehicle => vehicle.plateNumber !== plateNumber));
   };
-
   
+ 
+  const calculateTotalCapacity = () => {
+    // Start with the capacity of the initially selected vehicle
+    const selectedVehicleCapacity = selectedVehicle ? selectedVehicle.capacity : 0;
+    
+    // Sum the capacities of any additional vehicles
+    const addedVehiclesCapacity = addedVehicles.reduce((total, vehicle) => total + vehicle.capacity, 0);
+    
+    // Return the total capacity
+    return selectedVehicleCapacity + addedVehiclesCapacity;
+  };
   const handleVehicleModeToggle = () => {
     setIsMultipleVehicles(prevState => !prevState); 
     setShowVehicleContainer(prevState => !prevState); // Hide/show container
@@ -179,6 +187,7 @@ const ManageRequest = () => {
       setPickUpTime(''); // or null
     }
   };
+  
   
    
 
@@ -330,20 +339,35 @@ const ManageRequest = () => {
             <label htmlFor="from">
               <FaLocationCrosshairs style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> From:
             </label>
-            <input type="text" id="from" name="from" placeholder='Ex. CIT-University' value={selectedRequest.destinationFrom} required  />
-          </div>
+            <input
+              type="text"
+              id="from"
+              name="from"
+              placeholder='Ex. CIT-University'
+              value={selectedRequest.destinationFrom}
+              onChange={(e) => setSelectedRequest({ ...selectedRequest, destinationFrom: e.target.value })}
+              required
+            /></div>
           <div className="form-group">
             <label htmlFor="to">
               <FaLocationDot style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> To:
             </label>
-            <input type="text" id="to" name="to" placeholder='Ex. SM Seaside' value={selectedRequest.destinationTo} required />
+            <input type="text" id="to" name="to" placeholder='Ex. SM Seaside' value={selectedRequest.destinationTo} onChange={(e) => setSelectedRequest({ ...selectedRequest, destinationTo: e.target.value })} required />
           </div>
           <div className="form-group">
             <label htmlFor="capacity">
               <FaUserGroup style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Capacity:
             </label>
-            <input type="number" id="capacity" name="capacity" value={selectedRequest.capacity} required min="0" readOnly />
-          </div>
+            <input
+            type="number"
+            id="capacity"
+            name="capacity"
+            value={calculateTotalCapacity()}
+            
+            min="1"
+            placeholder="Enter capacity"
+            required
+          /> </div>
           <div className="form-group">
             <label htmlFor="vehicleType">
               <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Vehicle:
@@ -410,7 +434,7 @@ const ManageRequest = () => {
             <label htmlFor="approvalProof">
               <FaFileAlt style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Proof of Approval (optional):
             </label>
-            <input type="file" id="approvalProof" name="approvalProof" disabled />
+            <input type="file" id="approvalProof" name="approvalProof" />
           </div>
         </div>
         <div className="form-group-inline">
@@ -424,21 +448,30 @@ const ManageRequest = () => {
               className="reservation-reason-textarea"
               placeholder="State the reason of your reservation"
               value={selectedRequest.reason}
-              readOnly
+              required
+             
             />
           </div>
           {showVehicleContainer && (
             <div className="form-group">
-              <label htmlFor="addedVehicle">
-                <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Vehicle Added:
-              </label>
-              <div className="reserved-vehicle-added-container">
-                <div className="reserved-vehicle-item">
-                  <p>{`${selectedRequest.vehicleType} - ${selectedRequest.plateNumber} - ${selectedRequest.capacity}`}</p>
+            <label htmlFor="addedVehicle">
+              <FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle Added:
+              <button type='button' className='mult-vehicle-btn' onClick={handleAddVehicleClick}>
+              <IoMdAddCircle style={{color: "gold", marginRight: "5px", marginBottom: "-2px"}}/> Add another vehicle
+            </button>
+             </label> 
+             <div className="reserved-vehicle-added-container">
+              {addedVehicles.map(vehicle => (
+                <div key={vehicle.plateNumber} className="reserved-vehicle-item">
+                  <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</p>
+                  <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
+                    Remove
+                  </button>
                 </div>
-              </div>
-            </div>
-          )}
+                ))}
+             </div>
+           </div>
+           )}
         </div>
         <div className="form-group-inline"> 
         <div className="form-group">
@@ -449,15 +482,14 @@ const ManageRequest = () => {
     </div>
   </div>
 )}
-
-      {showAddVehicleModal && (
+{isAddVehicleModalOpen && (
         <AddVehicleModal 
-        isOpen={isAddVehicleModalOpen} 
-        onClose={handleCloseModal} 
-        onAdd={handleAddVehicle} 
-        selectedPlateNumber={vehicle.plateNumber}
-        addedVehiclePlates={addedVehiclePlates} 
-      />
+          isOpen={isAddVehicleModalOpen} 
+          onClose={handleCloseAddVehicleModal} 
+          onAdd={handleAddVehicle} 
+          selectedPlateNumber={selectedVehiclePlateNumber}
+          addedVehiclePlates={addedVehiclePlates} 
+        />
       )}
     </div>
   );
