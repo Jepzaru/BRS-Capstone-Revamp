@@ -258,16 +258,16 @@ const ManageRequest = () => {
                       <td>{request.capacity}</td>
                       <td className='mrg-t-v-row'>
                         {request.vehicleType ? (
-                          <div style={{backgroundColor: "#782324" , color: "white", padding: '5px', borderRadius: '5px'}}>
-                          {request.vehicleType} {request.plateNumber}
-                            </div>
+                          <div style={{ backgroundColor: "#782324", color: "white", padding: '5px', borderRadius: '5px' }}>
+                            {request.vehicleType} {request.plateNumber}
+                          </div>
                         ) : (
                           'No main vehicle specified'
                         )}
                         {request.vehicles && request.vehicles.length > 0 && (
                           request.vehicles.map(vehicle => (
-                            <div style={{backgroundColor: "#782324", color: "white", marginTop: '5px', padding: '5px', borderRadius: '5px'}} key={vehicle.id}>
-                              {vehicle.vehicleType} {request.plateNumber}
+                            <div style={{ backgroundColor: "#782324", color: "white", marginTop: '5px', padding: '10px', borderRadius: '5px' }} key={vehicle.id}>
+                              {vehicle.vehicleType} {vehicle.plateNumber}
                             </div>
                           ))
                         )}
@@ -477,6 +477,9 @@ const ManageRequest = () => {
         </div>
         <div className="form-group-inline"> 
         <div className="form-group">
+          <button className='rsnd-cancel-button' onClick={handleCloseModal}>Cancel</button>
+          </div>
+          <div className="form-group">
           <button className='rsnd-button'>Resend Request</button>
           </div>
           </div>

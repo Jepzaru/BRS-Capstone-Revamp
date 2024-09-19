@@ -297,9 +297,14 @@ body {
   background-color: yellow; 
 }
 
-.requests-table tr:hover {
-  background-color: rgb(255, 240, 153); 
+.requests-table tr.rejected:hover {
+  background-color: #5b1a1a; 
+  font-weight: normal; 
   color: white;
+}
+
+.requests-table tr:hover {
+  background-color: #e0dede; 
   font-weight: 500;
   cursor: pointer;
 }
@@ -346,5 +351,21 @@ body {
 
 .rsnd-button:hover{
   background-color: #5b1a1a;
+  transition: background-color 0.3s;
+}
+
+.rsnd-cancel-button{
+  background-color: #D4AF37;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: 700;
+  font-size: 18px; 
+  border-radius: 5px;
+}
+
+.rsnd-cancel-button:hover{
+  background-color: #ffdc67;
   transition: background-color 0.3s;
 }
