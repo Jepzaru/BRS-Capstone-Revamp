@@ -58,7 +58,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber, addedVeh
       <div className="addvehicle-content">
         <h2>
           Select Vehicle
-          <button className="addvehicle-close" onClick={onClose}>
+          <button className="addvehicle-close" onClick={onClose} >
             <IoMdCloseCircle />
           </button>
         </h2>

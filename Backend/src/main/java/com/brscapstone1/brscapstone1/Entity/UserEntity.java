@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 @Entity
@@ -17,8 +18,11 @@ public class UserEntity {
 	private String password;
 	private String department;
 	private String role;
-	private String imageFormat;
-	private byte[] profilePic;
+	private String imageName;
+    private String imageType;
+    
+    @Lob
+    private byte[] imageData;
 	
 	public int getId() {
 		return id;
@@ -51,29 +55,39 @@ public class UserEntity {
 		this.role = role;
 	}	
 
-	public String getImageFormat(){
-		return imageFormat;
-	}
+	public String getImageName() {
+        return imageName;
+    }
 
-	public void setImageFormat(String imageFormat){
-		this.imageFormat = imageFormat;
-	}
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
 
-	public byte[] getProfilePic() {
+    public String getImageType() {
+        return imageType;
+    }
 
-		return profilePic;
-	}
+    public void setImageType(String imageType) {
+        this.imageType = imageType;
+    }
 
-	public void setProfilePic(byte[] profilePic){
-		this.profilePic = profilePic;
-	}
+    public byte[] getImageData() {
+        return imageData;
+    }
 
-	public UserEntity(String email, String password, String department, String role) {
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
+    }
+
+	public UserEntity(String email, String password, String department, String role, String imageName, String imageType, byte[] imageData) {
 		super();
 		this.email = email;
 		this.password = password;
 		this.department = department;
 		this.role = role;
+		this.imageName = imageName;
+        this.imageType = imageType;
+        this.imageData = imageData;
 	}
 	public UserEntity() {
 		super();

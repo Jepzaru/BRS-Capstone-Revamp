@@ -9,7 +9,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { IoCloseCircle } from "react-icons/io5";
 import { FaFileAlt } from "react-icons/fa";
 import '../../CSS/HeadCss/HeadSide.css';
-import { div } from 'framer-motion/client';
+
 
 const HeadSide = () => {
   const [searchTerm, setSearchTerm] = useState("");

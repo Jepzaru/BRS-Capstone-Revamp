@@ -24,14 +24,14 @@ const titleMap = {
   '/driver-management': 'Driver Management - CIT-U Transportation Reservation System',
   '/opc-settings': 'Settings - CIT-U Transportation Reservation System',
   '/vip-side': 'Vip - CIT-U Transportation Reservation System',
-  '/vip-side/special-reservation': 'Vip Reservation - CIT-U Transportation Reservation System'
+  '/vip-side/special-reservation': 'Vip Reservation - CIT-U Transportation Reservation System',
 };
 
 const TitleManager = () => {
   const location = useLocation();
 
   useEffect(() => {
-    document.title = titleMap[location.pathname] || 'My Website';
+    document.title = titleMap[location.pathname] || 'Error 404';
   }, [location]);
 
   return null;

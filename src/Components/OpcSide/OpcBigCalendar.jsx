@@ -322,7 +322,8 @@ const OpcBigCalendar = () => {
         </div>
         {renderEvents()}
         {showAddEvent && (
-          <div className="opc-big-calendar-add-event-modal">
+          <div className="event-modal-overlay">
+          <div className="opc-big-calendar-edit-event-modal">
             <h3>Add New Event</h3>
             <input
               type="text"
@@ -335,11 +336,13 @@ const OpcBigCalendar = () => {
               value={eventDescription}
               onChange={(e) => setEventDescription(e.target.value)}
             ></textarea>
-            <button onClick={handleEventSubmit}>Add New Event</button>
+            <button onClick={handleEventSubmit} style={{backgroundColor: "#782324"}}>Add New Event</button>
             <button onClick={() => setShowAddEvent(false)}>Cancel</button>
+          </div>
           </div>
         )}
         {editingEvent && (
+          <div className="event-modal-overlay">
           <div className="opc-big-calendar-edit-event-modal">
             <h3>Edit Event</h3>
             <input
@@ -353,8 +356,9 @@ const OpcBigCalendar = () => {
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
             ></textarea>
-            <button onClick={handleEditEvent}>Update Event</button>
+            <button onClick={handleEditEvent} style={{backgroundColor: "#782324"}}>Update Event</button>
             <button onClick={() => setEditingEvent(null)}>Cancel</button>
+          </div>
           </div>
         )}
       </div>

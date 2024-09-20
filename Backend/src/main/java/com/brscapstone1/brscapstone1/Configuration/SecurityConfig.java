@@ -36,8 +36,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(registry -> {
                 registry.requestMatchers("/", "/authenticate", "/admin/users/add", "/profile-pictures/upload").permitAll();
-                registry.requestMatchers("/admin/**").hasRole("ADMIN");
-                registry.requestMatchers("/user/**").hasAnyRole("USER", "VIP");
+                registry.requestMatchers("/admin/**", "/user/profile-pictures/upload" ).hasRole("ADMIN");
+                registry.requestMatchers("/user/**").hasAnyRole("USER", "VIP", "OPC", "HEAD");
                 registry.requestMatchers("/opc/**").hasRole("OPC");
                 registry.requestMatchers("/opc/events/**").permitAll();  
                 registry.anyRequest().authenticated();
