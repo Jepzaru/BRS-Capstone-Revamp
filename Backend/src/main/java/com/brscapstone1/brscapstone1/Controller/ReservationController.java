@@ -154,11 +154,17 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations/by-plate-and-date")
-        public ResponseEntity<List<ReservedDateDTO>> getReservationsByPlateAndDate(
+    public ResponseEntity<List<ReservedDateDTO>> getReservationsByPlateAndDate(
         @RequestParam String plateNumber,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
         List<ReservedDateDTO> reservations = resServ.getReservationsByPlateAndDate(plateNumber, date);
         return ResponseEntity.ok(reservations);
-}
+    }
+
+    @DeleteMapping("/reservations/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable int id){
+        return ResponseEntity.ok((resServ.delete(id)));
+    }
+    
 }

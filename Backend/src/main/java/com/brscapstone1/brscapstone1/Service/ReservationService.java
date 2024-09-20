@@ -63,7 +63,7 @@ public class ReservationService {
     public ReservationEntity saveReservation(String userName, ReservationEntity reservation, List<Integer> vehicleIds, MultipartFile file) throws IOException {
         // Handle file
         if (file != null && !file.isEmpty()) {
-            reservation.setFileUrl("some-file-url"); // Implement actual file upload logic
+            reservation.setFileUrl(reservation.getFileUrl());
         } else {
             reservation.setFileUrl("No file(s) attached");
         }
@@ -177,6 +177,20 @@ public class ReservationService {
                 res.getPlateNumber()
             ))
             .collect(Collectors.toList());
+    }
+
+    //[DELETE] a reservation
+    public String delete(int id){
+        String msg = "";
+
+        if(resRepo.findById(id).isPresent()){
+            resRepo.deleteById(id);
+            
+            msg = "Reservation with id " +id+ " is successfully deleted.";
+        }else{
+            msg = "Reservation with id " +id+ " does not exist.";
+        }
+        return msg;
     }
     
 }
