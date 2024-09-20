@@ -2,7 +2,10 @@ package com.brscapstone1.brscapstone1.Entity;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,9 +43,9 @@ public class ReservationEntity {
     private int driverId;
     private String driverName;
 
-    @OneToMany(orphanRemoval = true)
-    @JoinColumn(name = "reservation_id")
-    private List<VehicleEntity> vehicles;
+     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ReservationVehicleEntity> vehicles;
+
     
     public int getId() {
         return id;
@@ -229,13 +232,7 @@ public class ReservationEntity {
         this.driverName = driverName;
     }
 
-    public List<VehicleEntity> getVehicles() {
-        return vehicles;
-    }
-
-    public void setVehicles(List<VehicleEntity> vehicles) {
-        this.vehicles = vehicles;
-    }
+   
 
     public ReservationEntity() {
         super();
@@ -268,6 +265,5 @@ public class ReservationEntity {
         this.feedback = feedback;
         this.driverId = driverId;
         this.driverName = driverName;
-        this.vehicles = vehicles;
     }
 }

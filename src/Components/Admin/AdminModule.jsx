@@ -25,17 +25,19 @@ const AdminModule = () => {
 
   const token = localStorage.getItem('token');
 
-  const fetchUsers = async () =>{
+  const fetchUsers = async () => {
     try {
-      const response = await fetch("http://localhost:8080/admin/users/read",{
-        headers: {"Authorization" : `Bearer ${token}`}
+      const response = await fetch("http://localhost:8080/admin/users/read", {
+        headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();
-      setUsers(data);
+      console.log('Fetched users:', data); // Add this line to inspect the data
+      setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to fetch users", error);
     }
   };
+  
 
   useEffect(() =>{
     fetchUsers();

@@ -55,6 +55,7 @@ const OpcRequests = () => {
     }
   }, [modalAction]);
 
+ 
   const fetchDrivers = async () => {
     try {
       const response = await fetch("http://localhost:8080/opc/driver/getAll", {
@@ -62,12 +63,17 @@ const OpcRequests = () => {
       });
       const data = await response.json();
       console.log("Fetched Drivers:", data); 
-      setDrivers(data);
+  
+      // Filter out drivers with status 'Unavailable'
+      const filteredDrivers = data.filter(driver => driver.status !== 'Unavailable');
+  
+      setDrivers(filteredDrivers);
     } catch (error) {
       console.error("Failed to fetch drivers.", error);
       setDrivers([]);
     }
   };
+  
   
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -195,23 +201,35 @@ const OpcRequests = () => {
   const filterDriversByLeaveDates = (drivers, requestSchedule, returnSchedule) => {
     return drivers.filter(driver => {
       const { leaveStartDate, leaveEndDate } = driver;
-    
-      if (!leaveStartDate || !leaveEndDate) {
-        return true; 
+  
+      const leaveStart = leaveStartDate ? new Date(leaveStartDate) : null;
+      const leaveEnd = leaveEndDate ? new Date(leaveEndDate) : null;
+  
+      const schedule = requestSchedule ? new Date(requestSchedule) : null;
+      const returnDate = returnSchedule && returnSchedule !== "0001-01-01" ? new Date(returnSchedule) : null;
+  
+      console.log("Driver Leave Dates:", leaveStart, leaveEnd);
+      console.log("Request Schedule:", schedule);
+      console.log("Return Date:", returnDate);
+  
+      if (!leaveStart || !leaveEnd) {
+        console.log("No leave dates for driver.");
+        return true;
       }
-    
-      const leaveStart = new Date(leaveStartDate);
-      const leaveEnd = new Date(leaveEndDate);
-      const schedule = new Date(requestSchedule);
-      const returnDate = returnSchedule === "0001-01-01" ? null : new Date(returnSchedule);
-    
-      if (!returnDate) {
-        return (schedule > leaveEnd || schedule < leaveStart);
-      }
-    
-      return (schedule > leaveEnd || returnDate < leaveStart);
+  
+      const isOnLeaveDuringSchedule = schedule && leaveEnd >= schedule && leaveStart <= schedule;
+      const isOnLeaveDuringReturn = returnDate && leaveEnd >= returnDate && leaveStart <= returnDate;
+  
+      console.log("isOnLeaveDuringSchedule:", isOnLeaveDuringSchedule);
+      console.log("isOnLeaveDuringReturn:", isOnLeaveDuringReturn);
+  
+      return !(isOnLeaveDuringSchedule || isOnLeaveDuringReturn);
     });
   };
+  
+  
+  
+  
 
   const handleViewFile = (fileUrl) => {
     if (fileUrl) {
@@ -266,7 +284,7 @@ const OpcRequests = () => {
                     <th>Return Schedule</th>
                     <th>Departure Time</th>
                     <th>Pick Up Time</th>
-                    <th className="reason-column">Reason</th>
+                    <th className="opc-reason-column">Reason</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
@@ -291,15 +309,14 @@ const OpcRequests = () => {
                           <td>{request.destinationTo}</td>
                           <td>{request.capacity}</td>
                           <td>{request.vehicleType}</td>
-                          <td>{request.schedule}</td>
-                          <td>{request.returnSchedule}</td>
-                          <td>{request.departureTime}</td>
-                          <td>{request.pickUpTime}</td>
+                          <td>{request.schedule || 'N/A'}</td>
+                          <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? request.returnSchedule : 'N/A'}</td>
+                          <td>{request.departureTime || 'N/A'}</td>
+                          <td>{request.pickUpTime || 'N/A'}</td>
                           <td className="reason-column">{request.reason}</td>
                           <td className={request.status === 'Pending' ? 'status-pending' : ''}>
                             <div className="status-container">
                               <span className="status-text">{request.status}</span>
-                              {console.log(request.department)}
                               {(request.department.trim().toLowerCase() === 'college of computer studies (ccs)' ||
                                 request.department.trim().toLowerCase() === 'college of engineering and architecture (cae)' ||
                                 request.department.trim().toLowerCase() === 'college of management, business & accountancy (cmba)' ||
@@ -310,12 +327,7 @@ const OpcRequests = () => {
                                   <FaFlag style={{ color: 'blue', marginLeft: '5px' }} /> Normal Request
                                 </span>
                               }
-                              
-                              {request.department.trim().toLowerCase() === 'office of the president (vip)' && 
-                              <span className="high-priority-badge">
-                                <FaFlag style={{ color: 'red', marginLeft: '5px' }} /> Special Request
-                              </span>
-                            }
+                             
                             </div>
                           </td>
                           <td>
@@ -327,7 +339,7 @@ const OpcRequests = () => {
                                 <IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject
                               </button>
                               {request.fileUrl === "No file(s) attached" ? (
-                                <button className="view-file-button" style={{fontSize: '10px'}}>No file attached</button>
+                                <button className="view-file-button" style={{ fontSize: '10px' }}>No file attached</button>
                               ) : (
                                 <button onClick={() => handleViewFile(request.fileUrl)} className="view-file-button">
                                   View File
@@ -358,9 +370,7 @@ const OpcRequests = () => {
                 value={selectedDriver ? selectedDriver.id : ''}
                 onChange={(e) => {
                   const driverId = e.target.value;
-                  console.log("Selected Driver ID:", driverId);
                   const driver = drivers.find(driver => String(driver.id) === String(driverId));
-                  console.log("Found Driver:", driver);
                   setSelectedDriver(driver);
                 }}
               >

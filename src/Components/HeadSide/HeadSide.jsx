@@ -201,9 +201,9 @@ const HeadSide = () => {
                       <td>{requests.capacity}</td>
                       <td>{requests.vehicleType}</td>
                       <td>{requests.schedule}</td>
-                      <td>{requests.returnSchedule}</td>
+                      <td>{requests.returnSchedule || 'N/A'}</td>
                       <td>{requests.departureTime}</td>
-                      <td>{requests.pickUpTime}</td>
+                      <td>{requests.pickUpTime || 'N/A'}</td>
                       <td>{splitText(requests.reason, 15)}</td>
                       <td>
                         <div className="head-action-buttons">

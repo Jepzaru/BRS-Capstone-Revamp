@@ -192,9 +192,9 @@ const OpcApprovedRequests = () => {
                         <td>{request.capacity}</td>
                         <td>{request.vehicleType}</td>
                         <td>{request.schedule}</td>
-                        <td>{request.returnSchedule}</td>
+                        <td>{request.returnSchedule || 'N/A'}</td>
                         <td>{request.departureTime}</td>
-                        <td>{request.pickUpTime}</td>
+                        <td>{request.pickUpTime || 'N/A'}</td>
                         <td>{request.driverName}</td>
                         <td className="reason-column">{request.reason}</td>
                       </tr>

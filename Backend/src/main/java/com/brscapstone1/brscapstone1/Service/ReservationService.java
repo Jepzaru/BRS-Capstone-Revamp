@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.brscapstone1.brscapstone1.DTO.ReservedDateDTO;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
+import com.brscapstone1.brscapstone1.Entity.ReservationVehicleEntity;
 import com.brscapstone1.brscapstone1.Entity.VehicleEntity;
 import com.brscapstone1.brscapstone1.Repository.ReservationRepository;
+import com.brscapstone1.brscapstone1.Repository.ReservationVehicleRepository;
 import com.brscapstone1.brscapstone1.Repository.VehicleRepository;
 
 @Service
@@ -22,6 +24,9 @@ public class ReservationService {
 
     @Autowired
     private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private ReservationVehicleRepository reservationVehicleRepository;
 
     public String generateTransactionId() {
     return UUID.randomUUID().toString().substring(0, 8).toUpperCase() + "-" +
@@ -58,17 +63,15 @@ public class ReservationService {
         reservation.setFeedback(feedback);
         resRepo.save(reservation);
     }
-
-    //[POST] || submits a reservation
-    public ReservationEntity saveReservation(String userName, ReservationEntity reservation, List<Integer> vehicleIds, MultipartFile file) throws IOException {
-        // Handle file
+    //save reservation
+   public ReservationEntity saveReservation(String userName, ReservationEntity reservation, List<Integer> vehicleIds, MultipartFile file) throws IOException {
+    
         if (file != null && !file.isEmpty()) {
             reservation.setFileUrl(reservation.getFileUrl());
         } else {
             reservation.setFileUrl("No file(s) attached");
         }
-    
-        // Set default values for reservation
+
         if (reservation.getStatus() == null || reservation.getStatus().isEmpty()) {
             reservation.setStatus("Pending");
         }
@@ -77,15 +80,22 @@ public class ReservationService {
         }
         reservation.setUserName(userName);
         reservation.setTransactionId(generateTransactionId());
-    
-        // Fetch existing vehicles by IDs from the database
+
+        ReservationEntity savedReservation = resRepo.save(reservation);
+
         List<VehicleEntity> vehicles = vehicleRepository.findAllById(vehicleIds);
-        
-        // Associate fetched vehicles with the reservation
-        reservation.setVehicles(vehicles);
-    
-        // Save and return the reservation
-        return resRepo.save(reservation);
+
+        for (VehicleEntity vehicle : vehicles) {
+            ReservationVehicleEntity reservationVehicle = new ReservationVehicleEntity();
+            reservationVehicle.setReservation(savedReservation);
+            reservationVehicle.setVehicleType(vehicle.getVehicleType());
+            reservationVehicle.setPlateNumber(vehicle.getPlateNumber()); 
+            reservationVehicle.setCapacity(vehicle.getCapacity());
+            reservationVehicleRepository.save(reservationVehicle);
+        }
+
+
+        return savedReservation;
     }
 
     //[GET] all Reservations

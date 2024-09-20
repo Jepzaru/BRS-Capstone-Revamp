@@ -208,8 +208,8 @@ body {
   padding: 10px;
 }
 
-.opc-requests-table .reason-column {
-  max-width: 150px; 
+.opc-requests-table .opc-reason-column {
+  max-width: 50px; 
   white-space: normal; 
   word-break: break-word; 
 }

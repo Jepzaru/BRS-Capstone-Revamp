@@ -11,6 +11,7 @@ const OpcCalendar = () => {
   const [events, setEvents] = useState([]); // General events
   const [reservations, setReservations] = useState([]); // Approved reservations
   const [expandedEvent, setExpandedEvent] = useState(null);
+  const [highlightedDates, setHighlightedDates] = useState(new Set());
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -19,6 +20,7 @@ const OpcCalendar = () => {
     } else {
       setCurrentMonth(currentMonth - 1);
     }
+    setSelectedDay(1); 
   };
 
   const nextMonth = () => {
@@ -28,6 +30,7 @@ const OpcCalendar = () => {
     } else {
       setCurrentMonth(currentMonth + 1);
     }
+    setSelectedDay(1);
   };
 
   const daysInMonth = (month, year) => {
@@ -38,23 +41,34 @@ const OpcCalendar = () => {
     const totalDays = daysInMonth(currentMonth, currentYear);
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const days = [];
-    const today = new Date(currentYear, currentMonth, currentDate.getDate());
-
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+  
     for (let i = 0; i < firstDay; i++) {
-      days.push({ day: '', selected: false, disabled: true });
+      days.push({ day: '', selected: false, disabled: true, isHighlighted: false });
     }
-
+  
     for (let i = 1; i <= totalDays; i++) {
       const date = new Date(currentYear, currentMonth, i);
+      const formattedDate = date.toLocaleDateString();
       const isPast = date < today;
       const isSelected = selectedDay === i && currentMonth === today.getMonth() && currentYear === today.getFullYear();
-      days.push({ day: i, selected: isSelected, disabled: isPast, isPast });
+      const isHighlighted = highlightedDates.has(formattedDate);
+  
+      days.push({
+        day: i,
+        selected: isSelected,
+        disabled: false,
+        isPast,
+        isHighlighted
+      });
     }
-
+  
     return days;
   };
+  
+  
 
-  // Fetch approved reservations
   const fetchReservations = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -76,7 +90,6 @@ const OpcCalendar = () => {
     }
   };
 
-  // Fetch general events
   const fetchEvents = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -89,7 +102,7 @@ const OpcCalendar = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setEvents(data); // Store general events
+        setEvents(data);
       } else {
         console.error('Failed to fetch events:', response.statusText);
       }
@@ -99,12 +112,14 @@ const OpcCalendar = () => {
   };
 
   useEffect(() => {
-    fetchReservations(); // Fetch approved reservations on load
-    fetchEvents();       // Fetch general events on load
+    fetchReservations(); 
+    fetchEvents();      
   }, []);
 
   const handleDayClick = (day) => {
-    setSelectedDay(day);
+    if (day) {
+      setSelectedDay(day);
+    }
   };
 
   const toggleDescription = (eventId) => {
@@ -114,13 +129,11 @@ const OpcCalendar = () => {
   const getEventsForSelectedDate = () => {
     const selectedDate = new Date(currentYear, currentMonth, selectedDay).toLocaleDateString();
 
-    // Filter reservations for the selected date (Departure)
     const reservationEvents = reservations.filter(res => {
       const departureDate = new Date(res.schedule).toLocaleDateString();
       return departureDate === selectedDate;
     });
 
-    // Filter reservations for the return date
     const returnEvents = reservations.filter(res => {
       if (res.tripType === 'roundTrip') {
         const returnDate = new Date(res.returnSchedule).toLocaleDateString();
@@ -129,7 +142,6 @@ const OpcCalendar = () => {
       return false;
     });
 
-    // Filter general events for the selected date
     const generalEvents = events.filter(event => {
       const eventDate = new Date(event.eventDate).toLocaleDateString();
       return eventDate === selectedDate;
@@ -139,6 +151,35 @@ const OpcCalendar = () => {
   };
 
   const { reservationEvents, returnEvents, generalEvents } = getEventsForSelectedDate();
+
+  useEffect(() => {
+    const fetchReservationsAndEvents = async () => {
+      await fetchReservations();
+      await fetchEvents();
+  
+      const newHighlightedDates = new Set();
+  
+      reservations.forEach(res => {
+        const departureDate = new Date(res.schedule).toLocaleDateString();
+        newHighlightedDates.add(departureDate);
+  
+        if (res.tripType === 'roundTrip') {
+          const returnDate = new Date(res.returnSchedule).toLocaleDateString();
+          newHighlightedDates.add(returnDate);
+        }
+      });
+  
+      events.forEach(event => {
+        const eventDate = new Date(event.eventDate).toLocaleDateString();
+        newHighlightedDates.add(eventDate);
+      });
+  
+      setHighlightedDates(newHighlightedDates);
+    };
+  
+    fetchReservationsAndEvents();
+  }, [reservations, events]);
+  
 
   return (
     <div className="opc-calendar">
@@ -158,20 +199,20 @@ const OpcCalendar = () => {
           <div key={day} className="opc-calendar-day-name">{day}</div>
         ))}
         {generateDays().map((item, index) => (
-          <div
-            key={index}
-            className={`opc-calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.isPast ? ' past' : ''}`}
-            onClick={() => !item.disabled && handleDayClick(item.day)}
-          >
-            {item.day}
-          </div>
-        ))}
+            <div
+              key={index}
+              className={`opc-calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.isPast ? ' past' : ''}${item.isHighlighted ? ' highlighted' : ''}`}
+              onClick={() => !item.disabled && handleDayClick(item.day)}
+            >
+              {item.day}
+            </div>
+          ))}
       </div>
 
       {/* Calendar Events Section */}
       <div className='calendar-events'>
         <h2>
-          <BsCalendar2EventFill style={{ marginBottom: "-2px", marginRight: "10px" }} /> Calendar Events
+          <BsCalendar2EventFill style={{ marginBottom: "-2px", marginRight: "10px", color: "#782324" }} /> Calendar Events
         </h2>
         <div className='calendar-events-content'>
           {/* Show general events for the selected date */}
