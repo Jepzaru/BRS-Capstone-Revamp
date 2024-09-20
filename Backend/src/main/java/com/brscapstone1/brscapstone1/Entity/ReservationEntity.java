@@ -9,7 +9,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -43,7 +42,7 @@ public class ReservationEntity {
     private int driverId;
     private String driverName;
 
-     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReservationVehicleEntity> vehicles;
 
     
@@ -231,8 +230,6 @@ public class ReservationEntity {
     public void setDriverName(String driverName) {
         this.driverName = driverName;
     }
-
-   
 
     public ReservationEntity() {
         super();
