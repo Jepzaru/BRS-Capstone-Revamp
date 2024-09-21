@@ -228,7 +228,8 @@ const ManageRequest = () => {
                   <th>From</th>
                   <th>To</th>
                   <th>Capacity</th>
-                  <th>Vehicle(s)</th>
+                  <th>Vehicle</th>
+                  <th>Added Vehicle</th>
                   <th>Schedule</th>
                   <th>Return Schedule</th>
                   <th>Departure Time</th>
@@ -256,20 +257,16 @@ const ManageRequest = () => {
                       <td>{request.destinationFrom}</td>
                       <td>{request.destinationTo}</td>
                       <td>{request.capacity}</td>
-                      <td className='mrg-t-v-row'>
-                        {request.vehicleType ? (
-                          <div style={{ backgroundColor: "#782324", color: "white", padding: '5px', borderRadius: '5px' }}>
-                            {request.vehicleType} {request.plateNumber}
-                          </div>
-                        ) : (
-                          'No main vehicle specified'
-                        )}
-                        {request.vehicles && request.vehicles.length > 0 && (
-                          request.vehicles.map(vehicle => (
-                            <div style={{ backgroundColor: "#782324", color: "white", marginTop: '5px', padding: '10px', borderRadius: '5px' }} key={vehicle.id}>
-                              {vehicle.vehicleType} {vehicle.plateNumber}
+                      <td>{request.vehicleType} - {request.plateNumber} </td>
+                      <td>
+                        {request.reservedVehicles.length > 0 ? (
+                          request.reservedVehicles.map((vehicle, index) => (
+                            <div key={index}>
+                              {vehicle.vehicleType} - {vehicle.plateNumber} 
                             </div>
                           ))
+                        ) : (
+                          <div>No Vehicles Added</div>
                         )}
                       </td>
                       <td>{request.schedule}</td>

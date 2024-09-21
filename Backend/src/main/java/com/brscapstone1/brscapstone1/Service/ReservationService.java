@@ -63,7 +63,7 @@ public class ReservationService {
         reservation.setFeedback(feedback);
         resRepo.save(reservation);
     }
-    //save reservation
+    //save reservation || with multiple vehicle
    public ReservationEntity saveReservation(String userName, ReservationEntity reservation, List<Integer> vehicleIds, MultipartFile file) throws IOException {
     
         if (file != null && !file.isEmpty()) {
@@ -159,6 +159,7 @@ public class ReservationService {
         return resRepo.findByHeadIsApproved(true);
     }
     
+    //fetchinge reserved dates and time
     public List<ReservedDateDTO> getAllReservedDatesByPlateNumber(String plateNumber) {
         List<ReservationEntity> reservations = resRepo.findByPlateNumber(plateNumber);
         return reservations.stream()
@@ -202,5 +203,7 @@ public class ReservationService {
         }
         return msg;
     }
+
+
     
 }

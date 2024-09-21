@@ -150,7 +150,8 @@ const OpcApprovedRequests = () => {
                     <th>From</th>
                     <th>To</th>
                     <th>Capacity</th>
-                    <th>Vehicle Type</th>
+                    <th>Vehicle</th>
+                    <th>Added Vehicle</th>
                     <th>Schedule</th>
                     <th>Return Schedule</th>
                     <th>Departure Time</th>
@@ -190,7 +191,18 @@ const OpcApprovedRequests = () => {
                         <td>{request.destinationFrom}</td>
                         <td>{request.destinationTo}</td>
                         <td>{request.capacity}</td>
-                        <td>{request.vehicleType}</td>
+                        <td>{request.vehicleType} - {request.plateNumber} </td>
+                      <td>
+                        {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
+                          request.reservedVehicles.map((vehicle, index) => (
+                            <div key={index}>
+                              {vehicle.vehicleType} - {vehicle.plateNumber} 
+                            </div>
+                          ))
+                        ) : (
+                          <div>No Vehicles Added</div>
+                        )}
+                      </td>
                         <td>{request.schedule}</td>
                         <td>{request.returnSchedule || 'N/A'}</td>
                         <td>{request.departureTime}</td>

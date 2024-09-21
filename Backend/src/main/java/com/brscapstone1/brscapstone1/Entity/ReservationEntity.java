@@ -43,7 +43,7 @@ public class ReservationEntity {
     private String driverName;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ReservationVehicleEntity> vehicles;
+    private List<ReservationVehicleEntity> reservedVehicles;
 
     
     public int getId() {
@@ -231,6 +231,14 @@ public class ReservationEntity {
         this.driverName = driverName;
     }
 
+    public List<ReservationVehicleEntity> getReservedVehicles() {
+        return reservedVehicles;
+    }
+
+    public void setReservedVehicles(List<ReservationVehicleEntity> reservedVehicles) {
+        this.reservedVehicles = reservedVehicles;
+    }
+
     public ReservationEntity() {
         super();
     }
@@ -239,7 +247,7 @@ public class ReservationEntity {
             int capacity, String department, LocalDate schedule, LocalDate returnSchedule, String vehicleType,
             String plateNumber, String pickUpTime, String departureTime, String reason, String fileUrl, String status,
             Boolean opcIsApproved, Boolean isRejected, Boolean headIsApproved, String userName, String feedback,
-            int driverId, String driverName, List<VehicleEntity> vehicles) {
+            int driverId, String driverName) {
         this.transactionId = transactionId;
         this.typeOfTrip = typeOfTrip;
         this.destinationTo = destinationTo;

@@ -144,7 +144,7 @@ public class ReservationController {
     public List<ReservationEntity> getApprovedReservations() {
         return resServ.getHeadApprovedReservations();
     }
-
+    //Availability
     @GetMapping("/reservations/vehicle-availability")
     public ResponseEntity<List<ReservedDateDTO>> checkVehicleReservation(
         @RequestParam String plateNumber) {
@@ -152,7 +152,7 @@ public class ReservationController {
         List<ReservedDateDTO> filteredDates = resServ.getAllReservedDatesByPlateNumber(plateNumber);
         return ResponseEntity.ok(filteredDates);
     }
-
+    //GET reserve date and time
     @GetMapping("/reservations/by-plate-and-date")
     public ResponseEntity<List<ReservedDateDTO>> getReservationsByPlateAndDate(
         @RequestParam String plateNumber,
@@ -161,7 +161,7 @@ public class ReservationController {
         List<ReservedDateDTO> reservations = resServ.getReservationsByPlateAndDate(plateNumber, date);
         return ResponseEntity.ok(reservations);
     }
-
+    //DELETE
     @DeleteMapping("/reservations/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable int id){
         return ResponseEntity.ok((resServ.delete(id)));

@@ -173,15 +173,16 @@ const HeadSide = () => {
               <thead>
                 <tr>
                   <th>Requestor Name</th>
-                  <th>Type of Trip</th>
+                  <th style={{width: '70px'}}>Type of Trip</th>
                   <th>From</th>
                   <th>To</th>
                   <th>Capacity</th>
-                  <th>Vehicle Type</th>
+                  <th>Vehicle</th>
+                  <th>Added vehicles</th>
                   <th>Schedule</th>
                   <th>Return Schedule</th>
-                  <th>Departure Time</th>
-                  <th>Pick Up Time</th>
+                  <th style={{width: '70px'}}>Departure Time</th>
+                  <th style={{width: '70px'}}>Pick Up Time</th>
                   <th>Reason</th>
                   <th>Action</th>
                 </tr>
@@ -195,15 +196,26 @@ const HeadSide = () => {
                   request.map((requests, index) => (
                     <tr key={index}>
                       <td>{requests.userName}</td>
-                      <td>{requests.typeOfTrip}</td>
+                      <td style={{width: '70px'}}>{requests.typeOfTrip}</td>
                       <td>{requests.destinationFrom}</td>
                       <td>{requests.destinationTo}</td>
                       <td>{requests.capacity}</td>
-                      <td>{requests.vehicleType}</td>
+                      <td>{requests.vehicleType} - {requests.plateNumber} </td>
+                      <td>
+                        {requests.reservedVehicles && requests.reservedVehicles.length > 0 ? (
+                          requests.reservedVehicles.map((vehicle, index) => (
+                            <div key={index}>
+                              {vehicle.vehicleType} - {vehicle.plateNumber} 
+                            </div>
+                          ))
+                        ) : (
+                          <div>No Vehicles Added</div>
+                        )}
+                      </td>
                       <td>{requests.schedule}</td>
                       <td>{requests.returnSchedule || 'N/A'}</td>
-                      <td>{requests.departureTime}</td>
-                      <td>{requests.pickUpTime || 'N/A'}</td>
+                      <td style={{width: '70px'}}>{requests.departureTime}</td>
+                      <td style={{width: '70px'}}>{requests.pickUpTime || 'N/A'}</td>
                       <td>{splitText(requests.reason, 15)}</td>
                       <td>
                         <div className="head-action-buttons">

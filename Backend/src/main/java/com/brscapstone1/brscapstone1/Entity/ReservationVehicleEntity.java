@@ -1,5 +1,7 @@
 package com.brscapstone1.brscapstone1.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+//Multiple Vehicle storage
 
 @Entity
 @Table(name = "reservation_vehicle")
@@ -18,6 +22,7 @@ public class ReservationVehicleEntity {
 
     @ManyToOne
     @JoinColumn(name = "reservation_id", nullable = false)
+    @JsonIgnore
     private ReservationEntity reservation;
 
     private String vehicleType;
