@@ -1,9 +1,7 @@
-// DepartTimeDropdown.jsx
-
 import React, { useEffect, useState } from 'react';
 import '../../CSS/UserCss/TimeDropdown.css';
 
-const DepartTimeDropdown = ({ selectedTime, onChange, name, disabled, plateNumber, date, token }) => {
+const DepartTimeDropdown = ({ selectedTime, onChange, name, disabled, plateNumber, addedPlateNumbers, date, token }) => {
   const [reservedTimes, setReservedTimes] = useState([]);
 
   const formatDate = (date) => {
@@ -16,29 +14,41 @@ const DepartTimeDropdown = ({ selectedTime, onChange, name, disabled, plateNumbe
 
   useEffect(() => {
     const fetchReservedTimes = async () => {
-      if (plateNumber && date && token) {
-        const formattedDate = formatDate(date);
-        try {
-          const response = await fetch(`http://localhost:8080/reservations/by-plate-and-date?plateNumber=${plateNumber}&date=${formattedDate}`, {
-            headers: {
-              "Authorization": `Bearer ${token}`
-            }
-          });
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          const data = await response.json();
-          setReservedTimes(data.map(item => ({
-            departureTime: formatFetchedTime(item.departureTime),
-            pickUpTime: formatFetchedTime(item.pickUpTime),
-          })));
-        } catch (error) {
-          console.error('Error fetching reserved times:', error);
-        }
+      if (!date || !token) return;
+
+      const plates = addedPlateNumbers.length > 0 ? addedPlateNumbers.join(',') : plateNumber;
+      const formattedDate = formatDate(date);
+      const urls = [
+        `http://localhost:8080/reservations/by-plate-and-date?plateNumber=${plateNumber}&date=${formattedDate}`,
+        `http://localhost:8080/multiple/reservations/by-plate-and-date?plateNumber=${plates}&date=${formattedDate}`,
+      ];
+
+      try {
+        const responses = await Promise.all(urls.map(url =>
+          fetch(url, {
+            headers: { "Authorization": `Bearer ${token}` }
+          })
+        ));
+
+        const dataPromises = responses.map(response => {
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+          return response.json();
+        });
+
+        const allReservedTimes = await Promise.all(dataPromises);
+        const combinedReservedTimes = [].concat(...allReservedTimes);
+
+        setReservedTimes(combinedReservedTimes.map(item => ({
+          departureTime: formatFetchedTime(item.departureTime),
+          pickUpTime: formatFetchedTime(item.pickUpTime),
+        })));
+      } catch (error) {
+        console.error('Error fetching reserved times:', error);
       }
     };
+
     fetchReservedTimes();
-  }, [plateNumber, date, token]);
+  }, [plateNumber, addedPlateNumbers, date, token]);
 
   const formatFetchedTime = (time) => {
     if (!time) return null;
@@ -95,14 +105,11 @@ const DepartTimeDropdown = ({ selectedTime, onChange, name, disabled, plateNumbe
 
   const generateTimes = () => {
     const times = [];
-    const start = 0;
-    const end = 24;
-    for (let hour = start; hour < end; hour++) {
+    for (let hour = 0; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
         const formattedHour = hour < 10 ? `0${hour}` : hour;
         const formattedMinute = minute < 10 ? `0${minute}` : minute;
-        const time = `${formattedHour}:${formattedMinute}`;
-        times.push(time);
+        times.push(`${formattedHour}:${formattedMinute}`);
       }
     }
     return times;

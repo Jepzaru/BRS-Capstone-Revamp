@@ -144,14 +144,26 @@ public class ReservationController {
     public List<ReservationEntity> getApprovedReservations() {
         return resServ.getHeadApprovedReservations();
     }
-    //Availability
+
+    //Availability date of multiple vehicles
     @GetMapping("/reservations/vehicle-availability")
     public ResponseEntity<List<ReservedDateDTO>> checkVehicleReservation(
+        @RequestParam String plateNumber) {
+
+        List<ReservedDateDTO> filteredDates = resServ.getAllReservationDatesByPlateNumber(plateNumber);
+        return ResponseEntity.ok(filteredDates);
+    }
+
+    //Availability date of multiple vehicles
+    @GetMapping("/reservations/multiple-vehicle-availability")
+    public ResponseEntity<List<ReservedDateDTO>> checkMultipleVehicleReservation(
         @RequestParam String plateNumber) {
 
         List<ReservedDateDTO> filteredDates = resServ.getAllReservedDatesByPlateNumber(plateNumber);
         return ResponseEntity.ok(filteredDates);
     }
+
+
     //GET reserve date and time
     @GetMapping("/reservations/by-plate-and-date")
     public ResponseEntity<List<ReservedDateDTO>> getReservationsByPlateAndDate(
@@ -159,6 +171,15 @@ public class ReservationController {
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
         List<ReservedDateDTO> reservations = resServ.getReservationsByPlateAndDate(plateNumber, date);
+        return ResponseEntity.ok(reservations);
+    }
+
+    @GetMapping("multiple/reservations/by-plate-and-date")
+    public ResponseEntity<List<ReservedDateDTO>> getReservedByPlateAndDate(
+        @RequestParam String plateNumber,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        List<ReservedDateDTO> reservations = resServ.getReservedByPlateAndDate(plateNumber, date);
         return ResponseEntity.ok(reservations);
     }
     //DELETE

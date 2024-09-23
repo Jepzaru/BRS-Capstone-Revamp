@@ -445,7 +445,8 @@ const Reservation = () => {
                        name="departureTime"
                        disabled={!selectedDate}
                        date={selectedDate}
-                       plateNumber={selectedVehiclePlateNumber}
+                       plateNumber={selectedVehiclePlateNumber} 
+                       addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
                        token={token}
                     />
                   </div>
@@ -470,6 +471,7 @@ const Reservation = () => {
                       disabled={!returnScheduleDate}
                       date={returnScheduleDate}
                       plateNumber={selectedVehiclePlateNumber}
+                      addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
                       token={token}
 
                     />

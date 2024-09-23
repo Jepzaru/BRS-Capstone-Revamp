@@ -43,17 +43,32 @@ public class ReservationService {
 
     //[POST] approved reservations by OPC
     public void opcApproveReservation(int reservationId, int driverId, String driverName) {
-        ReservationEntity reservation = resRepo.findById(reservationId).orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
-        
-        if(reservation.getDriverName() == null || reservation.getDriverName().isEmpty()) {
-            reservation.setDriverName("No driver assign");
+        ReservationEntity reservation = resRepo.findById(reservationId)
+            .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+    
+        // Check if driver name is set
+        if (reservation.getDriverName() == null || reservation.getDriverName().isEmpty()) {
+            reservation.setDriverName("No driver assigned");
         }
+    
+        // Set the reservation status to "Approved"
         reservation.setStatus("Approved");
-        reservation.setOpcIsApproved(true); 
+        reservation.setOpcIsApproved(true);
         reservation.setDriverId(driverId);
         reservation.setDriverName(driverName);
-        resRepo.save(reservation);
+    
+        // Fetch associated ReservationVehicleEntities
+        List<ReservationVehicleEntity> reservationVehicles = reservationVehicleRepository.findByReservation(reservation);
+        for (ReservationVehicleEntity vehicle : reservationVehicles) {
+            vehicle.setStatus("Approved");  // Update vehicle status to "Approved"
+            reservationVehicleRepository.save(vehicle);  // Save each vehicle with updated status
+        }
+    
+        resRepo.save(reservation);  // Save the reservation
     }
+    
+    
+    
 
     //[isRejected] rejects a reservation and returns boolean output
     public void rejectReservation(int reservationId, String feedback) {
@@ -64,14 +79,13 @@ public class ReservationService {
         resRepo.save(reservation);
     }
     //save reservation || with multiple vehicle
-   public ReservationEntity saveReservation(String userName, ReservationEntity reservation, List<Integer> vehicleIds, MultipartFile file) throws IOException {
-    
+    public ReservationEntity saveReservation(String userName, ReservationEntity reservation, List<Integer> vehicleIds, MultipartFile file) throws IOException {
         if (file != null && !file.isEmpty()) {
             reservation.setFileUrl(reservation.getFileUrl());
         } else {
             reservation.setFileUrl("No file(s) attached");
         }
-
+    
         if (reservation.getStatus() == null || reservation.getStatus().isEmpty()) {
             reservation.setStatus("Pending");
         }
@@ -80,23 +94,31 @@ public class ReservationService {
         }
         reservation.setUserName(userName);
         reservation.setTransactionId(generateTransactionId());
-
+    
         ReservationEntity savedReservation = resRepo.save(reservation);
-
+    
         List<VehicleEntity> vehicles = vehicleRepository.findAllById(vehicleIds);
-
+    
         for (VehicleEntity vehicle : vehicles) {
             ReservationVehicleEntity reservationVehicle = new ReservationVehicleEntity();
             reservationVehicle.setReservation(savedReservation);
             reservationVehicle.setVehicleType(vehicle.getVehicleType());
-            reservationVehicle.setPlateNumber(vehicle.getPlateNumber()); 
+            reservationVehicle.setPlateNumber(vehicle.getPlateNumber());
             reservationVehicle.setCapacity(vehicle.getCapacity());
+    
+            // Inherit scheduling details from the reservation
+            reservationVehicle.setSchedule(reservation.getSchedule());
+            reservationVehicle.setReturnSchedule(reservation.getReturnSchedule());
+            reservationVehicle.setPickUpTime(reservation.getPickUpTime());
+            reservationVehicle.setDepartureTime(reservation.getDepartureTime());
+            reservationVehicle.setStatus(reservation.getStatus());
+    
             reservationVehicleRepository.save(reservationVehicle);
         }
-
-
+    
         return savedReservation;
     }
+    
 
     //[GET] all Reservations
     public List<ReservationEntity> getAllReservations() {
@@ -159,8 +181,24 @@ public class ReservationService {
         return resRepo.findByHeadIsApproved(true);
     }
     
-    //fetchinge reserved dates and time
+    //fetchinge reserved dates of the multiple availability
     public List<ReservedDateDTO> getAllReservedDatesByPlateNumber(String plateNumber) {
+        List<ReservationVehicleEntity> reservedVehicles = reservationVehicleRepository.findByPlateNumber(plateNumber);
+        return reservedVehicles.stream()
+        .filter(vehicle -> "Approved".equals(vehicle.getStatus()))
+            .map(vehicle -> new ReservedDateDTO(
+                vehicle.getSchedule(),
+                vehicle.getReturnSchedule(),
+                vehicle.getPickUpTime(),
+                vehicle.getDepartureTime(),
+                vehicle.getReservation().getStatus(),
+                vehicle.getPlateNumber()
+            ))
+            .collect(Collectors.toList());
+    }
+
+    //fetchinge reserved dates of reserved vehicle on reservation
+    public List<ReservedDateDTO> getAllReservationDatesByPlateNumber(String plateNumber) {
         List<ReservationEntity> reservations = resRepo.findByPlateNumber(plateNumber);
         return reservations.stream()
             .filter(res -> "Approved".equals(res.getStatus()))
@@ -175,6 +213,7 @@ public class ReservationService {
             .collect(Collectors.toList());
     }
 
+    //fetching time of the main vehicle
     public List<ReservedDateDTO> getReservationsByPlateAndDate(String plateNumber, LocalDate date) {
         List<ReservationEntity> reservations = resRepo.findByPlateNumberAndDate(plateNumber, date);
         return reservations.stream()
@@ -189,6 +228,22 @@ public class ReservationService {
             ))
             .collect(Collectors.toList());
     }
+
+    public List<ReservedDateDTO> getReservedByPlateAndDate(String plateNumber, LocalDate date) {
+        List<ReservationVehicleEntity> reservedVehicles = reservationVehicleRepository.findByPlateNumberAndSchedule(plateNumber, date);
+        return reservedVehicles.stream()
+            .filter(vehicle -> "Approved".equals(vehicle.getStatus()) && vehicle.getSchedule().equals(date))
+            .map(vehicle -> new ReservedDateDTO(
+                vehicle.getSchedule(),
+                vehicle.getReturnSchedule(),
+                vehicle.getPickUpTime(),
+                vehicle.getDepartureTime(),
+                vehicle.getReservation().getStatus(),
+                vehicle.getPlateNumber()
+            ))
+            .collect(Collectors.toList());
+    }
+    
 
     //[DELETE] a reservation
     public String delete(int id){

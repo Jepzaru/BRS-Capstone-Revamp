@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/calendar.css';
 import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
@@ -9,27 +8,31 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
   const [selectedDay, setSelectedDay] = useState(null);
   const [reservedDates, setReservedDates] = useState([]);
-  const [reservedTimes, setReservedTimes] = useState([]);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchReservedDates = async () => {
+      if (!plateNumber) return;
+
       try {
-        const response = await fetch(`http://localhost:8080/reservations/vehicle-availability?plateNumber=${encodeURIComponent(plateNumber)}`, {
-          headers: { "Authorization": `Bearer ${token}` },
+        const responses = await Promise.all([
+          fetch(`http://localhost:8080/reservations/vehicle-availability?plateNumber=${encodeURIComponent(plateNumber)}`, {
+            headers: { "Authorization": `Bearer ${token}` },
+          }),
+          fetch(`http://localhost:8080/reservations/multiple-vehicle-availability?plateNumber=${encodeURIComponent(plateNumber)}`, {
+            headers: { "Authorization": `Bearer ${token}` },
+          })
+        ]);
+
+        const dataPromises = responses.map(response => {
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+          return response.json();
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        const [data1, data2] = await Promise.all(dataPromises);
+        const combinedData = [...data1, ...data2];
 
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          throw new Error("Expected data to be an array");
-        }
-
-        const parsedDates = data.map(d => ({
+        const parsedDates = combinedData.map(d => ({
           schedule: new Date(d.schedule),
           returnSchedule: d.returnSchedule ? new Date(d.returnSchedule) : null,
           pickUpTime: d.pickUpTime,
@@ -37,15 +40,19 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
           status: d.status,
         }));
 
-        setReservedDates(parsedDates);
+        // Remove duplicate dates
+        const uniqueDates = Array.from(new Set(parsedDates.map(a => a.schedule.getTime())))
+          .map(time => {
+            return parsedDates.find(a => a.schedule.getTime() === time);
+          });
+
+        setReservedDates(uniqueDates);
       } catch (error) {
         console.error("Error fetching reserved dates:", error);
       }
     };
 
-    if (plateNumber) {
-      fetchReservedDates();
-    }
+    fetchReservedDates();
   }, [plateNumber, token]);
 
   useEffect(() => {
@@ -63,7 +70,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
     const days = [];
 
     for (let i = 0; i < firstDay; i++) {
-      days.push({ day: '', selected: false, disabled: true, reserved: false, status: '' });
+      days.push({ day: '', selected: false, disabled: true, reserved: false });
     }
 
     for (let i = 1; i <= totalDays; i++) {
@@ -78,17 +85,12 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
       );
 
       const isReserved = reservedInfo !== undefined;
-      const status = isReserved ? reservedInfo.status : '';
 
       days.push({
         day: i,
         selected: selectedDay === i,
         disabled: isPast || isBeforeMinDate,
-        isPast,
         reserved: isReserved,
-        status,
-        pickUpTime: isReserved ? reservedInfo.pickUpTime : '',
-        departureTime: isReserved ? reservedInfo.departureTime : ''
       });
     }
     return days;
@@ -125,7 +127,6 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
     }
 
     setSelectedDay(day);
-
     const reservedInfo = reservedDates.find(res =>
       res.schedule.getFullYear() === date.getFullYear() &&
       res.schedule.getMonth() === date.getMonth() &&
@@ -134,10 +135,8 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
 
     if (reservedInfo) {
       const times = [reservedInfo.pickUpTime, reservedInfo.departureTime];
-      setReservedTimes(times);
       onDateSelect(date, times);
     } else {
-      setReservedTimes([]);
       onDateSelect(date, []);
     }
   };
@@ -160,32 +159,15 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         {generateDays().map((item, index) => (
           <div
             key={index}
-            className={`calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.isPast ? ' past' : ''}${item.reserved ? ' reserved' : ''}${item.status === 'Approved' ? ' approved' : ''}`}
+            className={`calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.reserved ? ' reserved' : ''}`}
             onClick={() => !item.disabled && handleDayClick(item.day)}
           >
             {item.day}
-            {item.selected && item.reserved && reservedTimes.length > 0 && (
-              <div className="reserved-times">
-                {reservedTimes.map((time, idx) => (
-                  <div key={idx} className="reserved-time" style={{ color: 'red' }}>
-                    {formatTime(time)}
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         ))}
       </div>
     </div>
   );
-};
-
-const formatTime = (time) => {
-  if (!time || time === "N/A") return '';
-  const [hours, minutes] = time.split(':');
-  const formattedHours = (parseInt(hours, 10) % 12) || 12;
-  const amPm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
-  return `${formattedHours}:${minutes} ${amPm}`;
 };
 
 export default Calendar;

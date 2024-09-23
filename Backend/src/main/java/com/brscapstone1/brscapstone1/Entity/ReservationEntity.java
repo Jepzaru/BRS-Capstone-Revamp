@@ -173,6 +173,15 @@ public class ReservationEntity {
 
     public void setStatus(String status) {
         this.status = status;
+        if ("Approved".equals(status) && reservedVehicles != null) {
+            for (ReservationVehicleEntity vehicle : reservedVehicles) {
+                vehicle.setStatus("Approved");
+                vehicle.setSchedule(this.schedule);
+                vehicle.setReturnSchedule(this.returnSchedule);
+                vehicle.setPickUpTime(this.pickUpTime);
+                vehicle.setDepartureTime(this.departureTime);
+            }
+        }
     }
 
     public Boolean isOpcIsApproved() {
