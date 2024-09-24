@@ -40,7 +40,11 @@ public class ReservationVehicleEntity {
     private String pickUpTime;
     private String departureTime;
 
-    // Getters and Setters
+
+    private int driverId; 
+    private String driverName; 
+
+   
 
     public int getId() {
         return id;
@@ -113,11 +117,28 @@ public class ReservationVehicleEntity {
     public void setDepartureTime(String departureTime) {
         this.departureTime = departureTime;
     }
+
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getDriverId() {
+        return driverId;
+    }
+
+    public void setDriverId(int driverId) {
+        this.driverId = driverId;
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
     }
 }

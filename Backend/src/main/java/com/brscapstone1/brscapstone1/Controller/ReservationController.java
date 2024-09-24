@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.brscapstone1.brscapstone1.DTO.ReservedDateDTO;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
+import com.brscapstone1.brscapstone1.Entity.ReservationVehicleEntity;
 import com.brscapstone1.brscapstone1.Service.ReservationService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +46,22 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to approve reservation: " + e.getMessage());
         }
     }
+
+    @PostMapping("/user/reservations/assign-driver/{reservationId}/{plateNumber}")
+    public ResponseEntity<String> assignDriverToReservation(
+            @PathVariable int reservationId,
+            @PathVariable String plateNumber,  // Added plateNumber parameter
+            @RequestBody ReservationVehicleEntity vehicleDetails) {
+        try {
+            // Call your service method to assign the driver
+            resServ.assignDriverToAddedVehicles(reservationId, plateNumber, vehicleDetails.getDriverId(), vehicleDetails.getDriverName());
+            return ResponseEntity.ok("Driver assigned successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to assign driver: " + e.getMessage());
+        }
+    }
+
 
     //[isRejected] rejects a reservation and returns boolean output
     @PostMapping("/user/reservations/reject/{reservationId}")

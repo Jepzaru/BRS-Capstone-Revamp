@@ -67,9 +67,21 @@ public class ReservationService {
         resRepo.save(reservation);  // Save the reservation
     }
     
+    //[POST] approved reservations
+    public void assignDriverToAddedVehicles(int reservationId, String plateNumber, int driverId, String driverName) {
+        // Find the vehicle by reservation ID and plate number
+        ReservationVehicleEntity vehicle = reservationVehicleRepository
+                .findByReservationIdAndPlateNumber(reservationId, plateNumber)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
     
+        // Set the driver details
+        vehicle.setDriverId(driverId);
+        vehicle.setDriverName(driverName);
     
-
+        // Save the updated vehicle entity
+        reservationVehicleRepository.save(vehicle);
+    }
+    
     //[isRejected] rejects a reservation and returns boolean output
     public void rejectReservation(int reservationId, String feedback) {
         ReservationEntity reservation = resRepo.findById(reservationId).orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
