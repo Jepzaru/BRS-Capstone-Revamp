@@ -1,29 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import ReservationModal from '../UserSide/ReservationModal'; 
-import AddVehicleModal from '../UserSide/AddVehicleModal';
-import DepartTimeDropdown from '../UserSide/DepartTimeDropdown';
-import PickUpDropdown from '../UserSide/PickUpDropdown';
-import Calendar from '../UserSide/Calendar'; 
-import Header from "../UserSide/Header";
-import logoImage1 from '../../Images/citbglogo.png';
-import VipSideNavbar from './VipSideNavbar';
-import Skeleton from 'react-loading-skeleton';
-import { useNavigate } from 'react-router-dom';
-import { FaLocationCrosshairs, FaLocationDot } from "react-icons/fa6";
-import { FaFileSignature, FaUserGroup, FaBuildingUser } from "react-icons/fa6";
-import { FaCalendarDay, FaBus, FaFileAlt } from "react-icons/fa";
-import { IoTime } from "react-icons/io5";
-import { RiSendPlaneFill, RiArrowGoBackLine } from "react-icons/ri";
-import { IoTrash } from "react-icons/io5";
-import { TbBus } from "react-icons/tb";
-import { IoMdAddCircle } from "react-icons/io";
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import React, { useEffect, useState } from 'react';
 import { CgDetailsMore } from "react-icons/cg";
-import { useLocation } from 'react-router-dom';
+import { FaBus, FaCalendarDay, FaFileAlt } from "react-icons/fa";
+import { FaBuildingUser, FaFileSignature, FaLocationCrosshairs, FaLocationDot, FaUserGroup } from "react-icons/fa6";
+import { IoMdAddCircle } from "react-icons/io";
+import { IoTime, IoTrash } from "react-icons/io5";
+import { RiArrowGoBackLine, RiSendPlaneFill } from "react-icons/ri";
+import { TbBus } from "react-icons/tb";
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../../CSS/UserCss/Reservation.css';
+import logoImage1 from '../../Images/citbglogo.png';
+import { storage } from '../Config/FileStorageConfig';
+import AddVehicleModal from '../UserSide/AddVehicleModal';
+import Calendar from '../UserSide/Calendar';
+import DepartTimeDropdown from '../UserSide/DepartTimeDropdown';
+import Header from '../UserSide/Header';
+import PickUpDropdown from '../UserSide/PickUpDropdown';
+import ReservationModal from '../UserSide/ReservationModal';
+import VipSideNavbar from './VipSideNavbar';
 
 
 const VipSpecialReservation = () => {
-  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -45,15 +42,14 @@ const VipSpecialReservation = () => {
   const [firstName, lastName] = localPart.split('.');
   const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const [reservedDates, setReservedDates] = useState([]);
-  const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState('');
-  const [reservedTimes, setReservedTimes] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [addedVehicles, setAddedVehicles] = useState([]);
   const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
   const [userDepartment, setUserDepartment] = useState('');
+  const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState(vehicle ? vehicle.plateNumber : '');
+  const [capacityExceeded, setCapacityExceeded] = useState(false);
+  const [capacityError, setCapacityError] = useState('');
   
-  
-
 
   useEffect(() => {
     if (vehicle && vehicle.plateNumber) {
@@ -61,35 +57,6 @@ const VipSpecialReservation = () => {
       
     }
   }, [vehicle]);
-
-  const convertTo12HourFormat = (time24) => {
-    const [hours, minutes] = time24.split(':');
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = (hours % 12) || 12;
-    return `${formattedHours}:${minutes} ${period}`;
-  };
-
-  const generateTimeOptions = (reservedTimes) => {
-    const timeOptions = [];
-    for (let hours = 0; hours < 24; hours++) {
-        for (let minutes = 0; minutes < 60; minutes += 30) {
-            const time = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-            timeOptions.push(time);
-        }
-    }
-    return timeOptions;
-};
-
-  const timeOptions = generateTimeOptions(reservedDates);
-
-  const isTimeReserved = (date, time, type) => {
-    if (!date || !time) return false;
-    const formattedTime = convertTo12HourFormat(time);
-    return reservedDates.some(reservation =>
-      reservation.schedule === date &&
-      reservation[type] === formattedTime
-    );
-  };
 
   const formatTime = (time) => {
     if (!time || time === "N/A") return '';
@@ -113,15 +80,16 @@ const VipSpecialReservation = () => {
     fileName: ''
   });
 
+
   useEffect(() => {
     if (selectedVehicle) {
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            vehicleType: selectedVehicle.vehicleType,
-            plateNumber: selectedVehicle.plateNumber,
-        }));
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        vehicleType: selectedVehicle.vehicleType,
+        plateNumber: selectedVehicle.plateNumber,
+      }));
     }
-}, [selectedVehicle]);
+  }, [selectedVehicle]);
 
   const handleAddVehicleClick = () => {
     setAddVehicleModalOpen(true);
@@ -130,18 +98,31 @@ const VipSpecialReservation = () => {
   const handleCloseModal = () => {
     setAddVehicleModalOpen(false);
   };
-  
+
   const handleAddVehicle = (vehicle) => {
     setAddedVehiclePlates(prev => [...prev, vehicle.plateNumber]);
-    setSelectedVehicle(vehicle); 
     setAddedVehicles(prevVehicles => [...prevVehicles, vehicle]);
-    setAddVehicleModalOpen(false); 
-};
+    // Don't update the main vehicle's state here if it's not meant to
+    setAddVehicleModalOpen(false);
+  };
 
-const handleRemoveVehicle = (plateNumber) => {
-  setAddedVehicles(prev => prev.filter(v => v.plateNumber !== plateNumber));
-  setAddedVehiclePlates(prev => prev.filter(p => p !== plateNumber));
-};
+  const handleRemoveVehicle = (plateNumber) => {
+    setAddedVehicles(prev => prev.filter(v => v.plateNumber !== plateNumber));
+    setAddedVehiclePlates(prev => prev.filter(p => p !== plateNumber));
+  };
+
+  const calculateMaxCapacity = () => {
+    let totalCapacity = 0;
+    if (vehicle) {
+      totalCapacity += vehicle.capacity;
+    }
+    if (isMultipleVehicles) {
+      addedVehicles.forEach(v => {
+        totalCapacity += v.capacity;
+      });
+    }
+    return totalCapacity;
+  };
 
 const calculateTotalCapacity = () => {
   const selectedVehicleCapacity = vehicle ? vehicle.capacity : 0;
@@ -150,169 +131,192 @@ const calculateTotalCapacity = () => {
 };
 
 
-  const handleVehicleModeToggle = () => {
-    setIsMultipleVehicles(prevState => !prevState); 
-    setShowVehicleContainer(prevState => !prevState); 
-  };
+const handleVehicleModeToggle = () => {
+  setIsMultipleVehicles(prevState => !prevState); 
+  setShowVehicleContainer(prevState => !prevState); 
+};
 
-  const handleInputChange = (e) => {
-    const { name, value, type, files } = e.target;
-    if (name === 'capacity' && parseInt(value, 10) < 0) {
-      return; 
+
+const handleInputChange = (event) => {
+  const { name, value } = event.target;
+
+  if (name === 'capacity') {
+    const capacity = Number(value);
+    const maxCapacity = calculateMaxCapacity();
+    setCapacityExceeded(capacity > maxCapacity);
+    if (capacity <= maxCapacity) {
+      setFormData({ ...formData, [name]: value });
+    }
+  } else {
+    setFormData({ ...formData, [name]: value });
   }
-    setFormData({
-      ...formData,
-      [name]: type === 'file' ? files[0] : value,
-      fileName: type === 'file' ? files[0]?.name || '' : formData.fileName,
-    });
-  };
+};
 
-  const handleClear = () => {
-    setFormData({
-      to: '',
-      from: '',
-      capacity: '',
-      department: '',
-      vehicleType: '', 
-      plateNumber: '',
-      departureTime: '',
-      pickUpTime: '', 
-      reservationReason: '',
-      approvalProof: null,
-      fileName: ''
-    });
-    setSelectedDate(null); 
-  };
-
+const handleClear = () => {
+  setFormData({
+    to: '',
+    from: '',
+    capacity: '',
+    department: '',
+    vehicleType: '', 
+    plateNumber: '',
+    departureTime: '',
+    pickUpTime: '', 
+    reservationReason: '',
+    approvalProof: null,
+    fileName: ''
+  });
+  setSelectedDate(null);
+  setReturnScheduleDate(null);  
+};
  
+useEffect(() =>{
+  const departmentFromStorage = localStorage.getItem('department');
+  setUserDepartment(departmentFromStorage || '');
+  setLoading(false);
+}, []);
 
-  useEffect(() =>{
-    const departmentFromStorage = localStorage.getItem('department');
-    setUserDepartment(departmentFromStorage || '');
-    setLoading(false);
-  }, []);
+const handleBackClick = () => {
+  window.history.back();
+};
 
-  const handleBackClick = () => {
-    window.history.back();
-  };
-
-  const handleDateSelect = (date, reservedTimesArray) => {
-    if (isSelectingReturn) {
+const handleDateSelect = (date) => {
+  if (isSelectingReturn) {
+    if (date >= selectedDate || !selectedDate) {
       setReturnScheduleDate(date);
     } else {
-      setSelectedDate(date);
+      alert('Return schedule date cannot be before the schedule date.');
     }
-    setShowCalendar(false);
-    setReservedTimes(reservedTimesArray); 
-  };
-  
-  const handleTripTypeChange = (event) => {
-    const selectedTripType = event.target.value;
-    setTripType(selectedTripType);
-    setIsSelectingReturn(selectedTripType === 'roundTrip'); 
-  };  
-
-  const handleSubmit = () => {
-    const {
-        from,
-        to,
-        vehicleType,
-        plateNumber,
-        departureTime,
-        reservationReason
-    } = formData;
-
-    const isFormValid = [
-        from,
-        to,
-        vehicleType,
-        plateNumber,
-        departureTime,
-        reservationReason
-    ].every(value => value.trim() !== '') && selectedDate;
-
-    const isTripTypeValid = tripType === 'oneWay' || (tripType === 'roundTrip' && returnScheduleDate && formData.pickUpTime.trim() !== '');
-    const isValid = isFormValid && isTripTypeValid;
-
-    if (isValid) {
-        setModalMessage('Are you sure you want to submit this reservation?');
-        setModalType('confirmation');
-        setIsModalOpen(true);
-    } else {
-        setModalMessage('Please fill out all required fields.');
-        setModalType('error');
-        setIsModalOpen(true);
+  } else {
+    setSelectedDate(date);
+    if (returnScheduleDate && returnScheduleDate < date) {
+      setReturnScheduleDate(null);
     }
+  }
+  setShowCalendar(false);
+};
+
+
+const handleTripTypeChange = (event) => {
+  const selectedTripType = event.target.value;
+  setTripType(selectedTripType);
+  setIsSelectingReturn(selectedTripType === 'roundTrip'); 
+};  
+
+
+const handleSubmit = (event) => {
+  event.preventDefault();
+  const capacity = Number(formData.capacity);
+  const maxCapacity = calculateMaxCapacity();
+
+  if (capacity > maxCapacity) {
+    setCapacityError(`Capacity cannot exceed ${maxCapacity}`);
+    return;
+  }
+  const {
+      from,
+      to,
+      vehicleType,
+      plateNumber,
+      departureTime,
+      reservationReason
+  } = formData;
+
+  const isFormValid = [
+      from,
+      to,
+      vehicleType,
+      plateNumber,
+      departureTime,
+      reservationReason
+  ].every(value => value.trim() !== '') && selectedDate;
+
+  const isTripTypeValid = tripType === 'oneWay' || (tripType === 'roundTrip' && returnScheduleDate && formData.pickUpTime.trim() !== '');
+  const isValid = isFormValid && isTripTypeValid;
+
+  if (isValid) {
+    setModalMessage('Are you sure you want to submit this reservation?');
+    setModalType('confirmation');
+    setIsModalOpen(true);
+} else {
+    setModalMessage('Please fill out all required fields.');
+    setModalType('error');
+    setIsModalOpen(true);
+}
 };
 
 const handleConfirm = async () => {
-  try {
-      console.log("Confirm button clicked");
-
-      const reservation = {
-          typeOfTrip: tripType,
-          destinationTo: formData.to,
-          destinationFrom: formData.from,
-          capacity: vehicle.capacity,
-          department: userDepartment,
-          schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
-          returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null,
-          vehicleType: formData.vehicleType,
-          plateNumber: formData.plateNumber,
-          pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
-          departureTime: formatTime(formData.departureTime),
-          reason: formData.reservationReason,
-          status: "Pending",
-          opcIsApproved: false,
-          isRejected: false,
-          headIsApproved: true,  // Automatically set to true
-          feedback: "",
-          driverId: 0,
-          driverName: "",
-      };
+  const vehicleIds = addedVehicles.map(v => v.id).filter(id => id != null);
+  
+        const reservation = {
+            typeOfTrip: tripType,
+            destinationTo: formData.to,
+            destinationFrom: formData.from,
+            capacity: formData.capacity,
+            department: userDepartment,
+            schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
+            returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null,
+            vehicleType: vehicle.vehicleType || null,  // Use the initially selected vehicle
+            plateNumber: vehicle.plateNumber || null,  // Use the initially selected vehicle
+            pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
+            departureTime: formatTime(formData.departureTime),
+            reason: formData.reservationReason || "",
+            fileUrl: "No file(s) attached", 
+            status: "Pending",
+            opcIsApproved: false,
+            isRejected: false,
+            headIsApproved: true,  // Automatically set to true
+            feedback: "",
+            driverId: 0,
+            driverName: "",
+        };
 
       console.log("Reservation data: ", reservation);
 
-      const reservationFormData = new FormData();
-      reservationFormData.append('reservation', JSON.stringify(reservation));
-      reservationFormData.append('userName', `${formatName(firstName)} ${formatName(lastName)}`);
+  try {
+    let fileUrl = "No file(s) attached";
+    if (formData.approvalProof) {
+      const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
+      await uploadBytes(fileRef, formData.approvalProof);
+      fileUrl = await getDownloadURL(fileRef);
+    }
+    reservation.fileUrl = fileUrl;
 
-      if (formData.approvalProof) {
-          reservationFormData.append('file', formData.approvalProof);
-      }
+    const reservationFormData = new FormData();
+    reservationFormData.append('reservation', JSON.stringify(reservation));
+    reservationFormData.append('userName', `${formatName(firstName)} ${formatName(lastName)}`);
 
-      console.log("Submitting reservation form data...");
+    if (formData.approvalProof) {
+      reservationFormData.append('file', formData.approvalProof);
+    }
+    reservationFormData.append('vehicleIds', vehicleIds.join(','));
 
-      const response = await fetch('http://localhost:8080/user/reservations/add', {
-          method: 'POST',
-          headers: {
-              "Authorization": `Bearer ${token}`
-          },
-          body: reservationFormData,
-      });
+    console.log("Form Data:", [...reservationFormData.entries()]);
 
-      if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Response Error Text:', errorText);
-          throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+    const response = await fetch('http://localhost:8080/user/reservations/add', {
+      method: 'POST',
+      headers: {
+        "Authorization": `Bearer ${token}`
+      },
+      body: reservationFormData,
+    });
 
-      const data = await response.json();
-      console.log("Response data: ", data);
+    if (!response.ok) {
+      const errorResponse = await response.text(); 
+      throw new Error(`HTTP error! Status: ${response.status}. Response: ${errorResponse}`);
+    }
 
-      setModalMessage('Reservation submitted successfully!');
-      setModalType('success');
-
-      navigate('/vip-side');
+    setModalMessage('Reservation submitted successfully!');
+    setModalType('success');
+    navigate('/vip-side');
   } catch (error) {
-      console.error('Error submitting reservation:', error);
-      setModalMessage('Failed to submit reservation. Please try again.');
-      setModalType('error');
+    console.error('Error submitting reservation:', error);
+    setModalMessage('Failed to submit reservation. Please try again.');
+    setModalType('error');
   } finally {
-      setIsModalOpen(true);
-      console.log("Modal opened.");
+    setIsModalOpen(true);
   }
-};
+};  
 
 const closeModal = () => {
   setIsModalOpen(false);
@@ -378,8 +382,18 @@ const closeModal = () => {
                   <input type="text" id="to" name="to" placeholder='Ex. SM Seaside' value={formData.to} required onChange={handleInputChange}/>
                 </div>
                 <div className="form-group">
-                  <label htmlFor="capacity"><FaUserGroup style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Capacity:</label>
-                  <input type="number" id="capacity" name="capacity" value={calculateTotalCapacity()}required min="0" onChange={handleInputChange}/>
+                  <label htmlFor="capacity"><FaUserGroup style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }}/> Capacity:</label>
+                  <input
+                        type="number"
+                        id="capacity"
+                        name="capacity"
+                        value={formData.capacity}
+                        required
+                        min="0"
+                        max={calculateMaxCapacity()} 
+                        onChange={handleInputChange}
+                      />
+                   {capacityError && <p style={{ color: "red", fontSize: "11px" }}>{capacityError}</p>}
                 </div>
                 <div className="form-group">
                 <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle:</label>
@@ -440,35 +454,37 @@ const closeModal = () => {
                        name="departureTime"
                        disabled={!selectedDate}
                        date={selectedDate}
-                       plateNumber={selectedVehiclePlateNumber}
+                       plateNumber={selectedVehiclePlateNumber} 
+                       addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
                        token={token}
                     />
                   </div>
                   {tripType === "roundTrip" && (
                     <div className="form-group">
-                    <label htmlFor="pickUpTime">
-                      <IoTime
-                        style={{
-                          backgroundColor: "white",
-                          color: "#782324",
-                          borderRadius: "20px",
-                          padding: "3px",
-                          marginBottom: "-5px",
-                        }}
-                      />
-                      Pick-Up Time:
-                    </label>
-                    <PickUpDropdown
-                    name="pickUpTime"
-                    selectedTime={formData.pickUpTime}
-                    onChange={handleInputChange}
-                    disabled={!returnScheduleDate}
-                    date={returnScheduleDate}
-                    plateNumber={selectedVehiclePlateNumber}
-                    token={token}
+                      <label htmlFor="pickUpTime">
+                        <IoTime
+                          style={{
+                            backgroundColor: "white",
+                            color: "#782324",
+                            borderRadius: "20px",
+                            padding: "3px",
+                            marginBottom: "-5px",
+                          }}
+                        />
+                        Pick-Up Time:
+                      </label>
+                      <PickUpDropdown
+                      name="pickUpTime"
+                      selectedTime={formData.pickUpTime}
+                      onChange={handleInputChange}
+                      disabled={!returnScheduleDate}
+                      date={returnScheduleDate}
+                      plateNumber={selectedVehiclePlateNumber}
+                      addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
+                      token={token}
 
-                  />
-                  </div>
+                    />
+                    </div>
                   )} 
               </div>
               <div className="form-group-inline">
@@ -502,22 +518,22 @@ const closeModal = () => {
                   <label htmlFor="addedVehicle">
                     <FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle Added:
                     <button 
-                    type="button" // Prevents form submission
+                    type="button"
                     className="add-another-vehicle" 
                     onClick={handleAddVehicleClick}>
                     <IoMdAddCircle style={{color: "gold", marginRight: "5px", marginBottom: "-2px"}}/> Add another vehicle
                   </button>
                    </label> 
                     <div className="reserved-vehicle-added-container">
-                    {addedVehicles.map(vehicle => (
-              <div key={vehicle.plateNumber} className="reserved-vehicle-item">
-                <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity} </p>
-                       <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
+                      {addedVehicles.map(vehicle => (
+                      <div key={vehicle.plateNumber} className="reserved-vehicle-item">
+                        <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity} </p>
+                          <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
                             Remove
-                        </button>
-              </div>
-                ))}
-                 </div>
+                          </button>
+                      </div>
+                      ))}
+                   </div>
                  </div>
                  )}
                 </div>
@@ -540,13 +556,30 @@ const closeModal = () => {
                 <strong>To:</strong> {formData.to}
               </div>
               <div className="summary-item">
-              <strong>Capacity:</strong> {calculateTotalCapacity()}
+              <strong>Capacity: {formData.capacity || 0} /</strong> {calculateMaxCapacity()}
               </div>
               <div className="summary-item">
                 <strong>Plate Number:</strong> {vehicle.plateNumber}
               </div>
               <div className="summary-item">
                 <strong>Vehicle Type:</strong> {vehicle.vehicleType}
+              </div>
+              <div className="summary-item">
+                {isMultipleVehicles && addedVehicles.length > 0 && (
+              <div className="summary-item">
+                <strong>Added Vehicles:</strong>
+                  <ul> {addedVehicles.map(vehicle => (
+                      <li key={vehicle.plateNumber}>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</li>
+                    ))}
+                  </ul>
+              </div>
+              )}
+              {isMultipleVehicles && addedVehicles.length === 0 && (
+              <div className="summary-item">
+                <strong>Added Vehicles:</strong>
+                  <p>No vehicles added yet.</p>
+              </div>
+                )}
               </div>
               <div className="summary-item">
               <strong>Schedule: </strong>
