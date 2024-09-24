@@ -36,19 +36,20 @@ body {
   margin-bottom: 20px;
   background-color: #CBC3C3;
   height: 690px;
-  width: 1500px;
+  width: 1533px;
   border-radius: 10px;
   /* padding: 20px; */
   padding-left: 20px;
-  padding-right: 20px;
   padding-bottom: 20px;
   padding-top: 10px;
   margin-right: 20px;
+  margin-top: -21px;
   z-index: 999;
 }
 
 .table-container {
   height: 670px; 
+  width: 1510px;
   overflow-y: auto;
   margin-top: 10px;
   background-color: white;
@@ -106,26 +107,74 @@ body {
 }
 
 .opc-requests-table {
-  width: 100%;
-  width: 1475px;
+  width: 1510px;
   border-collapse: collapse;
   background-color: white;
 }
 
 .opc-requests-table th, .opc-requests-table td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 5px;
   text-align: center;
 }
+
+.opc-department-column {
+  width: 50px; /* Set your desired width here */
+}
+
+.opc-vehicle-column{
+  width: 50px;
+}
+
+.opc-requestor-column{
+  width: 40px;
+}
+
+.opc-action-column{
+  width: 40px;
+}
+
+.opc-transac-column{
+  width: 50px;
+}
+
+.opc-added-column{
+  width: 70px;
+}
+
+.opc-tot-column{
+  width: 45px;
+}
+
+.opc-location-column{
+  width: 30px;
+}
+
+.opc-cap-column{
+  width: 40px;
+}
+
+.opc-time-column{
+  width: 50px;
+}
+
+.opc-status-column{
+  width: 50px;
+}
+
+.opc-schedule-column{
+  width: 50px;
+}
+
 .opc-requests-table td{
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .opc-requests-table th {
   background-color: #ddd;
   color: black;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: bolder;
   position: sticky;
   top: 0;
 }
@@ -158,6 +207,44 @@ body {
   align-items: center;
   gap: 10px; 
 }
+
+
+.opc-approve-button, .opc-reject-button, .opc-view-file-button {
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100px;
+  transition: background-color 0.3s;
+}
+
+.opc-approve-button {
+  background-color: #2a612c;  
+  color: white;
+}
+
+.opc-approve-button:hover{
+  background-color: #4CAF50;
+}
+
+.opc-reject-button{
+  background-color: #972b24;
+  color: white;
+}
+
+.opc-reject-button:hover {
+  background-color: #f44336;
+}
+
+.opc-view-file-button {
+  background-color: gold;
+  color: black;
+}
+
+.opc-view-file-button:hover {
+  background-color: rgb(253, 224, 58);
+}
+
 
 .modal-overlay {
   position: fixed;
@@ -213,6 +300,11 @@ body {
   white-space: normal; 
   word-break: break-word; 
 }
+
+.reason-column th {
+  width: 200px; /* Ensure the header matches the column width */
+}
+
 .generate-report-button{
   background-color: rgb(1, 87, 1);
   color: white;
@@ -254,6 +346,31 @@ body {
   padding: 2px 6px;
   border-radius: 4px;
   margin-left: 8px;
+}
+
+.vip-request-badge {
+  background-color: #add8e6; /* Light blue background for normal requests */
+  color: #000; /* Text color */
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+}
+
+.normal-header-request-badge {
+  color: #000; /* Text color */
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 30px;
+}
+
+.vip-header-request-badge {
+  color: #000; /* Text color */
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 50px;
 }
 
 .highlight-vip {

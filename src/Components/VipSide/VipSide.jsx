@@ -100,12 +100,12 @@ const VipSide = () => {
     console.log("Selected Vehicle Plate Number:", vehicle.plateNumber);
     navigate('/vip-side/special-reservation', { state: { vehicle } });
   };  
-
+ 
   return (
     <div className="app">
       <Header />
       <div className="main-content">
-        <VipSideNavbar />
+      <VipSideNavbar />
         <div className="content">
           {loading ? (
             <div>

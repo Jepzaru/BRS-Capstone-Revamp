@@ -266,28 +266,37 @@ const OpcRequests = () => {
                 <option value="descending">Capacity Descending</option>
               </select>
             </div>
+            <div>
+                  <span className="normal-header-request-badge">
+                  <FaFlag style={{ color: 'blue', marginLeft: '5px', paddingRight: '10px' }} />Normal Request</span>
+            </div>
+            <div>
+                <span className="vip-header-request-badge">
+                <FaFlag style={{ color: 'red', marginLeft: '5px', paddingRight: '10px' }} />Vip Request</span>
+            </div>
+
           </div>
           <div className='opc-request-container1'>
             <div className="table-container">
               <table className="opc-requests-table">
                 <thead>
                   <tr>
-                    <th>Transaction ID</th>
-                    <th>Requestor Name</th>
-                    <th>Department</th>
-                    <th>Type of Trip</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Capacity</th>
-                    <th>Vehicle</th>
-                    <th>Added Vehicles</th>
-                    <th>Schedule</th>
-                    <th>Return Schedule</th>
-                    <th>Departure Time</th>
-                    <th>Pick Up Time</th>
-                    <th className="opc-reason-column">Reason</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th className="opc-transac-column" >Transaction ID</th>
+                    <th className="opc-requestor-column" >Requestor Name</th>
+                    <th className="opc-department-column" >Department</th>
+                    <th className="opc-tot-column" >Type of Trip</th>
+                    <th className="opc-location-column" >From</th>
+                    <th className="opc-location-column" >To</th>
+                    <th className="opc-cap-column" >Capacity</th>
+                    <th className="opc-vehicle-column" >Vehicle</th>
+                    <th className="opc-added-column" >Added Vehicles</th>
+                    <th className="opc-schedule-column" >Schedule</th>
+                    <th className="opc-schedule-column" >Return Schedule</th>
+                    <th className="opc-time-column" >Departure Time</th>
+                    <th className="opc-time-column" >Pick Up Time</th>
+                    <th className="opc-reason-column" >Reason</th>
+                    <th className="opc-status-column" >Status</th>
+                    <th className="opc-action-column" >Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -296,71 +305,78 @@ const OpcRequests = () => {
                         <td colSpan="16" className="no-requests">No Requests Available</td>
                       </tr>
                     ) : (
-                      getFilteredAndSortedRequests().map((request, index) => (
-                        <tr key={index} className={
-                          request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
-                          request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
-                          'default-highlight'
-                        }>
-                          <td>{request.transactionId}</td>
-                          <td>{request.userName}</td>
-                          <td>{request.department}</td>
-                          <td>{request.typeOfTrip}</td>
-                          <td>{request.destinationFrom}</td>
-                          <td>{request.destinationTo}</td>
-                          <td>{request.capacity}</td>
-                          <td>{request.vehicleType} - {request.plateNumber} </td>
-                      <td>
-                        {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
-                          request.reservedVehicles.map((vehicle, index) => (
-                            <div key={index}>
-                              {vehicle.vehicleType} - {vehicle.plateNumber} 
-                            </div>
-                          ))
-                        ) : (
-                          <div>No Vehicles Added</div>
-                        )}
-                      </td>
-                          <td>{request.schedule || 'N/A'}</td>
-                          <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? request.returnSchedule : 'N/A'}</td>
-                          <td>{request.departureTime || 'N/A'}</td>
-                          <td>{request.pickUpTime || 'N/A'}</td>
-                          <td className="reason-column">{request.reason}</td>
-                          <td className={request.status === 'Pending' ? 'status-pending' : ''}>
+                      getFilteredAndSortedRequests().map((request, index) => {
+                        console.log(request); // Log the request object
+                        return (
+                          <tr key={index} className={
+                            request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
+                            request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
+                            'default-highlight'
+                          }>
+                            <td>{request.transactionId}</td>
+                            <td>{request.userName}</td>
+                            <td>{request.department}</td>
+                            <td>{request.typeOfTrip}</td>
+                            <td>{request.destinationFrom}</td>
+                            <td>{request.destinationTo}</td>
+                            <td>{request.capacity}</td>
+                            <td>{request.vehicleType} - {request.plateNumber}</td>
+                            <td>
+                              {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
+                                request.reservedVehicles.map((vehicle, index) => (
+                                  <div key={index}>
+                                    {vehicle.vehicleType} - {vehicle.plateNumber} 
+                                  </div>
+                                ))
+                              ) : (
+                                <div>No Vehicles Added</div>
+                              )}
+                            </td>
+                            <td>{request.schedule || 'N/A'}</td>
+                            <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? request.returnSchedule : 'N/A'}</td>
+                            <td>{request.departureTime || 'N/A'}</td>
+                            <td>{request.pickUpTime || 'N/A'}</td>
+                            <td className="reason-column">{request.reason}</td>
+                            <td className={request.status === 'Pending' ? 'status-pending' : ''}>
                             <div className="status-container">
-                              <span className="status-text">{request.status}</span>
-                              {(request.department.trim().toLowerCase() === 'college of computer studies (ccs)' ||
+                            <span className="status-text">{request.status}</span>
+                            {request.department.trim().toLowerCase() === 'office of the president (vip)' ? (
+                              <span className="vip-request-badge">
+                                <FaFlag style={{ color: 'red', marginLeft: '5px' }} /></span>
+                            ) : (
+                              (request.department.trim().toLowerCase() === 'college of computer studies (ccs)' ||
                                 request.department.trim().toLowerCase() === 'college of engineering and architecture (cae)' ||
                                 request.department.trim().toLowerCase() === 'college of management, business & accountancy (cmba)' ||
                                 request.department.trim().toLowerCase() === 'college of arts, sciences, & education (case)' ||
                                 request.department.trim().toLowerCase() === 'college of criminal justice (ccj)' ||
-                                request.department.trim().toLowerCase() === 'college of nursing & allied health sciences') &&
+                                request.department.trim().toLowerCase() === 'college of nursing & allied health sciences') && (
                                 <span className="normal-request-badge">
-                                  <FaFlag style={{ color: 'blue', marginLeft: '5px' }} /> Normal Request
+                                  <FaFlag style={{ color: 'blue', marginLeft: '5px' }} />
                                 </span>
-                              }
-                             
-                            </div>
-                          </td>
-                          <td>
-                            <div className="opc-action-buttons">
-                              <button className="approve-button" onClick={() => handleOpenModal(request, 'approve')}>
-                                <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve
-                              </button>
-                              <button className="reject-button" onClick={() => handleOpenModal(request, 'reject')}>
-                                <IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject
-                              </button>
-                              {request.fileUrl === "No file(s) attached" ? (
-                                <button className="view-file-button" style={{ fontSize: '10px' }}>No file attached</button>
-                              ) : (
-                                <button onClick={() => handleViewFile(request.fileUrl)} className="view-file-button">
-                                  View File
+                              )
+                            )}
+                          </div>
+                            </td>
+                            <td>
+                              <div className="opc-action-buttons">
+                                <button className="opc-approve-button" onClick={() => handleOpenModal(request, 'approve')}>
+                                  <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve
                                 </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))
+                                <button className="opc-reject-button" onClick={() => handleOpenModal(request, 'reject')}>
+                                  <IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject
+                                </button>
+                                {request.fileUrl === "No file(s) attached" ? (
+                                  <button className="opc-view-file-button" style={{ fontSize: '10px', fontWeight: 'bold' }}>No file attached</button>
+                                ) : (
+                                  <button onClick={() => handleViewFile(request.fileUrl)} className="opc-view-file-button" style={{ fontSize: '10px', fontWeight: 'bold' }} >
+                                    View File
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
                     )}
                   </tbody>
               </table>
