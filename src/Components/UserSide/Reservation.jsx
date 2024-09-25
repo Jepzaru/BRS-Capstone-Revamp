@@ -533,7 +533,7 @@ const handleInputChange = (event) => {
                   </div>
                 <div className="form-group">
                   <label htmlFor="approvalProof"><FaFileAlt style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Proof of Approval (optional):</label>
-                  <input type="file" id="approvalProof" name="approvalProof" onChange={handleInputChange} />
+                  <input type="file" id="approvalProof" name="approvalProof" accept="application/pdf" onChange={handleInputChange} />
                 </div>
               </div>
               <div className="form-group-inline">
