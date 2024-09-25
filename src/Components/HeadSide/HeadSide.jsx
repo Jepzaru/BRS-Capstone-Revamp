@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { FaFileAlt, FaSortAlphaDown, FaSwatchbook } from "react-icons/fa";
+import { FaCircleCheck } from "react-icons/fa6";
+import { IoCloseCircle, IoSearch } from "react-icons/io5";
 import Header from '../../Components/UserSide/Header';
+import '../../CSS/HeadCss/HeadSide.css';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './HeadNavbar';
-import { FaSwatchbook } from "react-icons/fa";
-import { IoSearch } from "react-icons/io5";
-import { FaSortAlphaDown } from "react-icons/fa";
-import { FaCircleCheck } from "react-icons/fa6";
-import { IoCloseCircle } from "react-icons/io5";
-import { FaFileAlt } from "react-icons/fa";
-import '../../CSS/HeadCss/HeadSide.css';
 
 
 const HeadSide = () => {
@@ -51,9 +48,10 @@ const HeadSide = () => {
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json", // Set content type to JSON
+          "Authorization": `Bearer ${token}`,  
         },
-        body: formData,
+          body: JSON.stringify(reservationData),
       });
 
       if (response.ok) {
@@ -78,7 +76,7 @@ const HeadSide = () => {
       const reservationData = {
         rejected: true,
         status: 'Rejected',
-        feedback: feedback
+        feedback: feedback,
       };
 
       const formData = new FormData();
@@ -88,8 +86,9 @@ const HeadSide = () => {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,
-        },
-        body: formData,
+          "Content-Type": "application/json", // Set content type to JSON
+      },
+      body: JSON.stringify(reservationData), // Send reservation data as JSON
       });
 
       if (response.ok) {

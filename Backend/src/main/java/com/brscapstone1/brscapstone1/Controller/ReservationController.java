@@ -128,27 +128,26 @@ public class ReservationController {
          }
      }
      
-    //[PUT] update reservation
-    @PutMapping("/reservations/update/{reservationId}")
-    public ResponseEntity<ReservationEntity> updateReservation(@PathVariable int reservationId, 
-                                                                @RequestParam(value = "file", required = false) MultipartFile file,
-                                                                @RequestParam("reservation") String reservationJson) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            ReservationEntity updatedReservation = objectMapper.readValue(reservationJson, ReservationEntity.class);
-            ReservationEntity updatedEntity = resServ.updateReservation(reservationId, updatedReservation, file);
-            return ResponseEntity.ok(updatedEntity);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
+     // [PUT] update reservation
+     @PutMapping("/reservations/update/{reservationId}")
+     public ResponseEntity<ReservationEntity> updateReservation(@PathVariable int reservationId,
+                                                                 @RequestBody ReservationEntity updatedReservation,
+                                                                 @RequestParam(value = "file", required = false) MultipartFile file,
+                                                                 @RequestParam(value = "isResending", defaultValue = "false") boolean isResending) {
+         try {
+             ReservationEntity updatedEntity = resServ.updateReservation(reservationId, updatedReservation, file, isResending);
+             return ResponseEntity.ok(updatedEntity);
+         } catch (IOException e) {
+             e.printStackTrace();
+             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+         } catch (IllegalArgumentException e) {
+             e.printStackTrace();
+             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+         } catch (Exception e) {
+             e.printStackTrace();
+             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+         }
+     }
 
     //[GET] all OPC approved
     @GetMapping("/reservations/opc-approved")
