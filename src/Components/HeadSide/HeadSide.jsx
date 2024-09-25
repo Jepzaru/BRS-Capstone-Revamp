@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { FaFileAlt, FaSortAlphaDown, FaSwatchbook } from "react-icons/fa";
+import { FaCircleCheck } from "react-icons/fa6";
+import { IoCloseCircle, IoSearch } from "react-icons/io5";
 import Header from '../../Components/UserSide/Header';
+import '../../CSS/HeadCss/HeadSide.css';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './HeadNavbar';
-import { FaSwatchbook } from "react-icons/fa";
-import { IoSearch } from "react-icons/io5";
-import { FaSortAlphaDown } from "react-icons/fa";
-import { FaCircleCheck } from "react-icons/fa6";
-import { IoCloseCircle } from "react-icons/io5";
-import { FaFileAlt } from "react-icons/fa";
-import '../../CSS/HeadCss/HeadSide.css';
-
 
 const HeadSide = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +15,6 @@ const HeadSide = () => {
   const [modalAction, setModalAction] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [fileUrl, setFileUrl] = useState('');
-
   const token = localStorage.getItem('token');
 
   const fetchRequestsData = async () => {
@@ -51,9 +46,10 @@ const HeadSide = () => {
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,  
         },
-        body: formData,
+          body: JSON.stringify(reservationData),
       });
 
       if (response.ok) {
@@ -78,7 +74,7 @@ const HeadSide = () => {
       const reservationData = {
         rejected: true,
         status: 'Rejected',
-        feedback: feedback
+        feedback: feedback,
       };
 
       const formData = new FormData();
@@ -88,8 +84,9 @@ const HeadSide = () => {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,
-        },
-        body: formData,
+          "Content-Type": "application/json", 
+      },
+      body: JSON.stringify(reservationData),
       });
 
       if (response.ok) {
@@ -218,25 +215,29 @@ const HeadSide = () => {
                       <td style={{width: '70px'}}>{requests.pickUpTime || 'N/A'}</td>
                       <td>{splitText(requests.reason, 15)}</td>
                       <td>
-                        <div className="head-action-buttons">
-                          <button className="approve-button" onClick={() => openModal(requests, 'approve')}><FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve</button>
-                          <button className="reject-button" onClick={() => openModal(requests, 'reject')}><IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject</button>
-                          {
-                            fileUrl === 0 ? 
-                            <button
+                      <div className="head-action-buttons">
+                        <button className="approve-button" onClick={() => openModal(requests, 'approve')}>
+                          <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve
+                        </button>
+                        <button className="reject-button" onClick={() => openModal(requests, 'reject')}>
+                          <IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject
+                        </button>
+                        
+                        {requests.fileUrl && requests.fileUrl !== 'No file(s) attached' ? (
+                          <button
                             className="view-file-button"
-                            onClick={() => window.open(requests.fileUrl, '_blank')}
+                            onClick={() => window.open(requests.fileUrl, '_blank')}  
                             disabled={!requests.fileUrl}
                           >
                             <FaFileAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> View File
                           </button>
-
-                          :
-                          <button className="view-file-button" style={{fontSize: '10px'}}>No file attached </button>
-                          }
-                          
-                        </div>
-                      </td>
+                        ) : (
+                          <button className="view-file-button" style={{ fontSize: '10px' }}>
+                            No file attached
+                          </button>
+                        )}
+                      </div>
+                    </td>
                     </tr>
                   ))
                 )}
@@ -249,38 +250,46 @@ const HeadSide = () => {
       </div>
 
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
-            <p>Are you sure you want to {modalAction} this request?</p>
-            {modalAction === 'approve' ? (
-              <div className="modal-approve">
-              </div>
-            ) : (
-              <div className="modal-feedback">
-                <input
-                  id="feedback-input"
-                  className='feedback-input'
-                  type="text"
-                  placeholder="Enter feedback"
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                />
-              </div>
-            )}
-            <div className="modal-buttons">
-              <button
-                className="modal-accept-button"
-                onClick={modalAction === 'approve' ? handleApproveRequests : handleRejectRequest}
-                disabled={modalAction === 'approve' ? !selectedRequest : !feedback.trim()}
-              >
-                {modalAction === 'approve' ? 'Approve' : 'Reject'}
-              </button>
-              <button className="modal-cancel-button" onClick={closeModal}>Cancel</button>
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
+          <p>Are you sure you want to {modalAction} this request?</p>
+
+          {fileUrl && fileUrl !== 'No file(s) attached' && (
+            <div>
+              <p>Attached File: <a href={fileUrl} target="_blank" rel="noopener noreferrer">View File</a></p>
             </div>
+          )}
+
+          {modalAction === 'approve' ? (
+            <div className="modal-approve">
+            </div>
+          ) : (
+            <div className="modal-feedback">
+              <input
+                id="feedback-input"
+                className="feedback-input"
+                type="text"
+                placeholder="Enter feedback"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+              />
+            </div>
+          )}
+
+          <div className="modal-buttons">
+            <button
+              className="modal-accept-button"
+              onClick={modalAction === 'approve' ? handleApproveRequests : handleRejectRequest}
+              disabled={modalAction === 'approve' ? !selectedRequest : !feedback.trim()}
+            >
+              {modalAction === 'approve' ? 'Approve' : 'Reject'}
+            </button>
+            <button className="modal-cancel-button" onClick={closeModal}>Cancel</button>
           </div>
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 };

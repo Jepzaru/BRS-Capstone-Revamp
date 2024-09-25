@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { FaFlag, FaSortAlphaDown, FaSwatchbook } from "react-icons/fa";
+import { FaCircleCheck } from "react-icons/fa6";
+import { IoCloseCircle, IoSearch } from "react-icons/io5";
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -9,7 +12,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { IoCloseCircle } from "react-icons/io5";
 import { FaBus } from "react-icons/fa";
 import '../../CSS/OpcCss/OpcRequests.css';
-import { FaFlag } from 'react-icons/fa';
+import SideNavbar from './OpcNavbar';
 
 const OpcRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -141,9 +144,10 @@ const OpcRequests = () => {
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
+          "Content-Type": "application/json", 
           "Authorization": `Bearer ${token}`,
-        },
-        body: formData,
+        }, 
+      body: JSON.stringify(reservationData),
       });
 
       if (response.ok) {
@@ -180,9 +184,10 @@ const OpcRequests = () => {
       const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-        body: formData,
+          "Content-Type": "application/json", // Set content type to JSON
+          "Authorization": `Bearer ${token}`, // Ensure the token is included
+      },
+      body: JSON.stringify(reservationData),
       });
 
       if (response.ok) {

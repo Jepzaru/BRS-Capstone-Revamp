@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -41,6 +42,11 @@ public class ReservationEntity {
     private String feedback;
     private int driverId;
     private String driverName;
+    private String rejectedBy;
+    
+    @OneToMany(orphanRemoval = true)
+    @JoinColumn(name = "reservation_id")
+    private List<VehicleEntity> vehicles;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReservationVehicleEntity> reservedVehicles;
@@ -248,6 +254,15 @@ public class ReservationEntity {
         this.reservedVehicles = reservedVehicles;
     }
 
+    public String getRejectedBy() {
+        return rejectedBy;
+    }
+
+    public void setRejectedBy(String rejectedBy) {
+        this.rejectedBy = rejectedBy;
+    }
+
+    
     public ReservationEntity() {
         super();
     }
@@ -256,7 +271,7 @@ public class ReservationEntity {
             int capacity, String department, LocalDate schedule, LocalDate returnSchedule, String vehicleType,
             String plateNumber, String pickUpTime, String departureTime, String reason, String fileUrl, String status,
             Boolean opcIsApproved, Boolean isRejected, Boolean headIsApproved, String userName, String feedback,
-            int driverId, String driverName) {
+            int driverId, String driverName, String rejectedBy) {
         this.transactionId = transactionId;
         this.typeOfTrip = typeOfTrip;
         this.destinationTo = destinationTo;
@@ -279,5 +294,6 @@ public class ReservationEntity {
         this.feedback = feedback;
         this.driverId = driverId;
         this.driverName = driverName;
+        this.rejectedBy = rejectedBy;
     }
 }
