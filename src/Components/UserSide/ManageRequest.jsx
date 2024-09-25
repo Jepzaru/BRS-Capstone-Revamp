@@ -7,10 +7,10 @@ import AddVehicleModal from './AddVehicleModal';
 import Header from './Header';
 import SideNavbar from './SideNavbar';
 
-
 import { CgDetailsMore } from "react-icons/cg";
 import { FaBus, FaCalendarDay, FaFileAlt } from "react-icons/fa";
 import { FaBuildingUser, FaLocationCrosshairs, FaLocationDot, FaUserGroup } from "react-icons/fa6";
+import { IoMdAddCircle } from "react-icons/io";
 import { IoTime } from "react-icons/io5";
 import { TbBus } from "react-icons/tb";
 
@@ -36,7 +36,7 @@ const ManageRequest = () => {
   const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
   const { vehicle } = location.state || {}; 
   const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState(vehicle ? vehicle.plateNumber : '');
-
+  const [showCalendar, setShowCalendar] = useState(false);
   
   const [message, setMessage] = useState('');
 
@@ -533,6 +533,9 @@ const ManageRequest = () => {
       <div className="form-group">
         <label htmlFor="addedVehicle">
           <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> Vehicle Added:
+          <button type='button' className='mult-vehicle-btn' onClick={handleAddVehicleClick}>
+              <IoMdAddCircle style={{color: "gold", marginRight: "5px", marginBottom: "-2px"}}/> Add another vehicle
+            </button>
         </label>
         <div className="reserved-vehicle-added-container">
           <div className="reserved-vehicle-item">
