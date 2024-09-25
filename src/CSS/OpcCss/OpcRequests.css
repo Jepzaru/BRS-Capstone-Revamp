@@ -119,11 +119,11 @@ body {
 }
 
 .opc-department-column {
-  width: 50px; /* Set your desired width here */
+  width: 50px; 
 }
 
 .opc-vehicle-column{
-  width: 50px;
+  width: 100px;
 }
 
 .opc-requestor-column{
@@ -139,7 +139,7 @@ body {
 }
 
 .opc-added-column{
-  width: 70px;
+  width: 100px;
 }
 
 .opc-tot-column{
@@ -147,7 +147,7 @@ body {
 }
 
 .opc-location-column{
-  width: 30px;
+  width: 70px;
 }
 
 .opc-cap-column{
@@ -155,15 +155,15 @@ body {
 }
 
 .opc-time-column{
-  width: 50px;
+  width: 60px;
 }
 
 .opc-status-column{
-  width: 50px;
+  width: 70px;
 }
 
 .opc-schedule-column{
-  width: 50px;
+  width: 90px;
 }
 
 .opc-requests-table td{
@@ -296,13 +296,13 @@ body {
 }
 
 .opc-requests-table .opc-reason-column {
-  max-width: 50px; 
+  max-width: 20px; 
   white-space: normal; 
   word-break: break-word; 
 }
 
-.reason-column th {
-  width: 200px; /* Ensure the header matches the column width */
+.opc-reason-column th {
+  width: 100px; 
 }
 
 .generate-report-button{
@@ -340,17 +340,15 @@ body {
 }
 
 .normal-request-badge {
-  background-color: #add8e6; /* Light blue background for normal requests */
-  color: #000; /* Text color */
+  background-color: #add8e6; 
   font-weight: bold;
-  padding: 2px 6px;
+  padding: 8px;
   border-radius: 4px;
-  margin-left: 8px;
 }
 
 .vip-request-badge {
-  background-color: #add8e6; /* Light blue background for normal requests */
-  color: #000; /* Text color */
+  background-color: #ffcc00; 
+  color: #000; 
   font-weight: bold;
   padding: 2px 6px;
   border-radius: 4px;
@@ -358,17 +356,19 @@ body {
 }
 
 .normal-header-request-badge {
-  color: #000; /* Text color */
+  background-color: #add8e6;
+  color: blue;
   font-weight: bold;
-  padding: 2px 6px;
+  padding: 8px 16px;
   border-radius: 4px;
   margin-left: 30px;
 }
 
 .vip-header-request-badge {
-  color: #000; /* Text color */
+  background-color: #ffcc00;
+  color: 000;
   font-weight: bold;
-  padding: 2px 6px;
+  padding: 8px 16px;
   border-radius: 4px;
   margin-left: 50px;
 }

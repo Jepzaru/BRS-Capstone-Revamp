@@ -7,7 +7,7 @@ import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { IoCloseCircle } from "react-icons/io5";
-import { FaFileAlt } from "react-icons/fa";
+import { FaBus } from "react-icons/fa";
 import '../../CSS/OpcCss/OpcRequests.css';
 import { FaFlag } from 'react-icons/fa';
 
@@ -105,6 +105,7 @@ const OpcRequests = () => {
       ...request,
       schedule: request.schedule,
       returnSchedule: request.returnSchedule,
+      reservedVehicles: request.reservedVehicles // Add this line to include the reserved vehicles
     });
     setModalAction(action);
     setShowModal(true);
@@ -112,7 +113,7 @@ const OpcRequests = () => {
       setFeedback('');
     }
   };
-
+  
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedRequest(null);
@@ -272,7 +273,7 @@ const OpcRequests = () => {
             </div>
             <div>
                 <span className="vip-header-request-badge">
-                <FaFlag style={{ color: 'red', marginLeft: '5px', paddingRight: '10px' }} />Vip Request</span>
+                <FaFlag style={{ color: 'red', paddingRight: '10px' }} />Vip Request</span>
             </div>
 
           </div>
@@ -319,7 +320,7 @@ const OpcRequests = () => {
                             <td>{request.typeOfTrip}</td>
                             <td>{request.destinationFrom}</td>
                             <td>{request.destinationTo}</td>
-                            <td>{request.capacity}</td>
+                            <td><span style={{color: "#782324", fontWeight: "700"}}>{request.capacity}</span></td>
                             <td>{request.vehicleType} - {request.plateNumber}</td>
                             <td>
                               {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
@@ -342,7 +343,7 @@ const OpcRequests = () => {
                             <span className="status-text">{request.status}</span>
                             {request.department.trim().toLowerCase() === 'office of the president (vip)' ? (
                               <span className="vip-request-badge">
-                                <FaFlag style={{ color: 'red', marginLeft: '5px' }} /></span>
+                                <FaFlag style={{ color: 'red'}} /></span>
                             ) : (
                               (request.department.trim().toLowerCase() === 'college of computer studies (ccs)' ||
                                 request.department.trim().toLowerCase() === 'college of engineering and architecture (cae)' ||
@@ -351,7 +352,7 @@ const OpcRequests = () => {
                                 request.department.trim().toLowerCase() === 'college of criminal justice (ccj)' ||
                                 request.department.trim().toLowerCase() === 'college of nursing & allied health sciences') && (
                                 <span className="normal-request-badge">
-                                  <FaFlag style={{ color: 'blue', marginLeft: '5px' }} />
+                                  <FaFlag style={{ color: 'blue'}} />
                                 </span>
                               )
                             )}
@@ -382,62 +383,98 @@ const OpcRequests = () => {
               </table>
             </div>
           </div>
+          <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />
         </div>
       </div>
 
       {showModal && (
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
-          <p>Are you sure you want to {modalAction} this request?</p>
-          {modalAction === 'approve' ? (
-            <div className="modal-driver-selection">
-              <label htmlFor="driver-select">Select Driver:</label>
-              <select
-                id="driver-select"
-                value={selectedDriver ? selectedDriver.id : ''}
-                onChange={(e) => {
-                  const driverId = e.target.value;
-                  const driver = drivers.find(driver => String(driver.id) === String(driverId));
-                  setSelectedDriver(driver);
-                }}
-              >
-                <option value="">Select Driver</option>
-                {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
-                  .map(driver => (
-                    <option key={driver.id} value={driver.id}>
-                      {driver.driverName}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          ) : (
-            <div className="modal-feedback">
-              <input
-                id="feedback-input"
-                className='feedback-input'
-                type="text"
-                placeholder="Enter feedback"
-                value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
-              />
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
+      <p>Are you sure you want to {modalAction} this request?</p>
+
+      {modalAction === 'approve' ? (
+        <div className="modal-driver-selection">
+          <label htmlFor="driver-select"><FaBus style={{color: "#782324", marginRight: "5px", marginBottom: '-2px'}}/>Main Vehicle: </label>
+          <select
+            id="driver-select"
+            value={selectedDriver ? selectedDriver.id : ''}
+            onChange={(e) => {
+              const driverId = e.target.value;
+              const driver = drivers.find(driver => String(driver.id) === String(driverId));
+              setSelectedDriver(driver);
+            }}
+          >
+            <option value="">Select Driver</option>
+            {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
+              .map(driver => (
+                <option key={driver.id} value={driver.id}>
+                  {driver.driverName}
+                </option>
+              ))}
+          </select>
+
+          {selectedRequest.reservedVehicles && (
+            <div className="modal-vehicle-list">
+              <h3>Added Vehicles:</h3>
+              <ul>
+                {selectedRequest.reservedVehicles.map((vehicle, index) => (
+                  <li key={index}>
+                    <strong><FaBus style={{color: "blue", marginRight: "5px", marginBottom: '-2px'}}/>Vehicle:</strong> {vehicle.vehicleType} {vehicle.plateNumber}
+
+                    <label htmlFor={`driver-select-${index}`}> </label>
+                    <select
+                      id={`driver-select-${index}`}
+                      onChange={(e) => {
+                        const driverId = e.target.value;
+                      }}
+                    >
+                      <option value="">Select Driver</option>
+                      {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
+                        .map(driver => (
+                          <option key={driver.id} value={driver.id}>
+                            {driver.driverName}
+                          </option>
+                        ))}
+                    </select>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
-          <div className="modal-buttons">
-            <button
-              className="modal-accept-button"
-              onClick={modalAction === 'approve' ? handleApprove : handleReject}
-              disabled={modalAction === 'approve' ? !selectedDriver : !feedback.trim()}
-            >
-              {modalAction === 'approve' ? 'Approve' : 'Reject'}
-            </button>
-            <button className="modal-close-button" onClick={handleCloseModal}>Cancel</button>
-          </div>
         </div>
-      </div>
+      ) : (
+        <div className="modal-feedback">
+          <input
+            id="feedback-input"
+            className="feedback-input"
+            type="text"
+            placeholder="Enter feedback"
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+          />
+        </div>
       )}
+
+      <div className="modal-buttons">
+        <button
+          className="modal-accept-button"
+          onClick={modalAction === 'approve' ? handleApprove : handleReject}
+          disabled={modalAction === 'approve' ? !selectedDriver : !feedback.trim()}
+        >
+          {modalAction === 'approve' ? 'Approve' : 'Reject'}
+        </button>
+        <button className="modal-close-button" onClick={handleCloseModal}>Cancel</button>
+      </div>
+      
     </div>
+  </div>
+)}
+
+    </div>
+    
   );
+
 };
 
 export default OpcRequests;

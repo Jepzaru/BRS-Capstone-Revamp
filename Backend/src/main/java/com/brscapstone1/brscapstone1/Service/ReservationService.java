@@ -67,7 +67,7 @@ public class ReservationService {
         resRepo.save(reservation);  // Save the reservation
     }
     
-    //[POST] approved reservations
+    //[PUT] approved reservations
     public void assignDriverToAddedVehicles(int reservationId, String plateNumber, int driverId, String driverName) {
         // Find the vehicle by reservation ID and plate number
         ReservationVehicleEntity vehicle = reservationVehicleRepository
@@ -81,6 +81,7 @@ public class ReservationService {
         // Save the updated vehicle entity
         reservationVehicleRepository.save(vehicle);
     }
+    
     
     //[isRejected] rejects a reservation and returns boolean output
     public void rejectReservation(int reservationId, String feedback) {

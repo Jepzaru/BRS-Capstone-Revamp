@@ -47,20 +47,20 @@ public class ReservationController {
         }
     }
 
-    @PostMapping("/user/reservations/assign-driver/{reservationId}/{plateNumber}")
+    @PutMapping("/user/reservations/assign-driver/{reservationId}/{plateNumber}")
     public ResponseEntity<String> assignDriverToReservation(
-            @PathVariable int reservationId,
-            @PathVariable String plateNumber,  // Added plateNumber parameter
-            @RequestBody ReservationVehicleEntity vehicleDetails) {
-        try {
-            // Call your service method to assign the driver
-            resServ.assignDriverToAddedVehicles(reservationId, plateNumber, vehicleDetails.getDriverId(), vehicleDetails.getDriverName());
-            return ResponseEntity.ok("Driver assigned successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to assign driver: " + e.getMessage());
-        }
+        @PathVariable int reservationId,
+        @PathVariable String plateNumber,  
+        @RequestBody ReservationVehicleEntity vehicleDetails) {
+    try {
+        // Call your service method to assign the driver
+        resServ.assignDriverToAddedVehicles(reservationId, plateNumber, vehicleDetails.getDriverId(), vehicleDetails.getDriverName());
+        return ResponseEntity.ok("Driver assigned successfully");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to assign driver: " + e.getMessage());
     }
+}
 
 
     //[isRejected] rejects a reservation and returns boolean output
