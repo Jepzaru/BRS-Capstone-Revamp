@@ -88,6 +88,8 @@ const Reservation = () => {
     }
   }, [selectedVehicle]);
 
+  const [isAddVehicleDisabled, setIsAddVehicleDisabled] = useState(true); 
+
   const handleAddVehicleClick = () => {
     setAddVehicleModalOpen(true);
   };
@@ -107,45 +109,73 @@ const Reservation = () => {
     setAddedVehiclePlates(prev => prev.filter(p => p !== plateNumber));
   };
 
-  const calculateMaxCapacity = () => {
-    let totalCapacity = 0;
-    if (vehicle) {
-      totalCapacity += vehicle.capacity;
-    }
-    if (isMultipleVehicles) {
-      addedVehicles.forEach(v => {
-        totalCapacity += v.capacity;
-      });
-    }
-    return totalCapacity;
-  };
+// Step 1: Define available vehicle types and their capacities
+const vehiclesList = [
+  { type: 'van', capacity: 16 },
+  { type: 'coaster', capacity: 28 },
+  { type: 'bus', capacity: 60 }
+];
+
+// Function to calculate total vehicle capacity
+const calculateMaxCapacity = () => {
+  let totalCapacity = 0;
+  if (vehicle) {
+    totalCapacity += vehicle.capacity; // Add the capacity of the main vehicle
+  }
+  addedVehicles.forEach(v => {
+    totalCapacity += v.capacity; // Add the capacity of each added vehicle
+  });
+  return totalCapacity; // Return the total capacity
+};
   
   const handleVehicleModeToggle = () => {
     setIsMultipleVehicles(prevState => !prevState); 
     setShowVehicleContainer(prevState => !prevState); 
   };
+  
+// Step 3: Handle capacity input changes and enable/disable the add vehicle button
+const handleInputChange = (event) => {
+  const { name, value, files } = event.target;
 
-  const handleInputChange = (event) => {
-    const { name, value, files } = event.target;
+  if (name === 'capacity') {
+    const capacity = Number(value);
+    const maxCapacity = calculateMaxCapacity(); // Calculate current max capacity
 
-    if (name === 'capacity') {
-        const capacity = Number(value);
-        const maxCapacity = calculateMaxCapacity();
-        setCapacityExceeded(capacity > maxCapacity);
-        if (capacity <= maxCapacity) {
-            setFormData({ ...formData, [name]: value });
-        }
-    } else if (name === 'approvalProof') {
-        if (files && files.length > 0) {
-            setFormData({ ...formData, [name]: files[0] }); 
+    // Update form data
+    setFormData({ ...formData, [name]: value });
+
+    // Step 4: Determine if the add vehicle button should be enabled or disabled
+    // Enable button only if current capacity exceeds max capacity
+    setIsAddVehicleDisabled(capacity <= maxCapacity); // Disable the button if capacity is less than or equal to max
+
+    // Step 5: Handle removing vehicles when the capacity is reduced
+    if (capacity < maxCapacity) {
+      let remainingCapacity = capacity;
+      const vehiclesToRemove = [];
+
+      addedVehicles.forEach(vehicle => {
+        if (remainingCapacity < vehicle.capacity) {
+          vehiclesToRemove.push(vehicle.plateNumber); // Track vehicles to remove
         } else {
-            setFormData({ ...formData, [name]: null });
+          remainingCapacity -= vehicle.capacity; // Subtract vehicle capacity from remaining
         }
-    } else {
-        setFormData({ ...formData, [name]: value });
-    }
-  };
+      });
 
+      // Remove vehicles using the handleRemoveVehicle function
+      vehiclesToRemove.forEach(plateNumber => handleRemoveVehicle(plateNumber));
+    }
+  } else if (name === 'approvalProof') {
+    if (files && files.length > 0) {
+        setFormData({ ...formData, [name]: files[0] }); 
+    } else {
+        setFormData({ ...formData, [name]: null });
+    }
+} else {
+    setFormData({ ...formData, [name]: value });
+}
+
+};
+  
   const handleClear = () => {
     setFormData({
       to: '',
@@ -349,7 +379,7 @@ const Reservation = () => {
                   </label>
                 </div>
                 <div className='mult-vehicle'>
-                <button type='button' className='mult-vehicle-btn' onClick={handleVehicleModeToggle}>
+                {/* <button type='button' className='mult-vehicle-btn' onClick={handleVehicleModeToggle}>
                     {isMultipleVehicles ? (
                       <>
                         <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Single vehicle
@@ -359,7 +389,7 @@ const Reservation = () => {
                         <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Multiple vehicles
                       </>
                     )}
-                  </button>
+                  </button> */}
                 </div>
               </div>
               <br/>
@@ -373,19 +403,37 @@ const Reservation = () => {
                   <input type="text" id="to" name="to" placeholder='Ex. SM Seaside' value={formData.to} required onChange={handleInputChange}/>
                 </div>
                 <div className="form-group">
-                  <label htmlFor="capacity"><FaUserGroup style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }}/> Capacity:</label>
-                  <input
-                        type="number"
-                        id="capacity"
-                        name="capacity"
-                        value={formData.capacity}
-                        required
-                        min="0"
-                        max={calculateMaxCapacity()} 
-                        onChange={handleInputChange}
+                    <label htmlFor="capacity">
+                      <FaUserGroup
+                        style={{
+                          backgroundColor: "white",
+                          color: "#782324",
+                          borderRadius: "20px",
+                          padding: "3px",
+                          marginBottom: "-5px",
+                        }}
                       />
-                   {capacityError && <p style={{ color: "red", fontSize: "11px" }}>{capacityError}</p>}
-                </div>
+                      Capacity:
+                    </label>
+                    <input
+                      type="number"
+                      id="capacity"
+                      name="capacity"
+                      value={formData.capacity}
+                      required
+                      min="0"
+                      max={calculateMaxCapacity()}
+                      onChange={handleInputChange}
+                    />
+                    
+                    {/* Cloud-style error message */}
+                    {capacityError && (
+                      <div className="capacity-error-cloud">
+                        <span>{capacityError}</span>
+                        <div className="cloud-arrow"></div> {/* Cloud-like arrow pointing to the input */}
+                      </div>
+                    )}
+                  </div>
                 <div className="form-group">
                 <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle:</label>
                 <input type="text" id="vehicleType" name="vehicleType" value={vehicle.vehicleType} onChange={handleInputChange} disabled={true}/>
@@ -504,29 +552,35 @@ const Reservation = () => {
                     onChange={handleInputChange}
                   />
                 </div>
-                {isMultipleVehicles && (
-                <div className="form-group">
-                  <label htmlFor="addedVehicle">
-                    <FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle Added:
-                    <button 
-                    type="button"
-                    className="add-another-vehicle" 
-                    onClick={handleAddVehicleClick}>
-                    <IoMdAddCircle style={{color: "gold", marginRight: "5px", marginBottom: "-2px"}}/> Add another vehicle
-                  </button>
-                   </label> 
+                  <div className="form-group">
+                    <label htmlFor="addedVehicle">
+                      <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> 
+                      Vehicle Added:
+                      <button 
+                        type="button"
+                        className="add-another-vehicle" 
+                        onClick={handleAddVehicleClick}
+                        disabled={isAddVehicleDisabled} // Disable button conditionally
+                        style={{ 
+                          opacity: isAddVehicleDisabled ? 0.5 : 1, // Optionally adjust opacity to indicate disabled state
+                          cursor: isAddVehicleDisabled ? 'not-allowed' : 'pointer' // Optionally adjust cursor style
+                        }}
+                      >
+                        <IoMdAddCircle style={{ color: "gold", marginRight: "5px", marginBottom: "-2px" }} /> 
+                        Add another vehicle
+                      </button>
+                    </label>
                     <div className="reserved-vehicle-added-container">
                       {addedVehicles.map(vehicle => (
-                      <div key={vehicle.plateNumber} className="reserved-vehicle-item">
-                        <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity} </p>
+                        <div key={vehicle.plateNumber} className="reserved-vehicle-item">
+                          <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</p>
                           <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
                             Remove
                           </button>
-                      </div>
+                        </div>
                       ))}
-                   </div>
-                 </div>
-                 )}
+                    </div>
+                  </div>
                 </div>
             </form>
             ) : (
