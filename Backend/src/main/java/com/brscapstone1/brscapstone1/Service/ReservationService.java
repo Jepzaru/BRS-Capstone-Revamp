@@ -90,10 +90,11 @@ public class ReservationService {
         reservation.setFeedback(feedback);
         resRepo.save(reservation);
     }
-    //save reservation || with multiple vehicle
-    public ReservationEntity saveReservation(String userName, ReservationEntity reservation, List<Integer> vehicleIds, MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
-            reservation.setFileUrl(reservation.getFileUrl());
+
+
+    public ReservationEntity saveReservation(String userName, ReservationEntity reservation, List<Integer> vehicleIds, String fileUrl) throws IOException {
+        if (fileUrl != null && !fileUrl.isEmpty()) {
+            reservation.setFileUrl(fileUrl); 
         } else {
             reservation.setFileUrl("No file(s) attached");
         }
@@ -130,7 +131,6 @@ public class ReservationService {
     
         return savedReservation;
     }
-    
 
     //[GET] all Reservations
     public List<ReservationEntity> getAllReservations() {

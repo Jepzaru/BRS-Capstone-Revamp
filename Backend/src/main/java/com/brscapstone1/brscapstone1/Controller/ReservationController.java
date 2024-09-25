@@ -62,7 +62,6 @@ public class ReservationController {
         }
     }
 
-
     //[isRejected] rejects a reservation and returns boolean output
     @PostMapping("/user/reservations/reject/{reservationId}")
     public ResponseEntity<String> rejectReservation(@PathVariable int reservationId, @RequestBody String feedback) {
@@ -78,7 +77,7 @@ public class ReservationController {
     @PostMapping("/user/reservations/add")
     public ReservationEntity addReservation(
         @RequestParam("userName") String userName, 
-        @RequestParam(value = "file", required = false) MultipartFile file, 
+        @RequestParam(value = "fileUrl", required = false) String fileUrl,  // Receive file URL instead of MultipartFile
         @RequestParam("reservation") String reservationJson, 
         @RequestParam("vehicleIds") List<Integer> vehicleIds
     ) throws IOException {
@@ -86,12 +85,12 @@ public class ReservationController {
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false); 
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); 
         objectMapper.registerModule(new JavaTimeModule());
-        
+
         // Convert JSON to ReservationEntity
         ReservationEntity reservation = objectMapper.readValue(reservationJson, ReservationEntity.class);
-    
-        // Pass vehicle IDs to the service layer
-        return resServ.saveReservation(userName, reservation, vehicleIds, file);
+
+        // Pass vehicle IDs and file URL to the service layer
+        return resServ.saveReservation(userName, reservation, vehicleIds, fileUrl);
     }
 
     //[GET] all Reservations

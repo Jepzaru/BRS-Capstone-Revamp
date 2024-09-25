@@ -99,7 +99,6 @@ const Reservation = () => {
   const handleAddVehicle = (vehicle) => {
     setAddedVehiclePlates(prev => [...prev, vehicle.plateNumber]);
     setAddedVehicles(prevVehicles => [...prevVehicles, vehicle]);
-    // Don't update the main vehicle's state here if it's not meant to
     setAddVehicleModalOpen(false);
   };
 
@@ -121,27 +120,31 @@ const Reservation = () => {
     return totalCapacity;
   };
   
-
   const handleVehicleModeToggle = () => {
     setIsMultipleVehicles(prevState => !prevState); 
     setShowVehicleContainer(prevState => !prevState); 
   };
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
-  
+    const { name, value, files } = event.target;
+
     if (name === 'capacity') {
-      const capacity = Number(value);
-      const maxCapacity = calculateMaxCapacity();
-      setCapacityExceeded(capacity > maxCapacity);
-      if (capacity <= maxCapacity) {
-        setFormData({ ...formData, [name]: value });
-      }
+        const capacity = Number(value);
+        const maxCapacity = calculateMaxCapacity();
+        setCapacityExceeded(capacity > maxCapacity);
+        if (capacity <= maxCapacity) {
+            setFormData({ ...formData, [name]: value });
+        }
+    } else if (name === 'approvalProof') {
+        if (files && files.length > 0) {
+            setFormData({ ...formData, [name]: files[0] }); 
+        } else {
+            setFormData({ ...formData, [name]: null });
+        }
     } else {
-      setFormData({ ...formData, [name]: value });
+        setFormData({ ...formData, [name]: value });
     }
   };
-  
 
   const handleClear = () => {
     setFormData({
@@ -235,83 +238,80 @@ const Reservation = () => {
   };
 
   const handleConfirm = async () => {
-    const vehicleIds = addedVehicles.map(v => v.id).filter(id => id != null);
-    
-    const reservation = {
-      typeOfTrip: tripType,
-      destinationTo: formData.to,
-      destinationFrom: formData.from,
-      capacity: formData.capacity,
-      department: userDepartment,
-      schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
-      returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null,
-      vehicleType: vehicle.vehicleType || null,  // Use the initially selected vehicle
-      plateNumber: vehicle.plateNumber || null,  // Use the initially selected vehicle
-      pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
-      departureTime: formatTime(formData.departureTime),
-      reason: formData.reservationReason || "",
-      fileUrl: "No file(s) attached", 
-      status: "Pending",
-      opcIsApproved: false,
-      headIsApproved: null,
-      feedback: formData.feedback || "No feedback",
-      driverId: 0,
-      driverName: null,
-      vehicleIds: vehicleIds.join(','),
-      rejected: false
-    };
-  
-    console.log("Reservation Data:", reservation);
-  
     try {
-      let fileUrl = "No file(s) attached";
-      if (formData.approvalProof) {
-        const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
-        await uploadBytes(fileRef, formData.approvalProof);
-        fileUrl = await getDownloadURL(fileRef);
-      }
-      reservation.fileUrl = fileUrl;
-  
-      const reservationFormData = new FormData();
-      reservationFormData.append('reservation', JSON.stringify(reservation));
-      reservationFormData.append('userName', `${formatName(firstName)} ${formatName(lastName)}`);
-  
-      if (formData.approvalProof) {
-        reservationFormData.append('file', formData.approvalProof);
-      }
-      reservationFormData.append('vehicleIds', vehicleIds.join(','));
-  
-      console.log("Form Data:", [...reservationFormData.entries()]);
-  
-      const response = await fetch('http://localhost:8080/user/reservations/add', {
-        method: 'POST',
-        headers: {
-          "Authorization": `Bearer ${token}`
-        },
-        body: reservationFormData,
-      });
-  
-      if (!response.ok) {
-        const errorResponse = await response.text(); 
-        throw new Error(`HTTP error! Status: ${response.status}. Response: ${errorResponse}`);
-      }
-  
-      setModalMessage('Reservation submitted successfully!');
-      setModalType('success');
-      navigate('/user-side');
+        let fileUrl = null;
+
+        if (formData.approvalProof) {
+            const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
+            const snapshot = await uploadBytes(fileRef, formData.approvalProof);
+
+            fileUrl = await getDownloadURL(snapshot.ref);
+            console.log('File uploaded successfully! File URL:', fileUrl);
+        }
+
+        const vehicleIds = addedVehicles.map(v => v.id).filter(id => id != null);
+
+        const reservation = {
+            typeOfTrip: tripType,
+            destinationTo: formData.to,
+            destinationFrom: formData.from,
+            capacity: formData.capacity, 
+            department: userDepartment,
+            schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
+            returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null,
+            vehicleType: vehicle.vehicleType || null,
+            plateNumber: vehicle.plateNumber || null,
+            pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
+            departureTime: formatTime(formData.departureTime),
+            reason: formData.reservationReason || "",
+            status: "Pending",
+            opcIsApproved: false,
+            headIsApproved: null,
+            feedback: formData.feedback || "No feedback",
+            driverId: 0,
+            driverName: null,
+            rejected: false,
+            approvalProofUrl: fileUrl
+        };
+
+        const reservationFormData = new FormData();
+        reservationFormData.append('reservation', JSON.stringify(reservation));
+        reservationFormData.append('userName', `${formatName(firstName)} ${formatName(lastName)}`);
+        reservationFormData.append('vehicleIds', vehicleIds.join(','));
+        reservationFormData.append('fileUrl', fileUrl);
+
+        const response = await fetch('http://localhost:8080/user/reservations/add', {
+            method: 'POST',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: reservationFormData,
+        });
+
+        if (!response.ok) {
+            const errorResponse = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status}. Response: ${errorResponse}`);
+        }
+
+        const result = await response.json(); 
+        console.log("Server Response:", result);
+
+        setModalMessage('Reservation submitted successfully!');
+        setModalType('success');
+        navigate('/user-side');
+
     } catch (error) {
-      console.error('Error submitting reservation:', error);
-      setModalMessage('Failed to submit reservation. Please try again.');
-      setModalType('error');
+        console.error('Error submitting reservation:', error);
+        setModalMessage('Failed to submit reservation. Please try again.');
+        setModalType('error');
     } finally {
-      setIsModalOpen(true);
+        setIsModalOpen(true);
     }
-  };  
+  };
   
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
 
   return (
     <div className="reservation-app">
