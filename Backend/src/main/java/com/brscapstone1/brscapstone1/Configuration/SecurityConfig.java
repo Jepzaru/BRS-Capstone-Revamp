@@ -37,7 +37,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(registry -> {
                 registry.requestMatchers("/", "/authenticate", "/admin/users/add", "/profile-pictures/upload").permitAll();
                 registry.requestMatchers("/admin/**", "/user/profile-pictures/upload" ).hasRole("ADMIN");
-                registry.requestMatchers("/user/**").hasAnyRole("USER", "VIP", "OPC", "HEAD");
+                registry.requestMatchers("/user/**", "/opc/events/getAll").hasAnyRole("USER", "VIP", "OPC", "HEAD");
                 registry.requestMatchers("/opc/**").hasRole("OPC");
                 registry.requestMatchers("/opc/events/**").permitAll();  
                 registry.anyRequest().authenticated();

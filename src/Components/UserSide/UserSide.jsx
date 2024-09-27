@@ -14,6 +14,7 @@ import vehiclesubImage5 from "../../Images/coasterimage2.jpg";
 import vehiclesubImage6 from "../../Images/coasterimage3.jpg";
 import defaultVehicleImage from "../../Images/defualtVehicle.png";
 import { BiSolidDiamond } from "react-icons/bi";
+import { MdEvent } from "react-icons/md";
 import { FaBook, FaBus } from "react-icons/fa";
 import '../../CSS/UserCss/UserSide.css';
 import { Link, useNavigate } from 'react-router-dom';
@@ -173,9 +174,12 @@ const UserSide = () => {
                     {events.length > 0 ? (
                       events.map((event, index) => (
                         <div key={index} className="event-item">
-                          <p>{event.eventTitle}</p>
-                          <p>{event.eventDate}</p>
-                          <p>{event.eventDescription}</p>
+                          <p><span style={{fontWeight: "700"}}>
+                          📌 Event Title:</span> {event.eventTitle}</p>
+                          <p>
+                          📅<span style={{fontWeight: "700"}}> Date:</span> {new Date(event.eventDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                          </p>
+                          <p>📜<span style={{fontWeight: "700"}}> Description:</span> {event.eventDescription}</p>
                         </div>
                       ))
                     ) : (

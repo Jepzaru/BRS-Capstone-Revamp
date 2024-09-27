@@ -75,6 +75,7 @@ body {
   background-color: #f4f4f4;
   height: 550px;
   border-radius: 8px;
+  overflow-y: auto;
 }
 
 .event-item {

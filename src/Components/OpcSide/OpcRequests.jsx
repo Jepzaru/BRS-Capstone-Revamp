@@ -415,9 +415,9 @@ const OpcRequests = () => {
                         <strong>
                           <FaBus style={{ color: "blue", marginRight: "5px", marginBottom: '-2px' }} />
                           Vehicle:
-                        </strong> {vehicle.vehicleType} {vehicle.plateNumber}
+                        </strong> {vehicle.plateNumber} : 
 
-                        <label htmlFor={`driver-select-${vehicle.id}`}> Select Driver: </label>
+                        <label htmlFor={`driver-select-${vehicle.id}`}></label>
                         <select
                           id={`driver-select-${vehicle.id}`}
                           value={vehicle.driverId || ''}
