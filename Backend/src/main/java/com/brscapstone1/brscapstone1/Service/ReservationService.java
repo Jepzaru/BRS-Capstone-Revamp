@@ -296,5 +296,41 @@ public class ReservationService {
     }
 
 
+    //Fetch the platenumbers of the multiple vehicles being reserved
+    public List<ReservedDateDTO> getPlateNumbersByScheduleOrReturnSchedule(LocalDate schedule, LocalDate returnSchedule) {
+        List<ReservationVehicleEntity> reservedVehicles = reservationVehicleRepository.findByScheduleOrReturnSchedule(schedule, returnSchedule);
+    
+        return reservedVehicles.stream()
+            .map(vehicle -> new ReservedDateDTO(
+                vehicle.getSchedule(),
+                vehicle.getReturnSchedule(),
+                vehicle.getPickUpTime(),
+                vehicle.getDepartureTime(),
+                vehicle.getReservation().getStatus(), 
+                vehicle.getPlateNumber()
+            ))
+            .collect(Collectors.toList());
+    }
+    
+    
+    public List<ReservedDateDTO> getMainPlateNumbersByScheduleOrReturnSchedule(LocalDate schedule, LocalDate returnSchedule) {
+        List<ReservationEntity> reservations = resRepo.findByMainScheduleOrReturnSchedule(schedule, returnSchedule); 
+        
+        return reservations.stream()
+            .map(reservation -> new ReservedDateDTO(
+                reservation.getSchedule(),
+                reservation.getReturnSchedule(),
+                reservation.getPickUpTime(),
+                reservation.getDepartureTime(),
+                reservation.getStatus(), 
+                reservation.getPlateNumber()
+            ))
+            .collect(Collectors.toList());
+    }
+    
+    
+    
+
+    
     
 }

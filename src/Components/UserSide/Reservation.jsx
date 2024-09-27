@@ -685,7 +685,9 @@ const handleInputChange = (event) => {
   onClose={handleCloseModal} 
   onAdd={handleAddVehicle} 
   selectedPlateNumber={vehicle.plateNumber}
-  addedVehiclePlates={addedVehiclePlates} 
+  addedVehiclePlates={addedVehiclePlates}
+  schedule={selectedDate}       // Pass the schedule here
+  returnSchedule={returnScheduleDate}
 />
     </div>
   );

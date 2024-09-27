@@ -149,8 +149,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         <button className='next' onClick={nextMonth}><BiSolidRightArrow /></button>
       </div>
       <div className="calendar-indicator">
-        <p>🟡 Pending</p>
-        <p>🔴 Fully booked</p>
+        <p>🟡 Booked</p>
       </div>
       <div className="calendar-grid">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (

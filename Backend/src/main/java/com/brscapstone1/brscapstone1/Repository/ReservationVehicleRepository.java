@@ -27,4 +27,9 @@ public interface ReservationVehicleRepository extends JpaRepository<ReservationV
     // New method to find by both reservation ID and plate number
     @Query("SELECT rv FROM ReservationVehicleEntity rv WHERE rv.reservation.id = :reservationId AND rv.plateNumber = :plateNumber")
     Optional<ReservationVehicleEntity> findByReservationIdAndPlateNumber(@Param("reservationId") int reservationId, @Param("plateNumber") String plateNumber);
+
+    @Query("SELECT rv FROM ReservationVehicleEntity rv WHERE (rv.schedule = :schedule OR rv.returnSchedule = :returnSchedule) AND rv.status = 'Approved'")
+    List<ReservationVehicleEntity> findByScheduleOrReturnSchedule(@Param("schedule") LocalDate schedule, @Param("returnSchedule") LocalDate returnSchedule);
+    
+
 }
