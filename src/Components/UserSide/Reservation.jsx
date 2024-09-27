@@ -601,18 +601,18 @@ const Reservation = () => {
               <div className="summary-item">
                 {isMultipleVehicles && addedVehicles.length > 0 && (
               <div className="summary-item">
-                <strong>Added Vehicles:</strong>
-                  <ul> {addedVehicles.map(vehicle => (
-                      <li key={vehicle.plateNumber}>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</li>
-                    ))}
-                  </ul>
-              </div>
-              )}
-              {isMultipleVehicles && addedVehicles.length === 0 && (
-              <div className="summary-item">
-                <strong>Added Vehicles:</strong>
-                  <p>No vehicles added yet.</p>
-              </div>
+                  <strong>Added Vehicles:</strong>
+                    <ul> {addedVehicles.map(vehicle => (
+                        <li key={vehicle.plateNumber}>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</li>
+                      ))}
+                    </ul>
+                </div>
+                )}
+                {isMultipleVehicles && addedVehicles.length === 0 && (
+                  <div className="summary-item">
+                    <strong>Added Vehicles:</strong>
+                      <p>No vehicles added yet.</p>
+                  </div>
                 )}
               </div>
               <div className="summary-item">
@@ -674,7 +674,9 @@ const Reservation = () => {
   onClose={handleCloseModal} 
   onAdd={handleAddVehicle} 
   selectedPlateNumber={vehicle.plateNumber}
-  addedVehiclePlates={addedVehiclePlates} 
+  addedVehiclePlates={addedVehiclePlates}
+  schedule={selectedDate}       // Pass the schedule here
+  returnSchedule={returnScheduleDate}
 />
     </div>
   );

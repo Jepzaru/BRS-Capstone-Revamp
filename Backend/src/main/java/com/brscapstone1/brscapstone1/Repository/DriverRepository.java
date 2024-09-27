@@ -12,5 +12,6 @@ public interface DriverRepository extends JpaRepository<DriverEntity, Long> {
     // Query to find drivers whose leave end date is before the given date
     @Query("SELECT d FROM DriverEntity d WHERE d.leaveEndDate IS NOT NULL AND d.leaveEndDate < :today")
     List<DriverEntity> findDriversOnLeave(@Param("today") LocalDate today);
+    
 
 }

@@ -160,7 +160,7 @@ public class ReservationController {
         return resServ.getHeadApprovedReservations();
     }
 
-    //Availability date of multiple vehicles
+    //Availability date of vehicles
     @GetMapping("/reservations/vehicle-availability")
     public ResponseEntity<List<ReservedDateDTO>> checkVehicleReservation(
         @RequestParam String plateNumber) {
@@ -196,9 +196,26 @@ public class ReservationController {
         List<ReservedDateDTO> reservations = resServ.getReservedByPlateAndDate(plateNumber, date);
         return ResponseEntity.ok(reservations);
     }
+    
     //DELETE
     @DeleteMapping("/reservations/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable int id){
         return ResponseEntity.ok((resServ.delete(id)));
     }
+    
+    //fetches multiple platenumbers 
+    @GetMapping("/reservations/multiple-reserved/plate-numbers")
+    public List<ReservedDateDTO> getPlateNumbersByScheduleOrReturnSchedule(
+            @RequestParam LocalDate schedule,
+            @RequestParam(required = false) LocalDate returnSchedule) {
+        return resServ.getPlateNumbersByScheduleOrReturnSchedule(schedule, returnSchedule);
+    }
+
+    //fetches main platenumbers
+    @GetMapping("/reservations/main-plate-numbers")
+    public List<ReservedDateDTO> getMainPlateNumbersByScheduleOrReturnSchedule(
+            @RequestParam LocalDate schedule,
+            @RequestParam(required = false) LocalDate returnSchedule) {
+        return resServ.getMainPlateNumbersByScheduleOrReturnSchedule(schedule, returnSchedule);
+    } 
 }
