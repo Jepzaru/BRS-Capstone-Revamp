@@ -178,7 +178,6 @@ public class ReservationController {
         return ResponseEntity.ok(filteredDates);
     }
 
-
     //GET reserve date and time
     @GetMapping("/reservations/by-plate-and-date")
     public ResponseEntity<List<ReservedDateDTO>> getReservationsByPlateAndDate(
@@ -202,5 +201,4 @@ public class ReservationController {
     public ResponseEntity<String> delete(@PathVariable int id){
         return ResponseEntity.ok((resServ.delete(id)));
     }
-    
 }

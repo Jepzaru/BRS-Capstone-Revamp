@@ -109,72 +109,62 @@ const Reservation = () => {
     setAddedVehiclePlates(prev => prev.filter(p => p !== plateNumber));
   };
 
-// Step 1: Define available vehicle types and their capacities
-const vehiclesList = [
-  { type: 'van', capacity: 16 },
-  { type: 'coaster', capacity: 28 },
-  { type: 'bus', capacity: 60 }
-];
+  const vehiclesList = [
+    { type: 'van', capacity: 16 },
+    { type: 'coaster', capacity: 28 },
+    { type: 'bus', capacity: 60 }
+  ];
 
-// Function to calculate total vehicle capacity
-const calculateMaxCapacity = () => {
-  let totalCapacity = 0;
-  if (vehicle) {
-    totalCapacity += vehicle.capacity; // Add the capacity of the main vehicle
-  }
-  addedVehicles.forEach(v => {
-    totalCapacity += v.capacity; // Add the capacity of each added vehicle
-  });
-  return totalCapacity; // Return the total capacity
-};
+  const calculateMaxCapacity = () => {
+    let totalCapacity = 0;
+    if (vehicle) {
+      totalCapacity += vehicle.capacity; 
+    }
+    addedVehicles.forEach(v => {
+      totalCapacity += v.capacity; 
+    });
+    return totalCapacity;
+  };
   
   const handleVehicleModeToggle = () => {
     setIsMultipleVehicles(prevState => !prevState); 
     setShowVehicleContainer(prevState => !prevState); 
   };
   
-// Step 3: Handle capacity input changes and enable/disable the add vehicle button
-const handleInputChange = (event) => {
-  const { name, value, files } = event.target;
+  const handleInputChange = (event) => {
+    const { name, value, files } = event.target;
 
-  if (name === 'capacity') {
-    const capacity = Number(value);
-    const maxCapacity = calculateMaxCapacity(); // Calculate current max capacity
+    if (name === 'capacity') {
+      const capacity = Number(value);
+      const maxCapacity = calculateMaxCapacity(); 
 
-    // Update form data
-    setFormData({ ...formData, [name]: value });
+      setFormData({ ...formData, [name]: value });
+      setIsAddVehicleDisabled(capacity <= maxCapacity);
 
-    // Step 4: Determine if the add vehicle button should be enabled or disabled
-    // Enable button only if current capacity exceeds max capacity
-    setIsAddVehicleDisabled(capacity <= maxCapacity); // Disable the button if capacity is less than or equal to max
+      if (capacity < maxCapacity) {
+        let remainingCapacity = capacity;
+        const vehiclesToRemove = [];
 
-    // Step 5: Handle removing vehicles when the capacity is reduced
-    if (capacity < maxCapacity) {
-      let remainingCapacity = capacity;
-      const vehiclesToRemove = [];
+        addedVehicles.forEach(vehicle => {
+          if (remainingCapacity < vehicle.capacity) {
+            vehiclesToRemove.push(vehicle.plateNumber); 
+          } else {
+            remainingCapacity -= vehicle.capacity; 
+          }
+        });
 
-      addedVehicles.forEach(vehicle => {
-        if (remainingCapacity < vehicle.capacity) {
-          vehiclesToRemove.push(vehicle.plateNumber); // Track vehicles to remove
-        } else {
-          remainingCapacity -= vehicle.capacity; // Subtract vehicle capacity from remaining
-        }
-      });
-
-      // Remove vehicles using the handleRemoveVehicle function
-      vehiclesToRemove.forEach(plateNumber => handleRemoveVehicle(plateNumber));
-    }
-  } else if (name === 'approvalProof') {
-    if (files && files.length > 0) {
-        setFormData({ ...formData, [name]: files[0] }); 
+        vehiclesToRemove.forEach(plateNumber => handleRemoveVehicle(plateNumber));
+      }
+    } else if (name === 'approvalProof') {
+      if (files && files.length > 0) {
+          setFormData({ ...formData, [name]: files[0] }); 
+      } else {
+          setFormData({ ...formData, [name]: null });
+      }
     } else {
-        setFormData({ ...formData, [name]: null });
+        setFormData({ ...formData, [name]: value });
     }
-} else {
-    setFormData({ ...formData, [name]: value });
-}
-
-};
+  };
   
   const handleClear = () => {
     setFormData({
@@ -426,11 +416,10 @@ const handleInputChange = (event) => {
                       onChange={handleInputChange}
                     />
                     
-                    {/* Cloud-style error message */}
                     {capacityError && (
                       <div className="capacity-error-cloud">
                         <span>{capacityError}</span>
-                        <div className="cloud-arrow"></div> {/* Cloud-like arrow pointing to the input */}
+                        <div className="cloud-arrow"></div> 
                       </div>
                     )}
                   </div>
@@ -560,10 +549,10 @@ const handleInputChange = (event) => {
                         type="button"
                         className="add-another-vehicle" 
                         onClick={handleAddVehicleClick}
-                        disabled={isAddVehicleDisabled} // Disable button conditionally
+                        disabled={isAddVehicleDisabled} 
                         style={{ 
-                          opacity: isAddVehicleDisabled ? 0.5 : 1, // Optionally adjust opacity to indicate disabled state
-                          cursor: isAddVehicleDisabled ? 'not-allowed' : 'pointer' // Optionally adjust cursor style
+                          opacity: isAddVehicleDisabled ? 0.5 : 1, 
+                          cursor: isAddVehicleDisabled ? 'not-allowed' : 'pointer' 
                         }}
                       >
                         <IoMdAddCircle style={{ color: "gold", marginRight: "5px", marginBottom: "-2px" }} /> 

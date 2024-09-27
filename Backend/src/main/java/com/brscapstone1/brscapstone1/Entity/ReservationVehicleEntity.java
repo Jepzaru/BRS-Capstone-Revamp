@@ -1,10 +1,8 @@
 package com.brscapstone1.brscapstone1.Entity;
 
 import java.time.LocalDate;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,12 +23,11 @@ public class ReservationVehicleEntity {
     @JoinColumn(name = "reservation_id", nullable = false)
     @JsonIgnore
     private ReservationEntity reservation;
-
     private String vehicleType;
     private String plateNumber;
     private int capacity;
     private String status;
-
+    
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate schedule;
 
@@ -39,12 +36,8 @@ public class ReservationVehicleEntity {
 
     private String pickUpTime;
     private String departureTime;
-
-
     private int driverId; 
     private String driverName; 
-
-   
 
     public int getId() {
         return id;

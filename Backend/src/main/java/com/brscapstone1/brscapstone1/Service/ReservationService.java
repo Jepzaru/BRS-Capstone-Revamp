@@ -67,21 +67,19 @@ public class ReservationService {
         resRepo.save(reservation);  // Save the reservation
     }
     
-    //[PUT] approved reservations
+    //[POST] approved reservations
     public void assignDriverToAddedVehicles(int reservationId, String plateNumber, int driverId, String driverName) {
         // Find the vehicle by reservation ID and plate number
         ReservationVehicleEntity vehicle = reservationVehicleRepository
                 .findByReservationIdAndPlateNumber(reservationId, plateNumber)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
     
-        // Set the driver details
         vehicle.setDriverId(driverId);
         vehicle.setDriverName(driverName);
     
         // Save the updated vehicle entity
         reservationVehicleRepository.save(vehicle);
     }
-    
     
     //[isRejected] rejects a reservation and returns boolean output
     public void rejectReservation(int reservationId, String feedback) {
@@ -91,7 +89,6 @@ public class ReservationService {
         reservation.setFeedback(feedback);
         resRepo.save(reservation);
     }
-
 
     public ReservationEntity saveReservation(String userName, ReservationEntity reservation, List<Integer> vehicleIds, String fileUrl) throws IOException {
         if (fileUrl != null && !fileUrl.isEmpty()) {
@@ -157,55 +154,68 @@ public class ReservationService {
         resRepo.save(reservation);
     }
 
- // [PUT] || update reservations
+    //[PUT] update a reservation
     public ReservationEntity updateReservation(int reservationId, ReservationEntity updatedReservation, MultipartFile file, boolean isResending) throws IOException {
         ReservationEntity existingReservation = resRepo.findById(reservationId)
             .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
-
+    
         if (isResending) {
-            // Resending logic: Restore the reservation to its pending state
             existingReservation.setRejected(false);
             existingReservation.setStatus("Pending");
-            
-            // Reset approval only for the user who rejected the request
+    
             if ("OPC".equals(existingReservation.getRejectedBy())) {
                 existingReservation.setOpcIsApproved(false);
             } else if ("Head".equals(existingReservation.getRejectedBy())) {
                 existingReservation.setHeadIsApproved(false);
             }
         } else {
-            // Handle rejection logic
             if (updatedReservation.isRejected() != null && updatedReservation.isRejected()) {
-                // Set rejectedBy based on who is rejecting the request
                 if (updatedReservation.isOpcIsApproved() != null && !updatedReservation.isOpcIsApproved()) {
                     existingReservation.setRejectedBy("OPC");
                 } else if (updatedReservation.isHeadIsApproved() != null && !updatedReservation.isHeadIsApproved()) {
                     existingReservation.setRejectedBy("Head");
                 }
             }
-            // Existing update logic for other fields
-            if (updatedReservation.getTypeOfTrip() != null) existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
-            if (updatedReservation.getDestinationTo() != null) existingReservation.setDestinationTo(updatedReservation.getDestinationTo());
-            if (updatedReservation.getDestinationFrom() != null) existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());
-            if (updatedReservation.getCapacity() > 0) existingReservation.setCapacity(updatedReservation.getCapacity());
-            if (updatedReservation.getDepartment() != null) existingReservation.setDepartment(updatedReservation.getDepartment());
-            if (updatedReservation.getSchedule() != null) existingReservation.setSchedule(updatedReservation.getSchedule());
-            if (updatedReservation.getVehicleType() != null) existingReservation.setVehicleType(updatedReservation.getVehicleType());
-            if (updatedReservation.getPickUpTime() != null) existingReservation.setPickUpTime(updatedReservation.getPickUpTime());
-            if (updatedReservation.getDepartureTime() != null) existingReservation.setDepartureTime(updatedReservation.getDepartureTime());
-            if (updatedReservation.getReason() != null) existingReservation.setReason(updatedReservation.getReason());
-            if (updatedReservation.getStatus() != null) existingReservation.setStatus(updatedReservation.getStatus());
-            if (updatedReservation.isOpcIsApproved() != null) existingReservation.setOpcIsApproved(updatedReservation.isOpcIsApproved());
-            if (updatedReservation.isRejected() != null) existingReservation.setRejected(updatedReservation.isRejected());
-            if (updatedReservation.isHeadIsApproved() != null) existingReservation.setHeadIsApproved(updatedReservation.isHeadIsApproved());
-            if (updatedReservation.getUserName() != null) existingReservation.setUserName(updatedReservation.getUserName());
-            if (updatedReservation.getFeedback() != null) existingReservation.setFeedback(updatedReservation.getFeedback());
-            if (updatedReservation.getDriverId() > 0) existingReservation.setDriverId(updatedReservation.getDriverId());
-            if (updatedReservation.getDriverName() != null) existingReservation.setDriverName(updatedReservation.getDriverName());
-        }
+            updateFields(existingReservation, updatedReservation);
+            
+            if (updatedReservation.getDriverId() > 0) {
+                existingReservation.setDriverId(updatedReservation.getDriverId());
+                existingReservation.setDriverName(updatedReservation.getDriverName());
+            }
 
+            if (updatedReservation.getReservedVehicles() != null) {
+                for (ReservationVehicleEntity updatedVehicle : updatedReservation.getReservedVehicles()) {
+                    for (ReservationVehicleEntity existingVehicle : existingReservation.getReservedVehicles()) {
+                        if (existingVehicle.getId() == updatedVehicle.getId()) {
+                            existingVehicle.setDriverId(updatedVehicle.getDriverId());
+                            existingVehicle.setDriverName(updatedVehicle.getDriverName());
+                        }
+                    }
+                }
+            }
+        }
         return resRepo.save(existingReservation);
     }
+    
+    //Update method to be call in the update reservation
+    private void updateFields(ReservationEntity existingReservation, ReservationEntity updatedReservation) {
+        if (updatedReservation.getTypeOfTrip() != null) existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
+        if (updatedReservation.getDestinationTo() != null) existingReservation.setDestinationTo(updatedReservation.getDestinationTo());
+        if (updatedReservation.getDestinationFrom() != null) existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());
+        if (updatedReservation.getCapacity() > 0) existingReservation.setCapacity(updatedReservation.getCapacity());
+        if (updatedReservation.getDepartment() != null) existingReservation.setDepartment(updatedReservation.getDepartment());
+        if (updatedReservation.getSchedule() != null) existingReservation.setSchedule(updatedReservation.getSchedule());
+        if (updatedReservation.getVehicleType() != null) existingReservation.setVehicleType(updatedReservation.getVehicleType());
+        if (updatedReservation.getPickUpTime() != null) existingReservation.setPickUpTime(updatedReservation.getPickUpTime());
+        if (updatedReservation.getDepartureTime() != null) existingReservation.setDepartureTime(updatedReservation.getDepartureTime());
+        if (updatedReservation.getReason() != null) existingReservation.setReason(updatedReservation.getReason());
+        if (updatedReservation.getStatus() != null) existingReservation.setStatus(updatedReservation.getStatus());
+        if (updatedReservation.isOpcIsApproved() != null) existingReservation.setOpcIsApproved(updatedReservation.isOpcIsApproved());
+        if (updatedReservation.isRejected() != null) existingReservation.setRejected(updatedReservation.isRejected());
+        if (updatedReservation.isHeadIsApproved() != null) existingReservation.setHeadIsApproved(updatedReservation.isHeadIsApproved());
+        if (updatedReservation.getUserName() != null) existingReservation.setUserName(updatedReservation.getUserName());
+        if (updatedReservation.getFeedback() != null) existingReservation.setFeedback(updatedReservation.getFeedback());
+    }    
 
     //[GET] all OPC approved
     public List<ReservationEntity> getOpcApprovedReservation() {
@@ -279,7 +289,6 @@ public class ReservationService {
             ))
             .collect(Collectors.toList());
     }
-    
 
     //[DELETE] a reservation
     public String delete(int id){
@@ -294,7 +303,4 @@ public class ReservationService {
         }
         return msg;
     }
-
-
-    
 }

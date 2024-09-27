@@ -2,7 +2,6 @@ package com.brscapstone1.brscapstone1.Entity;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -67,7 +66,6 @@ public class ReservationEntity {
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
-
 
     public String getTypeOfTrip() {
         return typeOfTrip;
@@ -262,7 +260,6 @@ public class ReservationEntity {
         this.rejectedBy = rejectedBy;
     }
 
-    
     public ReservationEntity() {
         super();
     }
