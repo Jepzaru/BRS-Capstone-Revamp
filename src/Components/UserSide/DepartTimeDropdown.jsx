@@ -4,6 +4,9 @@ import '../../CSS/UserCss/TimeDropdown.css';
 const DepartTimeDropdown = ({ selectedTime, onChange, name, disabled, plateNumber, addedPlateNumbers, date, token }) => {
   const [reservedTimes, setReservedTimes] = useState([]);
 
+console.log('Selected Date:', date);
+console.log('Plate Number:', plateNumber);
+
   const formatDate = (date) => {
     const d = new Date(date);
     const year = d.getFullYear();
@@ -122,11 +125,11 @@ const DepartTimeDropdown = ({ selectedTime, onChange, name, disabled, plateNumbe
       <select
         id={name}
         name={name}
-        value={selectedTime}
+        value={selectedTime || ''}
         onChange={onChange}
         disabled={disabled}
       >
-        <option value="" disabled>Select Time</option>
+        <option value="" disabled>Select Departure Time &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
         {times.map(time => (
           <option
             key={time}
