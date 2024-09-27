@@ -3,12 +3,12 @@ import { CgDetailsMore } from "react-icons/cg";
 import { FaBus, FaCalendarDay, FaFileAlt } from "react-icons/fa";
 import { FaBuildingUser, FaLocationCrosshairs, FaLocationDot, FaUserGroup } from "react-icons/fa6";
 import { IoMdAddCircle } from "react-icons/io";
-import PickUpDropdown from './PickUpDropdown';
-import DepartTimeDropdown from './DepartTimeDropdown';
-import Calendar from './Calendar'; // Ensure your Calendar component is imported
 import { IoTime } from "react-icons/io5";
+import Calendar from './Calendar';
+import DepartTimeDropdown from './DepartTimeDropdown';
+import PickUpDropdown from './PickUpDropdown';
 
-const RequestModal = ({ request, showModal, onClose }) => {
+const RequestModal = ({ request, showModal, onClose, onResend }) => {
     const [formData, setFormData] = useState({ 
         typeOfTrip: '', 
         destinationFrom: '', 
@@ -86,11 +86,10 @@ const RequestModal = ({ request, showModal, onClose }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData);
+        onResend(formData);
     };
 
     if (!showModal) return null;
-
-
 
     return (
         <div className="modal-overlay">
