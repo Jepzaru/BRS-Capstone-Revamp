@@ -7,24 +7,28 @@ import { IoTime } from "react-icons/io5";
 import Calendar from './Calendar';
 import DepartTimeDropdown from './DepartTimeDropdown';
 import PickUpDropdown from './PickUpDropdown';
+import AddVehicleModal from './AddVehicleModal';
 
 const RequestModal = ({ request, showModal, onClose, onResend }) => {
-    const [formData, setFormData] = useState({ 
-        typeOfTrip: '', 
-        destinationFrom: '', 
-        destinationTo: '', 
-        capacity: '', 
-        vehicleType: '', 
-        plateNumber: '', 
-        schedule: '', 
-        returnSchedule: '', 
-        departureTime: request?.departureTime || '', 
-        pickUpTime: '', 
-        department: '', 
-        reason: '', 
-        approvalProof: null, // Add if you expect to handle file uploads
-        ...request // Ensure request has the expected structure
-    });
+    // Make sure this is declared once at the top of your component
+const [formData, setFormData] = useState({
+    typeOfTrip: '', 
+    destinationFrom: '', 
+    destinationTo: '', 
+    capacity: '', 
+    vehicleType: '', 
+    plateNumber: '', 
+    schedule: '', 
+    returnSchedule: '', 
+    departureTime: request?.departureTime || '', 
+    pickUpTime: '', 
+    department: '', 
+    reason: '', 
+    approvalProof: null, 
+    reservedVehicles: [],  // Ensure reservedVehicles is always an array
+    ...request
+});
+
     const [showCalendar, setShowCalendar] = useState(false);
     const [isSelectingReturn, setIsSelectingReturn] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -33,6 +37,10 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
     const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState('');
     const [addedVehicles, setAddedVehicles] = useState([]);
     const token = localStorage.getItem('token');
+    const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
+    const [isAddVehicleDisabled, setIsAddVehicleDisabled] = useState(false);
+    const [isAddVehicleModalOpen, setAddVehicleModalOpen] = useState(false);
+    
     
 
     const handleInputChange = (e) => {
@@ -90,6 +98,30 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
     };
 
     if (!showModal) return null;
+
+    const handleAddVehicleClick = () => {
+        setAddVehicleModalOpen(true);
+    };
+
+    const handleAddVehicle = (vehicle) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            reservedVehicles: [...prevData.reservedVehicles, vehicle]
+        }));
+        setAddVehicleModalOpen(false);
+        
+    };
+
+    const handleRemoveVehicle = (plateNumber) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            reservedVehicles: prevData.reservedVehicles.filter(v => v.plateNumber !== plateNumber)
+        }));
+    };
+    const handleCloseModal = () => {
+        setAddVehicleModalOpen(false);
+      };
+    
 
     return (
         <div className="modal-overlay">
@@ -261,30 +293,39 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="addedVehicle">
-                                <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
-                                Vehicle Added:
-                                <button type="button" className="add-another-vehicle" >
-                                    <IoMdAddCircle style={{ color: "gold", marginRight: "5px", marginBottom: "-2px" }} />
-                                    Add another vehicle
-                                </button>
-                            </label>
-                            <div className="reserved-vehicle-added-container">
-                                <div style={{backgroundColor: "#CBC3C3", margin: "10px", padding: "10px"}}>
-                            {request.reservedVehicles.length > 0 ? (
-                            request.reservedVehicles.map((vehicle, index) => (
-                              <div key={index}>
-                                {vehicle.vehicleType} - {vehicle.plateNumber} 
-                              </div>
+                    <label htmlFor="addedVehicle">
+                      <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> 
+                      Vehicle Added:
+                      <button 
+                        type="button"
+                        className="add-another-vehicle" 
+                        onClick={handleAddVehicleClick}
+                        disabled={isAddVehicleDisabled} // Disable button conditionally
+                        style={{ 
+                          opacity: isAddVehicleDisabled ? 0.5 : 1, // Optionally adjust opacity to indicate disabled state
+                          cursor: isAddVehicleDisabled ? 'not-allowed' : 'pointer' // Optionally adjust cursor style
+                        }}
+                      >
+                            <IoMdAddCircle style={{ color: "gold", marginRight: "5px", marginBottom: "-2px" }} />
+                            Add another vehicle
+                        </button>
+                        </label>
+                        <div className="reserved-vehicle-added-container">
+                         {(formData.reservedVehicles || []).length > 0 ? (
+                            formData.reservedVehicles.map((vehicle, index) => (
+                                <div key={index} className="reserved-vehicle-item">
+                                    <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</p>
+                                    <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
+                                        Remove
+                                    </button>
+                                </div>
                             ))
-                          ) : (
+                        ) : (
                             <div>No Vehicles Added</div>
-                          )}
-                          </div>
-                            </div>
+                        )}
+
                         </div>
                     </div>
-
                     <div className="form-group-inline">
                         <div className="form-group">
                             <button type="button" onClick={onClose} className='rsnd-cancel-button'>Cancel</button>
@@ -293,8 +334,10 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
                             <button type="submit" className='rsnd-button'>Resend Request</button>
                         </div>
                     </div>
+                    </div>
                 </form>
             </div>
+
             {showCalendar && (
       <div className="calendar-modal">
         <div className="calendar-modal-content">
@@ -303,9 +346,20 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
             returnScheduleDate={returnScheduleDate}
             plateNumber={selectedVehiclePlateNumber}
           />
-        </div>
-      </div>
-      )}
+                    </div>
+                </div>
+                
+            )}
+
+<AddVehicleModal 
+  isOpen={isAddVehicleModalOpen} 
+  onClose={handleCloseModal} 
+  onAdd={handleAddVehicle} 
+  selectedPlateNumber={vehicle?.plateNumber || ''}  // Safely handle undefined vehicle
+  addedVehiclePlates={addedVehiclePlates}
+  schedule={selectedDate}       // Pass the schedule here
+  returnSchedule={returnScheduleDate}
+/>
 
         </div>
     );

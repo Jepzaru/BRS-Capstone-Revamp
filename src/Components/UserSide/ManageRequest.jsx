@@ -200,11 +200,12 @@ const ManageRequest = () => {
                         <td>{request.destinationTo}</td>
                         <td>{request.capacity}</td>
                         <td>{request.vehicleType} - {request.plateNumber} </td>
+                        <td><span style={{color: "#782324", fontWeight: "700"}}>{request.vehicleType} : </span><span style={{color: "green", fontWeight: "700"}}>{request.plateNumber}</span> </td>
                         <td>
                           {request.reservedVehicles.length > 0 ? (
                             request.reservedVehicles.map((vehicle, index) => (
                               <div key={index}>
-                                {vehicle.vehicleType} - {vehicle.plateNumber} 
+                               <span style={{color: "#782324", fontWeight: "700"}}>{vehicle.vehicleType} : </span><span style={{color: "green", fontWeight: "700"}}>{vehicle.plateNumber}</span> 
                               </div>
                             ))
                           ) : (
