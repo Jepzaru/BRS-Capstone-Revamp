@@ -199,7 +199,6 @@ const ManageRequest = () => {
                         <td>{request.destinationFrom}</td>
                         <td>{request.destinationTo}</td>
                         <td>{request.capacity}</td>
-                        <td>{request.vehicleType} - {request.plateNumber} </td>
                         <td><span style={{color: "#782324", fontWeight: "700"}}>{request.vehicleType} : </span><span style={{color: "green", fontWeight: "700"}}>{request.plateNumber}</span> </td>
                         <td>
                           {request.reservedVehicles.length > 0 ? (
