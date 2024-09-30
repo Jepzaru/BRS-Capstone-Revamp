@@ -300,10 +300,10 @@ const [formData, setFormData] = useState({
                         type="button"
                         className="add-another-vehicle" 
                         onClick={handleAddVehicleClick}
-                        disabled={isAddVehicleDisabled} // Disable button conditionally
+                        disabled={isAddVehicleDisabled} 
                         style={{ 
-                          opacity: isAddVehicleDisabled ? 0.5 : 1, // Optionally adjust opacity to indicate disabled state
-                          cursor: isAddVehicleDisabled ? 'not-allowed' : 'pointer' // Optionally adjust cursor style
+                          opacity: isAddVehicleDisabled ? 0.5 : 1, 
+                          cursor: isAddVehicleDisabled ? 'not-allowed' : 'pointer' 
                         }}
                       >
                             <IoMdAddCircle style={{ color: "gold", marginRight: "5px", marginBottom: "-2px" }} />
@@ -326,6 +326,7 @@ const [formData, setFormData] = useState({
 
                         </div>
                     </div>
+                    </div>
                     <div className="form-group-inline">
                         <div className="form-group">
                             <button type="button" onClick={onClose} className='rsnd-cancel-button'>Cancel</button>
@@ -333,7 +334,6 @@ const [formData, setFormData] = useState({
                         <div className="form-group">
                             <button type="submit" className='rsnd-button'>Resend Request</button>
                         </div>
-                    </div>
                     </div>
                 </form>
             </div>
