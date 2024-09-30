@@ -6,7 +6,7 @@ import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
 import { FaClipboardCheck } from "react-icons/fa6";
 import { RiFileExcel2Fill } from "react-icons/ri";
-import * as XLSX from 'xlsx'; // Import XLSX
+import * as XLSX from 'xlsx'; 
 import '../../CSS/OpcCss/OpcRequests.css';
 
 const OpcApprovedRequests = () => {
@@ -157,6 +157,7 @@ const OpcApprovedRequests = () => {
                     <th>Departure Time</th>
                     <th>Pick Up Time</th>
                     <th>Assigned Driver</th>
+                    <th>Extra Drivers</th>
                     <th>Reason</th>
                   </tr>
                 </thead>
@@ -208,6 +209,17 @@ const OpcApprovedRequests = () => {
                         <td>{request.departureTime}</td>
                         <td>{request.pickUpTime || 'N/A'}</td>
                         <td>{request.driverName}</td>
+                        <td>
+                        {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
+                          request.reservedVehicles.map((vehicle, index) => (
+                            <div key={index}>
+                              {vehicle.driverName || 'N/A'}
+                            </div>
+                          ))
+                        ) : (
+                          <div>No Drivers Added</div>
+                        )}
+                      </td>
                         <td className="reason-column">{request.reason}</td>
                       </tr>
                     ))

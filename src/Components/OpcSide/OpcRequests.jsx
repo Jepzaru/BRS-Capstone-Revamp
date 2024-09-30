@@ -115,7 +115,6 @@ const OpcRequests = () => {
   };
 
   const handleDriverSelect = (vehicleId, driver) => {
-    // Update the selectedRequest with the driver information
     setSelectedRequest(prevRequest => {
       const updatedVehicles = prevRequest.reservedVehicles.map(vehicle => {
         if (vehicle.id === vehicleId) {
@@ -233,6 +232,27 @@ const OpcRequests = () => {
     }
   };
 
+  const findDuplicateSchedules = (scheduleType) => {
+    const scheduleCount = {};
+    
+    // Count occurrences of each schedule, excluding "N/A"
+    requests.forEach(request => {
+      const schedule = request[scheduleType];
+      if (schedule && schedule !== 'N/A' && schedule !== '0001-01-01') {
+        if (!scheduleCount[schedule]) {
+          scheduleCount[schedule] = 1;
+        } else {
+          scheduleCount[schedule]++;
+        }
+      }
+    });
+
+    return scheduleCount;
+  };
+
+  const duplicateSchedules = findDuplicateSchedules('schedule');
+  const duplicateReturnSchedules = findDuplicateSchedules('returnSchedule');
+
   return (
     <div className="opcrequest">
       <Header />
@@ -294,18 +314,26 @@ const OpcRequests = () => {
                   </tr>
                 </thead>
                 <tbody>
-                    {getFilteredAndSortedRequests().length === 0 ? (
-                      <tr>
-                        <td colSpan="16" className="no-requests">No Requests Available</td>
-                      </tr>
-                    ) : (
-                      getFilteredAndSortedRequests().map((request, index) => {
-                        return (
-                          <tr key={index} className={
-                            request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
-                            request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
-                            'default-highlight'
-                          }>
+                  {getFilteredAndSortedRequests().length === 0 ? (
+                    <tr>
+                      <td colSpan="16" className="no-requests">No Requests Available</td>
+                    </tr>
+                  ) : (
+                    getFilteredAndSortedRequests().map((request, index) => {
+                      const isDuplicateSchedule = duplicateSchedules[request.schedule] > 1;
+                      const isDuplicateReturnSchedule = duplicateReturnSchedules[request.returnSchedule] > 1;
+                      const statusClass = isDuplicateSchedule || isDuplicateReturnSchedule ? 'conflict-status' : '';
+                      const updatedStatus = isDuplicateSchedule || isDuplicateReturnSchedule ? 'Conflict' : request.status;
+                      
+                      return (
+                        <tr
+                          key={index}
+                          className={`
+                            ${request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' : ''}
+                            ${isDuplicateSchedule ? 'highlight-duplicate-schedule' : ''}
+                            ${isDuplicateReturnSchedule ? 'highlight-duplicate-return-schedule' : ''}
+                          `}
+                        >
                             <td>{request.transactionId}</td>
                             <td>{request.userName}</td>
                             <td>{request.department}</td>
@@ -332,7 +360,7 @@ const OpcRequests = () => {
                             <td className="reason-column">{request.reason}</td>
                             <td className={request.status === 'Pending' ? 'status-pending' : ''}>
                             <div className="status-container">
-                            <span className="status-text">{request.status}</span>
+                            <span className={statusClass}>{updatedStatus}</span>
                             {request.department.trim().toLowerCase() === 'office of the president (vip)' ? (
                               <span className="vip-request-badge">
                                 <FaFlag style={{ color: 'red'}} /></span>

@@ -404,6 +404,18 @@ body {
   margin-right: 5px; 
 }
 
+.highlight-duplicate-schedule {
+  background-color: lightcoral; /
+}
+
+.highlight-duplicate-return-schedule {
+  background-color: lightcoral; 
+}
+
+.conflict-status {
+  color: yellow; 
+}
+
 @media (max-width: 767px) {
   .opc-request-content1 {
       margin-left: 10px;
