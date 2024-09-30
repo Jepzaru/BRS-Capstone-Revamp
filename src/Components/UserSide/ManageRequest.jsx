@@ -4,8 +4,8 @@ import { IoSearch } from "react-icons/io5";
 import '../../CSS/UserCss/ManageRequest.css';
 import logoImage1 from "../../Images/citbglogo.png";
 import Header from './Header';
-import SideNavbar from './SideNavbar';
 import ResendRequestModal from './ResendRequestModal';
+import SideNavbar from './SideNavbar';
 
 const ManageRequest = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,7 +18,8 @@ const ManageRequest = () => {
   const token = localStorage.getItem('token');
   const localPart = email.split('@')[0];
   const [firstName, lastName] = localPart.split('.');
-  
+  const [message, setMessage] = useState("");
+
   const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const username = formatName(firstName) + " " + formatName(lastName);
 
@@ -87,6 +88,38 @@ const ManageRequest = () => {
 
     return statuses;
   };
+
+  const handleModalSubmit = async (updatedRequest) => {
+    const updatedData = {
+        ...updatedRequest,
+        status: 'Pending', 
+        rejected: false,  
+        [updatedRequest.rejectedBy === 'OPC' ? 'opcIsApproved' : 'headIsApproved']: false, 
+    };
+    try {
+        const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}?isResending=true`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updatedData), 
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json(); 
+        setMessage('Reservation updated successfully!');
+
+        await fetchUsersRequests(); 
+        handleCloseModal(); 
+    } catch (error) {
+        console.error('Error resending request:', error);
+        setMessage('Failed to resend request.');
+    }
+};
+
 
   const handleRowClick = (request) => {
     if (request.rejected) {
@@ -166,12 +199,12 @@ const ManageRequest = () => {
                         <td>{request.destinationFrom}</td>
                         <td>{request.destinationTo}</td>
                         <td>{request.capacity}</td>
-                        <td>{request.vehicleType} - {request.plateNumber} </td>
+                        <td><span style={{color: "#782324", fontWeight: "700"}}>{request.vehicleType} : </span><span style={{color: "green", fontWeight: "700"}}>{request.plateNumber}</span> </td>
                         <td>
                           {request.reservedVehicles.length > 0 ? (
                             request.reservedVehicles.map((vehicle, index) => (
                               <div key={index}>
-                                {vehicle.vehicleType} - {vehicle.plateNumber} 
+                               <span style={{color: "#782324", fontWeight: "700"}}>{vehicle.vehicleType} : </span><span style={{color: "green", fontWeight: "700"}}>{vehicle.plateNumber}</span> 
                               </div>
                             ))
                           ) : (
@@ -196,7 +229,7 @@ const ManageRequest = () => {
                 </tbody>
               </table>
             </div>
-            <ResendRequestModal request={selectedRequest} showModal={showModal} onClose={handleCloseModal} />
+            <ResendRequestModal request={selectedRequest} showModal={showModal} onClose={handleCloseModal} onResend={handleModalSubmit}/>
           </div>
         </div>
         <img src={logoImage1} alt="Logo" className="logo-image2" />
