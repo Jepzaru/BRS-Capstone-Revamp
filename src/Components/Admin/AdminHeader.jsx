@@ -7,7 +7,6 @@ import logo from '../../Images/citlogo1.png';
 const AdminHeader = () => {
   const email = localStorage.getItem('email');
   const firstName = email ? email.split('@')[0] : '';
-
   const [isLogOutModalOpen, setIsLogOutModalOpen] = useState(false);
 
   const handleLogoutClick = () => {

@@ -10,13 +10,13 @@ const Header = () => {
   const [isLogOutModalOpen, setIsLogOutModalOpen] = useState(false);
   
   const token = localStorage.getItem('token');
-  const userId = localStorage.getItem('userId'); // Assume you have userId stored in localStorage
+  const userId = localStorage.getItem('userId'); 
 
   useEffect(() => {
     const storedEmail = localStorage.getItem('email');
     if (storedEmail) {
       setEmail(storedEmail);
-      fetchProfilePic(); // Fetch the profile picture
+      fetchProfilePic(); 
     }
   }, []);
 
@@ -66,8 +66,8 @@ const Header = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('email');
-    localStorage.removeItem('userId'); // Clear userId on logout
-    setProfilePicUrl(''); // Clear profile picture URL on logout
+    localStorage.removeItem('userId'); 
+    setProfilePicUrl(''); 
     window.location.href = '/user-authentication';
   };
 

@@ -6,8 +6,8 @@
   }
   
   .loader {
-    width: 100px; /* Adjust width if necessary */
-    height: 100px; /* Adjust height if necessary */
+    width: 100px; 
+    height: 100px; 
     position: relative;
     animation: rotate 1s linear infinite;
   }
@@ -28,7 +28,6 @@
     width: 210px;
     height: 170px;
   }
-
   
   @keyframes rotate {
     100% {

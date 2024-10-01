@@ -86,7 +86,7 @@ const PickUpDropdown = ({ selectedTime, onChange, name, disabled, plateNumber, a
       };
 
       const checkBuffer = (t, isAfter) => {
-        const buffer = 120; // 2 hours
+        const buffer = 120;
         const formattedTime = timeInMinutes(time);
         const reservedTime = timeInMinutes(t);
         if (isAfter) {

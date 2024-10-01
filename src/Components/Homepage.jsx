@@ -69,7 +69,7 @@ function HomePage() {
 
     const scrollToSection = (index) => {
         sectionsRef.current[index]?.scrollIntoView({ behavior: 'smooth' });
-        setIsMobileMenuOpen(false); // Close the mobile menu after navigation
+        setIsMobileMenuOpen(false); 
     };
 
     useEffect(() => {
@@ -92,9 +92,7 @@ function HomePage() {
                 }
             });
         };
-
         window.addEventListener('scroll', handleScroll);
-
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 

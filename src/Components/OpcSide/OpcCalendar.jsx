@@ -8,8 +8,8 @@ const OpcCalendar = () => {
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
   const [selectedDay, setSelectedDay] = useState(currentDate.getDate());
-  const [events, setEvents] = useState([]); // General events
-  const [reservations, setReservations] = useState([]); // Approved reservations
+  const [events, setEvents] = useState([]); 
+  const [reservations, setReservations] = useState([]); 
   const [expandedEvent, setExpandedEvent] = useState(null);
   const [highlightedDates, setHighlightedDates] = useState(new Set());
 
@@ -67,8 +67,6 @@ const OpcCalendar = () => {
     return days;
   };
   
-  
-
   const fetchReservations = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -209,13 +207,11 @@ const OpcCalendar = () => {
           ))}
       </div>
 
-      {/* Calendar Events Section */}
       <div className='calendar-events'>
         <h2>
           <BsCalendar2EventFill style={{ marginBottom: "-2px", marginRight: "10px", color: "#782324" }} /> Calendar Events
         </h2>
         <div className='calendar-events-content'>
-          {/* Show general events for the selected date */}
           {generalEvents.length > 0 && (
             <>
               <h3 style={{marginLeft: '15px'}}>📅 General Events</h3>
@@ -236,7 +232,6 @@ const OpcCalendar = () => {
             </>
           )}
 
-          {/* Show reservations for selected date */}
           {(reservationEvents.length > 0 || returnEvents.length > 0) && (
             <>
               <h3 style={{marginLeft: '15px'}}>🚩 Approved Reservations</h3>

@@ -40,7 +40,6 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
           status: d.status,
         }));
 
-        // Remove duplicate dates
         const uniqueDates = Array.from(new Set(parsedDates.map(a => a.schedule.getTime())))
           .map(time => {
             return parsedDates.find(a => a.schedule.getTime() === time);
@@ -121,7 +120,6 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   const handleDayClick = (day) => {
     const date = new Date(currentYear, currentMonth, day, 12, 0, 0);
 
-    // Allow selecting the same date for both 'Schedule' and 'Return Schedule'
     if (returnDate && date < returnDate) {
       return;
     }

@@ -16,8 +16,8 @@ const OpcSettings = () => {
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [passwordTooShort, setPasswordTooShort] = useState(false);
   const [showModal, setShowModal] = useState(false); 
-  const [profilePic, setProfilePic] = useState(null); // State for profile picture
-  const [hover, setHover] = useState(false); // State for hover effect
+  const [profilePic, setProfilePic] = useState(null); 
+  const [hover, setHover] = useState(false); 
 
   const email = localStorage.getItem('email');
   const role = localStorage.getItem('role');
@@ -29,7 +29,6 @@ const OpcSettings = () => {
   const formattedName = `${capitalize(firstName)} ${capitalize(lastName)}`;
 
   useEffect(() => {
-    // Fetch profile picture when the component mounts
     const fetchProfilePic = async () => {
       try {
         const response = await fetch(`http://localhost:8080/users/profile-pic/${userId}`, {

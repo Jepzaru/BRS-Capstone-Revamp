@@ -17,7 +17,6 @@ const OpcBigCalendar = () => {
   const [editingEvent, setEditingEvent] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
-
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -27,8 +26,8 @@ const OpcBigCalendar = () => {
 
   useEffect(() => {
     if (selectedDate) {
-      fetchEventsForMonth(); // Fetch events for the selected date
-      fetchApprovedReservationsForMonth(); // Fetch approved reservations for the selected date
+      fetchEventsForMonth();
+      fetchApprovedReservationsForMonth(); 
     }
   }, [selectedDate]);
 
@@ -283,7 +282,6 @@ const OpcBigCalendar = () => {
                   <p><strong>Reason:</strong> {res.reason}</p>
                 </div>
               </div>
-              {/* Add actions if needed */}
             </div>
           ))
         ) : (

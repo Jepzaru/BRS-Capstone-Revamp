@@ -31,14 +31,13 @@ const AdminModule = () => {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();
-      console.log('Fetched users:', data); // Add this line to inspect the data
+      console.log('Fetched users:', data); 
       setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to fetch users", error);
     }
   };
   
-
   useEffect(() =>{
     fetchUsers();
   }, [token])
@@ -112,7 +111,7 @@ const handleAddAccount = async (event) => {
     } catch (error) {
         console.error("Failed to add user", error);
     }
-};
+  };
 
   const handleUpdateAccount = async (event) => {
     event.preventDefault();

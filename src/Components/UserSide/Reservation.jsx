@@ -667,17 +667,17 @@ const Reservation = () => {
         onConfirm={handleConfirm} 
         message={modalMessage} 
         type={modalType} 
-    />
+      />
 
-<AddVehicleModal 
-  isOpen={isAddVehicleModalOpen} 
-  onClose={handleCloseModal} 
-  onAdd={handleAddVehicle} 
-  selectedPlateNumber={vehicle.plateNumber}
-  addedVehiclePlates={addedVehiclePlates}
-  schedule={selectedDate}       // Pass the schedule here
-  returnSchedule={returnScheduleDate}
-/>
+      <AddVehicleModal 
+        isOpen={isAddVehicleModalOpen} 
+        onClose={handleCloseModal} 
+        onAdd={handleAddVehicle} 
+        selectedPlateNumber={vehicle.plateNumber}
+        addedVehiclePlates={addedVehiclePlates}
+        schedule={selectedDate}       
+        returnSchedule={returnScheduleDate}
+      />
     </div>
   );
 };

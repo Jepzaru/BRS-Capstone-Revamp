@@ -35,14 +35,13 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
       if (response.ok) {
         const result = await response.json();
         console.log('Event added successfully:', result);
-        handleSave(result); // Optionally call the handleSave function with the result
+        handleSave(result);
       } else {
         console.error('Failed to add event:', response.statusText);
       }
     } catch (error) {
       console.error('Error:', error);
     }
-
     handleClose();
   };
 
@@ -100,7 +99,7 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
           <Button 
             variant="primary" 
             onClick={onSave} 
-            className="modal-save-btn"  // Use className here
+            className="modal-save-btn"  
           >
             Save Event
           </Button>

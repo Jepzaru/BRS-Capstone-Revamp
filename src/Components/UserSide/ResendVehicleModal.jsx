@@ -4,7 +4,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 
 const ResendVehicleModal = ({ isOpen, onClose, onSubmit }) => {
   const [vehicles, setVehicles] = useState([]);
-  const [selectedVehicle, setSelectedVehicle] = useState(null); // State for selected vehicle
+  const [selectedVehicle, setSelectedVehicle] = useState(null); 
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -33,18 +33,17 @@ const ResendVehicleModal = ({ isOpen, onClose, onSubmit }) => {
   };
 
   const handleSelectVehicle = (vehicle) => {
-    setSelectedVehicle(vehicle); // Update selected vehicle state
+    setSelectedVehicle(vehicle);
   };
 
   const handleSubmit = () => {
     if (selectedVehicle) {
-      onSubmit(selectedVehicle); // Send selected vehicle with capacity to parent
+      onSubmit(selectedVehicle); 
       onClose();
     } else {
       alert("Please select a vehicle before submitting.");
     }
   };
-  
 
   const getStatusClass = (status) => {
     switch (status) {

@@ -204,11 +204,10 @@ const OpcRequests = () => {
 
   const filterDriversByLeaveDates = (drivers, requestSchedule, returnSchedule) => {
     return drivers.filter(driver => {
+
       const { leaveStartDate, leaveEndDate } = driver;
-  
       const leaveStart = leaveStartDate ? new Date(leaveStartDate) : null;
       const leaveEnd = leaveEndDate ? new Date(leaveEndDate) : null;
-  
       const schedule = requestSchedule ? new Date(requestSchedule) : null;
       const returnDate = returnSchedule && returnSchedule !== "0001-01-01" ? new Date(returnSchedule) : null;
   
@@ -235,7 +234,6 @@ const OpcRequests = () => {
   const findDuplicateSchedules = (scheduleType) => {
     const scheduleCount = {};
     
-    // Count occurrences of each schedule, excluding "N/A"
     requests.forEach(request => {
       const schedule = request[scheduleType];
       if (schedule && schedule !== 'N/A' && schedule !== '0001-01-01') {

@@ -4,7 +4,7 @@ import ToggleButton from '../UserSide/ToggleButton';
 import { FaBook } from "react-icons/fa";
 import { FaSwatchbook } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
-import { NavLink } from 'react-router-dom'; // Change to NavLink
+import { NavLink } from 'react-router-dom'; 
 
 const VipSideNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);

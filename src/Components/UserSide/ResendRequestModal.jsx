@@ -10,24 +10,23 @@ import PickUpDropdown from './PickUpDropdown';
 import AddVehicleModal from './AddVehicleModal';
 
 const RequestModal = ({ request, showModal, onClose, onResend }) => {
-    // Make sure this is declared once at the top of your component
-const [formData, setFormData] = useState({
-    typeOfTrip: '', 
-    destinationFrom: '', 
-    destinationTo: '', 
-    capacity: '', 
-    vehicleType: '', 
-    plateNumber: '', 
-    schedule: '', 
-    returnSchedule: '', 
-    departureTime: request?.departureTime || '', 
-    pickUpTime: '', 
-    department: '', 
-    reason: '', 
-    approvalProof: null, 
-    reservedVehicles: [],  // Ensure reservedVehicles is always an array
-    ...request
-});
+    const [formData, setFormData] = useState({
+        typeOfTrip: '', 
+        destinationFrom: '', 
+        destinationTo: '', 
+        capacity: '', 
+        vehicleType: '', 
+        plateNumber: '', 
+        schedule: '', 
+        returnSchedule: '', 
+        departureTime: request?.departureTime || '', 
+        pickUpTime: '', 
+        department: '', 
+        reason: '', 
+        approvalProof: null, 
+        reservedVehicles: [],
+        ...request
+    });
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [isSelectingReturn, setIsSelectingReturn] = useState(false);
@@ -39,9 +38,7 @@ const [formData, setFormData] = useState({
     const token = localStorage.getItem('token');
     const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
     const [isAddVehicleDisabled, setIsAddVehicleDisabled] = useState(false);
-    const [isAddVehicleModalOpen, setAddVehicleModalOpen] = useState(false);
-    
-    
+    const [isAddVehicleModalOpen, setAddVehicleModalOpen] = useState(false);    
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -121,7 +118,6 @@ const [formData, setFormData] = useState({
     const handleCloseModal = () => {
         setAddVehicleModalOpen(false);
       };
-    
 
     return (
         <div className="modal-overlay">
@@ -339,27 +335,27 @@ const [formData, setFormData] = useState({
             </div>
 
             {showCalendar && (
-      <div className="calendar-modal">
-        <div className="calendar-modal-content">
-          <Calendar 
-            onDateSelect={handleDateSelect} 
-            returnScheduleDate={returnScheduleDate}
-            plateNumber={selectedVehiclePlateNumber}
-          />
+                <div className="calendar-modal">
+                    <div className="calendar-modal-content">
+                    <Calendar 
+                        onDateSelect={handleDateSelect} 
+                        returnScheduleDate={returnScheduleDate}
+                        plateNumber={selectedVehiclePlateNumber}
+                    />
                     </div>
                 </div>
                 
             )}
 
-<AddVehicleModal 
-  isOpen={isAddVehicleModalOpen} 
-  onClose={handleCloseModal} 
-  onAdd={handleAddVehicle} 
-  selectedPlateNumber={vehicle?.plateNumber || ''}  // Safely handle undefined vehicle
-  addedVehiclePlates={addedVehiclePlates}
-  schedule={selectedDate}       // Pass the schedule here
-  returnSchedule={returnScheduleDate}
-/>
+            <AddVehicleModal 
+            isOpen={isAddVehicleModalOpen} 
+            onClose={handleCloseModal} 
+            onAdd={handleAddVehicle} 
+            selectedPlateNumber={vehicle?.plateNumber || ''}  
+            addedVehiclePlates={addedVehiclePlates}
+            schedule={selectedDate}      
+            returnSchedule={returnScheduleDate}
+            />
 
         </div>
     );

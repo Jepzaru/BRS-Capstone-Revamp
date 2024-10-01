@@ -151,7 +151,6 @@ const VehicleManagement = () => {
         throw new Error('Failed to add vehicle: ' + errorText);
       }
       const newVehicle = await response.json();
-      // Prepend the new vehicle to the list
       setVehicles([newVehicle, ...vehicles]);
       setSuccessMessage('Vehicle added successfully!');
       setVehicleType('');

@@ -13,7 +13,6 @@ const VipManageRequest = () => {
   const [sortOption, setSortOption] = useState("");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  
   const email = localStorage.getItem('email');
   const token = localStorage.getItem('token');
   const localPart = email.split('@')[0];
@@ -117,8 +116,7 @@ const VipManageRequest = () => {
         console.error('Error resending request:', error);
         setMessage('Failed to resend request.');
     }
-};
-
+  };
 
   const handleRowClick = (request) => {
     if (request.rejected) {

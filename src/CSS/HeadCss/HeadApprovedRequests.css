@@ -30,8 +30,8 @@ body {
 .title-search-container {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Align the search bar beside the title */
-  gap: 20px; /* Add some space between title and search bar */
+  justify-content: flex-start; 
+  gap: 20px; 
 }
 
 .approved1 h1 {

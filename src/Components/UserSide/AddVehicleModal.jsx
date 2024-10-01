@@ -51,14 +51,11 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber, addedVeh
 
         const reservedPlateNumbers = await reservedPlateResponse.json();
         const reservedPlateNumberList = reservedPlateNumbers.map(item => item.plateNumber);
-
-  
         const filteredVehicles = allVehicles.filter(vehicle =>
             vehicle.plateNumber !== selectedPlateNumber && 
             !addedVehiclePlates.includes(vehicle.plateNumber) && 
             !reservedPlateNumberList.includes(vehicle.plateNumber)
         );
-
       
         setVehicles(filteredVehicles);
 
@@ -81,12 +78,9 @@ const fetchMainVehicles = async () => {
       }
 
       const allVehicles = await vehicleResponse.json();
-
-   
       const formattedSchedule = new Date(schedule).toISOString().split('T')[0];
       const formattedReturnSchedule = new Date(returnSchedule).toISOString().split('T')[0];
 
-  
       let reservedPlateUrl = `http://localhost:8080/reservations/main-plate-numbers?schedule=${formattedSchedule}`;
       
       if (returnSchedule) {
@@ -105,8 +99,6 @@ const fetchMainVehicles = async () => {
 
       const reservedPlateNumbers = await reservedPlateResponse.json();
       const reservedPlateNumberList = reservedPlateNumbers.map(item => item.plateNumber);
-
-
       const filteredVehicles = allVehicles.filter(vehicle =>
           vehicle.plateNumber !== selectedPlateNumber && 
           !addedVehiclePlates.includes(vehicle.plateNumber) && 
@@ -120,8 +112,6 @@ const fetchMainVehicles = async () => {
       console.error('Failed to fetch vehicles:', error);
   }
 };
-
-
 
   const handleSelectVehicle = (vehicle) => {
     onAdd(vehicle); 

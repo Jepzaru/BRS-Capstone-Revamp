@@ -48,7 +48,6 @@
     font-size: 30px;
   }
   
-  /* Calendar Grid */
   .opc-big-calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -85,7 +84,7 @@
   }
   
   .opc-big-calendar-day.selected {
-    background-color: #ffcc00; /* Highlight selected day */
+    background-color: #ffcc00;
     color: #782324;
   }
   
@@ -93,21 +92,19 @@
     background-color: #fff;
   }
   
-  /* Day Number */
   .opc-big-calendar-day-number {
     font-size: 24px;
     font-weight: bold;
 
   }
   
-  /* Events Content Container */
   .opc-big-calendar-events-content {
-    width: 35%; /* Adjust width as needed */
+    width: 35%; 
     padding: 25px;
     background-color: #f9f9f9;
     border-left: 1px solid #ddd;
     border-radius: 15px;
-    overflow-y: auto; /* Allow scrolling if content overflows */
+    overflow-y: auto; 
   }
 
   .opc-big-calendar-event-btn{
@@ -128,7 +125,6 @@
     color: #782324;
   }
   
-/* Event Item */
 .opc-big-calendar-event-item {
     display: flex;
     justify-content: space-between;
@@ -136,9 +132,9 @@
     background-color: #e0e0e0;
     padding: 10px;
     border-radius: 3px;
-    margin-bottom: 10px; /* Space between events */
-    text-overflow: ellipsis; /* Ensure text does not overflow */
-    white-space: normal; /* Allow text to wrap */
+    margin-bottom: 10px; 
+    text-overflow: ellipsis; 
+    white-space: normal; 
     overflow: hidden;
   }
 
@@ -161,13 +157,11 @@
     font-size: 15px;
   }
   
-  /* Selected Date Display */
   .opc-big-calendar-selected-date {
     margin-top: 15px;
     font-size: 14px;
   }
   
-  /* Add Event Modal */
   .opc-big-calendar-add-event-modal {
     position: fixed;
     top: 20%;
@@ -213,7 +207,6 @@
     color: #782324;
   }
   
-  /* Styles for the edit event modal */
   .opc-big-calendar-edit-event-modal {
     position: fixed;
     top: 50%;

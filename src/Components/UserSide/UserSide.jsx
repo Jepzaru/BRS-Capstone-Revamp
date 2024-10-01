@@ -27,7 +27,6 @@ const UserSide = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
-  // Fetch vehicle details
   useEffect(() => {
     const fetchVehicleDetails = async () => {
       try {
@@ -51,7 +50,6 @@ const UserSide = () => {
     fetchVehicleDetails();
   }, [token]);
 
-  // Fetch events
   useEffect(() => {
     const fetchEvents = async () => {
       try {
