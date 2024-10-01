@@ -1,0 +1,12 @@
+{
+    "routes": [
+        {
+            "src": "/",
+            "dest": "/"
+        },
+        {
+            "src": "/user-authentication",
+            "dest": "/user-authentication"
+        }
+    ]
+}

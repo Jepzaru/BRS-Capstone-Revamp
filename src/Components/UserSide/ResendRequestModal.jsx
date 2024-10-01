@@ -355,9 +355,9 @@ const [formData, setFormData] = useState({
   isOpen={isAddVehicleModalOpen} 
   onClose={handleCloseModal} 
   onAdd={handleAddVehicle} 
-  selectedPlateNumber={vehicle?.plateNumber || ''}  // Safely handle undefined vehicle
+  selectedPlateNumber={vehicle?.plateNumber || ''}  
   addedVehiclePlates={addedVehiclePlates}
-  schedule={selectedDate}       // Pass the schedule here
+  schedule={selectedDate}       
   returnSchedule={returnScheduleDate}
 />
 
