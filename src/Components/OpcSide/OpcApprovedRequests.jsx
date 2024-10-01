@@ -7,6 +7,7 @@ import { FaSortAlphaDown } from "react-icons/fa";
 import { FaClipboardCheck } from "react-icons/fa6";
 import { RiFileExcel2Fill } from "react-icons/ri";
 import * as XLSX from 'xlsx'; 
+import LoadingScreen from '../../Components/UserSide/LoadingScreen'; // Import loading screen
 import '../../CSS/OpcCss/OpcRequests.css';
 
 const OpcApprovedRequests = () => {
@@ -15,11 +16,13 @@ const OpcApprovedRequests = () => {
   const [sortOption, setSortOption] = useState("");
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [confirmMode, setConfirmMode] = useState(false);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   const token = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchApprovedRequests = async () => {
+      setLoading(true); // Set loading to true before fetching data
       try {
         const response = await fetch('http://localhost:8080/reservations/opc-approved', {
           headers: { "Authorization": `Bearer ${token}` }
@@ -27,8 +30,10 @@ const OpcApprovedRequests = () => {
         const data = await response.json();
         const approvedRequests = data.filter(request => request.opcIsApproved === true);
         setRequests(approvedRequests);
+        setLoading(false); // Set loading to false after fetching data
       } catch (error) {
         console.error("Error fetching approved requests:", error);
+        setLoading(false); // Also set loading to false on error
       }
     };
     fetchApprovedRequests();
@@ -85,12 +90,19 @@ const OpcApprovedRequests = () => {
     XLSX.utils.book_append_sheet(wb, ws, "Approved Requests");
     
     XLSX.writeFile(wb, "Approved_Requests.xlsx");
+
+    window.location.reload();
   };
 
   const handleCancel = () => {
     setSelectedRows(new Set());
     setConfirmMode(false);
   };
+
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="opcrequest">
