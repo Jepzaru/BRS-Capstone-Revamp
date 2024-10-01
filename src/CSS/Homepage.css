@@ -181,17 +181,6 @@
         font-size: 20px;
     }
 
-    .service-boxes {
-        width: 100%; 
-        align-items: center;opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    .service-box.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
     .service-icon {
         width: 50%;
     }
@@ -323,11 +312,11 @@
 }
 
 .carousel-button.prev {
-    left: 10px; /* Adjust for spacing */
+    left: 10px; 
 }
 
 .carousel-button.next {
-    right: 10px; /* Adjust for spacing */
+    right: 10px; 
 }
 
 .carousel-indicators {
