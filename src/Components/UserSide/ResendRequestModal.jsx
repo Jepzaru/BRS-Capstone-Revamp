@@ -9,24 +9,25 @@ import DepartTimeDropdown from './DepartTimeDropdown';
 import PickUpDropdown from './PickUpDropdown';
 import AddVehicleModal from './AddVehicleModal';
 
-const RequestModal = ({ request, showModal, onClose, onResend }) => {
-    const [formData, setFormData] = useState({
-        typeOfTrip: '', 
-        destinationFrom: '', 
-        destinationTo: '', 
-        capacity: '', 
-        vehicleType: '', 
-        plateNumber: '', 
-        schedule: '', 
-        returnSchedule: '', 
-        departureTime: request?.departureTime || '', 
-        pickUpTime: '', 
-        department: '', 
-        reason: '', 
-        approvalProof: null, 
-        reservedVehicles: [],
-        ...request
-    });
+const RequestModal = ({ request, showModal, onClose}) => {
+   
+const [formData, setFormData] = useState({
+    typeOfTrip: '', 
+    destinationFrom: '', 
+    destinationTo: '', 
+    capacity: '', 
+    vehicleType: '', 
+    plateNumber: '', 
+    schedule: '', 
+    returnSchedule: '', 
+    departureTime: request?.departureTime || '', 
+    pickUpTime: '', 
+    department: '', 
+    reason: '', 
+    approvalProof: null, 
+    reservedVehicles: [], 
+    ...request
+});
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [isSelectingReturn, setIsSelectingReturn] = useState(false);
@@ -38,7 +39,10 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
     const token = localStorage.getItem('token');
     const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
     const [isAddVehicleDisabled, setIsAddVehicleDisabled] = useState(false);
-    const [isAddVehicleModalOpen, setAddVehicleModalOpen] = useState(false);    
+    const [isAddVehicleModalOpen, setAddVehicleModalOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    
+    
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -65,35 +69,36 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
     }, [request, vehicle]);
 
     const handleDateSelect = (date) => {
+       
+        const utcDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+        
         if (isSelectingReturn) {
-            if (date >= selectedDate || !selectedDate) {
-                setReturnScheduleDate(date);
+            if (utcDate >= selectedDate || !selectedDate) {
+                setReturnScheduleDate(utcDate);
                 setFormData((prevData) => ({
                     ...prevData,
-                    returnSchedule: date.toLocaleDateString('en-US'),
+                    returnSchedule: utcDate.toISOString().split('T')[0], 
+                    schedule: prevData.schedule
                 }));
             } else {
                 alert('Return schedule date cannot be before the schedule date.');
             }
         } else {
-            setSelectedDate(date);
+            setSelectedDate(utcDate);
             setFormData((prevData) => ({
                 ...prevData,
-                schedule: date.toLocaleDateString('en-US'),
+                schedule: utcDate.toISOString().split('T')[0], 
             }));
-            if (returnScheduleDate && returnScheduleDate < date) {
+            if (returnScheduleDate && returnScheduleDate < utcDate) {
                 setReturnScheduleDate(null);
             }
         }
         setShowCalendar(false);
+        console.log("Selected Date:", date);
+console.log("Formatted Schedule Date:", date.toLocaleDateString('en-US'));
     };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log(formData);
-        onResend(formData);
-    };
-
+    
+    
     if (!showModal) return null;
 
     const handleAddVehicleClick = () => {
@@ -118,6 +123,100 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
     const handleCloseModal = () => {
         setAddVehicleModalOpen(false);
       };
+    
+      const handleModalSubmit = async (updatedRequest) => {
+        const formattedSchedule = updatedRequest.schedule ? new Date(updatedRequest.schedule).toISOString().split('T')[0] : '';
+        const formattedReturnSchedule = updatedRequest.returnSchedule ? new Date(updatedRequest.returnSchedule).toISOString().split('T')[0] : null;
+    
+        const formattedDepartureTime = formatTime(updatedRequest.departureTime);
+        const formattedPickUpTime = formatTime(updatedRequest.pickUpTime);
+    
+        const updatedData = {
+            id: updatedRequest.id,
+            typeOfTrip: updatedRequest.typeOfTrip,
+            destinationFrom: updatedRequest.destinationFrom,
+            destinationTo: updatedRequest.destinationTo,
+            capacity: updatedRequest.capacity,
+            vehicleType: updatedRequest.vehicleType, 
+            plateNumber: updatedRequest.plateNumber,
+            schedule: formattedSchedule,  
+            returnSchedule: formattedReturnSchedule,
+            departureTime: formattedDepartureTime, 
+            pickUpTime: formattedPickUpTime,
+            department: updatedRequest.department,
+            reason: updatedRequest.reason,
+            approvalProof: updatedRequest.approvalProof,
+            reservedVehicles: updatedRequest.reservedVehicles.map(vehicle => ({
+                id: vehicle.id,
+                vehicleType: vehicle.vehicleType,
+                plateNumber: vehicle.plateNumber,
+                capacity: vehicle.capacity,
+                status: vehicle.status,
+                schedule: vehicle.schedule ? new Date(vehicle.schedule).toISOString().split('T')[0] : null,
+                returnSchedule: vehicle.returnSchedule 
+                    ? new Date(vehicle.returnSchedule).toISOString().split('T')[0] 
+                    : null,
+                pickUpTime: vehicle.pickUpTime,
+                departureTime: vehicle.departureTime,
+                driverId: vehicle.driverId,
+                driverName: vehicle.driverName,
+            })),
+            transactionId: updatedRequest.transactionId,
+            fileUrl: updatedRequest.fileUrl,
+            status: 'Pending',  
+            rejected: false, 
+            feedback: updatedRequest.feedback,
+            userName: updatedRequest.userName,
+            rejectedBy: updatedRequest.rejectedBy,
+            opcIsApproved: updatedRequest.opcIsApproved, 
+            headIsApproved: updatedRequest.headIsApproved,
+        };
+    
+        console.log('Updated Data:', updatedData);
+    
+        try {
+            const response = await fetch(`http://localhost:8080/reservations/update/${updatedRequest.id}?isResending=true`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(updatedData), 
+            });
+    
+            if (!response.ok) {
+                const errorResponse = await response.text(); 
+                console.error('Error updating request:', errorResponse);
+                throw new Error('Network response was not ok');
+            }
+            const result = await response.json(); 
+            setMessage('Reservation updated successfully!');
+    
+            await fetchUsersRequests(); 
+            handleCloseModal();
+        } catch (error) {
+            console.error('Error resending request:', error);
+            setMessage('Failed to resend request.');
+        }
+      };
+
+      const formatTime = (timeString) => {
+        if (!timeString) {
+            return ''; 
+        }
+        
+        const [hours, minutes] = timeString.split(':');
+        const hour = parseInt(hours, 10);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const formattedHour = hour % 12 || 12; 
+        return `${formattedHour}:${minutes} ${ampm}`;
+    };
+
+      const handleSubmit = (event) => {
+        event.preventDefault(); 
+        handleModalSubmit(formData); 
+    };
+    
 
     return (
         <div className="modal-overlay">
@@ -158,14 +257,14 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
                                 <FaLocationCrosshairs style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 From:
                             </label>
-                            <input type="text" id="from" name="from" placeholder='Ex. CIT-University' value={formData.destinationFrom} required onChange={handleInputChange} />
+                            <input type="text" id="from" name="destinationFrom" placeholder='Ex. CIT-University' value={formData.destinationFrom} required onChange={handleInputChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="to">
                                 <FaLocationDot style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 To:
                             </label>
-                            <input type="text" id="to" name="to" placeholder='Ex. SM Seaside' value={formData.destinationTo} required onChange={handleInputChange} />
+                            <input type="text" id="to" name="destinationTo" placeholder='Ex. SM Seaside' value={formData.destinationTo} required onChange={handleInputChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="capacity">
@@ -280,7 +379,7 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
                             </label>
                             <textarea
                                 id="reservationReason"
-                                name="reservationReason"
+                                name="reason"
                                 className="reservation-reason-textarea"
                                 placeholder="State the reason for your reservation"
                                 value={formData.reason}
@@ -328,34 +427,34 @@ const RequestModal = ({ request, showModal, onClose, onResend }) => {
                             <button type="button" onClick={onClose} className='rsnd-cancel-button'>Cancel</button>
                         </div>
                         <div className="form-group">
-                            <button type="submit" className='rsnd-button'>Resend Request</button>
+                            <button className='rsnd-button' onClick={handleModalSubmit}>Resend Request</button>
                         </div>
                     </div>
                 </form>
             </div>
 
             {showCalendar && (
-                <div className="calendar-modal">
-                    <div className="calendar-modal-content">
-                    <Calendar 
-                        onDateSelect={handleDateSelect} 
-                        returnScheduleDate={returnScheduleDate}
-                        plateNumber={selectedVehiclePlateNumber}
-                    />
+      <div className="calendar-modal">
+        <div className="calendar-modal-content">
+          <Calendar 
+            onDateSelect={handleDateSelect} 
+            returnScheduleDate={returnScheduleDate}
+            plateNumber={selectedVehiclePlateNumber}
+          />
                     </div>
                 </div>
                 
             )}
 
-            <AddVehicleModal 
-            isOpen={isAddVehicleModalOpen} 
-            onClose={handleCloseModal} 
-            onAdd={handleAddVehicle} 
-            selectedPlateNumber={vehicle?.plateNumber || ''}  
-            addedVehiclePlates={addedVehiclePlates}
-            schedule={selectedDate}      
-            returnSchedule={returnScheduleDate}
-            />
+<AddVehicleModal 
+  isOpen={isAddVehicleModalOpen} 
+  onClose={handleCloseModal} 
+  onAdd={handleAddVehicle} 
+  selectedPlateNumber={vehicle?.plateNumber || ''}  
+  addedVehiclePlates={addedVehiclePlates}
+  schedule={selectedDate}       
+  returnSchedule={returnScheduleDate}
+/>
 
         </div>
     );

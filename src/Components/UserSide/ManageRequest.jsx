@@ -17,7 +17,6 @@ const ManageRequest = () => {
   const token = localStorage.getItem('token');
   const localPart = email.split('@')[0];
   const [firstName, lastName] = localPart.split('.');
-  const [message, setMessage] = useState("");
   const formatName = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const username = formatName(firstName) + " " + formatName(lastName);
 
@@ -94,80 +93,7 @@ const ManageRequest = () => {
     return statuses;
   };
 
-  const handleModalSubmit = async (updatedRequest) => {
-    const formattedSchedule = new Date(updatedRequest.schedule).toISOString().split('T')[0];
-    const formattedReturnSchedule = updatedRequest.returnSchedule 
-        ? new Date(updatedRequest.returnSchedule).toISOString().split('T')[0] 
-        : null;
 
-    const updatedData = {
-        id: updatedRequest.id,
-        typeOfTrip: updatedRequest.typeOfTrip,
-        destinationFrom: updatedRequest.destinationFrom,
-        destinationTo: updatedRequest.destinationTo,
-        capacity: updatedRequest.capacity,
-        vehicleType: updatedRequest.vehicleType, 
-        plateNumber: updatedRequest.plateNumber,
-        schedule: formattedSchedule,  
-        returnSchedule: formattedReturnSchedule,
-        departureTime: updatedRequest.departureTime,
-        pickUpTime: updatedRequest.pickUpTime,
-        department: updatedRequest.department,
-        reason: updatedRequest.reason,
-        approvalProof: updatedRequest.approvalProof,
-        reservedVehicles: updatedRequest.reservedVehicles.map(vehicle => ({
-            id: vehicle.id,
-            vehicleType: vehicle.vehicleType,
-            plateNumber: vehicle.plateNumber,
-            capacity: vehicle.capacity,
-            status: vehicle.status,
-            schedule: vehicle.schedule ? new Date(vehicle.schedule).toISOString().split('T')[0] : null,
-            returnSchedule: vehicle.returnSchedule 
-                ? new Date(vehicle.returnSchedule).toISOString().split('T')[0] 
-                : null,
-            pickUpTime: vehicle.pickUpTime,
-            departureTime: vehicle.departureTime,
-            driverId: vehicle.driverId,
-            driverName: vehicle.driverName,
-        })),
-        transactionId: updatedRequest.transactionId,
-        fileUrl: updatedRequest.fileUrl,
-        status: 'Pending',  
-        rejected: false, 
-        feedback: updatedRequest.feedback,
-        userName: updatedRequest.userName,
-        rejectedBy: updatedRequest.rejectedBy,
-        opcIsApproved: updatedRequest.opcIsApproved, 
-        headIsApproved: updatedRequest.headIsApproved,
-    };
-
-    console.log('Updated Data:', updatedData);
-
-    try {
-        const response = await fetch(`http://localhost:8080/reservations/update/${updatedRequest.id}?isResending=true`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(updatedData), 
-        });
-
-        if (!response.ok) {
-            const errorResponse = await response.text(); 
-            console.error('Error updating request:', errorResponse);
-            throw new Error('Network response was not ok');
-        }
-        const result = await response.json(); 
-        setMessage('Reservation updated successfully!');
-
-        await fetchUsersRequests(); 
-        handleCloseModal();
-    } catch (error) {
-        console.error('Error resending request:', error);
-        setMessage('Failed to resend request.');
-    }
-  };
 
   const handleRowClick = (request) => {
     if (request.rejected) {
@@ -277,7 +203,7 @@ const ManageRequest = () => {
                 </tbody>
               </table>
             </div>
-            <ResendRequestModal request={selectedRequest} showModal={showModal} onClose={handleCloseModal} onResend={handleModalSubmit} onUpdateRequest={updateRequest} />
+            <ResendRequestModal request={selectedRequest} showModal={showModal} onClose={handleCloseModal} />
           </div>
         </div>
         <img src={logoImage1} alt="Logo" className="logo-image2" />
