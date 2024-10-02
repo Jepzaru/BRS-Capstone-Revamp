@@ -334,4 +334,49 @@ public class ReservationService {
             ))
             .collect(Collectors.toList());
     } 
+
+    //Resend Reservation
+    public ReservationEntity resendReservation(int reservationId, ReservationEntity updatedReservation, MultipartFile file, boolean isResending) throws IOException {
+        ReservationEntity existingReservation = resRepo.findById(reservationId)
+            .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+    
+        if (isResending) {
+            existingReservation.setRejected(false);
+            existingReservation.setStatus("Pending");  
+    
+            if ("OPC".equals(existingReservation.getRejectedBy())) {
+                existingReservation.setOpcIsApproved(false);
+                existingReservation.setRejectedBy(null);  
+            } else if ("Head".equals(existingReservation.getRejectedBy())) {
+                existingReservation.setHeadIsApproved(false);
+                existingReservation.setRejectedBy(null);  
+            }
+        } else {
+            if (updatedReservation.isRejected() != null && updatedReservation.isRejected()) {
+                if (updatedReservation.isOpcIsApproved() != null && !updatedReservation.isOpcIsApproved()) {
+                    existingReservation.setRejectedBy("OPC");
+                } else if (updatedReservation.isHeadIsApproved() != null && !updatedReservation.isHeadIsApproved()) {
+                    existingReservation.setRejectedBy("Head");
+                }
+            }
+            updateFields(existingReservation, updatedReservation);  
+    
+            if (updatedReservation.getDriverId() > 0) {
+                existingReservation.setDriverId(updatedReservation.getDriverId());
+                existingReservation.setDriverName(updatedReservation.getDriverName());
+            }
+    
+            if (updatedReservation.getReservedVehicles() != null) {
+                for (ReservationVehicleEntity updatedVehicle : updatedReservation.getReservedVehicles()) {
+                    for (ReservationVehicleEntity existingVehicle : existingReservation.getReservedVehicles()) {
+                        if (existingVehicle.getId() == updatedVehicle.getId()) {
+                            existingVehicle.setDriverId(updatedVehicle.getDriverId());
+                            existingVehicle.setDriverName(updatedVehicle.getDriverName());
+                        }
+                    }
+                }
+            }
+        }
+        return resRepo.save(existingReservation);
+    }
 }

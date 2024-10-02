@@ -77,7 +77,7 @@ public class ReservationController {
     @PostMapping("/user/reservations/add")
     public ReservationEntity addReservation(
         @RequestParam("userName") String userName, 
-        @RequestParam(value = "fileUrl", required = false) String fileUrl,  // Receive file URL instead of MultipartFile
+        @RequestParam(value = "fileUrl", required = false) String fileUrl, 
         @RequestParam("reservation") String reservationJson, 
         @RequestParam("vehicleIds") List<Integer> vehicleIds
     ) throws IOException {
@@ -86,10 +86,8 @@ public class ReservationController {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); 
         objectMapper.registerModule(new JavaTimeModule());
 
-        // Convert JSON to ReservationEntity
         ReservationEntity reservation = objectMapper.readValue(reservationJson, ReservationEntity.class);
 
-        // Pass vehicle IDs and file URL to the service layer
         return resServ.saveReservation(userName, reservation, vehicleIds, fileUrl);
     }
 
@@ -218,4 +216,25 @@ public class ReservationController {
             @RequestParam(required = false) LocalDate returnSchedule) {
         return resServ.getMainPlateNumbersByScheduleOrReturnSchedule(schedule, returnSchedule);
     } 
+
+    //Resend Reservation
+    @PutMapping("/reservations/resend/{reservationId}")
+    public ResponseEntity<ReservationEntity> resendReservation(@PathVariable int reservationId,
+                                                                @RequestBody ReservationEntity updatedReservation,
+                                                                @RequestParam(value = "file", required = false) MultipartFile file,
+                                                                @RequestParam(value = "isResending", defaultValue = "false") boolean isResending) {
+        try {
+            ReservationEntity updatedEntity = resServ.resendReservation(reservationId, updatedReservation, file, isResending);
+            return ResponseEntity.ok(updatedEntity);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }

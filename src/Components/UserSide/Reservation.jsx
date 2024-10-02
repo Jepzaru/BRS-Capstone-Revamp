@@ -266,9 +266,7 @@ const Reservation = () => {
             const snapshot = await uploadBytes(fileRef, formData.approvalProof);
 
             fileUrl = await getDownloadURL(snapshot.ref);
-            console.log('File uploaded successfully! File URL:', fileUrl);
         }
-
         const vehicleIds = addedVehicles.map(v => v.id).filter(id => id != null);
 
         const reservation = {
