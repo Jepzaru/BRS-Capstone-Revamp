@@ -439,11 +439,11 @@ const OpcRequests = () => {
                   <h3>Added Vehicles:</h3>
                   <ul>
                     {selectedRequest.reservedVehicles.map((vehicle) => (
-                      <li key={vehicle.id}>
+                      <p key={vehicle.id}>
                         <strong>
                           <FaBus style={{ color: "blue", marginRight: "5px", marginBottom: '-2px' }} />
                           Vehicle:
-                        </strong> {vehicle.plateNumber} : 
+                        </strong> <span style={{ marginRight: "5px"}}>{vehicle.plateNumber} : </span>
 
                         <label htmlFor={`driver-select-${vehicle.id}`}></label>
                         <select
@@ -463,7 +463,7 @@ const OpcRequests = () => {
                               </option>
                             ))}
                         </select>
-                      </li>
+                      </p>
                     ))}
                   </ul>
                 </div>

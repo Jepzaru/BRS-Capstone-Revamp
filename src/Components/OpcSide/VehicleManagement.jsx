@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
-import { FaBus } from "react-icons/fa";
+import { FaBus, FaRegTrashAlt, FaSortAlphaDown } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
-import { FaSortAlphaDown } from "react-icons/fa";
 import { MdAddCircle } from "react-icons/md";
 import { IoIosCloseCircle } from "react-icons/io";
-import { MdOutlineSystemUpdateAlt } from "react-icons/md";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { MdOutlineSystemUpdateAlt, MdOutlineRadioButtonChecked } from "react-icons/md";
+import { PiNumberSquareZeroFill } from "react-icons/pi";
+import { FaUserGroup } from "react-icons/fa6";
+import { RiAlarmWarningFill } from "react-icons/ri";
 import '../../CSS/OpcCss/VehicleManagement.css';
 
 const VehicleManagement = () => {
@@ -151,7 +152,7 @@ const VehicleManagement = () => {
         throw new Error('Failed to add vehicle: ' + errorText);
       }
       const newVehicle = await response.json();
-      // Prepend the new vehicle to the list
+  
       setVehicles([newVehicle, ...vehicles]);
       setSuccessMessage('Vehicle added successfully!');
       setVehicleType('');
@@ -274,11 +275,11 @@ const VehicleManagement = () => {
             <table className="vehicle-table">
               <thead>
                 <tr>
-                  <th>Vehicle Type</th>
-                  <th>Plate Number</th>
-                  <th>Maximum Capacity</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  <th><FaBus style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Vehicle Type</th>
+                  <th><PiNumberSquareZeroFill  style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Plate Number</th>
+                  <th><FaUserGroup style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Maximum Capacity</th>
+                  <th><RiAlarmWarningFill style={{color: 'maroon', marginRight: '5px'}}/>  Status</th>
+                  <th><MdOutlineRadioButtonChecked style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Action</th>
                 </tr>
               </thead>
               <tbody>

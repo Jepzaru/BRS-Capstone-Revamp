@@ -209,20 +209,19 @@ const OpcCalendar = () => {
           ))}
       </div>
 
-      {/* Calendar Events Section */}
       <div className='calendar-events'>
         <h2>
           <BsCalendar2EventFill style={{ marginBottom: "-2px", marginRight: "10px", color: "#782324" }} /> Calendar Events
         </h2>
         <div className='calendar-events-content'>
-          {/* Show general events for the selected date */}
+      
           {generalEvents.length > 0 && (
             <>
               <h3 style={{marginLeft: '15px'}}>📅 General Events</h3>
               {generalEvents.map((event, index) => (
-                <div key={index} className="event-item">
-                  <h4 onClick={() => toggleDescription(event.eventId)} style={{marginLeft: '15px'}}>
-                    {event.eventTitle} 
+                <div key={index} className="event-item" onClick={() => toggleDescription(event.eventId)}>
+                  <h4 style={{marginLeft: '10px'}}>
+                    Event Title: {event.eventTitle} 
                   </h4>
                   {expandedEvent === event.eventId && (
                     <div className="event-description">
@@ -235,15 +234,14 @@ const OpcCalendar = () => {
               ))}
             </>
           )}
-
-          {/* Show reservations for selected date */}
+          
           {(reservationEvents.length > 0 || returnEvents.length > 0) && (
             <>
               <h3 style={{marginLeft: '15px'}}>🚩 Approved Reservations</h3>
               {reservationEvents.map((event, index) => (
-                <div key={index} className="event-item">
-                  <h4 onClick={() => toggleDescription(event.eventId)} style={{marginLeft: '15px'}}>
-                     {event.reason} (Departure)
+                <div key={index} className="event-item" onClick={() => toggleDescription(event.eventId)}>
+                  <h4 style={{marginLeft: '15px'}}>
+                     Reason: {event.reason} <span style={{color: 'maroon'}}>(Departure)</span>
                   </h4>
                   {expandedEvent === event.eventId && (
                     <div className="event-description">

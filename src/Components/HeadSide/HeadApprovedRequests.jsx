@@ -111,6 +111,7 @@ const HeadApprovedRequests = () => {
             ) : error ? (
               <p className="error-message">Error: {error}</p>
             ) : (
+              <div className="table-container">
               <table className="approved-requests-table">
                 <thead>
                   <tr>
@@ -145,9 +146,9 @@ const HeadApprovedRequests = () => {
                         <td>{request.capacity}</td>
                         <td>{request.vehicleType}</td>
                         <td>{request.schedule}</td>
-                        <td>{request.returnSchedule}</td>
+                        <td>{request.returnSchedule || 'N/A'}</td>
                         <td>{request.departureTime}</td>
-                        <td>{request.pickUpTime}</td>
+                        <td>{request.pickUpTime || 'N/A'}</td>
                         <td>{request.reason}</td>
                         <td className={request.status === 'Pending' ? 'status-pending' : request.status === 'Approved' ? 'status-approved' : ''}>
                         {request.status}
@@ -157,6 +158,7 @@ const HeadApprovedRequests = () => {
                   )}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
           <img src={logoImage1} alt="Logo" className="approved-logo-image" />

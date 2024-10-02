@@ -3,12 +3,13 @@ import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
 import { IoSearch } from "react-icons/io5";
-import { FaSortAlphaDown } from "react-icons/fa";
+import { FaSortAlphaDown, FaPhoneAlt, FaCalendarDay, FaCalendarMinus } from "react-icons/fa";
 import { BsPersonFillAdd } from "react-icons/bs";
 import { PiSteeringWheelFill } from "react-icons/pi";
-import { IoIosCloseCircle } from "react-icons/io";
-import { MdOutlineSystemUpdateAlt } from "react-icons/md";
+import { IoIosCloseCircle, IoMdPerson } from "react-icons/io";
+import { MdOutlineSystemUpdateAlt, MdOutlineRadioButtonChecked } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { RiAlarmWarningFill } from "react-icons/ri";
 import '../../CSS/OpcCss/DriverManagement.css';
 
 const getCurrentDate = () => {
@@ -226,12 +227,12 @@ const DriverManagement = () => {
             <table className="driver-table">
               <thead>
                 <tr>
-                  <th>Driver Name</th>
-                  <th>Phone Number</th>
-                  <th>Status</th>
-                  <th>Start Leave Date</th>
-                  <th>End Leave Date</th>
-                  <th>Action</th>
+                  <th><IoMdPerson style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Driver Name</th> 
+                  <th> <FaPhoneAlt style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Phone Number</th>
+                  <th> <RiAlarmWarningFill style={{color: 'maroon', marginRight: '5px'}}/> Status</th>
+                  <th> <FaCalendarDay style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Start Leave Date</th>
+                  <th> <FaCalendarMinus style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> End Leave Date</th>
+                  <th> <MdOutlineRadioButtonChecked style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Action</th>
                 </tr>
               </thead>
               <tbody>

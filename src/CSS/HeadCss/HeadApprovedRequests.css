@@ -30,8 +30,8 @@ body {
 .title-search-container {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Align the search bar beside the title */
-  gap: 20px; /* Add some space between title and search bar */
+  justify-content: flex-start; 
+  gap: 20px; 
 }
 
 .approved1 h1 {
@@ -93,8 +93,9 @@ body {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
-  background-color: white;
+  background-color: red;
   table-layout: fixed; 
+  overflow-y: scroll;
 }
 
 .approved-requests-table th, .approved-requests-table td {
@@ -107,10 +108,12 @@ body {
 }
 
 .approved-requests-table th {
-  background-color: #ddd;
-  color: black;
+  background-color: #782324;
+  color: white;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: bold;
+  top: 0;
+  position: sticky;
 }
 
 .approved-requests-table tbody {

@@ -1,4 +1,4 @@
-/* UserSide.css */
+
 
 body, html {
     margin: 0;
@@ -57,7 +57,7 @@ body {
     justify-content: space-between;
     margin-top: 5px;
     width: 65%;
-    margin-bottom: 0; /* Ensure no bottom margin */
+    margin-bottom: 0; 
 }
 
 .dashcontainer1, .dashcontainer2, .dashcontainer3 {
@@ -72,7 +72,7 @@ body {
 }
 
 .dashcontainer3 {
-    margin-right: 0; /* Remove margin from the last container */
+    margin-right: 0; 
 }
 
 .number-badge {
@@ -93,11 +93,11 @@ body {
     box-sizing: border-box;
     border-radius: 10px;
     margin-left: 10px;
-    height: 50px; /* Match the height of container-wrapper */
+    height: 50px; 
 }
 
 .full-width-container {
-    margin-top: 20px; /* Adjust the top margin */
+    margin-top: 20px; 
     width: 65%;
     padding: 10px;
     background-color: #ddd;
@@ -106,12 +106,14 @@ body {
 }
 
 .additional-container {
-    margin-top: 20px; /* Adjust margin as needed */
+    margin-top: 20px; 
     padding: 10px;
     background-color: #ddd;
     box-sizing: border-box;
     border-radius: 10px;
+
 }
+
 
 @media (max-width: 767px) {
     .dashboard-content1 {
