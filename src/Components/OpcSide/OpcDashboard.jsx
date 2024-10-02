@@ -169,7 +169,6 @@ const OpcDashboard = () => {
     },
   };
 
-
   return (
     <div className="dashboard">
       {isLoading ? <LoadingScreen /> : (

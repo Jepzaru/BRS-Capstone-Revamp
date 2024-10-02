@@ -1,5 +1,3 @@
-
-
 .homepage-container {
     background-image: url('../Images/homebg.png'); 
     background-size: cover;  
@@ -9,7 +7,6 @@
     min-height: 100vh;
     width: 100%;
 }
-
 
 .homepage-header {
     background-color: white;
@@ -23,7 +20,6 @@
     align-items: center;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
 }
-
 
 .homepage-navbar {
     display: flex;
@@ -61,7 +57,6 @@
     font-weight: 700;
 }
 
-
 .get-started {
     background-color: #782324;
     color: white;
@@ -77,6 +72,7 @@
 .get-started:hover {
     background-color: #5b1a1a;
 }
+
 .admin-route{
     font-weight: 400; 
     color: inherit;
@@ -84,6 +80,7 @@
     border: 2px solid transparent; 
     transition: all 0.3s ease-in-out;
 }
+
 .admin-route:hover{
     font-weight: 700; 
     color: #782324; 
@@ -103,12 +100,14 @@
     background-color: #333;
     margin: 4px;
 }
+
 .home-label{
     align-items: center;
     text-align: center;
     font-size: 42px;
     font-weight: 600;
 }
+
 .home-services p{
     align-items: center;
     text-align: center;
@@ -116,6 +115,7 @@
     margin-top: 100px;
     font-weight: 600;
 }
+
 .service-label p{
     align-items: center;
     text-align: center;
@@ -123,6 +123,7 @@
     font-weight: 300;
     margin-top: 30px;
 }
+
 .home-reserve-btn{
     padding: 10px 30px;
     background-color: #782324;
@@ -136,6 +137,7 @@
     font-weight: 800;
     transition: background-color 0.3s;
 }
+
 .home-reserve-btn:hover{
     background-color: #5b1a1a;
     color: gold;
@@ -315,7 +317,7 @@
 }
 
 .carousel-button.next {
-    right: 10px; 
+    right: 10px;
 }
 
 .carousel-indicators {

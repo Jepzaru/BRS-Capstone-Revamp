@@ -14,7 +14,6 @@ const Login = () => {
   const [error, setError] = useState(null); 
   const navigate = useNavigate(); 
 
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);

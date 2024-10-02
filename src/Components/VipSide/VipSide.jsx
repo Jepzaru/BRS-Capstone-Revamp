@@ -26,7 +26,6 @@ const VipSide = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
-  // Fetch vehicle details
   useEffect(() => {
     const fetchVehicleDetails = async () => {
       try {
@@ -46,11 +45,9 @@ const VipSide = () => {
         setLoading(false);
       }
     };
-
     fetchVehicleDetails();
   }, [token]);
 
-  // Fetch events
   useEffect(() => {
     const fetchEvents = async () => {
       try {

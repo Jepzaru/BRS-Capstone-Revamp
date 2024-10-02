@@ -22,12 +22,6 @@ const getCurrentDate = () => {
 
 const minDate = getCurrentDate(); 
 
- 
-  const handleUpdateDriver = (event) => {
-    event.preventDefault();
-   
-  };
-
 const DriverManagement = () => {
   const [drivers, setDrivers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -117,7 +111,6 @@ const DriverManagement = () => {
       });
       if (response.ok) {
         const newDriver = await response.json();
-        // Insert new driver at the beginning of the list
         setDrivers([newDriver, ...drivers]);
         closeModal();
       } else {
@@ -127,7 +120,6 @@ const DriverManagement = () => {
       console.error("Failed to add driver", error);
     }
   };
-  
   
   const handleUpdateDriver = async () => {
     try {

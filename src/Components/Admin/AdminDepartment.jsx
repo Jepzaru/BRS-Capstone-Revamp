@@ -13,7 +13,6 @@ const AdminDepartment = () => {
   const [departments, setDepartments] = useState([]);
   const [newDepartmentName, setNewDepartmentName] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-
   const token = localStorage.getItem('token');
 
   useEffect(() => {

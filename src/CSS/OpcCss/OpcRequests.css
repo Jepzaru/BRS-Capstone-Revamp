@@ -199,14 +199,12 @@ body {
   font-weight: 800;
 }
 
-
 .opc-action-buttons {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px; 
 }
-
 
 .opc-approve-button, .opc-reject-button, .opc-view-file-button {
   padding: 10px;
@@ -243,7 +241,6 @@ body {
 .opc-view-file-button:hover {
   background-color: rgb(253, 224, 58);
 }
-
 
 .modal-overlay {
   position: fixed;

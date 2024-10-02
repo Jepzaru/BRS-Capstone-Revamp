@@ -6,5 +6,4 @@ export const roles = {
     ROLE_VIP: ['/','/user-authentication','vip-side', 'vip-side/special-reservation', '/manage-requests', '/settings'  ]
 };
 
-
 export const user_roles = ['USER', 'HEAD', 'OPC', 'ADMIN', 'VIP'];

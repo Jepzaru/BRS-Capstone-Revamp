@@ -3,10 +3,6 @@ import '../../CSS/UserCss/TimeDropdown.css';
 
 const DepartTimeDropdown = ({ selectedTime, onChange, name, disabled, plateNumber, addedPlateNumbers, date, token }) => {
   const [reservedTimes, setReservedTimes] = useState([]);
-
-console.log('Selected Date:', date);
-console.log('Plate Number:', plateNumber);
-
   const formatDate = (date) => {
     const d = new Date(date);
     const year = d.getFullYear();
@@ -89,7 +85,7 @@ console.log('Plate Number:', plateNumber);
       };
 
       const checkBuffer = (t, isAfter) => {
-        const buffer = 120; // 2 hours
+        const buffer = 120;
         const formattedTime = timeInMinutes(time);
         const reservedTime = timeInMinutes(t);
         if (isAfter) {

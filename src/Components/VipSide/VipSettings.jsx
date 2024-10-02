@@ -15,7 +15,6 @@ const VipSettings = () => {
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [passwordTooShort, setPasswordTooShort] = useState(false);
   const [showModal, setShowModal] = useState(false); 
-
   const email = localStorage.getItem('email');
   const role = localStorage.getItem('role');
   const token = localStorage.getItem('token');

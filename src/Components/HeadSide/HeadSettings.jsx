@@ -8,8 +8,6 @@ import Header from '../../Components/UserSide/Header';
 import SideNavbar from './HeadNavbar';
 import defaultProfilePic from '../../Images/defaultProfile.png';
 
-
-
 const SuccessModal = ({ show, onClose }) => {
   if (!show) return null;
 
@@ -33,8 +31,7 @@ const HeadSettings = () => {
   const [passwordTooShort, setPasswordTooShort] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
-  const [hover, setHover] = useState(false); // New state for hover effect
-
+  const [hover, setHover] = useState(false); 
   const email = localStorage.getItem('email');
   const role = localStorage.getItem('role');
   const token = localStorage.getItem('token');

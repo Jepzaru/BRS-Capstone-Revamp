@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/AddVehicleModal.css';
 import { IoMdCloseCircle } from "react-icons/io";
 
-const ResendVehicleModal = ({ isOpen, onClose, onSubmit }) => {
+const ResendVehicleModal = ({ isOpen, onClose, onSubmit, onUpdateRequest  }) => {
   const [vehicles, setVehicles] = useState([]);
-  const [selectedVehicle, setSelectedVehicle] = useState(null); // State for selected vehicle
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -33,19 +33,18 @@ const ResendVehicleModal = ({ isOpen, onClose, onSubmit }) => {
   };
 
   const handleSelectVehicle = (vehicle) => {
-    setSelectedVehicle(vehicle); // Update selected vehicle state
+    setSelectedVehicle(vehicle); 
   };
 
   const handleSubmit = () => {
     if (selectedVehicle) {
-      onSubmit(selectedVehicle); // Send selected vehicle with capacity to parent
+      onSubmit(selectedVehicle); 
       onClose();
     } else {
       alert("Please select a vehicle before submitting.");
     }
   };
   
-
   const getStatusClass = (status) => {
     switch (status) {
       case 'Available':
@@ -68,7 +67,6 @@ const ResendVehicleModal = ({ isOpen, onClose, onSubmit }) => {
             <IoMdCloseCircle />
           </button>
         </h2>
-
         <table>
           <thead>
             <tr>

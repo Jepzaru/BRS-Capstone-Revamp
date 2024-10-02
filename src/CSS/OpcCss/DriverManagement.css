@@ -179,7 +179,6 @@ body {
   text-align: center;
 }
 
-
 @media (max-width: 767px) {
   .opc-request-content1 {
     margin-left: 10px;
@@ -199,16 +198,16 @@ body {
     align-items: flex-start;
   }
   .search-container {
-    margin-left: 0; /* Reset the margin on smaller screens */
+    margin-left: 0; 
     width: 100%;
   }
   .search-bar {
     margin-top: 10px;
-    width: 100%; /* Adjust width for search button */
+    width: 100%; 
   }
   .search-button {
     width: 10%;
-    margin-right: 0; /* Reset the margin on smaller screens */
+    margin-right: 0; 
   }
   .sort-dropdown {
     width: 50%;

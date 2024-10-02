@@ -9,7 +9,6 @@ const ProtectedRoute = ({ element, path }) => {
   const token = localStorage.getItem('token'); 
   const hasAccess = checkAccess(path);
 
-
   if (!token || isTokenExpired(token)) {
     localStorage.removeItem('token');
     localStorage.removeItem('role');

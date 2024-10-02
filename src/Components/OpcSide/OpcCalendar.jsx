@@ -8,8 +8,8 @@ const OpcCalendar = () => {
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
   const [selectedDay, setSelectedDay] = useState(currentDate.getDate());
-  const [events, setEvents] = useState([]); // General events
-  const [reservations, setReservations] = useState([]); // Approved reservations
+  const [events, setEvents] = useState([]); 
+  const [reservations, setReservations] = useState([]); 
   const [expandedEvent, setExpandedEvent] = useState(null);
   const [highlightedDates, setHighlightedDates] = useState(new Set());
 
@@ -67,8 +67,6 @@ const OpcCalendar = () => {
     return days;
   };
   
-  
-
   const fetchReservations = async () => {
     try {
       const token = localStorage.getItem('token');
