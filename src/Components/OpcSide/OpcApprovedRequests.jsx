@@ -18,26 +18,29 @@ const OpcApprovedRequests = () => {
   const [confirmMode, setConfirmMode] = useState(false);
   const [loading, setLoading] = useState(true); 
 
-  const token = localStorage.getItem('token');
-
   useEffect(() => {
     const fetchApprovedRequests = async () => {
       setLoading(true); 
+      const token = localStorage.getItem('token'); 
+
       try {
         const response = await fetch('http://localhost:8080/reservations/opc-approved', {
           headers: { "Authorization": `Bearer ${token}` }
         });
+        if (!response.ok) throw new Error("Network response was not ok");
+        
         const data = await response.json();
         const approvedRequests = data.filter(request => request.opcIsApproved === true);
         setRequests(approvedRequests);
-        setLoading(false); 
       } catch (error) {
         console.error("Error fetching approved requests:", error);
+      } finally {
         setLoading(false); 
       }
     };
+    
     fetchApprovedRequests();
-  }, [token]);
+  }, []); 
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -90,15 +93,12 @@ const OpcApprovedRequests = () => {
     XLSX.utils.book_append_sheet(wb, ws, "Approved Requests");
     
     XLSX.writeFile(wb, "Approved_Requests.xlsx");
-
-    window.location.reload();
   };
 
   const handleCancel = () => {
     setSelectedRows(new Set());
     setConfirmMode(false);
   };
-
 
   if (loading) {
     return <LoadingScreen />;
@@ -208,31 +208,19 @@ const OpcApprovedRequests = () => {
                       <td>
                         {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
                           request.reservedVehicles.map((vehicle, index) => (
-                            <div key={index}>
-                              {vehicle.vehicleType} - {vehicle.plateNumber} 
-                            </div>
+                            <div key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</div>
                           ))
                         ) : (
-                          <div>No Vehicles Added</div>
+                          "No additional vehicles"
                         )}
                       </td>
                         <td>{request.schedule}</td>
-                        <td>{request.returnSchedule || 'N/A'}</td>
+                        <td>{request.returnSchedule || "N/A"}</td>
                         <td>{request.departureTime}</td>
-                        <td>{request.pickUpTime || 'N/A'}</td>
-                        <td>{request.driverName}</td>
-                        <td>
-                        {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
-                          request.reservedVehicles.map((vehicle, index) => (
-                            <div key={index}>
-                              {vehicle.driverName || 'N/A'}
-                            </div>
-                          ))
-                        ) : (
-                          <div>No Drivers Added</div>
-                        )}
-                      </td>
-                        <td className="reason-column">{request.reason}</td>
+                        <td>{request.pickUpTime || "N/A"}</td>
+                        <td>{request.driverName || "N/A"}</td>
+                        <td>{request.extraDrivers || "N/A"}</td>
+                        <td>{request.reason}</td>
                       </tr>
                     ))
                   )}

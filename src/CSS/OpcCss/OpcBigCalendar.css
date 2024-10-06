@@ -84,8 +84,8 @@
   }
   
   .opc-big-calendar-day.selected {
-    background-color: #ffcc00;
-    color: #782324;
+    background-color: #782324;
+    color: #ffcc00;
   }
   
   .opc-big-calendar-day.empty {
@@ -296,4 +296,8 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  }
+
+  .highlighted {
+    background-color: #ffcc00; 
   }
