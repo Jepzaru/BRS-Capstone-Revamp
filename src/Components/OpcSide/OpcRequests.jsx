@@ -318,18 +318,41 @@ const OpcRequests = () => {
                     </tr>
                   ) : (
                     getFilteredAndSortedRequests().map((request, index) => {
+        
                       const isDuplicateSchedule = duplicateSchedules[request.schedule] > 1;
-                      const isDuplicateReturnSchedule = duplicateReturnSchedules[request.returnSchedule] > 1;
-                      const statusClass = isDuplicateSchedule || isDuplicateReturnSchedule ? 'conflict-status' : '';
-                      const updatedStatus = isDuplicateSchedule || isDuplicateReturnSchedule ? 'Conflict' : request.status;
+                    
+                      const isReturnScheduleValid = request.returnSchedule !== null; 
+                      const isDuplicateReturnSchedule = isReturnScheduleValid && duplicateReturnSchedules[request.returnSchedule] > 1;
+                    
+                      const hasVehicleConflict = getFilteredAndSortedRequests().some(otherRequest => {
+                        if (otherRequest.id !== request.id) {
+          
+                          const isMainScheduleConflict = otherRequest.schedule === request.schedule &&
+                            otherRequest.vehicleType === request.vehicleType && 
+                            otherRequest.plateNumber === request.plateNumber;
+                    
+                          const isReturnScheduleConflict = isReturnScheduleValid && otherRequest.returnSchedule !== null && 
+                            otherRequest.returnSchedule === request.returnSchedule && 
+                            otherRequest.vehicleType === request.vehicleType && 
+                            otherRequest.plateNumber === request.plateNumber;
+                    
+                          return isMainScheduleConflict || isReturnScheduleConflict;
+                        }
+                        return false;
+                      });
+                    
+          
+                      const isConflict = (hasVehicleConflict || isDuplicateSchedule || isDuplicateReturnSchedule);
+                    
+                      const statusClass = isConflict ? 'conflict-status' : '';
+                      const updatedStatus = isConflict ? 'Conflict' : request.status;
                       
                       return (
                         <tr
                           key={index}
                           className={`
                             ${request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' : ''}
-                            ${isDuplicateSchedule ? 'highlight-duplicate-schedule' : ''}
-                            ${isDuplicateReturnSchedule ? 'highlight-duplicate-return-schedule' : ''}
+                             ${hasVehicleConflict ? 'highlight-vehicle-conflict' : ''}
                           `}
                         >
                             <td>{request.transactionId}</td>
@@ -358,7 +381,9 @@ const OpcRequests = () => {
                             <td className="reason-column">{request.reason}</td>
                             <td className={request.status === 'Pending' ? 'status-pending' : ''}>
                             <div className="status-container">
-                            <span className={statusClass}>{updatedStatus}</span>
+                            <span className={statusClass}>
+                              {updatedStatus}
+                              </span>
                             {request.department.trim().toLowerCase() === 'office of the president (vip)' ? (
                               <span className="vip-request-badge">
                                 <FaFlag style={{ color: 'red'}} /></span>

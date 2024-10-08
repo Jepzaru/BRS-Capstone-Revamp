@@ -74,35 +74,36 @@ body, html {
   .add-account-button:hover {
     background-color: #5c1a1a; 
   }
-  .accounts-container{
-    width: 1300px;
-    height: 720px;
+  .accounts-container {
+    width: 100%; 
+    max-height: 700px; 
     background-color: #ccc;
     border-radius: 10px;
-  }
-  .accounts-container {
-    margin-top: 20px;
+    overflow-y: auto; 
   }
   
+
   .accounts-table {
     width: 100%;
     border-collapse: collapse;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    table-layout: fixed; 
+    overflow-y: auto; 
   }
   
-  .accounts-table th,
-  .accounts-table td {
-    border: 1px solid #ddd;
-    padding: 12px; 
-    text-align: left;
-    transition: background-color 0.3s ease;
+
+  .accounts-table thead {
+    position: sticky;
+    top: 0;
+    background-color: #f4f4f4; 
+    z-index: 1; 
+  }
+  
+  
+  .accounts-table th, .accounts-table td {
     text-align: center;
-  }
-  
-  .accounts-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-    color: #333; 
+    padding: 12px;
+    border: 1px solid #ddd;
+    word-wrap: break-word; 
   }
   
   .accounts-table tr {
@@ -110,11 +111,12 @@ body, html {
   }
   
   .accounts-table tr:hover {
-    background-color: #f1f1f1; 
+    background-color: #f1f1f1;
+    cursor: pointer; 
   }
   
   .admin-update-button {
-    padding: 6px 12px;
+    padding: 10px 25px;
     border: none;
     border-radius: 4px;
     background-color: green;
@@ -129,7 +131,7 @@ body, html {
   }
 
   .admin-delete-button {
-    padding: 6px 12px;
+    padding: 10px 25px;
     border: none;
     border-radius: 4px;
     background-color: #782324;

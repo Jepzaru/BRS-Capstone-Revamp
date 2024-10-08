@@ -35,8 +35,8 @@ body {
   justify-content: flex-start; 
   margin-bottom: 20px;
   background-color: #CBC3C3;
-  height: 690px;
-  width: 1533px;
+  height: 710px;
+  width: 1550px;
   border-radius: 10px;
   padding-left: 20px;
   padding-bottom: 20px;
@@ -48,8 +48,9 @@ body {
 
 .table-container {
   height: 670px; 
-  width: 1510px;
+  width: 1530px;
   overflow-y: auto;
+  overflow-x: hidden;
   margin-top: 10px;
   background-color: white;
 }
@@ -400,7 +401,7 @@ body {
   margin-right: 5px; 
 }
 
-.highlight-duplicate-schedule {
+.highlight-vehicle-conflict {
   background-color: lightcoral; 
 }
 

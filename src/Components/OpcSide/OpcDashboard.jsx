@@ -115,32 +115,38 @@ const OpcDashboard = () => {
     return counts;
   };
 
-  const departmentFullNames = {
-    CCS: 'College of Computer Studies',
-    CEA: 'College of Engineering and Architecture',
-    CMBA: 'College of Management, Business, and Accountancy',
-    CASE: 'College of Arts, Sciences, and Education',
-    CNAHS: 'College of Nursing and Allied Health Sciences',
-    CCJ: 'College of Criminal Justice'
+  const departmentAcronyms = {
+    'College of Computer Studies': 'CSS',
+    'College of Engineering and Architecture': 'CEA',
+    'College of Management, Business, and Accountancy': 'CMBA',
+    'College of Arts, Sciences, and Education': 'CASE',
+    'College of Nursing and Allied Health Sciences': 'CNAHS',
+    'College of Criminal Justice': 'CCJ',
   };
-
+  
   const reservationCounts = countReservationsPerDepartment(requests);
-
+  
+  
+  const labels = Object.keys(reservationCounts).map(department => departmentAcronyms[department] || department);
+  
   const data = {
-    labels: Object.keys(reservationCounts),
+    labels: labels,  
     datasets: [
       {
         label: 'Number of Reservations per Department',
         data: Object.values(reservationCounts),
-        backgroundColor: [
-          'orange', 'green', 'violet', 'gold', 'red', 'blue'
-        ],
+        backgroundColor: ['orange', 'green', 'violet', 'gold', 'red', 'blue'],
       },
     ],
   };
-
+  
   const options = {
     scales: {
+      x: {
+        ticks: {
+          display: false,  
+        },
+      },
       y: {
         beginAtZero: true,
       },
@@ -149,7 +155,6 @@ const OpcDashboard = () => {
       legend: {
         display: true,
         position: 'top',
-        align: 'center',
         labels: {
           color: 'black',
           font: {
@@ -158,7 +163,7 @@ const OpcDashboard = () => {
           generateLabels: (chart) => {
             const datasets = chart.data.datasets;
             return datasets[0].backgroundColor.map((color, index) => ({
-              text: departmentFullNames[chart.data.labels[index]] || chart.data.labels[index],
+              text: chart.data.labels[index], 
               fillStyle: color,
               strokeStyle: color,
               lineWidth: 1,
