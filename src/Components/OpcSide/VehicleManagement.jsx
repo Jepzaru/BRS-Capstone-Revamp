@@ -127,19 +127,35 @@ const VehicleManagement = () => {
     return plateNumberPattern.test(plateNumber);
   };
 
-  const handleAddVehicle = async () => {
+  const handleAddVehicle = async (e) => {
+    e.preventDefault(); // Prevent form submission reload
+    
+    // Validate plate number format first
     if (!validatePlateNumber(plateNumber)) {
       setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
       return;
     }
-    const capacityNumber = Number(capacity);
-    if (isNaN(capacityNumber) || capacityNumber < 0) {
-      setErrorMessage('Capacity must be a non-negative number');
-      return;
-    }
+  
+    // Fetch all vehicles to check if the plate number exists
     try {
-      const vehicleData = { vehicleType, plateNumber, capacity: capacityNumber };
-      const response = await fetch('http://localhost:8080/opc/vehicle/post', { 
+      const response = await fetch('http://localhost:8080/vehicle/getAll', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch vehicles');
+      }
+      const data = await response.json();
+  
+      // Check if the plate number already exists in the fetched vehicles
+      const existingVehicle = data.find(vehicle => vehicle.plateNumber === plateNumber);
+      if (existingVehicle) {
+        setErrorMessage(`A vehicle with plate number ${plateNumber} already exists.`);
+        return; // Stop execution here to prevent modal closing
+      }
+  
+      // If plate number is unique, proceed to add the new vehicle
+      const vehicleData = { vehicleType, plateNumber, capacity: Number(capacity) };
+      const addResponse = await fetch('http://localhost:8080/opc/vehicle/post', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -147,22 +163,27 @@ const VehicleManagement = () => {
         },
         body: JSON.stringify(vehicleData),
       });
-      if (!response.ok) {
-        const errorText = await response.text();
+  
+      if (!addResponse.ok) {
+        const errorText = await addResponse.text();
         throw new Error('Failed to add vehicle: ' + errorText);
       }
-      const newVehicle = await response.json();
   
+      const newVehicle = await addResponse.json();
       setVehicles([newVehicle, ...vehicles]);
       setSuccessMessage('Vehicle added successfully!');
       setVehicleType('');
       setPlateNumber('');
       setCapacity('');
+  
+     
       closeAddModal();
+  
     } catch (error) {
       setErrorMessage('Error adding vehicle: ' + error.message);
     }
   };
+  
   
   const handleUpdateVehicle = async () => {
     if (!validatePlateNumber(updatePlateNumber)) {
@@ -244,6 +265,8 @@ const VehicleManagement = () => {
     vehicle.vehicleType.toLowerCase().includes(searchTerm.toLowerCase()) ||
     vehicle.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
   );  
+
+  
 
   return (
     <div className="vehiclemanage">

@@ -186,7 +186,16 @@ const DriverManagement = () => {
 
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
-  };  
+  }; 
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short", 
+      day: "numeric",
+    });
+  };
   
   return (
     <div className="drivermanage">
@@ -245,8 +254,8 @@ const DriverManagement = () => {
                         }}>
                           {driver.status}
                       </td>
-                      <td>{driver.leaveStartDate ? driver.leaveStartDate : 'N/A'}</td>
-                      <td>{driver.leaveEndDate ? driver.leaveEndDate : 'N/A'}</td>
+                      <td>{driver.leaveStartDate ? formatDate(driver.leaveStartDate) : 'N/A'}</td>
+                      <td>{driver.leaveEndDate ?formatDate(driver.leaveEndDate) : 'N/A'}</td>
                       <td className='td-action'>
                         <button className="update-button" onClick={() => openUpdateModal(driver)}>
                           <MdOutlineSystemUpdateAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Update

@@ -79,6 +79,15 @@ const OpcApprovedRequests = () => {
     });
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short", 
+      day: "numeric",
+    });
+  };
+
   const exportToExcel = () => {
     const selectedRequests = requests.filter(request => selectedRows.has(request.transactionId));
     const ws = XLSX.utils.json_to_sheet(selectedRequests, {
@@ -211,11 +220,11 @@ const OpcApprovedRequests = () => {
                             <div key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</div>
                           ))
                         ) : (
-                          "No additional vehicles"
+                          "No Vehicles Added"
                         )}
                       </td>
-                        <td>{request.schedule}</td>
-                        <td>{request.returnSchedule || "N/A"}</td>
+                      <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
+                      <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
                         <td>{request.departureTime}</td>
                         <td>{request.pickUpTime || "N/A"}</td>
                         <td>{request.driverName || "N/A"}</td>

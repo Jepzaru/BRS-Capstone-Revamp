@@ -251,6 +251,15 @@ const OpcRequests = () => {
   const duplicateSchedules = findDuplicateSchedules('schedule');
   const duplicateReturnSchedules = findDuplicateSchedules('returnSchedule');
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short", 
+      day: "numeric",
+    });
+  };
+
   return (
     <div className="opcrequest">
       <Header />
@@ -374,8 +383,8 @@ const OpcRequests = () => {
                                 <div>No Vehicles Added</div>
                               )}
                             </td>
-                            <td>{request.schedule || 'N/A'}</td>
-                            <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? request.returnSchedule : 'N/A'}</td>
+                            <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
+                            <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
                             <td>{request.departureTime || 'N/A'}</td>
                             <td>{request.pickUpTime || 'N/A'}</td>
                             <td className="reason-column">{request.reason}</td>
