@@ -335,48 +335,69 @@ public class ReservationService {
             .collect(Collectors.toList());
     } 
 
-    //Resend Reservation
     public ReservationEntity resendReservation(int reservationId, ReservationEntity updatedReservation, MultipartFile file, boolean isResending) throws IOException {
         ReservationEntity existingReservation = resRepo.findById(reservationId)
-            .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
     
+        // Handle resending logic
         if (isResending) {
             existingReservation.setRejected(false);
-            existingReservation.setStatus("Pending");  
-    
-            if ("OPC".equals(existingReservation.getRejectedBy())) {
-                existingReservation.setOpcIsApproved(false);
-                existingReservation.setRejectedBy(null);  
-            } else if ("Head".equals(existingReservation.getRejectedBy())) {
-                existingReservation.setHeadIsApproved(false);
-                existingReservation.setRejectedBy(null);  
-            }
+            existingReservation.setStatus("Pending");
+            // Reset rejection status if applicable
+            resetRejectionStatus(existingReservation);
         } else {
+            // Handle regular update logic
             if (updatedReservation.isRejected() != null && updatedReservation.isRejected()) {
-                if (updatedReservation.isOpcIsApproved() != null && !updatedReservation.isOpcIsApproved()) {
-                    existingReservation.setRejectedBy("OPC");
-                } else if (updatedReservation.isHeadIsApproved() != null && !updatedReservation.isHeadIsApproved()) {
-                    existingReservation.setRejectedBy("Head");
-                }
-            }
-            updateFields(existingReservation, updatedReservation);  
-    
-            if (updatedReservation.getDriverId() > 0) {
-                existingReservation.setDriverId(updatedReservation.getDriverId());
-                existingReservation.setDriverName(updatedReservation.getDriverName());
+                setRejectionStatus(existingReservation, updatedReservation);
             }
     
-            if (updatedReservation.getReservedVehicles() != null) {
-                for (ReservationVehicleEntity updatedVehicle : updatedReservation.getReservedVehicles()) {
-                    for (ReservationVehicleEntity existingVehicle : existingReservation.getReservedVehicles()) {
-                        if (existingVehicle.getId() == updatedVehicle.getId()) {
-                            existingVehicle.setDriverId(updatedVehicle.getDriverId());
-                            existingVehicle.setDriverName(updatedVehicle.getDriverName());
-                        }
-                    }
-                }
-            }
+            // Update fields with new data
+            resendFields(existingReservation, updatedReservation);
         }
-        return resRepo.save(existingReservation);
+    
+        // Log the entity before saving for debugging
+        System.out.println("Before save: " + existingReservation);
+    
+        // Save the updated reservation to the database
+        ReservationEntity savedEntity = resRepo.save(existingReservation);
+        
+        // Log the saved entity for debugging
+        System.out.println("After save: " + savedEntity);
+    
+        return savedEntity;
+    }
+    
+    private void resetRejectionStatus(ReservationEntity reservation) {
+        if ("OPC".equals(reservation.getRejectedBy())) {
+            reservation.setOpcIsApproved(false);
+            reservation.setRejectedBy(null);
+        } else if ("Head".equals(reservation.getRejectedBy())) {
+            reservation.setHeadIsApproved(false);
+            reservation.setRejectedBy(null);
+        }
+    }
+    
+    private void setRejectionStatus(ReservationEntity existingReservation, ReservationEntity updatedReservation) {
+        if (updatedReservation.isOpcIsApproved() != null && !updatedReservation.isOpcIsApproved()) {
+            existingReservation.setRejectedBy("OPC");
+        } else if (updatedReservation.isHeadIsApproved() != null && !updatedReservation.isHeadIsApproved()) {
+            existingReservation.setRejectedBy("Head");
+        }
+    }
+    
+    private void resendFields(ReservationEntity existingReservation, ReservationEntity updatedReservation) {
+        existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
+        existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());
+        existingReservation.setDestinationTo(updatedReservation.getDestinationTo());
+        existingReservation.setCapacity(updatedReservation.getCapacity());
+        existingReservation.setVehicleType(updatedReservation.getVehicleType());
+        existingReservation.setPlateNumber(updatedReservation.getPlateNumber());
+        existingReservation.setSchedule(updatedReservation.getSchedule());
+        existingReservation.setReturnSchedule(updatedReservation.getReturnSchedule());
+        existingReservation.setDepartureTime(updatedReservation.getDepartureTime());
+        existingReservation.setPickUpTime(updatedReservation.getPickUpTime());
+        existingReservation.setDepartment(updatedReservation.getDepartment());
+        existingReservation.setReason(updatedReservation.getReason());
+        existingReservation.setReservedVehicles(updatedReservation.getReservedVehicles());
     }
 }

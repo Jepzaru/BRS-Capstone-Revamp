@@ -9,25 +9,24 @@ import DepartTimeDropdown from './DepartTimeDropdown';
 import PickUpDropdown from './PickUpDropdown';
 import AddVehicleModal from './AddVehicleModal';
 
-const RequestModal = ({ request, showModal, onClose}) => {
-   
-const [formData, setFormData] = useState({
-    typeOfTrip: '', 
-    destinationFrom: '', 
-    destinationTo: '', 
-    capacity: '', 
-    vehicleType: '', 
-    plateNumber: '', 
-    schedule: '', 
-    returnSchedule: '', 
-    departureTime: request?.departureTime || '', 
-    pickUpTime: '', 
-    department: '', 
-    reason: '', 
-    approvalProof: null, 
-    reservedVehicles: [], 
-    ...request
-});
+const ResendRequestModal = ({ request, showModal, onClose }) => {
+    const [formData, setFormData] = useState({
+        typeOfTrip: '',
+        destinationFrom: '',
+        destinationTo: '',
+        capacity: '',
+        vehicleType: '',
+        plateNumber: '',
+        schedule: '',
+        returnSchedule: '',
+        departureTime: request?.departureTime || '',
+        pickUpTime: '',
+        department: '',
+        reason: '',
+        approvalProof: null,
+        reservedVehicles: [],
+        ...request
+    });
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [isSelectingReturn, setIsSelectingReturn] = useState(false);
@@ -41,8 +40,6 @@ const [formData, setFormData] = useState({
     const [isAddVehicleDisabled, setIsAddVehicleDisabled] = useState(false);
     const [isAddVehicleModalOpen, setAddVehicleModalOpen] = useState(false);
     const [message, setMessage] = useState('');
-    
-    
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -53,32 +50,23 @@ const [formData, setFormData] = useState({
     };
 
     useEffect(() => {
-        if (request && request.plateNumber) {
-            setSelectedVehiclePlateNumber(request.plateNumber);
-            setFormData((prevData) => ({
-                ...prevData,
-                plateNumber: request.plateNumber 
-            }));
-        }
         if (request) {
             setFormData((prevData) => ({
                 ...prevData,
-                ...request 
+                ...request
             }));
         }
-    }, [request, vehicle]);
+    }, [request]);
 
     const handleDateSelect = (date) => {
-       
         const utcDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-        
+
         if (isSelectingReturn) {
             if (utcDate >= selectedDate || !selectedDate) {
                 setReturnScheduleDate(utcDate);
                 setFormData((prevData) => ({
                     ...prevData,
-                    returnSchedule: utcDate.toISOString().split('T')[0], 
-                    schedule: prevData.schedule
+                    returnSchedule: utcDate.toISOString().split('T')[0],
                 }));
             } else {
                 alert('Return schedule date cannot be before the schedule date.');
@@ -87,18 +75,15 @@ const [formData, setFormData] = useState({
             setSelectedDate(utcDate);
             setFormData((prevData) => ({
                 ...prevData,
-                schedule: utcDate.toISOString().split('T')[0], 
+                schedule: utcDate.toISOString().split('T')[0],
             }));
             if (returnScheduleDate && returnScheduleDate < utcDate) {
                 setReturnScheduleDate(null);
             }
         }
         setShowCalendar(false);
-        console.log("Selected Date:", date);
-console.log("Formatted Schedule Date:", date.toLocaleDateString('en-US'));
     };
-    
-    
+
     if (!showModal) return null;
 
     const handleAddVehicleClick = () => {
@@ -111,7 +96,6 @@ console.log("Formatted Schedule Date:", date.toLocaleDateString('en-US'));
             reservedVehicles: [...prevData.reservedVehicles, vehicle]
         }));
         setAddVehicleModalOpen(false);
-        
     };
 
     const handleRemoveVehicle = (plateNumber) => {
@@ -120,103 +104,70 @@ console.log("Formatted Schedule Date:", date.toLocaleDateString('en-US'));
             reservedVehicles: prevData.reservedVehicles.filter(v => v.plateNumber !== plateNumber)
         }));
     };
+
     const handleCloseModal = () => {
         setAddVehicleModalOpen(false);
-      };
-    
-      const handleModalSubmit = async (updatedRequest) => {
-        const formattedSchedule = updatedRequest.schedule ? new Date(updatedRequest.schedule).toISOString().split('T')[0] : '';
-        const formattedReturnSchedule = updatedRequest.returnSchedule ? new Date(updatedRequest.returnSchedule).toISOString().split('T')[0] : null;
-    
-        const formattedDepartureTime = formatTime(updatedRequest.departureTime);
-        const formattedPickUpTime = formatTime(updatedRequest.pickUpTime);
-    
+    };
+
+    const handleModalSubmit = async (event) => {
+        event.preventDefault(); // Prevent the page refresh
+
         const updatedData = {
-            id: updatedRequest.id,
-            typeOfTrip: updatedRequest.typeOfTrip,
-            destinationFrom: updatedRequest.destinationFrom,
-            destinationTo: updatedRequest.destinationTo,
-            capacity: updatedRequest.capacity,
-            vehicleType: updatedRequest.vehicleType, 
-            plateNumber: updatedRequest.plateNumber,
-            schedule: formattedSchedule,  
-            returnSchedule: formattedReturnSchedule,
-            departureTime: formattedDepartureTime, 
-            pickUpTime: formattedPickUpTime,
-            department: updatedRequest.department,
-            reason: updatedRequest.reason,
-            approvalProof: updatedRequest.approvalProof,
-            reservedVehicles: updatedRequest.reservedVehicles.map(vehicle => ({
-                id: vehicle.id,
-                vehicleType: vehicle.vehicleType,
-                plateNumber: vehicle.plateNumber,
-                capacity: vehicle.capacity,
-                status: vehicle.status,
-                schedule: vehicle.schedule ? new Date(vehicle.schedule).toISOString().split('T')[0] : null,
-                returnSchedule: vehicle.returnSchedule 
-                    ? new Date(vehicle.returnSchedule).toISOString().split('T')[0] 
-                    : null,
-                pickUpTime: vehicle.pickUpTime,
-                departureTime: vehicle.departureTime,
-                driverId: vehicle.driverId,
-                driverName: vehicle.driverName,
-            })),
-            transactionId: updatedRequest.transactionId,
-            fileUrl: updatedRequest.fileUrl,
-            status: 'Pending',  
-            rejected: false, 
-            feedback: updatedRequest.feedback,
-            userName: updatedRequest.userName,
-            rejectedBy: updatedRequest.rejectedBy,
-            opcIsApproved: updatedRequest.opcIsApproved, 
-            headIsApproved: updatedRequest.headIsApproved,
+            id: formData.id,
+            typeOfTrip: formData.typeOfTrip,
+            destinationFrom: formData.destinationFrom,
+            destinationTo: formData.destinationTo,
+            capacity: formData.capacity,
+            vehicleType: formData.vehicleType,
+            plateNumber: formData.plateNumber,
+            schedule: formData.schedule,
+            returnSchedule: formData.returnSchedule,
+            departureTime: formData.departureTime,
+            pickUpTime: formData.pickUpTime,
+            department: formData.department,
+            reason: formData.reason,
+            approvalProof: formData.approvalProof,
+            reservedVehicles: formData.reservedVehicles,
+            rejected: false, // Assuming this is for rejected state
         };
-    
-        console.log('Updated Data:', updatedData);
-    
+
+        // Log the updated data for debugging
+        console.log("Updated Request Data: ", updatedData);
+
+        // Constructing the URL
+        const requestUrl = `http://localhost:8080/reservations/resend/${updatedData.id}?isResending=true`;
+        console.log("Request URL: ", requestUrl);
+
         try {
-            const response = await fetch(`http://localhost:8080/reservations/update/${updatedRequest.id}?isResending=true`, {
+            const response = await fetch(requestUrl, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(updatedData), 
+                body: JSON.stringify(updatedData),
             });
-    
+
+            // Checking the response
             if (!response.ok) {
-                const errorResponse = await response.text(); 
-                console.error('Error updating request:', errorResponse);
-                throw new Error('Network response was not ok');
+                const errorDetails = await response.text();
+                console.error(`Error updating request: ${response.status} - ${errorDetails}`);
+                alert('Error updating request. Please try again.');
+                return; // Early return to prevent further processing
             }
-            const result = await response.json(); 
+
+            // Log the response for debugging
+            const result = await response.json();
+            console.log("Response from server: ", result);
+
+            alert('Reservation updated successfully!');
             setMessage('Reservation updated successfully!');
-    
-            await fetchUsersRequests(); 
-            handleCloseModal();
+            onClose();
         } catch (error) {
             console.error('Error resending request:', error);
-            setMessage('Failed to resend request.');
+            alert('Failed to resend request. Please try again.');
         }
-      };
-
-      const formatTime = (timeString) => {
-        if (!timeString) {
-            return ''; 
-        }
-        
-        const [hours, minutes] = timeString.split(':');
-        const hour = parseInt(hours, 10);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const formattedHour = hour % 12 || 12; 
-        return `${formattedHour}:${minutes} ${ampm}`;
     };
-
-      const handleSubmit = (event) => {
-        event.preventDefault(); 
-        handleModalSubmit(formData); 
-    };
-    
 
     return (
         <div className="modal-overlay">
@@ -225,7 +176,7 @@ console.log("Formatted Schedule Date:", date.toLocaleDateString('en-US'));
                     Transaction ID: <span style={{ color: '#ffcc00' }}>{request.transactionId}</span>
                 </h3>
 
-                <form className="reservation-form" onSubmit={handleSubmit}>
+                <form className="reservation-form" onSubmit={handleModalSubmit}>
                     <div className="form-group-inline">
                         <div className="trip-type">
                             <label>
@@ -427,7 +378,7 @@ console.log("Formatted Schedule Date:", date.toLocaleDateString('en-US'));
                             <button type="button" onClick={onClose} className='rsnd-cancel-button'>Cancel</button>
                         </div>
                         <div className="form-group">
-                            <button className='rsnd-button' onClick={handleModalSubmit}>Resend Request</button>
+                            <button  type="submit" className='rsnd-button'>Resend Request</button>
                         </div>
                     </div>
                 </form>
@@ -460,4 +411,4 @@ console.log("Formatted Schedule Date:", date.toLocaleDateString('en-US'));
     );
 };
 
-export default RequestModal;
+export default ResendRequestModal;

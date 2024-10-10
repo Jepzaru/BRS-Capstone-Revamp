@@ -219,10 +219,11 @@ public class ReservationController {
 
     //Resend Reservation
     @PutMapping("/reservations/resend/{reservationId}")
-    public ResponseEntity<ReservationEntity> resendReservation(@PathVariable int reservationId,
-                                                                @RequestBody ReservationEntity updatedReservation,
-                                                                @RequestParam(value = "file", required = false) MultipartFile file,
-                                                                @RequestParam(value = "isResending", defaultValue = "false") boolean isResending) {
+    public ResponseEntity<ReservationEntity> resendReservation(
+            @PathVariable int reservationId,
+            @RequestBody ReservationEntity updatedReservation,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "isResending", defaultValue = "false") boolean isResending) {
         try {
             ReservationEntity updatedEntity = resServ.resendReservation(reservationId, updatedReservation, file, isResending);
             return ResponseEntity.ok(updatedEntity);

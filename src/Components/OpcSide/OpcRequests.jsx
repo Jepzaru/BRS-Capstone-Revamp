@@ -27,10 +27,18 @@ const OpcRequests = () => {
         headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await response.json();
+      const currentDate = new Date(); // Get the current date
+  
       if (Array.isArray(data)) {
-        const filteredRequests = data.filter(request => 
-          !request.opcIsApproved && !request.rejected
-        );
+        const filteredRequests = data.filter(request => {
+          const scheduleDate = new Date(request.schedule);
+          const returnScheduleDate = new Date(request.returnSchedule);
+          // Filter out past requests
+          return (
+            (!request.opcIsApproved && !request.rejected) &&
+            (scheduleDate >= currentDate || returnScheduleDate >= currentDate) // Keep current and future schedules
+          );
+        });
         setRequests(filteredRequests);
       } else {
         console.error("Unexpected data format:", data);
