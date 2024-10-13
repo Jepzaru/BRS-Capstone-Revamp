@@ -420,9 +420,18 @@ const OpcRequests = () => {
                             </td>
                             <td>
                               <div className="opc-action-buttons">
-                                <button className="opc-approve-button" onClick={() => handleOpenModal(request, 'approve')}>
-                                  <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve
-                                </button>
+                              <button
+                                    className="opc-approve-button"
+                                    onClick={() => handleOpenModal(request, 'approve')}
+                                    disabled={updatedStatus === 'Conflict'}
+                                    style={{
+                                      opacity: updatedStatus === 'Conflict' ? 0.5 : 1,
+                                      backgroundColor: updatedStatus === 'Conflict' ? 'black' : 'green', 
+                                      cursor: updatedStatus === 'Conflict' ? 'not-allowed' : 'pointer' 
+                                    }}
+                                  >
+                                    <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve
+                                  </button>
                                 <button className="opc-reject-button" onClick={() => handleOpenModal(request, 'reject')}>
                                   <IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject
                                 </button>
