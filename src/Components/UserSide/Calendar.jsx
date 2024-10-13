@@ -66,36 +66,37 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   }, [minDate, currentMonth, currentYear]);
 
   const generateDays = () => {
-    const totalDays = daysInMonth(currentMonth, currentYear);
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    const days = [];
+  const totalDays = daysInMonth(currentMonth, currentYear);
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const days = [];
 
-    for (let i = 0; i < firstDay; i++) {
-      days.push({ day: '', selected: false, disabled: true, reserved: false });
-    }
+  for (let i = 0; i < firstDay; i++) {
+    days.push({ day: '', selected: false, disabled: true, reserved: false });
+  }
 
-    for (let i = 1; i <= totalDays; i++) {
-      const date = new Date(currentYear, currentMonth, i);
-      const isPast = date < currentDate;
-      const isBeforeMinDate = minDate && date < minDate;
-      const isAfterReturnDate = returnDate && date >= returnDate;
+  for (let i = 1; i <= totalDays; i++) {
+    const date = new Date(currentYear, currentMonth, i);
+    const isPast = date < currentDate; 
+    const isBeforeMinDate = minDate && date < minDate;
 
-      const reservedInfo = reservedDates.find(res =>
-        res.schedule.toDateString() === date.toDateString() ||
-        (res.returnSchedule && res.returnSchedule.toDateString() === date.toDateString())
-      );
+    const reservedInfo = reservedDates.find(res =>
+      res.schedule.toDateString() === date.toDateString() ||
+      (res.returnSchedule && res.returnSchedule.toDateString() === date.toDateString())
+    );
 
-      const isReserved = reservedInfo !== undefined;
+    const isReserved = reservedInfo !== undefined;
 
-      days.push({
-        day: i,
-        selected: selectedDay === i,
-        disabled: isPast || isBeforeMinDate,
-        reserved: isReserved,
-      });
-    }
-    return days;
-  };
+    days.push({
+      day: i,
+      selected: selectedDay === i,
+      disabled: isPast || isBeforeMinDate, 
+      reserved: isReserved,
+    });
+  }
+  return days;
+};
+
+  
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -121,18 +122,19 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
 
   const handleDayClick = (day) => {
     const date = new Date(currentYear, currentMonth, day, 12, 0, 0);
-
+  
     if (returnDate && date < returnDate) {
-      return;
+      return; 
     }
-
+  
     setSelectedDay(day);
+    
     const reservedInfo = reservedDates.find(res =>
       res.schedule.getFullYear() === date.getFullYear() &&
       res.schedule.getMonth() === date.getMonth() &&
       res.schedule.getDate() === date.getDate()
     );
-
+  
     if (reservedInfo) {
       const times = [reservedInfo.pickUpTime, reservedInfo.departureTime];
       onDateSelect(date, times);
@@ -140,6 +142,8 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
       onDateSelect(date, []);
     }
   };
+  
+  
 
   return (
     <div className="calendar">

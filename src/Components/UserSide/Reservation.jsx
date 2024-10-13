@@ -6,7 +6,6 @@ import { FaBuildingUser, FaFileSignature, FaLocationCrosshairs, FaLocationDot, F
 import { IoMdAddCircle } from "react-icons/io";
 import { IoTime, IoTrash } from "react-icons/io5";
 import { RiArrowGoBackLine, RiSendPlaneFill } from "react-icons/ri";
-import { TbBus } from "react-icons/tb";
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../../CSS/UserCss/Reservation.css';
 import logoImage1 from '../../Images/citbglogo.png';
@@ -196,19 +195,25 @@ const Reservation = () => {
 
   const handleDateSelect = (date) => {
     if (isSelectingReturn) {
+      // Allow selecting the same date or a later date for return schedule
       if (date >= selectedDate || !selectedDate) {
         setReturnScheduleDate(date);
       } else {
         alert('Return schedule date cannot be before the schedule date.');
       }
     } else {
+      // Set the selected date for schedule
       setSelectedDate(date);
+      
+      // If return date is set and it's before the selected date, clear it
       if (returnScheduleDate && returnScheduleDate < date) {
         setReturnScheduleDate(null);
       }
     }
+    
     setShowCalendar(false);
   };
+  
   
   const handleTripTypeChange = (event) => {
     const selectedTripType = event.target.value;
@@ -636,9 +641,9 @@ const Reservation = () => {
       {showCalendar && (
       <div className="calendar-modal">
         <div className="calendar-modal-content">
-          <Calendar 
+        <Calendar 
             onDateSelect={handleDateSelect} 
-            minDate={tripType === 'roundTrip' && isSelectingReturn ? selectedDate : null}
+            minDate={tripType === 'roundTrip' ? new Date() : null} 
             returnScheduleDate={returnScheduleDate}
             plateNumber={selectedVehiclePlateNumber}
           />
