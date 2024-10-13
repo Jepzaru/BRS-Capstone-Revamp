@@ -227,7 +227,7 @@ const Reservation = () => {
     const maxCapacity = calculateMaxCapacity();
 
     if (capacity > maxCapacity) {
-      setCapacityError(`Capacity cannot exceed ${maxCapacity}`);
+      setCapacityError(`Capacity should not exceed ${maxCapacity} or add vehicle if needed so.`);
       return;
     }
     const {

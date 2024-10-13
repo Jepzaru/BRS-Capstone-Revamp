@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "brs-revamp": "file:",
     "chart.js": "^4.4.3",

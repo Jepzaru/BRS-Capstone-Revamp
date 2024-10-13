@@ -5,7 +5,7 @@ import '../../CSS/UserCss/ManageRequest.css';
 import logoImage1 from "../../Images/citbglogo.png";
 import Header from '../UserSide/Header';
 import VipSideNavbar from './VipSideNavbar';
-import ResendRequestModal from '../UserSide/ResendRequestModal';
+import ResendRequestModal from './VipResendRequestModal';
 
 const VipManageRequest = () => {
   const [searchTerm, setSearchTerm] = useState("");
