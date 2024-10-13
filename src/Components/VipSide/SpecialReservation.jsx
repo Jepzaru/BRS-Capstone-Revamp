@@ -650,9 +650,9 @@ const closeModal = () => {
       {showCalendar && (
       <div className="calendar-modal">
         <div className="calendar-modal-content">
-          <Calendar 
+        <Calendar 
             onDateSelect={handleDateSelect} 
-            minDate={tripType === 'roundTrip' && isSelectingReturn ? selectedDate : null}
+            minDate={tripType === 'roundTrip' ? new Date() : null} 
             returnScheduleDate={returnScheduleDate}
             plateNumber={selectedVehiclePlateNumber}
           />
