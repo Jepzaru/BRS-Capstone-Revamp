@@ -335,38 +335,44 @@ public class ReservationService {
             .collect(Collectors.toList());
     } 
 
-    public ReservationEntity resendReservation(int reservationId, ReservationEntity updatedReservation, MultipartFile file, boolean isResending) throws IOException {
+    //resend request
+    public ReservationEntity resendReservationStatus(int reservationId, ReservationEntity updatedReservation, String fileUrl) {
         ReservationEntity existingReservation = resRepo.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
     
-        // Handle resending logic
-        if (isResending) {
-            existingReservation.setRejected(false);
-            existingReservation.setStatus("Pending");
-            // Reset rejection status if applicable
-            resetRejectionStatus(existingReservation);
-        } else {
-            // Handle regular update logic
-            if (updatedReservation.isRejected() != null && updatedReservation.isRejected()) {
-                setRejectionStatus(existingReservation, updatedReservation);
-            }
+        // Update fields as needed
+        existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
+        existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());
+        existingReservation.setDestinationTo(updatedReservation.getDestinationTo());
+        existingReservation.setCapacity(updatedReservation.getCapacity());
+        existingReservation.setVehicleType(updatedReservation.getVehicleType());
+        existingReservation.setPlateNumber(updatedReservation.getPlateNumber());
+        existingReservation.setSchedule(updatedReservation.getSchedule());
+        existingReservation.setReturnSchedule(updatedReservation.getReturnSchedule());
+        existingReservation.setDepartureTime(updatedReservation.getDepartureTime());
+        existingReservation.setPickUpTime(updatedReservation.getPickUpTime());
+        existingReservation.setDepartment(updatedReservation.getDepartment());
+        existingReservation.setReason(updatedReservation.getReason());
     
-            // Update fields with new data
-            resendFields(existingReservation, updatedReservation);
+    
+        if (fileUrl != null && !fileUrl.isEmpty()) {
+            existingReservation.setFileUrl(fileUrl); 
         }
     
-        // Log the entity before saving for debugging
-        System.out.println("Before save: " + existingReservation);
+        // Reset rejection status if applicable
+        resetRejectionStatus(existingReservation);
     
-        // Save the updated reservation to the database
-        ReservationEntity savedEntity = resRepo.save(existingReservation);
-        
-        // Log the saved entity for debugging
-        System.out.println("After save: " + savedEntity);
+        // Set rejection status if applicable
+        setRejectionStatus(existingReservation, updatedReservation);
     
-        return savedEntity;
+        existingReservation.setStatus("Pending");
+        existingReservation.setRejected(false);
+    
+        // Save updated reservation
+        return resRepo.save(existingReservation);
     }
     
+    // Existing methods remain unchanged
     private void resetRejectionStatus(ReservationEntity reservation) {
         if ("OPC".equals(reservation.getRejectedBy())) {
             reservation.setOpcIsApproved(false);
@@ -385,19 +391,6 @@ public class ReservationService {
         }
     }
     
-    private void resendFields(ReservationEntity existingReservation, ReservationEntity updatedReservation) {
-        existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
-        existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());
-        existingReservation.setDestinationTo(updatedReservation.getDestinationTo());
-        existingReservation.setCapacity(updatedReservation.getCapacity());
-        existingReservation.setVehicleType(updatedReservation.getVehicleType());
-        existingReservation.setPlateNumber(updatedReservation.getPlateNumber());
-        existingReservation.setSchedule(updatedReservation.getSchedule());
-        existingReservation.setReturnSchedule(updatedReservation.getReturnSchedule());
-        existingReservation.setDepartureTime(updatedReservation.getDepartureTime());
-        existingReservation.setPickUpTime(updatedReservation.getPickUpTime());
-        existingReservation.setDepartment(updatedReservation.getDepartment());
-        existingReservation.setReason(updatedReservation.getReason());
-        existingReservation.setReservedVehicles(updatedReservation.getReservedVehicles());
-    }
+    
+
 }

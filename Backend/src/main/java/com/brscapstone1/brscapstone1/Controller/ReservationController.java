@@ -218,18 +218,15 @@ public class ReservationController {
     } 
 
     //Resend Reservation
-    @PutMapping("/reservations/resend/{reservationId}")
-    public ResponseEntity<ReservationEntity> resendReservation(
+    @PutMapping("reservations/resend/{reservationId}")
+    public ResponseEntity<ReservationEntity> resendReservationRequest(
             @PathVariable int reservationId,
             @RequestBody ReservationEntity updatedReservation,
-            @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "isResending", defaultValue = "false") boolean isResending) {
+            @RequestParam(value = "fileUrl", required = false) String fileUrl) {
         try {
-            ReservationEntity updatedEntity = resServ.resendReservation(reservationId, updatedReservation, file, isResending);
+            // Pass the file URL along with the updated reservation to the service
+            ReservationEntity updatedEntity = resServ.resendReservationStatus(reservationId, updatedReservation, fileUrl);
             return ResponseEntity.ok(updatedEntity);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -238,4 +235,6 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+    
+    
 }

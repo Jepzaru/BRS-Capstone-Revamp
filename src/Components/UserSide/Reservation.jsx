@@ -366,19 +366,6 @@ const Reservation = () => {
                     <span>Round Trip</span>
                   </label>
                 </div>
-                <div className='mult-vehicle'>
-                {/* <button type='button' className='mult-vehicle-btn' onClick={handleVehicleModeToggle}>
-                    {isMultipleVehicles ? (
-                      <>
-                        <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Single vehicle
-                      </>
-                    ) : (
-                      <>
-                        <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Multiple vehicles
-                      </>
-                    )}
-                  </button> */}
-                </div>
               </div>
               <br/>
               <div className="form-group-inline">

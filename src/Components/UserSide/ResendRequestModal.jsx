@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { storage } from '../Config/FileStorageConfig';
 import { CgDetailsMore } from "react-icons/cg";
 import { FaBus, FaCalendarDay, FaFileAlt } from "react-icons/fa";
 import { FaBuildingUser, FaLocationCrosshairs, FaLocationDot, FaUserGroup } from "react-icons/fa6";
-import { IoMdAddCircle } from "react-icons/io";
 import { IoTime } from "react-icons/io5";
 import Calendar from './Calendar';
 import DepartTimeDropdown from './DepartTimeDropdown';
 import PickUpDropdown from './PickUpDropdown';
-import AddVehicleModal from './AddVehicleModal';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
-const ResendRequestModal = ({ request, showModal, onClose }) => {
+const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests }) => {
     const [formData, setFormData] = useState({
         typeOfTrip: '',
         destinationFrom: '',
@@ -23,7 +23,7 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
         pickUpTime: '',
         department: '',
         reason: '',
-        approvalProof: null,
+        approvalProof: '',
         reservedVehicles: [],
         ...request
     });
@@ -32,22 +32,25 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
     const [isSelectingReturn, setIsSelectingReturn] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const [returnScheduleDate, setReturnScheduleDate] = useState(null);
-    const { vehicle } = location.state || {};
-    const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState('');
     const [addedVehicles, setAddedVehicles] = useState([]);
     const token = localStorage.getItem('token');
-    const [addedVehiclePlates, setAddedVehiclePlates] = useState([]);
-    const [isAddVehicleDisabled, setIsAddVehicleDisabled] = useState(false);
-    const [isAddVehicleModalOpen, setAddVehicleModalOpen] = useState(false);
-    const [message, setMessage] = useState('');
+    const [responseModal, setResponseModal] = useState({ show: false, success: null, message: '' }); // For response modal
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
+        const { name, value, files } = e.target;
+        if (name === "approvalProof" && files.length > 0) {
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: files[0],
+            }));
+        } else {
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: value,  
+            }));
+            console.log(`${name}: ${value}`);
+        }
+    }
 
     useEffect(() => {
         if (request) {
@@ -86,10 +89,6 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
 
     if (!showModal) return null;
 
-    const handleAddVehicleClick = () => {
-        setAddVehicleModalOpen(true);
-    };
-
     const handleAddVehicle = (vehicle) => {
         setFormData((prevData) => ({
             ...prevData,
@@ -105,70 +104,62 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
         }));
     };
 
-    const handleCloseModal = () => {
-        setAddVehicleModalOpen(false);
-    };
-
-    const handleModalSubmit = async (event) => {
-        event.preventDefault(); // Prevent the page refresh
-
-        const updatedData = {
-            id: formData.id,
-            typeOfTrip: formData.typeOfTrip,
-            destinationFrom: formData.destinationFrom,
-            destinationTo: formData.destinationTo,
-            capacity: formData.capacity,
-            vehicleType: formData.vehicleType,
-            plateNumber: formData.plateNumber,
-            schedule: formData.schedule,
-            returnSchedule: formData.returnSchedule,
-            departureTime: formData.departureTime,
-            pickUpTime: formData.pickUpTime,
-            department: formData.department,
-            reason: formData.reason,
-            approvalProof: formData.approvalProof,
-            reservedVehicles: formData.reservedVehicles,
-            rejected: false, // Assuming this is for rejected state
-        };
-
-        // Log the updated data for debugging
-        console.log("Updated Request Data: ", updatedData);
-
-        // Constructing the URL
-        const requestUrl = `http://localhost:8080/reservations/resend/${updatedData.id}?isResending=true`;
-        console.log("Request URL: ", requestUrl);
-
+    const handleResendRequest = async () => {
+    
         try {
-            const response = await fetch(requestUrl, {
+            let fileUrl = null;
+    
+            if (formData.approvalProof instanceof File) {
+                const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
+                const snapshot = await uploadBytes(fileRef, formData.approvalProof);
+                fileUrl = await getDownloadURL(snapshot.ref);
+            }
+    
+            const payload = {
+                typeOfTrip: formData.typeOfTrip,
+                destinationFrom: formData.destinationFrom,
+                destinationTo: formData.destinationTo,
+                capacity: formData.capacity,
+                vehicleType: formData.vehicleType,
+                plateNumber: formData.plateNumber || '',
+                schedule: formData.schedule,
+                returnSchedule: formData.returnSchedule,
+                departureTime: formData.departureTime,
+                pickUpTime: formData.pickUpTime,
+                department: formData.department,
+                reason: formData.reason,
+                reservedVehicles: formData.reservedVehicles,
+                approvalProof: fileUrl,
+                rejected: false,
+            };
+    
+            const response = await fetch(`http://localhost:8080/reservations/resend/${request.id}`, {
                 method: 'PUT',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(updatedData),
+                body: JSON.stringify(payload),
             });
-
-            // Checking the response
-            if (!response.ok) {
-                const errorDetails = await response.text();
-                console.error(`Error updating request: ${response.status} - ${errorDetails}`);
-                alert('Error updating request. Please try again.');
-                return; // Early return to prevent further processing
+    
+            if (response.ok) {
+                const updatedReservation = await response.json();
+                setResponseModal({ show: true, success: true, message: 'Request Resent Successfully!' });
+            } else {
+                const errorBody = await response.text();
+                setResponseModal({ show: true, success: false, message: 'Failed to resend request: ' + errorBody }); 
             }
-
-            // Log the response for debugging
-            const result = await response.json();
-            console.log("Response from server: ", result);
-
-            alert('Reservation updated successfully!');
-            setMessage('Reservation updated successfully!');
-            onClose();
         } catch (error) {
-            console.error('Error resending request:', error);
-            alert('Failed to resend request. Please try again.');
+            setResponseModal({ show: true, success: false, message: 'Error during request: ' + error.message });
         }
     };
-
+    
+    const handleCloseResponseModal = () => {
+        setResponseModal({ show: false, success: null, message: '' });
+        refreshManageRequests(); 
+        onClose(); 
+    };
+    
     return (
         <div className="modal-overlay">
             <div className="modal-content" style={{ width: '1000px', maxWidth: '100%', padding: '60px', textAlign: 'left', backgroundColor: '#CBC3C3' }}>
@@ -176,7 +167,7 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
                     Transaction ID: <span style={{ color: '#ffcc00' }}>{request.transactionId}</span>
                 </h3>
 
-                <form className="reservation-form" onSubmit={handleModalSubmit}>
+                <form className="reservation-form">
                     <div className="form-group-inline">
                         <div className="trip-type">
                             <label>
@@ -208,35 +199,35 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
                                 <FaLocationCrosshairs style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 From:
                             </label>
-                            <input type="text" id="from" name="destinationFrom" placeholder='Ex. CIT-University' value={formData.destinationFrom} required onChange={handleInputChange} />
+                            <input type="text" id="from" name="destinationFrom" placeholder='Ex. CIT-University' value={formData.destinationFrom || ''} required onChange={handleInputChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="to">
                                 <FaLocationDot style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 To:
                             </label>
-                            <input type="text" id="to" name="destinationTo" placeholder='Ex. SM Seaside' value={formData.destinationTo} required onChange={handleInputChange} />
+                            <input type="text" id="to" name="destinationTo" placeholder='Ex. SM Seaside' value={formData.destinationTo || ''} required onChange={handleInputChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="capacity">
                                 <FaUserGroup style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 Capacity:
                             </label>
-                            <input type="number" id="capacity" name="capacity" value={formData.capacity} required min="0" onChange={handleInputChange} />
+                            <input type="number" id="capacity" name="capacity" value={formData.capacity || ''} required min="0" onChange={handleInputChange} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="vehicleType">
                                 <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} />
                                 Vehicle:
                             </label>
-                            <input type="text" id="vehicleType" name="vehicleType" value={formData.vehicleType} onChange={handleInputChange} />
+                            <input type="text" id="vehicleType" name="vehicleType" value={formData.vehicleType || ''} onChange={handleInputChange} disabled />
                         </div>
                         <div className="form-group">
                             <label htmlFor="plateNumber">
                                 <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 Plate Number:
                             </label>
-                            <input type="text" id="plateNumber" name="plateNumber" value={formData.plateNumber} disabled onChange={handleInputChange} />
+                            <input type="text" id="plateNumber" name="plateNumber" value={formData.plateNumber || ''} disabled onChange={handleInputChange} />
                         </div>
                     </div>
                     <div className="form-group-inline">
@@ -245,15 +236,14 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
                                 <FaCalendarDay style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 Schedule:
                             </label>
-                            <input 
-                             type="text"
-                             id="schedule"
-                             name="schedule"
-                             value={formData.schedule || (selectedDate ? selectedDate.toLocaleDateString('en-US') : '')}
-                             onClick={() => { setShowCalendar(true); setIsSelectingReturn(false); }}
-                             readOnly
-                             required
-                    
+                            <input
+                                type="text"
+                                id="schedule"
+                                name="schedule"
+                                value={formData.schedule || (selectedDate ? selectedDate.toLocaleDateString('en-US') : '')}
+                                onClick={() => { setShowCalendar(true); setIsSelectingReturn(false); }}
+                                readOnly
+                                required
                             />
                         </div>
                         <div className="form-group">
@@ -261,15 +251,16 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
                                 <FaCalendarDay style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 Return Schedule:
                             </label>
-                            <input 
-                              type="text"
-                              id="returnSchedule"
-                              name="returnSchedule"
-                              value={formData.returnSchedule || 'N/A' || (selectedDate ? selectedDate.toLocaleDateString('en-US') : '')}
-                              onClick={() => { setShowCalendar(true); setIsSelectingReturn(true); }}
-                              readOnly
-                              required
-                            disabled={formData.typeOfTrip === 'oneWay'}/>
+                            <input
+                                type="text"
+                                id="returnSchedule"
+                                name="returnSchedule"
+                                value={formData.returnSchedule || 'N/A' || (selectedDate ? selectedDate.toLocaleDateString('en-US') : '')}
+                                onClick={() => { setShowCalendar(true); setIsSelectingReturn(true); }}
+                                readOnly
+                                required
+                                disabled={formData.typeOfTrip === 'oneWay'}
+                            />
                         </div>
                         <div className="form-group">
                             <label htmlFor="departureTime">
@@ -277,13 +268,13 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
                                 Departure Time:
                             </label>
                             <DepartTimeDropdown
-                                id="departureTime" 
-                                name="departureTime" 
+                                id="departureTime"
+                                name="departureTime"
                                 selectedTime={formData.departureTime}
                                 onChange={handleInputChange}
                                 disabled={!selectedDate}
                                 date={selectedDate}
-                                plateNumber={selectedVehiclePlateNumber} 
+                                plateNumber={formData.plateNumber}
                                 addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
                                 token={token}
                             />
@@ -293,17 +284,17 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
                                 <IoTime style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 Pick-Up Time:
                             </label>
-                            <PickUpDropdown 
-                                id="pickUpTime" 
+                            <PickUpDropdown
+                                id="pickUpTime"
                                 name="pickUpTime"
                                 value={formData.pickUpTime}
                                 onChange={handleInputChange}
                                 disabled={formData.typeOfTrip === 'oneWay'}
                                 date={returnScheduleDate}
-                                plateNumber={selectedVehiclePlateNumber} 
+                                plateNumber={formData.plateNumber}
                                 addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
-                                token={token} 
-                                />
+                                token={token}
+                            />
                         </div>
                     </div>
                     <div className="form-group-inline">
@@ -312,7 +303,7 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
                                 <FaBuildingUser style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 Department:
                             </label>
-                            <input type="text" id="department" name="department" value={formData.department} disabled required/>
+                            <input type="text" id="department" name="department" value={formData.department} disabled required />
                         </div>
                         <div className="form-group">
                             <label htmlFor="approvalProof">
@@ -339,73 +330,55 @@ const ResendRequestModal = ({ request, showModal, onClose }) => {
                             />
                         </div>
                         <div className="form-group">
-                    <label htmlFor="addedVehicle">
-                      <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> 
-                      Vehicle Added:
-                      <button 
-                        type="button"
-                        className="add-another-vehicle" 
-                        onClick={handleAddVehicleClick}
-                        disabled={isAddVehicleDisabled} 
-                        style={{ 
-                          opacity: isAddVehicleDisabled ? 0.5 : 1, 
-                          cursor: isAddVehicleDisabled ? 'not-allowed' : 'pointer' 
-                        }}
-                      >
-                            <IoMdAddCircle style={{ color: "gold", marginRight: "5px", marginBottom: "-2px" }} />
-                            Add another vehicle
-                        </button>
-                        </label>
-                        <div className="reserved-vehicle-added-container">
-                         {(formData.reservedVehicles || []).length > 0 ? (
-                            formData.reservedVehicles.map((vehicle, index) => (
-                                <div key={index} className="reserved-vehicle-item">
-                                    <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</p>
-                                    <button onClick={() => handleRemoveVehicle(vehicle.plateNumber)}>
-                                        Remove
-                                    </button>
-                                </div>
-                            ))
-                        ) : (
-                            <div>No Vehicles Added</div>
-                        )}
-
+                            <label htmlFor="addedVehicle">
+                                <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} />
+                                Vehicle Added:
+                               
+                            </label>
+                            <div className="reserved-vehicle-added-container">
+                                {(formData.reservedVehicles || []).length > 0 ? (
+                                    formData.reservedVehicles.map((vehicle, index) => (
+                                        <div key={index} className="reserved-vehicle-item">
+                                            <p>{vehicle.vehicleType} - {vehicle.plateNumber} - {vehicle.capacity}</p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div>No Vehicles Added</div>
+                                )}
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <div className="form-group-inline">
                         <div className="form-group">
                             <button type="button" onClick={onClose} className='rsnd-cancel-button'>Cancel</button>
                         </div>
                         <div className="form-group">
-                            <button  type="submit" className='rsnd-button'>Resend Request</button>
+                            <button  type="button" className='rsnd-button' onClick={handleResendRequest}>Resend Request</button>
                         </div>
                     </div>
                 </form>
             </div>
 
+            {responseModal.show && (
+                <div className="close-overlay">
+    <div className={`response-modal ${responseModal.success ? 'success' : 'error'}`}>
+        <h4>{responseModal.message}</h4>
+        <button onClick={handleCloseResponseModal} className="close-mdl">Close</button>
+    </div>
+    </div>
+)}
+
             {showCalendar && (
-      <div className="calendar-modal">
-        <div className="calendar-modal-content">
-          <Calendar 
-            onDateSelect={handleDateSelect} 
-            returnScheduleDate={returnScheduleDate}
-            plateNumber={selectedVehiclePlateNumber}
-          />
+                <div className="calendar-modal">
+                    <div className="calendar-modal-content">
+                        <Calendar
+                            onDateSelect={handleDateSelect}
+                            returnScheduleDate={returnScheduleDate}
+                            plateNumber={request.plateNumber}
+                        />
                     </div>
                 </div>
-                
             )}
-
-<AddVehicleModal 
-  isOpen={isAddVehicleModalOpen} 
-  onClose={handleCloseModal} 
-  onAdd={handleAddVehicle} 
-  selectedPlateNumber={vehicle?.plateNumber || ''}  
-  addedVehiclePlates={addedVehiclePlates}
-  schedule={selectedDate}       
-  returnSchedule={returnScheduleDate}
-/>
 
         </div>
     );

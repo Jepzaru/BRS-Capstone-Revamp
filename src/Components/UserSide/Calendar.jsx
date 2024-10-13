@@ -10,6 +10,8 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   const [reservedDates, setReservedDates] = useState([]);
   const token = localStorage.getItem('token');
 
+  console.log("Plate number passed:", plateNumber);
+
   useEffect(() => {
     const fetchReservedDates = async () => {
       if (!plateNumber) return;
