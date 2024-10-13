@@ -1,3 +1,5 @@
+// Calendar.jsx
+
 import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/calendar.css';
 import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
@@ -8,9 +10,8 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
   const [selectedDay, setSelectedDay] = useState(null);
   const [reservedDates, setReservedDates] = useState([]);
+  const [events, setEvents] = useState([]); 
   const token = localStorage.getItem('token');
-
-  console.log("Plate number passed:", plateNumber);
 
   useEffect(() => {
     const fetchReservedDates = async () => {
@@ -53,50 +54,64 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
       }
     };
 
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/opc/events/getAll', {
+          headers: { "Authorization": `Bearer ${token}` },
+        });
+    
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    
+        const data = await response.json();
+        console.log("Fetched events:", data); // Log the fetched events
+    
+        // Use the correct property for the date
+        setEvents(data.map(event => new Date(event.eventDate))); // Make sure this property matches the API response
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
     fetchReservedDates();
+    fetchEvents(); // Fetch events on component mount
   }, [plateNumber, token]);
 
-  useEffect(() => {
-    if (minDate) {
-      const minDay = minDate.getDate();
-      if (selectedDay && new Date(currentYear, currentMonth, selectedDay) < minDate) {
-        setSelectedDay(null);
-      }
-    }
-  }, [minDate, currentMonth, currentYear]);
-
   const generateDays = () => {
-  const totalDays = daysInMonth(currentMonth, currentYear);
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const days = [];
+    const totalDays = daysInMonth(currentMonth, currentYear);
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const days = [];
+  
+    for (let i = 0; i < firstDay; i++) {
+        days.push({ day: '', selected: false, disabled: true, reserved: false, highlight: false });
+    }
+  
+    for (let i = 1; i <= totalDays; i++) {
+        const date = new Date(currentYear, currentMonth, i);
+        const isPast = date < currentDate; 
+        const isBeforeMinDate = minDate && date < minDate;
 
-  for (let i = 0; i < firstDay; i++) {
-    days.push({ day: '', selected: false, disabled: true, reserved: false });
-  }
+        const reservedInfo = reservedDates.find(res =>
+            res.schedule.toDateString() === date.toDateString() ||
+            (res.returnSchedule && res.returnSchedule.toDateString() === date.toDateString())
+        );
+  
+        const isReserved = reservedInfo !== undefined;
+        const hasEvent = events.some(event => event.toDateString() === date.toDateString());
 
-  for (let i = 1; i <= totalDays; i++) {
-    const date = new Date(currentYear, currentMonth, i);
-    const isPast = date < currentDate; 
-    const isBeforeMinDate = minDate && date < minDate;
+        // Disable the day if it has an event
+        const isHighlighted = hasEvent; 
 
-    const reservedInfo = reservedDates.find(res =>
-      res.schedule.toDateString() === date.toDateString() ||
-      (res.returnSchedule && res.returnSchedule.toDateString() === date.toDateString())
-    );
-
-    const isReserved = reservedInfo !== undefined;
-
-    days.push({
-      day: i,
-      selected: selectedDay === i,
-      disabled: isPast || isBeforeMinDate, 
-      reserved: isReserved,
-    });
-  }
-  return days;
+        days.push({
+            day: i,
+            selected: selectedDay === i,
+            disabled: isPast || isBeforeMinDate || isReserved || isHighlighted, // Disable if it's reserved or has an event
+            reserved: isReserved,
+            highlight: isHighlighted // Set highlight to true if there is an event
+        });
+    }
+    return days;
 };
 
-  
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -143,8 +158,6 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
     }
   };
   
-  
-
   return (
     <div className="calendar">
       <div className="calendar-nav">
@@ -153,7 +166,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         <button className='next' onClick={nextMonth}><BiSolidRightArrow /></button>
       </div>
       <div className="calendar-indicator">
-        <p>🟡 Booked</p>
+        <p>🟡 Booked &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 🔴 Holiday or Events</p>
       </div>
       <div className="calendar-grid">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
@@ -162,7 +175,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         {generateDays().map((item, index) => (
           <div
             key={index}
-            className={`calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.reserved ? ' reserved' : ''}`}
+            className={`calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.reserved ? ' reserved' : ''}${item.highlight ? ' highlight' : ''}`} // Add highlight class
             onClick={() => !item.disabled && handleDayClick(item.day)}
           >
             {item.day}

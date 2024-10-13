@@ -149,3 +149,10 @@
   pointer-events: none;
 }
 
+.highlight {
+  background-color: red; 
+  color: white;
+  cursor: pointer; 
+}
+
+
