@@ -28,6 +28,15 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
         ...request
     });
 
+    
+  const formatTime = (time) => {
+    if (!time || time === "N/A") return '';
+    const [hours, minutes] = time.split(':');
+    const formattedHours = (parseInt(hours, 10) % 12) || 12;
+    const amPm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
+    return `${formattedHours}:${minutes} ${amPm}`;
+  };
+
     const [showCalendar, setShowCalendar] = useState(false);
     const [isSelectingReturn, setIsSelectingReturn] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -124,8 +133,8 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                 plateNumber: formData.plateNumber || '',
                 schedule: formData.schedule,
                 returnSchedule: formData.returnSchedule,
-                departureTime: formData.departureTime,
-                pickUpTime: formData.pickUpTime,
+                departureTime: formatTime(formData.departureTime),
+                pickUpTime: formatTime(formData.pickUpTime),
                 department: formData.department,
                 reason: formData.reason,
                 reservedVehicles: formData.reservedVehicles,
@@ -361,12 +370,12 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
 
             {responseModal.show && (
                 <div className="close-overlay">
-    <div className={`response-modal ${responseModal.success ? 'success' : 'error'}`}>
-        <h4>{responseModal.message}</h4>
-        <button onClick={handleCloseResponseModal} className="close-mdl">Close</button>
-    </div>
-    </div>
-)}
+                    <div className={`response-modal ${responseModal.success ? 'success' : 'error'}`}>
+                        <h4>{responseModal.message}</h4>
+                        <button onClick={handleCloseResponseModal} className="close-mdl">Close</button>
+                    </div>
+                </div>
+            )}
 
             {showCalendar && (
                 <div className="calendar-modal">
@@ -379,7 +388,6 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                     </div>
                 </div>
             )}
-
         </div>
     );
 };
