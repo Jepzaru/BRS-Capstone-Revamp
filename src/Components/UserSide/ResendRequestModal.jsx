@@ -29,13 +29,19 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
     });
 
     
-  const formatTime = (time) => {
-    if (!time || time === "N/A") return '';
-    const [hours, minutes] = time.split(':');
-    const formattedHours = (parseInt(hours, 10) % 12) || 12;
-    const amPm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
-    return `${formattedHours}:${minutes} ${amPm}`;
-  };
+    const formatTime = (time) => {
+        if (!time || time === "N/A") return '';
+      
+        // Check if the time already contains AM or PM to avoid double-formatting
+        if (time.includes("AM") || time.includes("PM")) {
+          return time; // Return as-is if already formatted
+        }
+      
+        const [hours, minutes] = time.split(':');
+        const formattedHours = (parseInt(hours, 10) % 12) || 12;
+        const amPm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
+        return `${formattedHours}:${minutes} ${amPm}`;
+      };
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [isSelectingReturn, setIsSelectingReturn] = useState(false);
@@ -43,23 +49,23 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
     const [returnScheduleDate, setReturnScheduleDate] = useState(null);
     const [addedVehicles, setAddedVehicles] = useState([]);
     const token = localStorage.getItem('token');
-    const [responseModal, setResponseModal] = useState({ show: false, success: null, message: '' }); // For response modal
+    const [responseModal, setResponseModal] = useState({ show: false, success: null, message: '' });
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === "approvalProof" && files.length > 0) {
             setFormData((prevData) => ({
                 ...prevData,
-                [name]: files[0],
+                [name]: files[0],  
             }));
         } else {
             setFormData((prevData) => ({
                 ...prevData,
                 [name]: value,  
             }));
-            console.log(`${name}: ${value}`);
         }
-    }
+    };
+    
 
     useEffect(() => {
         if (request) {
@@ -114,6 +120,11 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
     };
 
     const handleResendRequest = async () => {
+
+        if (!formData.destinationFrom || !formData.destinationTo || !formData.capacity || !formData.reason) {
+            alert('Please fill in all required fields.');
+            return;
+        }
     
         try {
             let fileUrl = null;
@@ -138,7 +149,7 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                 department: formData.department,
                 reason: formData.reason,
                 reservedVehicles: formData.reservedVehicles,
-                approvalProof: fileUrl,
+                approvalProof: formData.approvalProof instanceof File ? fileUrl : formData.approvalProof,
                 rejected: false,
             };
     
@@ -161,6 +172,7 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
         } catch (error) {
             setResponseModal({ show: true, success: false, message: 'Error during request: ' + error.message });
         }
+        console.log('Payload to send:', payload);
     };
     
     const handleCloseResponseModal = () => {
@@ -319,7 +331,13 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                                 <FaFileAlt style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 Proof of Approval (optional):
                             </label>
-                            <input type="file" id="approvalProof" name="approvalProof" accept="application/pdf" onChange={handleInputChange} />
+                            <input
+                            type="file"
+                            id="approvalProof"
+                            name="approvalProof"
+                            accept="application/pdf"
+                            onChange={handleInputChange} 
+                        />
                         </div>
                     </div>
                     <div className="form-group-inline">

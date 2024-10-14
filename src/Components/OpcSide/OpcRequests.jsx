@@ -336,33 +336,43 @@ const OpcRequests = () => {
                   ) : (
                     getFilteredAndSortedRequests().map((request, index) => {
         
-                      const isDuplicateSchedule = duplicateSchedules[request.schedule] > 1;
+                      const isDuplicateSchedule = getFilteredAndSortedRequests().some(otherRequest => 
+                        otherRequest.schedule === request.schedule &&
+                        otherRequest.vehicleType === request.vehicleType &&
+                        otherRequest.plateNumber === request.plateNumber &&
+                        otherRequest.id !== request.id
+                    );
                     
-                      const isReturnScheduleValid = request.returnSchedule !== null; 
-                      const isDuplicateReturnSchedule = isReturnScheduleValid && duplicateReturnSchedules[request.returnSchedule] > 1;
+                    // Check for duplicate return schedules only if the vehicle type and plate number match
+                    const isReturnScheduleValid = request.returnSchedule !== null;
+                    const isDuplicateReturnSchedule = isReturnScheduleValid && getFilteredAndSortedRequests().some(otherRequest => 
+                        otherRequest.returnSchedule === request.returnSchedule &&
+                        otherRequest.vehicleType === request.vehicleType &&
+                        otherRequest.plateNumber === request.plateNumber &&
+                        otherRequest.id !== request.id
+                    );
                     
-                      const hasVehicleConflict = getFilteredAndSortedRequests().some(otherRequest => {
+                    // Check for vehicle conflicts based on the main schedule and return schedule
+                    const hasVehicleConflict = getFilteredAndSortedRequests().some(otherRequest => {
                         if (otherRequest.id !== request.id) {
-          
-                          const isMainScheduleConflict = otherRequest.schedule === request.schedule &&
-                            otherRequest.vehicleType === request.vehicleType && 
-                            otherRequest.plateNumber === request.plateNumber;
+                            const isMainScheduleConflict = otherRequest.schedule === request.schedule &&
+                                otherRequest.vehicleType === request.vehicleType && 
+                                otherRequest.plateNumber === request.plateNumber;
                     
-                          const isReturnScheduleConflict = isReturnScheduleValid && otherRequest.returnSchedule !== null && 
-                            otherRequest.returnSchedule === request.returnSchedule && 
-                            otherRequest.vehicleType === request.vehicleType && 
-                            otherRequest.plateNumber === request.plateNumber;
+                            const isReturnScheduleConflict = isReturnScheduleValid && otherRequest.returnSchedule !== null && 
+                                otherRequest.returnSchedule === request.returnSchedule &&
+                                otherRequest.vehicleType === request.vehicleType &&
+                                otherRequest.plateNumber === request.plateNumber;
                     
-                          return isMainScheduleConflict || isReturnScheduleConflict;
+                            return isMainScheduleConflict || isReturnScheduleConflict;
                         }
                         return false;
-                      });
+                    });
                     
-          
-                      const isConflict = (hasVehicleConflict || isDuplicateSchedule || isDuplicateReturnSchedule);
-                    
-                      const statusClass = isConflict ? 'conflict-status' : '';
-                      const updatedStatus = isConflict ? 'Conflict' : request.status;
+                    // Mark conflict only if vehicle conflict or duplicate schedules exist
+                    const isConflict = hasVehicleConflict || isDuplicateSchedule || isDuplicateReturnSchedule;
+                    const statusClass = isConflict ? 'conflict-status' : '';
+                    const updatedStatus = isConflict ? 'Conflict' : request.status;
                       
                       return (
                         <tr
