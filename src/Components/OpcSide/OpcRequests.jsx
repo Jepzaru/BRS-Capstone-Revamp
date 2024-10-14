@@ -123,6 +123,20 @@ const OpcRequests = () => {
   };
 
   const handleDriverSelect = (vehicleId, driver) => {
+    if (!driver) return; // Check for null or undefined driver
+  
+    // Check if the driver is already assigned to another vehicle in the same request
+    const isDriverAssigned = selectedRequest.reservedVehicles.some(vehicle => vehicle.driverId === driver.id && vehicle.id !== vehicleId);
+  
+    // Also check if the driver is assigned to the main vehicle (if applicable)
+    const isMainVehicleAssigned = selectedDriver && selectedDriver.id === driver.id;
+  
+    if (isDriverAssigned || isMainVehicleAssigned) {
+      alert(`Driver ${driver.driverName} is already assigned to another vehicle.`);
+      return; // Prevent selection if driver is already assigned
+    }
+  
+    // Update the driver assignment for the selected vehicle
     setSelectedRequest(prevRequest => {
       const updatedVehicles = prevRequest.reservedVehicles.map(vehicle => {
         if (vehicle.id === vehicleId) {
@@ -134,6 +148,10 @@ const OpcRequests = () => {
       return { ...prevRequest, reservedVehicles: updatedVehicles };
     });
   };
+  
+  
+  
+  
 
   const handleReject = async () => {
     if (!feedback.trim()) {
@@ -343,7 +361,6 @@ const OpcRequests = () => {
                         otherRequest.id !== request.id
                     );
                     
-                    // Check for duplicate return schedules only if the vehicle type and plate number match
                     const isReturnScheduleValid = request.returnSchedule !== null;
                     const isDuplicateReturnSchedule = isReturnScheduleValid && getFilteredAndSortedRequests().some(otherRequest => 
                         otherRequest.returnSchedule === request.returnSchedule &&
@@ -351,8 +368,7 @@ const OpcRequests = () => {
                         otherRequest.plateNumber === request.plateNumber &&
                         otherRequest.id !== request.id
                     );
-                    
-                    // Check for vehicle conflicts based on the main schedule and return schedule
+                  
                     const hasVehicleConflict = getFilteredAndSortedRequests().some(otherRequest => {
                         if (otherRequest.id !== request.id) {
                             const isMainScheduleConflict = otherRequest.schedule === request.schedule &&
@@ -369,7 +385,6 @@ const OpcRequests = () => {
                         return false;
                     });
                     
-                    // Mark conflict only if vehicle conflict or duplicate schedules exist
                     const isConflict = hasVehicleConflict || isDuplicateSchedule || isDuplicateReturnSchedule;
                     const statusClass = isConflict ? 'conflict-status' : '';
                     const updatedStatus = isConflict ? 'Conflict' : request.status;
@@ -467,31 +482,45 @@ const OpcRequests = () => {
       </div>
 
       {showModal && (
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
-          <p>Are you sure you want to {modalAction} this request?</p>
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
+      <p>Are you sure you want to {modalAction} this request?</p>
 
-          {modalAction === 'approve' ? (
-            <div className="modal-driver-selection">
-              <label htmlFor="driver-select"><FaBus style={{color: "#782324", marginRight: "5px", marginBottom: '-2px'}}/>Main Vehicle: </label>
-              <select
-                id="driver-select"
-                value={selectedDriver ? selectedDriver.id : ''}
-                onChange={(e) => {
-                  const driverId = e.target.value;
-                  const driver = drivers.find(driver => String(driver.id) === String(driverId));
-                  setSelectedDriver(driver);
-                }}
-              >
-                <option value="">Select Driver</option>
-                {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
-                  .map(driver => (
-                    <option key={driver.id} value={driver.id}>
-                      {driver.driverName}
-                    </option>
-                  ))}
-              </select>
+      {modalAction === 'approve' ? (
+        <div className="modal-driver-selection">
+          {/* Main Vehicle Driver Selection */}
+          <label htmlFor="driver-select">
+            <FaBus style={{ color: "#782324", marginRight: "5px", marginBottom: '-2px' }} />
+            Main Vehicle:
+          </label>
+          <select
+            id="driver-select"
+            value={selectedDriver ? selectedDriver.id : ''}
+            onChange={(e) => {
+              const driverId = e.target.value;
+              const driver = drivers.find(driver => String(driver.id) === String(driverId));
+
+              // Check if the driver is already assigned to another vehicle
+              const isDriverAssigned = selectedRequest.reservedVehicles.some(vehicle => vehicle.driverId === driver.id);
+
+              if (isDriverAssigned) {
+                alert(`Driver ${driver.driverName} is already assigned to another vehicle.`);
+                return; // Prevent selection if driver is already assigned
+              }
+
+              // Set the selected driver for the main vehicle
+              setSelectedDriver(driver);
+            }}
+          >
+            <option value="">Select Driver</option>
+            {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
+              .map(driver => (
+                <option key={driver.id} value={driver.id}>
+                  {driver.driverName}
+                </option>
+              ))}
+          </select>
 
               {selectedRequest.reservedVehicles && (
                 <div className="modal-vehicle-list">
