@@ -23,7 +23,7 @@ const OpcRequests = () => {
 
   const fetchHeadIsApprovedRequests = async () => {
     try {
-      const response = await fetch("http://localhost:8080/reservations/head-approved", {
+      const response = await fetch("https://citumovebackend.up.railway.app/reservations/head-approved", {
         headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await response.json();
@@ -62,7 +62,7 @@ const OpcRequests = () => {
  
   const fetchDrivers = async () => {
     try {
-      const response = await fetch("http://localhost:8080/opc/driver/getAll", {
+      const response = await fetch("https://citumovebackend.up.railway.app/opc/driver/getAll", {
         headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await response.json();
@@ -169,7 +169,7 @@ const OpcRequests = () => {
     formData.append("reservation", JSON.stringify(reservationData));
 
     try {
-      const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json", 
@@ -206,7 +206,7 @@ const OpcRequests = () => {
     };
   
     try {
-      const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

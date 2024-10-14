@@ -47,7 +47,7 @@
 
 //   const fetchReservedDates = async () => {
 //     try {
-//       const response = await fetch("http://localhost:8080/reservations/reserved-dates", {
+//       const response = await fetch("https://citumovebackend.up.railway.app/reservations/reserved-dates", {
 //         headers: { "Authorization": `Bearer ${token}` }
 //       });
 //       if (!response.ok) {
@@ -195,7 +195,7 @@
 
 //   const fetchDepartments = async () => {
 //     try {
-//         const response = await fetch("http://localhost:8080/department/getAll", {
+//         const response = await fetch("https://citumovebackend.up.railway.app/department/getAll", {
 //             headers: {"Authorization" : `Bearer ${token}`}
 //         });
 //         if (!response.ok) {
@@ -311,7 +311,7 @@
 //     }
 
 //     try {
-//       const response = await fetch('http://localhost:8080/user/reservations/add', {
+//       const response = await fetch('https://citumovebackend.up.railway.app/user/reservations/add', {
 //         method: 'POST',
 //         headers: {
 //           "Authorization": `Bearer ${token}`

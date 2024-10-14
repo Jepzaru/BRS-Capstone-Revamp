@@ -22,7 +22,7 @@ const ManageRequest = () => {
 
   const fetchUsersRequests = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/user/reservations/${username}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/user/reservations/${username}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();

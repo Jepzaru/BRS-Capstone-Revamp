@@ -30,7 +30,7 @@ const UserSide = () => {
   useEffect(() => {
     const fetchVehicleDetails = async () => {
       try {
-        const response = await fetch("http://localhost:8080/vehicle/getAll", {
+        const response = await fetch("https://citumovebackend.up.railway.app/vehicle/getAll", {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await response.json();
@@ -53,7 +53,7 @@ const UserSide = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("http://localhost:8080/opc/events/getAll", {
+        const response = await fetch("https://citumovebackend.up.railway.app/opc/events/getAll", {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await response.json();

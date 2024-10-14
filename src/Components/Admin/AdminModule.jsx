@@ -27,7 +27,7 @@ const AdminModule = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://localhost:8080/admin/users/read", {
+      const response = await fetch("https://citumovebackend.up.railway.app/admin/users/read", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();
@@ -44,7 +44,7 @@ const AdminModule = () => {
 
   const fetchDepartments = async () =>{
     try {
-      const response = await fetch("http://localhost:8080/department/getAll",{
+      const response = await fetch("https://citumovebackend.up.railway.app/department/getAll",{
         headers: {"Authorization" : `Bearer ${token}`}
       })
       const data = await response.json();
@@ -93,7 +93,7 @@ const handleAddAccount = async (event) => {
     };
   
     try {
-        const response = await fetch("http://localhost:8080/admin/users/add", {
+        const response = await fetch("https://citumovebackend.up.railway.app/admin/users/add", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -123,7 +123,7 @@ const handleAddAccount = async (event) => {
     };
   
     try {
-      const response = await fetch(`http://localhost:8080/admin/users/update/${selectedUser.id}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/admin/users/update/${selectedUser.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -145,7 +145,7 @@ const handleAddAccount = async (event) => {
 
   const handleDeleteAccount = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/admin/users/delete/${userToDelete.id}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/admin/users/delete/${userToDelete.id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,

@@ -53,7 +53,7 @@ const VipSettings = () => {
     }
   
     try {
-      const response = await fetch(`http://localhost:8080/users/change-password/${userId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/users/change-password/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

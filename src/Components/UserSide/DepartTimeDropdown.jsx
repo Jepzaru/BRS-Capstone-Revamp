@@ -18,8 +18,8 @@ const DepartTimeDropdown = ({ selectedTime, onChange, name, disabled, plateNumbe
       const plates = addedPlateNumbers.length > 0 ? addedPlateNumbers.join(',') : plateNumber;
       const formattedDate = formatDate(date);
       const urls = [
-        `http://localhost:8080/reservations/by-plate-and-date?plateNumber=${plateNumber}&date=${formattedDate}`,
-        `http://localhost:8080/multiple/reservations/by-plate-and-date?plateNumber=${plates}&date=${formattedDate}`,
+        `https://citumovebackend.up.railway.app/reservations/by-plate-and-date?plateNumber=${plateNumber}&date=${formattedDate}`,
+        `https://citumovebackend.up.railway.app/multiple/reservations/by-plate-and-date?plateNumber=${plates}&date=${formattedDate}`,
       ];
 
       try {

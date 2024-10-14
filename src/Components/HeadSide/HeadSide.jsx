@@ -21,7 +21,7 @@ const HeadSide = () => {
     try {
       const department = localStorage.getItem('department');
 
-      const response = await fetch("http://localhost:8080/reservations/getAll", {
+      const response = await fetch("https://citumovebackend.up.railway.app/reservations/getAll", {
         headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await response.json();
@@ -43,7 +43,7 @@ const HeadSide = () => {
       const formData = new FormData();
       formData.append("reservation", JSON.stringify(reservationData));
 
-      const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +80,7 @@ const HeadSide = () => {
       const formData = new FormData();
       formData.append("reservation", JSON.stringify(reservationData));
 
-      const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,

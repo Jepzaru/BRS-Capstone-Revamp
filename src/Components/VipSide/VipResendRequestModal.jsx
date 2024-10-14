@@ -140,7 +140,7 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
                 rejected: false,
             };
     
-            const response = await fetch(`http://localhost:8080/reservations/resend/${request.id}`, {
+            const response = await fetch(`https://citumovebackend.up.railway.app/reservations/resend/${request.id}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,

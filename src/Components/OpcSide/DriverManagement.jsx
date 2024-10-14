@@ -45,7 +45,7 @@ const DriverManagement = () => {
   useEffect(() => {
     const fetchDriverDetails = async () => {
       try {
-        const response = await fetch("http://localhost:8080/opc/driver/getAll", {
+        const response = await fetch("https://citumovebackend.up.railway.app/opc/driver/getAll", {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await response.json();
@@ -101,7 +101,7 @@ const DriverManagement = () => {
 
   const handleAddDriver = async () => {
     try {
-      const response = await fetch("http://localhost:8080/opc/driver/post", {
+      const response = await fetch("https://citumovebackend.up.railway.app/opc/driver/post", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ const DriverManagement = () => {
   
   const handleUpdateDriver = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/opc/driver/update/${selectedDriverId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/driver/update/${selectedDriverId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -151,7 +151,7 @@ const DriverManagement = () => {
 
   const handleDeleteDriver = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/opc/driver/delete/${selectedDriverId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/driver/delete/${selectedDriverId}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });
