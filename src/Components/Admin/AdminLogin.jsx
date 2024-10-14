@@ -35,7 +35,7 @@ const AdminLogin = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/authenticate', {
+      const response = await fetch('citumovebackend.up.railway.appauthenticate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
