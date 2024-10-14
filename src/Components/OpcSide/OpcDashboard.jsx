@@ -51,7 +51,7 @@ const OpcDashboard = () => {
   useEffect(() => {
     const fetchNumberOfDrivers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/opc/driver/getAll", {
+        const response = await fetch("https://citumovebackend.up.railway.app/opc/driver/getAll", {
           headers: {"Authorization" : `Bearer ${token}`}
         });
         const data = await response.json();
@@ -66,7 +66,7 @@ const OpcDashboard = () => {
   useEffect(() => {
     const fetchNumberOfVehicles = async () => {
       try {
-        const response = await fetch("http://localhost:8080/vehicle/getAll", {
+        const response = await fetch("https://citumovebackend.up.railway.app/vehicle/getAll", {
           headers: {"Authorization" : `Bearer ${token}`}
         });
         const data = await response.json();
@@ -81,7 +81,7 @@ const OpcDashboard = () => {
   useEffect(() => {
     const fetchNumbersOfRequests = async () => {
       try {
-        const response = await fetch("http://localhost:8080/reservations/getAll", {
+        const response = await fetch("https://citumovebackend.up.railway.app/reservations/getAll", {
           headers: {"Authorization" : `Bearer ${token}`}
         });
         const data = await response.json();

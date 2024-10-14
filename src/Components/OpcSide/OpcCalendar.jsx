@@ -70,7 +70,7 @@ const OpcCalendar = () => {
   const fetchReservations = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/reservations/opc-approved`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/reservations/opc-approved`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -91,7 +91,7 @@ const OpcCalendar = () => {
   const fetchEvents = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/opc/events/getAll`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/getAll`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`

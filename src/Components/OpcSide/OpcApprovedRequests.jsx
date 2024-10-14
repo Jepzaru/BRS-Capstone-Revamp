@@ -24,7 +24,7 @@ const OpcApprovedRequests = () => {
       const token = localStorage.getItem('token'); 
 
       try {
-        const response = await fetch('http://localhost:8080/reservations/opc-approved', {
+        const response = await fetch('https://citumovebackend.up.railway.app/reservations/opc-approved', {
           headers: { "Authorization": `Bearer ${token}` }
         });
         if (!response.ok) throw new Error("Network response was not ok");

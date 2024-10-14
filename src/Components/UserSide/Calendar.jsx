@@ -19,10 +19,10 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
 
       try {
         const responses = await Promise.all([
-          fetch(`http://localhost:8080/reservations/vehicle-availability?plateNumber=${encodeURIComponent(plateNumber)}`, {
+          fetch(`https://citumovebackend.up.railway.app/reservations/vehicle-availability?plateNumber=${encodeURIComponent(plateNumber)}`, {
             headers: { "Authorization": `Bearer ${token}` },
           }),
-          fetch(`http://localhost:8080/reservations/multiple-vehicle-availability?plateNumber=${encodeURIComponent(plateNumber)}`, {
+          fetch(`https://citumovebackend.up.railway.app/reservations/multiple-vehicle-availability?plateNumber=${encodeURIComponent(plateNumber)}`, {
             headers: { "Authorization": `Bearer ${token}` },
           })
         ]);
@@ -56,7 +56,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
 
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:8080/opc/events/getAll', {
+        const response = await fetch('https://citumovebackend.up.railway.app/opc/events/getAll', {
           headers: { "Authorization": `Bearer ${token}` },
         });
     

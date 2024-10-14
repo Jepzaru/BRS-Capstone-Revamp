@@ -24,7 +24,7 @@ const Header = () => {
     if (!userId || !token) return;
 
     try {
-      const response = await fetch(`http://localhost:8080/users/profile-pic/${userId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/users/profile-pic/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

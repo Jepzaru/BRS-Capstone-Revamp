@@ -24,7 +24,7 @@ const VipManageRequest = () => {
 
   const fetchUsersRequests = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/user/reservations/${username}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/user/reservations/${username}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();
@@ -95,7 +95,7 @@ const VipManageRequest = () => {
     };
 
     try {
-        const response = await fetch(`http://localhost:8080/reservations/update/${selectedRequest.id}?isResending=true`, {
+        const response = await fetch(`https://citumovebackend.up.railway.app/reservations/update/${selectedRequest.id}?isResending=true`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

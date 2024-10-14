@@ -14,7 +14,7 @@ const HeadApprovedRequests = () => {
 
   const fetchApprovedRequests = async () => {
     try {
-      const response = await fetch("http://localhost:8080/reservations/getAll", {
+      const response = await fetch("https://citumovebackend.up.railway.app/reservations/getAll", {
         headers: { 
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"

@@ -21,7 +21,7 @@ const AdminDepartment = () => {
 
   const fetchDepartments = async () => {
     try {
-      const response = await fetch("http://localhost:8080/department/getAll", {
+      const response = await fetch("https://citumovebackend.up.railway.app/department/getAll", {
         headers: { "Authorization": `Bearer ${token}` },
       });
       const data = await response.json();
@@ -34,7 +34,7 @@ const AdminDepartment = () => {
   const handleAddDepartment = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/department/post", {
+      const response = await fetch("https://citumovebackend.up.railway.app/department/post", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -58,7 +58,7 @@ const AdminDepartment = () => {
   const handleUpdateDepartment = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8080/department/update/${selectedDepartment.id}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/department/update/${selectedDepartment.id}`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -81,7 +81,7 @@ const AdminDepartment = () => {
 
   const handleDeleteDepartment = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/department/delete/${selectedDepartment.id}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/department/delete/${selectedDepartment.id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` },
       });

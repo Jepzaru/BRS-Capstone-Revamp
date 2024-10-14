@@ -303,7 +303,7 @@ const VipSpecialReservation = () => {
 
       console.log("Form Data:", [...reservationFormData.entries()]);
 
-      const response = await fetch('http://localhost:8080/user/reservations/add', {
+      const response = await fetch('https://citumovebackend.up.railway.app/user/reservations/add', {
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${token}`

@@ -31,7 +31,7 @@ const OpcSettings = () => {
   useEffect(() => {
     const fetchProfilePic = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/users/profile-pic/${userId}`, {
+        const response = await fetch(`https://citumovebackend.up.railway.app/users/profile-pic/${userId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -77,7 +77,7 @@ const OpcSettings = () => {
     formData.append('imageFile', file);
   
     try {
-      const response = await fetch(`http://localhost:8080/users/upload-profile-pic/${userId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/users/upload-profile-pic/${userId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -106,7 +106,7 @@ const OpcSettings = () => {
     }
   
     try {  
-      const response = await fetch(`http://localhost:8080/users/change-password/${userId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/users/change-password/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ const OpcSettings = () => {
       formData.append('imageFile', file);
 
       try {
-        const response = await fetch(`http://localhost:8080/users/update-profile-pic/${userId}`, {
+        const response = await fetch(`https://citumovebackend.up.railway.app/users/update-profile-pic/${userId}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`

@@ -16,7 +16,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber, addedVeh
   const fetchVehicles = async () => {
     try {
         
-        const vehicleResponse = await fetch('http://localhost:8080/vehicle/getAll', {
+        const vehicleResponse = await fetch('https://citumovebackend.up.railway.app/vehicle/getAll', {
             headers: {
                 "Authorization": `Bearer ${token}`
             }
@@ -33,7 +33,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber, addedVeh
         const formattedReturnSchedule = new Date(returnSchedule).toISOString().split('T')[0];
 
     
-        let reservedPlateUrl = `http://localhost:8080/reservations/multiple-reserved/plate-numbers?schedule=${formattedSchedule}`;
+        let reservedPlateUrl = `https://citumovebackend.up.railway.app/reservations/multiple-reserved/plate-numbers?schedule=${formattedSchedule}`;
         
         if (returnSchedule) {
             reservedPlateUrl += `&returnSchedule=${formattedReturnSchedule}`; 
@@ -67,7 +67,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber, addedVeh
 const fetchMainVehicles = async () => {
   try {
       
-      const vehicleResponse = await fetch('http://localhost:8080/vehicle/getAll', {
+      const vehicleResponse = await fetch('https://citumovebackend.up.railway.app/vehicle/getAll', {
           headers: {
               "Authorization": `Bearer ${token}`
           }
@@ -81,7 +81,7 @@ const fetchMainVehicles = async () => {
       const formattedSchedule = new Date(schedule).toISOString().split('T')[0];
       const formattedReturnSchedule = new Date(returnSchedule).toISOString().split('T')[0];
 
-      let reservedPlateUrl = `http://localhost:8080/reservations/main-plate-numbers?schedule=${formattedSchedule}`;
+      let reservedPlateUrl = `https://citumovebackend.up.railway.app/reservations/main-plate-numbers?schedule=${formattedSchedule}`;
       
       if (returnSchedule) {
           reservedPlateUrl += `&returnSchedule=${formattedReturnSchedule}`; 

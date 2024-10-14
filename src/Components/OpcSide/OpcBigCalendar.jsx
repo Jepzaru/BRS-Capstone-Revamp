@@ -36,7 +36,7 @@ const OpcBigCalendar = () => {
 
   const fetchEventsForMonth = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/opc/events/getAll`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/getAll`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -56,7 +56,7 @@ const OpcBigCalendar = () => {
 
   const fetchApprovedReservationsForMonth = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/reservations/opc-approved`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/reservations/opc-approved`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -105,7 +105,7 @@ const OpcBigCalendar = () => {
 
   const deleteEvent = async (eventId) => {
     try {
-      const response = await fetch(`http://localhost:8080/opc/events/delete/${eventId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/delete/${eventId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -144,7 +144,7 @@ const OpcBigCalendar = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8080/opc/events/post', {
+      const response = await fetch('https://citumovebackend.up.railway.app/opc/events/post', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -181,7 +181,7 @@ const OpcBigCalendar = () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:8080/opc/events/update/${editingEvent.eventId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/update/${editingEvent.eventId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

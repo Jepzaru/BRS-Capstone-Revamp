@@ -15,7 +15,7 @@ const ResendVehicleModal = ({ isOpen, onClose, onSubmit, onUpdateRequest  }) => 
 
   const fetchVehicles = async () => {
     try {
-      const response = await fetch('http://localhost:8080/vehicle/getAll', {
+      const response = await fetch('https://citumovebackend.up.railway.app/vehicle/getAll', {
         headers: {
           "Authorization": `Bearer ${token}`
         }

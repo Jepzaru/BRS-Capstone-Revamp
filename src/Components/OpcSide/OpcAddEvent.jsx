@@ -23,7 +23,7 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
     };
 
     try {
-      const response = await fetch('http://localhost:8080/opc/events/post', {
+      const response = await fetch('https://citumovebackend.up.railway.app/opc/events/post', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -37,7 +37,7 @@ const VehicleManagement = () => {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const response = await fetch('http://localhost:8080/vehicle/getAll', {
+        const response = await fetch('https://citumovebackend.up.railway.app/vehicle/getAll', {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!response.ok) {
@@ -138,7 +138,7 @@ const VehicleManagement = () => {
   
     // Fetch all vehicles to check if the plate number exists
     try {
-      const response = await fetch('http://localhost:8080/vehicle/getAll', {
+      const response = await fetch('https://citumovebackend.up.railway.app/vehicle/getAll', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -155,7 +155,7 @@ const VehicleManagement = () => {
   
       // If plate number is unique, proceed to add the new vehicle
       const vehicleData = { vehicleType, plateNumber, capacity: Number(capacity) };
-      const addResponse = await fetch('http://localhost:8080/opc/vehicle/post', {
+      const addResponse = await fetch('https://citumovebackend.up.railway.app/opc/vehicle/post', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -203,7 +203,7 @@ const VehicleManagement = () => {
         status: updateStatus
       };
   
-      const response = await fetch(`http://localhost:8080/opc/vehicle/update/${selectedVehicleId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/vehicle/update/${selectedVehicleId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -218,7 +218,7 @@ const VehicleManagement = () => {
       setSuccessMessage('Vehicle updated successfully!');
       closeUpdateModal();
   
-      const updatedVehicles = await fetch('http://localhost:8080/opc/vehicle/getAll', {
+      const updatedVehicles = await fetch('https://citumovebackend.up.railway.app/opc/vehicle/getAll', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -237,7 +237,7 @@ const VehicleManagement = () => {
   const handleDeleteVehicle = async () => {
     if (!selectedVehicleId) return;
     try {
-      const response = await fetch(`http://localhost:8080/opc/vehicle/delete/${selectedVehicleId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/vehicle/delete/${selectedVehicleId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -249,7 +249,7 @@ const VehicleManagement = () => {
       }
       setSuccessMessage('Vehicle deleted successfully!');
       closeDeleteModal();
-      const updatedVehicles = await fetch('http://localhost:8080/opc/vehicle/getAll', {
+      const updatedVehicles = await fetch('https://citumovebackend.up.railway.app/opc/vehicle/getAll', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
