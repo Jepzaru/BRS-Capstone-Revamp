@@ -63,17 +63,16 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     
         const data = await response.json();
-        console.log("Fetched events:", data); // Log the fetched events
+        console.log("Fetched events:", data); 
     
-        // Use the correct property for the date
-        setEvents(data.map(event => new Date(event.eventDate))); // Make sure this property matches the API response
+        setEvents(data.map(event => new Date(event.eventDate))); 
       } catch (error) {
         console.error("Error fetching events:", error);
       }
     };
 
     fetchReservedDates();
-    fetchEvents(); // Fetch events on component mount
+    fetchEvents(); 
   }, [plateNumber, token]);
 
   const generateDays = () => {
@@ -98,15 +97,15 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         const isReserved = reservedInfo !== undefined;
         const hasEvent = events.some(event => event.toDateString() === date.toDateString());
 
-        // Disable the day if it has an event
+  
         const isHighlighted = hasEvent; 
 
         days.push({
             day: i,
             selected: selectedDay === i,
-            disabled: isPast || isBeforeMinDate || isReserved || isHighlighted, // Disable if it's reserved or has an event
+            disabled: isPast || isBeforeMinDate || isHighlighted,
             reserved: isReserved,
-            highlight: isHighlighted // Set highlight to true if there is an event
+            highlight: isHighlighted 
         });
     }
     return days;

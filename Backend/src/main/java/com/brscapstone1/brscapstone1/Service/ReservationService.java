@@ -339,7 +339,7 @@ public class ReservationService {
     public ReservationEntity resendReservationStatus(int reservationId, ReservationEntity updatedReservation, String fileUrl) {
         ReservationEntity existingReservation = resRepo.findById(reservationId)
             .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
-    
+
         // Update fields as needed
         existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
         existingReservation.setDestinationFrom(updatedReservation.getDestinationFrom());
@@ -353,24 +353,28 @@ public class ReservationService {
         existingReservation.setPickUpTime(updatedReservation.getPickUpTime());
         existingReservation.setDepartment(updatedReservation.getDepartment());
         existingReservation.setReason(updatedReservation.getReason());
-    
-    
+
+        // Update file URL (use the URL from the request if provided)
         if (fileUrl != null && !fileUrl.isEmpty()) {
-            existingReservation.setFileUrl(fileUrl); 
+            existingReservation.setFileUrl(fileUrl);
+        } else if (updatedReservation.getFileUrl() != null && !updatedReservation.getFileUrl().isEmpty()) {
+            existingReservation.setFileUrl(updatedReservation.getFileUrl());
         }
-    
+
         // Reset rejection status if applicable
         resetRejectionStatus(existingReservation);
-    
+
         // Set rejection status if applicable
         setRejectionStatus(existingReservation, updatedReservation);
-    
+
+        // Set status to Pending and reset rejection
         existingReservation.setStatus("Pending");
         existingReservation.setRejected(false);
-    
-        // Save updated reservation
+
+        // Save and return the updated reservation
         return resRepo.save(existingReservation);
     }
+
     
     // Existing methods remain unchanged
     private void resetRejectionStatus(ReservationEntity reservation) {

@@ -18,6 +18,17 @@ const AdminModule = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState(''); 
   const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+const [errorMessage, setErrorMessage] = useState('');
+
+const openErrorModal = (message) => {
+    setErrorMessage(message);
+    setIsErrorModalOpen(true);
+};
+
+const closeErrorModal = () => {
+    setIsErrorModalOpen(false);
+};
 
   const openAddModal = () => setIsAddAccountModalOpen(true);
   const closeAddModal = () => setIsAddAccountModalOpen(false);
@@ -67,7 +78,7 @@ const AdminModule = () => {
     }
   };
 
-const handleAddAccount = async (event) => {
+  const handleAddAccount = async (event) => {
     event.preventDefault();
     
     const formData = new FormData(event.target);
@@ -77,11 +88,18 @@ const handleAddAccount = async (event) => {
     const department = selectedDepartment || formData.get('department');
 
     if (!email || !password) {
-        console.error("Email and Password are required.");
+        openErrorModal("Email and Password are required.");
         return;
     }
     if (!role || !department) {
-        console.error("Role and Department are required.");
+        openErrorModal("Role and Department are required.");
+        return;
+    }
+
+    // Check if email already exists
+    const emailExists = users.some(user => user.email === email);
+    if (emailExists) {
+        openErrorModal("This email is already in use.");
         return;
     }
 
@@ -104,64 +122,55 @@ const handleAddAccount = async (event) => {
   
         if (response.ok) {
             closeAddModal();
-            fetchUsers();
+            fetchUsers();  
         } else {
-            console.error("Failed to add user");
+            openErrorModal("Failed to add user.");
         }
     } catch (error) {
-        console.error("Failed to add user", error);
+        openErrorModal("Failed to add user.");
     }
+};
+
+
+const handleUpdateAccount = async (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const updatedEmail = formData.get('email');
+
+  // Check if the email already exists in another account
+  const emailExists = users.some(user => user.email === updatedEmail && user.id !== selectedUser.id);
+  if (emailExists) {
+      openErrorModal("This email is already in use.");
+      return;
+  }
+
+  const updatedUser = {
+    department: selectedDepartment || formData.get('department'),
+    email: updatedEmail,
+    role: selectedRole || formData.get('role'),
   };
 
-  const handleUpdateAccount = async (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const updatedUser = {
-      department: selectedDepartment || formData.get('department'),
-      email: formData.get('email'),
-      role: selectedRole || formData.get('role'),
-    };
-  
-    try {
-      const response = await fetch(`https://citumovebackend.up.railway.app/admin/users/update/${selectedUser.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(updatedUser)
-      });
-  
-      if (response.ok) {
-        closeUpdateModal();
-        fetchUsers();  
-      } else {
-        console.error("Failed to update user");
-      }
-    } catch (error) {
-      console.error("Failed to update user", error);
-    }
-  };
+  try {
+    const response = await fetch(`https://citumovebackend.up.railway.app/admin/users/update/${selectedUser.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(updatedUser)
+    });
 
-  const handleDeleteAccount = async () => {
-    try {
-      const response = await fetch(`https://citumovebackend.up.railway.app/admin/users/delete/${userToDelete.id}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-  
-      if (response.ok) {
-        closeDeleteModal();
-        fetchUsers();
-      } else {
-        console.error("Failed to delete user");
-      }
-    } catch (error) {
-      console.error("Failed to delete user", error);
+    if (response.ok) {
+      closeUpdateModal();
+      fetchUsers();  
+    } else {
+      openErrorModal("Failed to update user.");
     }
-  };
+  } catch (error) {
+    openErrorModal("Failed to update user.");
+  }
+};
+
 
   const openUpdateModal = (user) => {
     setSelectedUser(user);
@@ -341,6 +350,16 @@ const handleAddAccount = async (event) => {
           </div>
         </div>
       )}
+
+        {isErrorModalOpen && (
+          <div className="error-modal-overlay" onClick={closeErrorModal}>
+            <div className="error-modal-content" onClick={(e) => e.stopPropagation()}>
+              <h2>Error</h2>
+              <p>{errorMessage}</p>
+              <button onClick={closeErrorModal}>Close</button>
+            </div>
+          </div>
+        )}
     </div>
   );
 };

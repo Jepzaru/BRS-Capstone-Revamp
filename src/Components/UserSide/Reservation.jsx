@@ -195,17 +195,16 @@ const Reservation = () => {
 
   const handleDateSelect = (date) => {
     if (isSelectingReturn) {
-      // Allow selecting the same date or a later date for return schedule
       if (date >= selectedDate || !selectedDate) {
         setReturnScheduleDate(date);
       } else {
         alert('Return schedule date cannot be before the schedule date.');
       }
     } else {
-      // Set the selected date for schedule
+      
       setSelectedDate(date);
       
-      // If return date is set and it's before the selected date, clear it
+ 
       if (returnScheduleDate && returnScheduleDate < date) {
         setReturnScheduleDate(null);
       }

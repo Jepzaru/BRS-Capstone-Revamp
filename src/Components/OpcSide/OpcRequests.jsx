@@ -18,8 +18,8 @@ const OpcRequests = () => {
   const [drivers, setDrivers] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [feedback, setFeedback] = useState('');
-
-  const token = localStorage.getItem('token');
+  
+const token = localStorage.getItem('token');
 
   const fetchHeadIsApprovedRequests = async () => {
     try {
@@ -123,20 +123,17 @@ const OpcRequests = () => {
   };
 
   const handleDriverSelect = (vehicleId, driver) => {
-    if (!driver) return; // Check for null or undefined driver
+    if (!driver) return; 
   
-    // Check if the driver is already assigned to another vehicle in the same request
     const isDriverAssigned = selectedRequest.reservedVehicles.some(vehicle => vehicle.driverId === driver.id && vehicle.id !== vehicleId);
   
-    // Also check if the driver is assigned to the main vehicle (if applicable)
     const isMainVehicleAssigned = selectedDriver && selectedDriver.id === driver.id;
   
     if (isDriverAssigned || isMainVehicleAssigned) {
       alert(`Driver ${driver.driverName} is already assigned to another vehicle.`);
-      return; // Prevent selection if driver is already assigned
+      return; 
     }
   
-    // Update the driver assignment for the selected vehicle
     setSelectedRequest(prevRequest => {
       const updatedVehicles = prevRequest.reservedVehicles.map(vehicle => {
         if (vehicle.id === vehicleId) {
@@ -250,7 +247,7 @@ const OpcRequests = () => {
   };
 
   const handleViewFile = (fileUrl) => {
-    if (fileUrl) {
+    if (fileUrl && fileUrl !== "No file(s) attached" && fileUrl !== 'null') {
       window.open(fileUrl, '_blank');
     } else {
       alert("No file URL available");
@@ -284,6 +281,10 @@ const OpcRequests = () => {
       month: "short", 
       day: "numeric",
     });
+  };
+
+  const allVehiclesHaveDrivers = () => {
+    return selectedRequest?.reservedVehicles.every(vehicle => vehicle.driverId);
   };
 
   return (
@@ -448,23 +449,19 @@ const OpcRequests = () => {
                               <button
                                     className="opc-approve-button"
                                     onClick={() => handleOpenModal(request, 'approve')}
-                                    disabled={updatedStatus === 'Conflict'}
-                                    style={{
-                                      opacity: updatedStatus === 'Conflict' ? 0.5 : 1,
-                                      backgroundColor: updatedStatus === 'Conflict' ? 'black' : 'green', 
-                                      cursor: updatedStatus === 'Conflict' ? 'not-allowed' : 'pointer' 
-                                    }}
                                   >
                                     <FaCircleCheck style={{ marginBottom: "-2px", marginRight: "5px" }} /> Approve
                                   </button>
                                 <button className="opc-reject-button" onClick={() => handleOpenModal(request, 'reject')}>
                                   <IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject
                                 </button>
-                                {request.fileUrl === "No file(s) attached" ? (
-                                  <button className="opc-view-file-button" style={{ fontSize: '10px', fontWeight: 'bold' }}>No file attached</button>
-                                ) : (
-                                  <button onClick={() => handleViewFile(request.fileUrl)} className="opc-view-file-button" style={{ fontSize: '10px', fontWeight: 'bold' }} >
+                                {request.fileUrl && request.fileUrl !== "No file(s) attached" && request.fileUrl !== 'null' ? (
+                                  <button onClick={() => handleViewFile(request.fileUrl)} className="opc-view-file-button" style={{ fontSize: '10px', fontWeight: 'bold' }}>
                                     View File
+                                  </button>
+                                ) : (
+                                  <button className="opc-view-file-button" style={{ fontSize: '10px', fontWeight: 'bold' }} disabled>
+                                    No file attached
                                   </button>
                                 )}
                               </div>
@@ -489,7 +486,7 @@ const OpcRequests = () => {
 
       {modalAction === 'approve' ? (
         <div className="modal-driver-selection">
-          {/* Main Vehicle Driver Selection */}
+       
           <label htmlFor="driver-select">
             <FaBus style={{ color: "#782324", marginRight: "5px", marginBottom: '-2px' }} />
             Main Vehicle:
@@ -501,19 +498,18 @@ const OpcRequests = () => {
               const driverId = e.target.value;
               const driver = drivers.find(driver => String(driver.id) === String(driverId));
 
-              // Check if the driver is already assigned to another vehicle
+            
               const isDriverAssigned = selectedRequest.reservedVehicles.some(vehicle => vehicle.driverId === driver.id);
 
               if (isDriverAssigned) {
                 alert(`Driver ${driver.driverName} is already assigned to another vehicle.`);
-                return; // Prevent selection if driver is already assigned
+                return; 
               }
 
-              // Set the selected driver for the main vehicle
               setSelectedDriver(driver);
             }}
           >
-            <option value="">Select Driver</option>
+            <option value="" disabled selected>Select Driver</option>
             {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
               .map(driver => (
                 <option key={driver.id} value={driver.id}>
@@ -571,13 +567,14 @@ const OpcRequests = () => {
           )}
 
           <div className="modal-buttons">
-            <button
+          <button
               className="modal-accept-button"
               onClick={modalAction === 'approve' ? handleApprove : handleReject}
-              disabled={modalAction === 'approve' ? !selectedDriver : !feedback.trim()}
+              disabled={modalAction === 'approve' ? !allVehiclesHaveDrivers() : !feedback.trim()}
             >
               {modalAction === 'approve' ? 'Approve' : 'Reject'}
             </button>
+
             <button className="modal-close-button" onClick={handleCloseModal}>Cancel</button>
           </div>
         </div>

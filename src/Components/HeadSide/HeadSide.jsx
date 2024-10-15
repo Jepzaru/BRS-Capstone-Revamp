@@ -16,6 +16,7 @@ const HeadSide = () => {
   const [feedback, setFeedback] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   const token = localStorage.getItem('token');
+  const [errorMessage, setErrorMessage] = useState(''); // Error message state
 
   const fetchRequestsData = async () => {
     try {
@@ -117,6 +118,11 @@ const HeadSide = () => {
     setSelectedRequest(null);
     setModalAction(null);
     setFeedback('');
+    setErrorMessage('');
+  };
+
+  const handleViewFileError = () => {
+    setErrorMessage('No file is attached.'); 
   };
 
   useEffect(() => {
@@ -136,6 +142,15 @@ const HeadSide = () => {
   const splitText = (text, maxLength) => {
     const regex = new RegExp(`.{1,${maxLength}}`, 'g');
     return text.match(regex).join('\n');
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short", 
+      day: "numeric",
+    });
   };
 
   return (
@@ -209,8 +224,8 @@ const HeadSide = () => {
                           <div>No Vehicles Added</div>
                         )}
                       </td>
-                      <td>{requests.schedule}</td>
-                      <td>{requests.returnSchedule || 'N/A'}</td>
+                      <td>{requests.schedule ? formatDate(requests.schedule) : 'N/A'}</td>
+                      <td>{requests.returnSchedule && requests.returnSchedule !== "0001-01-01" ? formatDate(requests.returnSchedule) : 'N/A'}</td>
                       <td style={{width: '70px'}}>{requests.departureTime}</td>
                       <td style={{width: '70px'}}>{requests.pickUpTime || 'N/A'}</td>
                       <td>{splitText(requests.reason, 15)}</td>
@@ -223,16 +238,15 @@ const HeadSide = () => {
                           <IoCloseCircle style={{ marginBottom: "-2px", marginRight: "3px", marginLeft: "-5px", fontSize: "16px" }} /> Reject
                         </button>
                         
-                        {requests.fileUrl && requests.fileUrl !== 'No file(s) attached' ? (
+                        {requests.fileUrl && requests.fileUrl !== 'No file(s) attached' && requests.fileUrl !== 'null' ? (
                           <button
                             className="view-file-button"
-                            onClick={() => window.open(requests.fileUrl, '_blank')}  
-                            disabled={!requests.fileUrl}
+                            onClick={() => window.open(requests.fileUrl, '_blank')}
                           >
                             <FaFileAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> View File
                           </button>
                         ) : (
-                          <button className="view-file-button" style={{ fontSize: '10px' }}>
+                          <button className="view-file-button" style={{ fontSize: '10px' }} disabled>
                             No file attached
                           </button>
                         )}
@@ -254,12 +268,6 @@ const HeadSide = () => {
         <div className="modal-content">
           <h2>{modalAction === 'approve' ? 'Approve Request' : 'Reject Request'}</h2>
           <p>Are you sure you want to {modalAction} this request?</p>
-
-          {fileUrl && fileUrl !== 'No file(s) attached' && (
-            <div>
-              <p>Attached File: <a href={fileUrl} target="_blank" rel="noopener noreferrer">View File</a></p>
-            </div>
-          )}
 
           {modalAction === 'approve' ? (
             <div className="modal-approve">
