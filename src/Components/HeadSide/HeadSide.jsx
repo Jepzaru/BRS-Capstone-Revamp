@@ -16,24 +16,23 @@ const HeadSide = () => {
   const [feedback, setFeedback] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   const token = localStorage.getItem('token');
-  const [errorMessage, setErrorMessage] = useState(''); // Error message state
+  const [errorMessage, setErrorMessage] = useState(''); 
 
   const fetchRequestsData = async () => {
     try {
-      const department = localStorage.getItem('department');
-
-      const response = await fetch("https://citumovebackend.up.railway.app/reservations/getAll", {
-        headers: { "Authorization": `Bearer ${token}` },
-      });
-      const data = await response.json();
-      const matchingReservations = data.filter(reservation =>
-        reservation.department === department && !reservation.headIsApproved && !reservation.rejected
-      );
-      setRequests(matchingReservations);
+        const department = localStorage.getItem('department');
+        const response = await fetch("https://citumovebackend.up.railway.app/reservations/getAll", {
+            headers: { "Authorization": `Bearer ${token}` },
+        });
+        const data = await response.json();
+        const matchingReservations = data.filter(reservation =>
+            reservation.department === department && !reservation.headIsApproved && !reservation.rejected
+        ).sort((a, b) => new Date(b.schedule) - new Date(a.schedule));
+        setRequests(matchingReservations);
     } catch (error) {
-      console.error("Failed to fetch requests.", error);
+        console.error("Failed to fetch requests.", error);
     }
-  };
+};
 
   const handleApproveRequests = async () => {
     try {
@@ -137,7 +136,17 @@ const HeadSide = () => {
   };
 
   const handleSortChange = (event) => {
-  };
+    const sortOption = event.target.value;
+    let sortedRequests = [...request];
+
+    if (sortOption === 'scheduleDescending') {
+        sortedRequests.sort((a, b) => new Date(b.schedule) - new Date(a.schedule));
+    } else if (sortOption === 'scheduleAscending') {
+        sortedRequests.sort((a, b) => new Date(a.schedule) - new Date(b.schedule));
+    }
+    
+    setRequests(sortedRequests);
+};
 
   const splitText = (text, maxLength) => {
     const regex = new RegExp(`.{1,${maxLength}}`, 'g');
@@ -174,9 +183,11 @@ const HeadSide = () => {
               <select onChange={handleSortChange} className="sort-dropdown">
                 <option value="">Sort By</option>
                 <option value="alphabetical">Alphabetical</option>
+                <option value="scheduleDescending">Schedule Descending</option>
+                <option value="scheduleAscending">Schedule Ascending</option>
                 <option value="ascending">Capacity Ascending</option>
                 <option value="descending">Capacity Descending</option>
-              </select>
+            </select>
             </div>
           </div>
           <div className='head-container1'>

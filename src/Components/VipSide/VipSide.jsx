@@ -164,15 +164,18 @@ const VipSide = () => {
                 </div>
                 <div className="another-container">
                   <div className="inner-container">
-                    <label className="events-label">📣 Events and Updates</label>
+                  <label className="events-label">📣 Events and Updates</label>
                   </div>
                   <div className="events-list">
                     {events.length > 0 ? (
                       events.map((event, index) => (
                         <div key={index} className="event-item">
-                          <p>{event.eventTitle}</p>
-                          <p>{event.eventDate}</p>
-                          <p>{event.eventDescription}</p>
+                          <p><span style={{fontWeight: "700"}}>
+                          📌 Event Title:</span> {event.eventTitle}</p>
+                          <p>
+                          📅<span style={{fontWeight: "700"}}> Date:</span> {new Date(event.eventDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                          </p>
+                          <p>📜<span style={{fontWeight: "700"}}> Description:</span> {event.eventDescription}</p>
                         </div>
                       ))
                     ) : (

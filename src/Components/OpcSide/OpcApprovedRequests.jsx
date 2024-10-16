@@ -25,7 +25,7 @@ const OpcApprovedRequests = () => {
       const token = localStorage.getItem('token'); 
 
       try {
-        const response = await fetch('https://citumovebackend.up.railway.app/opc-approved', {
+        const response = await fetch('https://citumovebackend.up.railway.app/reservations/opc-approved', {
           headers: { "Authorization": `Bearer ${token}` }
         });
         if (!response.ok) throw new Error("Network response was not ok");
@@ -202,9 +202,10 @@ const OpcApprovedRequests = () => {
                       className={
                         selectedRows.has(request.transactionId) ? 'selected-row' :
                         request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
+                        request.department.trim().toLowerCase() === "office of the vice-president (vip)" ? 'highlight-vip' :
                         request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
                         'default-highlight'
-                      }
+                    }
                     >
                         {confirmMode && (
                           <td>
