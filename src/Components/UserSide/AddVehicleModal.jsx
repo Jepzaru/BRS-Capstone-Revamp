@@ -176,6 +176,7 @@ const fetchMainVehicles = async () => {
                     <button
                       className='addvehicle-select-btn'
                       onClick={() => handleSelectVehicle(vehicle)}
+                      disabled={vehicle.status !== 'Available'}
                     >
                       Select vehicle
                     </button>
