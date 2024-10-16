@@ -97,6 +97,8 @@ body {
   background-color: red;
   table-layout: fixed; 
   overflow-y: scroll;
+  margin: 0; 
+  padding: 0; 
 }
 
 .approved-requests-table th, .approved-requests-table td {
@@ -106,6 +108,7 @@ body {
 }
 .approved-requests-table td{
   font-size: 14px;
+  word-break: break-word;
 }
 
 .approved-requests-table th {

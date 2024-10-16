@@ -18,6 +18,8 @@ const OpcRequests = () => {
   const [drivers, setDrivers] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [feedback, setFeedback] = useState('');
+  const [sortBy, setSortBy] = useState('');
+
   
 const token = localStorage.getItem('token');
 
@@ -84,21 +86,34 @@ const token = localStorage.getItem('token');
   };
 
   const getFilteredAndSortedRequests = () => {
-    const filteredRequests = requests.filter(request =>
-      request.reason.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    switch (sortOption) {
-      case "alphabetical":
-        return filteredRequests.sort((a, b) => a.reason.localeCompare(b.reason));
-      case "ascending":
-        return filteredRequests.sort((a, b) => a.capacity - b.capacity);
-      case "descending":
-        return filteredRequests.sort((a, b) => b.capacity - a.capacity);
-      default:
-        return filteredRequests;
+    let filteredRequests = requests;
+  
+    if (searchTerm) {
+      filteredRequests = filteredRequests.filter((request) =>
+        request.reason.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
+  
+    filteredRequests.sort((a, b) => {
+      const dateA = new Date(a.schedule);
+      const dateB = new Date(b.schedule);
+  
+      return dateA - dateB;
+    });
+  
+    if (sortBy === 'alphabetical') {
+      filteredRequests.sort((a, b) =>
+        a.reason.toLowerCase() > b.reason.toLowerCase() ? 1 : -1
+      );
+    } else if (sortBy === 'ascending') {
+      filteredRequests.sort((a, b) => a.capacity - b.capacity);
+    } else if (sortBy === 'descending') {
+      filteredRequests.sort((a, b) => b.capacity - a.capacity);
+    }
+  
+    return filteredRequests;
   };
+  
 
   const handleOpenModal = (request, action) => {
     setSelectedRequest({
@@ -145,9 +160,6 @@ const token = localStorage.getItem('token');
       return { ...prevRequest, reservedVehicles: updatedVehicles };
     });
   };
-  
-  
-  
   
 
   const handleReject = async () => {

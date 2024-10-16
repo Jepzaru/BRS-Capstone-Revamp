@@ -17,6 +17,7 @@ const OpcApprovedRequests = () => {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [confirmMode, setConfirmMode] = useState(false);
   const [loading, setLoading] = useState(true); 
+  
 
   useEffect(() => {
     const fetchApprovedRequests = async () => {
@@ -24,7 +25,7 @@ const OpcApprovedRequests = () => {
       const token = localStorage.getItem('token'); 
 
       try {
-        const response = await fetch('https://citumovebackend.up.railway.app/reservations/opc-approved', {
+        const response = await fetch('https://citumovebackend.up.railway.app/opc-approved', {
           headers: { "Authorization": `Bearer ${token}` }
         });
         if (!response.ok) throw new Error("Network response was not ok");
@@ -52,7 +53,13 @@ const OpcApprovedRequests = () => {
 
   const sortRequests = (requests) => {
     const filteredRequests = requests.filter(request => request.reason.toLowerCase().includes(searchTerm.toLowerCase()));
-
+  
+    filteredRequests.sort((a, b) => {
+      const dateA = new Date(a.schedule);
+      const dateB = new Date(b.schedule);
+      return dateB - dateA; 
+    });
+  
     switch (sortOption) {
       case "alphabetical":
         return filteredRequests.sort((a, b) => a.reason.localeCompare(b.reason));
@@ -61,9 +68,10 @@ const OpcApprovedRequests = () => {
       case "descending":
         return filteredRequests.sort((a, b) => b.capacity - a.capacity);
       default:
-        return filteredRequests;
+        return filteredRequests; 
     }
   };
+  
 
   const sortedRequests = sortRequests(requests);
 
@@ -228,7 +236,17 @@ const OpcApprovedRequests = () => {
                         <td>{request.departureTime}</td>
                         <td>{request.pickUpTime || "N/A"}</td>
                         <td>{request.driverName || "N/A"}</td>
-                        <td>{request.extraDrivers || "N/A"}</td>
+                        <td>
+                        {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
+                          request.reservedVehicles.map((vehicle, index) => (
+                            <div key={index}>
+                              - {vehicle.driverName || 'N/A'}
+                            </div>
+                          ))
+                        ) : (
+                          <div>No Drivers Added</div>
+                        )}
+                      </td>
                         <td>{request.reason}</td>
                       </tr>
                     ))

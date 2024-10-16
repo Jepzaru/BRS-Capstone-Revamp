@@ -195,6 +195,17 @@ body {
   color: rgb(255, 145, 0);
   font-weight: 800;
 }
+
+.status-approved {
+  color: green;
+  font-weight: 800;
+}
+
+.status-rejected {
+  color: red;
+  font-weight: 800;
+}
+
 .status-approved {
   color: green;
   font-weight: 800;

@@ -291,6 +291,16 @@ body {
   justify-content: space-evenly;
 }
 
+.vehicle-input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
 @keyframes slideUp {
   from {
     transform: translateY(0);

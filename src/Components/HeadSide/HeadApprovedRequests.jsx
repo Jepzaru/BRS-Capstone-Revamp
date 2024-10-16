@@ -14,23 +14,25 @@ const HeadApprovedRequests = () => {
 
   const fetchApprovedRequests = async () => {
     try {
-      const response = await fetch("https://citumovebackend.up.railway.app/reservations/getAll", {
+      const response = await fetch("https://citumovebackend.up.railway.app/reservations/head-approved", {
         headers: { 
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
         },
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
       const data = await response.json();
+      
       const approvedReservations = data.filter(reservation => 
         reservation.department === department && reservation.headIsApproved
       );
-
+  
       console.log("Approved Reservations:", approvedReservations);
-
+  
       setRequests(approvedReservations.reverse()); 
       setLoading(false);
     } catch (error) {
@@ -38,8 +40,8 @@ const HeadApprovedRequests = () => {
       setError(error.message);
       setLoading(false);
     }
-  };
 
+  };
   useEffect(() => {
     fetchApprovedRequests();
   }, [token, department]); 
@@ -57,8 +59,6 @@ const HeadApprovedRequests = () => {
 
   const getDisplayedRequests = () => {
     let filteredRequests = requests;
-  
-    filteredRequests = filteredRequests.filter(request => request.status === "Approved");
   
     if (searchTerm.trim() !== "") {
       filteredRequests = filteredRequests.filter(request => 
@@ -146,7 +146,7 @@ const HeadApprovedRequests = () => {
                 <tbody>
                   {getDisplayedRequests().length === 0 ? (
                     <tr>
-                      <td colSpan="13" className="no-requests">No Approved Requests Available</td>
+                      <td colSpan="14" className="no-requests">No Approved Requests Available</td>
                     </tr>
                   ) : (
                     getDisplayedRequests().map((request, index) => (
@@ -174,8 +174,8 @@ const HeadApprovedRequests = () => {
                         <td>{request.departureTime}</td>
                         <td>{request.pickUpTime || 'N/A'}</td>
                         <td>{request.reason}</td>
-                        <td className={request.status === 'Pending' ? 'status-pending' : request.status === 'Approved' ? 'status-approved' : ''}>
-                        {request.status}
+                        <td className={request.status === 'Pending' ? 'status-pending' : request.status === 'Approved' ? 'status-approved' :  request.status === 'Rejected' ? 'status-rejected' : ''}>
+                        {request.status} by OPC
                       </td>
                       </tr>
                     ))
