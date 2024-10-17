@@ -172,6 +172,9 @@ const handleUpdateAccount = async (event) => {
 };
 
 
+
+
+
   const openUpdateModal = (user) => {
     setSelectedUser(user);
     setSelectedRole(user.role); 
@@ -215,6 +218,28 @@ const handleUpdateAccount = async (event) => {
     const fullName = `${getFirstName(user.email)} ${getLastName(user.email)}`.toLowerCase();
     return fullName.includes(searchQuery.toLowerCase()) || user.email.toLowerCase().includes(searchQuery.toLowerCase());
   });
+
+  const handleDeleteAccount = async () => {
+    if (!userToDelete) return;
+  
+    try {
+      const response = await fetch(`https://citumovebackend.up.railway.app/admin/users/delete/${userToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+  
+      if (response.ok) {
+        fetchUsers();
+        closeDeleteModal();
+      } else {
+        openErrorModal("Failed to delete the user.");
+      }
+    } catch (error) {
+      openErrorModal("An error occurred while deleting the user.");
+    }
+  };
 
   return (
     <div className="admin">
