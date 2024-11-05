@@ -24,7 +24,8 @@ const titleMap = {
   '/opc-settings': 'Settings - CIT-U Transportation Reservation System',
   '/vip-side': 'Vip - CIT-U Transportation Reservation System',
   '/vip-side/special-reservation': 'Special Reservation - CIT-U Transportation Reservation System',
-  '/vip-manage-requests': 'Manage Requests - CIT-U Transportation Reservation System'
+  '/vip-manage-requests': 'Manage Requests - CIT-U Transportation Reservation System',
+  '/forgot-password': 'Forgot Password - CIT-U Transportation Reservation System'
 };
 
 const TitleManager = () => {

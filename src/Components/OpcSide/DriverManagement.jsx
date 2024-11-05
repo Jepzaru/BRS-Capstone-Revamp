@@ -3,13 +3,13 @@ import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
 import { IoSearch } from "react-icons/io5";
-import { FaSortAlphaDown, FaPhoneAlt, FaCalendarDay, FaCalendarMinus } from "react-icons/fa";
-import { BsPersonFillAdd } from "react-icons/bs";
-import { PiSteeringWheelFill } from "react-icons/pi";
+import { FaSortAlphaDown } from "react-icons/fa";
+import { BsPersonFillAdd, BsFillPersonFill } from "react-icons/bs";
+import { PiSteeringWheelFill} from "react-icons/pi";
 import { IoIosCloseCircle, IoMdPerson } from "react-icons/io";
 import { MdOutlineSystemUpdateAlt, MdOutlineRadioButtonChecked } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { RiAlarmWarningFill } from "react-icons/ri";
+import { RiReservedFill } from "react-icons/ri";
 import '../../CSS/OpcCss/DriverManagement.css';
 
 const getCurrentDate = () => {
@@ -39,6 +39,15 @@ const DriverManagement = () => {
   const minDate = getCurrentDate();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('');
+  const [selectedDriver, setSelectedDriver] = useState("all"); 
+  const [reservations, setReservations] = useState([]); 
+  const [selectedDriverName, setSelectedDriverName] = useState("all");
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [reservationIdToComplete, setReservationIdToComplete] = useState(null);
+  
+
 
   const token = localStorage.getItem('token');
 
@@ -56,6 +65,49 @@ const DriverManagement = () => {
     }
     fetchDriverDetails();
   }, [token]);
+
+  
+  useEffect(() => {
+    const fetchReservations = async () => {
+        try {
+            const response = await fetch(`https://citumovebackend.up.railway.app/reservations/opc-approved`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const data = await response.json();
+            
+            const filteredReservations = selectedDriver === "all" 
+                ? data 
+                : data.filter(reservation => reservation.driver_id === parseInt(selectedDriver, 10));
+
+            
+            setReservations(filteredReservations);
+        } catch (error) {
+            console.error("Error fetching reservations:", error);
+        }
+    };
+
+    fetchReservations();
+}, [selectedDriver, token]); 
+
+
+  const driverNames = Array.from(new Set(reservations.map(reservation => reservation.driverName))).filter(Boolean);
+
+ 
+  const filteredList = selectedDriverName === "all"
+    ? reservations
+    : reservations.filter(reservation => reservation.driverName === selectedDriverName);
+
+  const handleDriverChange = (event) => {
+    setSelectedDriver(event.target.value);
+    console.log("Selected Driver ID:", event.target.value); 
+  };
+  
+  const filteredReservations = selectedDriver === 'all'
+  ? reservations
+  : reservations.filter(reservation => {
+      console.log('Checking reservation:', reservation);
+      return reservation.driverId === Number(selectedDriver); 
+    });
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -166,6 +218,54 @@ const DriverManagement = () => {
     }
   };
 
+  const openConfirmModal = (reservationId) => {
+    setReservationIdToComplete(reservationId);
+    setIsConfirmModalOpen(true);
+  };
+
+  const closeConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+    setReservationIdToComplete(null);
+  };
+
+  const closeMessageModal = () => {
+    setIsMessageModalOpen(false);
+    window.location.reload();  
+  };
+
+  const handleComplete = async () => {
+    closeConfirmModal();
+
+    try {
+      const response = await fetch(`https://citumovebackend.up.railway.app/user/reservations/complete/${reservationIdToComplete}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to complete reservation: ${response.status} ${errorText}`);
+      }
+
+      setReservations(prevReservations =>
+        prevReservations.map(reservation =>
+          reservation.id === reservationIdToComplete ? { ...reservation, is_completed: 1, status: 'Completed' } : reservation
+        )
+      );
+
+      setModalMessage("Reservation completed successfully!");
+      setIsMessageModalOpen(true);
+
+    } catch (error) {
+      console.error("Failed to complete reservation:", error);
+      setModalMessage(error.message);
+      setIsMessageModalOpen(true);
+    }
+  };
+
   const sortedDrivers = [...drivers].sort((a, b) => {
     switch (sortOption) {
       case 'alphabetical':
@@ -224,51 +324,161 @@ const DriverManagement = () => {
               <button className='add-driver-btn' onClick={openModal}><BsPersonFillAdd style={{ marginRight: "10px", marginBottom: "-2px" }} />Add new Driver</button>
             </div>
           </div>
-          <div className='driver-list-container'>
-            <table className="driver-table">
+          <div class="driver-management-wrapper">
+                <div className='driver-list-container'>
+                  <div className="driver-schedlist">
+                    <h3>
+                      <BsFillPersonFill style={{ color: "#782324", marginRight: "15px", marginBottom: "-2px" }} />
+                      Driver List
+                    </h3>
+                  </div>
+                  <div className='driver-table-container'>
+                    <table className="driver-table">
+                      <thead>
+                        <tr>
+                          <th> Driver Name</th> 
+                          <th> Phone Number</th>
+                          <th> Status</th>
+                          <th> Start Leave Date</th>
+                          <th> End Leave Date</th>
+                          <th> Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredDrivers.length === 0 ? (
+                          <tr>
+                            <td colSpan="6" className="no-driver">
+                              <PiSteeringWheelFill style={{ fontSize: "24px", marginBottom: "-2px" }} /> No Driver Registered
+                            </td>
+                          </tr>
+                        ) : (
+                          filteredDrivers.map((driver) => (
+                            <tr key={driver.id}>
+                              <td>{driver.driverName}</td>
+                              <td>{driver.contactNumber}</td>
+                              <td style={{ 
+                                  fontWeight: '700', 
+                                  color: driver.status === 'Available' ? 'green' : driver.status === "Unavailable" ? 'red' : 'orange' 
+                                }}>
+                                {driver.status}
+                              </td>
+                              <td>{driver.leaveStartDate ? formatDate(driver.leaveStartDate) : 'N/A'}</td>
+                              <td>{driver.leaveEndDate ? formatDate(driver.leaveEndDate) : 'N/A'}</td>
+                              <td className="td-action">
+                                <div className="button-container">
+                                  <button className="driver-update-button" onClick={() => openUpdateModal(driver)}>
+                                    <MdOutlineSystemUpdateAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Update
+                                  </button>
+                                  <button className="driver-delete-button" onClick={() => openDeleteModal(driver.id)}>
+                                    <FaRegTrashAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Delete
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+          <div className="driver-reservations">
+          <div className="driver-schedlist">
+                  <h3>
+                    <RiReservedFill style={{ color: "#782324", marginRight: "15px", marginBottom: "-2px" }} />
+                    Driver Reservations
+                  </h3>
+                  <BsFillPersonFill style={{ color: "#782324", marginLeft: "300px", marginBottom: "-2px" }} />
+                <select className="reservation-filter"
+                  value={selectedDriverName}
+                  onChange={(e) => setSelectedDriverName(e.target.value)}
+                >
+                  <option value="all">All Drivers</option>
+                  {driverNames.map(driver => (
+                    <option key={driver} value={driver}>{driver}</option>
+                  ))}
+                </select>
+                </div>
+          <div className='driver-table-container'>
+          <table className="driver-table">
               <thead>
                 <tr>
-                  <th><IoMdPerson style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Driver Name</th> 
-                  <th> <FaPhoneAlt style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Phone Number</th>
-                  <th> <RiAlarmWarningFill style={{color: 'maroon', marginRight: '5px'}}/> Status</th>
-                  <th> <FaCalendarDay style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Start Leave Date</th>
-                  <th> <FaCalendarMinus style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> End Leave Date</th>
-                  <th> <MdOutlineRadioButtonChecked style={{color: 'maroon', marginBottom: '-2px', marginRight: '5px'}}/> Action</th>
+                  <th>Driver</th>
+                  <th>Vehicle</th>
+                  <th>Schedule</th>
+                  <th>Departure Time</th>
+                  <th>Return Schedule</th>
+                  <th>Pick-Up Time</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredDrivers.length === 0 ? (
+                {filteredList.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="no-driver">
-                      <PiSteeringWheelFill style={{ fontSize: "24px", marginBottom: "-2px" }} /> No Driver Registered
-                    </td>
+                    <td colSpan="7">No reservations available for the selected driver.</td>
                   </tr>
                 ) : (
-                  filteredDrivers.map((driver) => (
-                    <tr key={driver.id}>
-                      <td>{driver.driverName}</td>
-                      <td>{driver.contactNumber}</td>
-                      <td style={{ 
-                          fontWeight: '700', 
-                          color: driver.status === 'Available' ? 'green' : driver.status === "Unavailable" ? 'red' : 'orange' 
-                        }}>
-                          {driver.status}
-                      </td>
-                      <td>{driver.leaveStartDate ? formatDate(driver.leaveStartDate) : 'N/A'}</td>
-                      <td>{driver.leaveEndDate ?formatDate(driver.leaveEndDate) : 'N/A'}</td>
-                      <td className='td-action'>
-                        <button className="update-button" onClick={() => openUpdateModal(driver)}>
-                          <MdOutlineSystemUpdateAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Update
-                        </button>
-                        <button className="delete-button" onClick={() => openDeleteModal(driver.id)}>
-                          <FaRegTrashAlt style={{ marginBottom: "-2px", marginRight: "5px" }} /> Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                  filteredList
+                    .sort((a, b) => {
+                      if (a.isCompleted === b.isCompleted) {
+                        return new Date(b.schedule) - new Date(a.schedule);
+                      }
+                      return a.isCompleted - b.isCompleted;
+                    })
+                    .map(reservation => (
+                      <tr key={reservation.id}>
+                        <td>
+                          <span style={{backgroundColor: "#782324", color: "gold", padding: "3px 5px", borderRadius: "50px", fontSize: "10px", marginRight:"3px", fontWeight: "700"}}>
+                            1
+                          </span>
+                          <span style={{color: "#782324", fontWeight: "700"}}>{reservation.driverName || 'N/A'}</span>
+                          {reservation.reservedVehicles && reservation.reservedVehicles.length > 0 && (
+                            <div style={{ marginTop: "5px" }}>
+                              {reservation.reservedVehicles.map((vehicle, index) => (
+                                <div key={index + 1} style={{marginTop: "5px"}}>
+                                  <span style={{backgroundColor: "#782324", color: "gold", padding: "3px 5px", borderRadius: "50px", fontSize: "10px", marginRight:"3px", fontWeight: "700"}}>{index + 2}</span> 
+                                  <span style={{ color: "#782324", fontWeight: "700" }}>{vehicle.driverName}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          </td>
+                        <td>
+                          <div>
+                          <span style={{backgroundColor: "#782324", color: "gold", padding: "3px 5px", borderRadius: "50px", fontSize: "10px", marginRight:"3px", fontWeight: "700"}}>
+                            1
+                          </span>
+                          <span style={{ color: "#782324", fontWeight: "700" }}>{reservation.vehicleType || 'N/A'}</span> : 
+                            <span style={{ color: "green", fontWeight: "700" }}> {reservation.plateNumber || 'N/A'}</span>
+                          </div>
+                          {reservation.reservedVehicles && reservation.reservedVehicles.length > 0 && (
+                            <div style={{ marginTop: "5px" }}>
+                              {reservation.reservedVehicles.map((vehicle, index) => (
+                                <div key={index + 1}>
+                                  <span style={{backgroundColor: "#782324", color: "gold", padding: "3px 5px", borderRadius: "50px", fontSize: "10px", marginRight:"3px", fontWeight: "700"}}>{index + 2}</span> 
+                                  <span style={{ color: "#782324", fontWeight: "700" }}>{vehicle.vehicleType}</span> : <span style={{ color: "green", fontWeight: "700" }}>{vehicle.plateNumber}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </td>
+                        <td>{reservation.schedule ? new Date(reservation.schedule).toLocaleDateString() : 'N/A'}</td>
+                        <td>{reservation.departureTime || 'N/A'}</td>
+                        <td>{reservation.returnSchedule ? new Date(reservation.returnSchedule).toLocaleDateString() : 'N/A'}</td>
+                        <td>{reservation.pickUpTime || 'N/A'}</td>
+                        <td>
+                          {reservation.isCompleted === true ? (
+                            <span style={{ color: 'green', fontWeight: 'bold' }}>{reservation.status}</span>
+                          ) : (
+                            <button className="complete-button" onClick={() => openConfirmModal(reservation.id)}>Complete</button>
+                          )}
+                        </td>
+                      </tr>
+                    ))
                 )}
               </tbody>
             </table>
+              </div>
+              </div>
           </div>
           <img src={logoImage1} alt="Logo" className="driver-logo-image" />
         </div>
@@ -378,34 +588,34 @@ const DriverManagement = () => {
           </select>
 
           {updateDriverStatus === 'On leave' && (
-          <div className="leave-date-container">
-            <div>
-              <label htmlFor='leave-start-date'>Start Leave Date</label>
-              <input
-                type="date"
-                id="leave-start-date"
-                value={updateLeaveStartDate}
-                onChange={(e) => setUpdateLeaveStartDate(e.target.value)}
-                className="driver-input"
-                min={minDate}
-                required
-              />
+            <div className="leave-date-container">
+              <div>
+                <label htmlFor='leave-start-date'>Start Leave Date</label>
+                <input
+                  type="date"
+                  id="leave-start-date"
+                  value={updateLeaveStartDate}
+                  onChange={(e) => setUpdateLeaveStartDate(e.target.value)}
+                  className="driver-input"
+                  required
+                  min={new Date().toISOString().split("T")[0]} 
+                />
+              </div>
+              <div>
+                <label htmlFor='leave-end-date'>End Leave Date</label>
+                <input
+                  type="date"
+                  id="leave-end-date"
+                  value={updateLeaveEndDate}
+                  onChange={(e) => setUpdateLeaveEndDate(e.target.value)}
+                  className="driver-input"
+                  required
+                  min={updateLeaveStartDate || new Date().toISOString().split("T")[0]} 
+                  disabled={!updateLeaveStartDate} 
+                />
+              </div>
             </div>
-            <div>
-              <label htmlFor='leave-end-date'>End Leave Date</label>
-              <input
-                type="date"
-                id="leave-end-date"
-                value={updateLeaveEndDate}
-                onChange={(e) => setUpdateLeaveEndDate(e.target.value)}
-                className="driver-input"
-                min={minDate}
-                required
-              />
-            </div>
-          </div>
-        )}
-
+          )}
           <button className="add-driver-btn-modal">Update Driver</button>
         </div>
       </form>
@@ -422,6 +632,33 @@ const DriverManagement = () => {
               <button className="delete-button-confirm" onClick={() => handleDeleteDriver(selectedDriverId)}>Delete</button>
             </div>
           </div>
+        </div>
+      )}
+
+{isConfirmModalOpen && (
+  <div className="driver-modal-overlay">
+        <div className="confirm-modal">
+          <div className="confirm-modal-content">
+            <h2>Are you sure to complete this reservation?</h2>
+            <div className="driver-modal-buttons">
+            <button className="cancel-button" onClick={closeConfirmModal}>No</button>
+            <button className="yes-button-confirm" onClick={handleComplete}>Yes</button>
+            </div>
+          </div>
+        </div>
+        </div>
+      )}
+
+{isMessageModalOpen && (
+  <div className="driver-modal-overlay">
+        <div className="msg-modal">
+          <div className="msg-modal-content">
+            <h2>{modalMessage}</h2>
+            <div className="driver-modal-buttons">
+            <button className="yes-button-confirm" onClick={closeMessageModal}>OK</button>
+          </div>
+          </div>
+        </div>
         </div>
       )}
     </div>

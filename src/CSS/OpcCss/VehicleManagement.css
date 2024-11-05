@@ -97,9 +97,16 @@ body {
   font-weight: 700;
 }
 
+.vehicle-management-wrapper {
+  display: flex;
+  gap: 20px; 
+  justify-content: space-between;
+  margin: 0 auto;
+}
+
 .vehicle-list-container {
   background-color: #CBC3C3;
-  width: 1400px;
+  width: 900px;
   height: 680px;
   border-radius: 10px;
   padding: 20px;
@@ -109,23 +116,72 @@ body {
   justify-content: center;
 }
 
+.vehicle-table-container {
+  max-height: 600px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+  background-color: white;
+}
+
+.vehicle-reservations {
+  background-color: #CBC3C3; 
+  width: 550px; 
+  height: 680px;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.vehicle-schedlist{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  width: 899px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.vehicle-schedlist h3{
+  margin-left: 15px;
+}
+
+.vehicle-schedlist2{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  width: 550px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.vehicle-schedlist2 h3{
+  margin-left: 15px;
+}
+
 .vehicle-table {
   width: 100%;
   border-collapse: collapse;
   background-color: white;
   height: 700px;
+  font-size: 12px;
 }
 
 .vehicle-table thead {
   background-color: #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .vehicle-table tbody {
   display: block;
   max-height: 630px; 
   width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .vehicle-table thead, .vehicle-table tbody tr {
@@ -153,9 +209,10 @@ body {
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 8px 16px;
+  padding: 8px 12px;
   cursor: pointer;
   margin-right: 5px;
+  font-size: 12px;
 }
 
 .update-button {
@@ -163,12 +220,13 @@ body {
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 8px 16px;
+  padding: 8px 12px;
   cursor: pointer;
   margin-right: 5px;
+  font-size: 12px;
 }
 
-.update-button:hover, .delete-button:hover {
+.delete-button:hover {
   background-color: #5b1a1a;
 }
 
@@ -293,7 +351,6 @@ body {
 
 .vehicle-input {
   display: block;
-  width: 100%;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
@@ -364,4 +421,69 @@ body {
 
 .cancel-button:hover {
   background-color: #bbb;
+}
+
+.maintenance-date-container{
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.complete-btn{
+  background-color: green;
+  color: #f4f4f4;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.complete-btn:hover{
+  background-color: rgba(0, 128, 0, 0.63);
+  transition: background-color 0.3s;
+}
+
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirm-modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
+
+.confirm-modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.confirm-button {
+  background-color: green;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background-color: gray;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }

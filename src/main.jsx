@@ -12,6 +12,7 @@ import UserSide from './Components/UserSide/UserSide';
 import Settings from './Components/UserSide/Settings';
 import HeadSettings from './Components/HeadSide/HeadSettings';
 import Reservation from './Components/UserSide/Reservation';
+import ForgotPassword from './Components/ForgotPassword';
 import HeadSide from './Components/HeadSide/HeadSide';
 import OpcDashboard from './Components/OpcSide/OpcDashboard';
 import OpcRequests from './Components/OpcSide/OpcRequests';
@@ -55,6 +56,7 @@ const Main = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/user-authentication" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/vip-side/special-reservation" element={<ProtectedRoute path="/vip-side/special-reservation" element={<VipSpecialReservation  />} />} />
         <Route path="/vip-side" element={<ProtectedRoute path="/vip-side" element={<VipSide />} />} />
         <Route path="/vip-settings" element={<ProtectedRoute path="/vip-settings" element={<VipSettings />} />} />

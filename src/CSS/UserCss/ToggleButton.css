@@ -1,26 +1,25 @@
 .toggle-button {
-    position: fixed;
-    top: 10px;
-    left: 15px;
-    background-color: gold;
-    color: #782324;
-    border: none;
-    padding: 5px 15px;
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 1001;
-    font-weight: bolder;
-    border-radius: 10px;
-  }
+  position: fixed;
+  top: 10px;
+  left: 15px;
+  background-color: gold;
+  color: #782324;
+  border: none;
+  padding: 5px 15px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+  font-weight: bolder;
+  border-radius: 10px;
+}
 
-  .toggle-button:hover{
-    background-color: white;
-    transition: background-color 0.3s;
+.toggle-button:hover{
+  background-color: white;
+  transition: background-color 0.3s;
+}
+
+@media (min-width: 768px) {
+  .toggle-button {
+    display: none;
   }
-  
-  @media (min-width: 768px) {
-    .toggle-button {
-      display: none;
-    }
-  }
-  
+}

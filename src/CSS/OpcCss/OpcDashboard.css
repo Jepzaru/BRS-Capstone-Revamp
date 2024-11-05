@@ -99,12 +99,41 @@ body {
 
 .full-width-container {
     margin-top: 20px; 
-    width: 65%;
+    width: 64%;
     padding: 10px;
     background-color: #ddd;
-    box-sizing: border-box;
     border-radius: 10px;
 }
+
+.container-header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;  
+    justify-content: space-between; 
+}
+
+.filter-container {
+    display: flex;
+    align-items: center;  
+    margin-left: 30px; 
+
+}
+
+.filter-container label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.filter-container select {
+    padding: 5px;
+    margin-right: 10px;  
+}
+
+.filter-container select {
+    padding: 5px;
+    margin-right: 10px;  
+}
+
 
 .additional-container {
     margin-top: 20px; 
@@ -112,7 +141,12 @@ body {
     background-color: #ddd;
     box-sizing: border-box;
     border-radius: 10px;
-
+}
+.bar-chart-container{
+    margin-top: 5px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
 }
 
 

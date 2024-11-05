@@ -14,8 +14,25 @@ body {
   display: flex;
   flex: 1;
   padding: 20px;
-  margin-left: 300px;
+  margin-left: 300px; 
   margin-top: 50px;
+}
+
+.complete-button{
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 80px;
+  transition: background-color 0.3s;
+  background-color: #2a612c;  
+  color: white;
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.complete-button:hover{
+  background-color: #4CAF50;
 }
 
 .driver1 {
@@ -94,12 +111,12 @@ body {
 .add-driver-btn:hover {
   background-color: #5b1a1a;
   transition: background-color 0.3s;
-  font-weight: 700;
+
 }
 
 .driver-list-container {
   background-color: #CBC3C3;
-  width: 1400px;
+  width: 750px;
   height: 680px;
   border-radius: 10px;
   padding: 20px;
@@ -109,29 +126,98 @@ body {
   justify-content: center;
 }
 
+.driver-management-wrapper {
+  display: flex;
+  flex-direction: row; 
+  gap: 20px; 
+  justify-content: space-between;
+}
+
+.driver-reservations {
+  background-color: #CBC3C3; 
+  width: 715px; 
+  height: 680px;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.driver-schedlist {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  width: 732px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  z-index: 10; 
+}
+
+.driver-schedlist h3{
+  margin-left: 15px;
+}
+
+.reservation-filter {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  color: #333;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.reservation-filter:hover {
+  background-color: #e0e0e0;
+}
+
+.driver-table-container {
+  max-height: 600px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+  background-color: white;
+}
+
+.driver-list-container, .driver-reservations {
+  flex: 1; 
+  min-width: 350px; 
+}
+
 .driver-table {
-  width: 100%;
+  width: 100%; 
+  border-collapse: collapse;
+}
+
+.driver-table {
+  width: calc(100% - 2px); 
   border-collapse: collapse;
   background-color: white;
   height: 700px;
+  padding-right: 15px; 
+  box-sizing: border-box; 
 }
 
 .driver-table thead {
   background-color: #ddd;
+  position: sticky; 
+  top: 0; 
 }
 
 .driver-table tbody {
-  display: block;
-  max-height: 630px; 
+  display: block; 
+  max-height: 550px; 
   width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .driver-table thead, .driver-table tbody tr {
   display: table;
   width: 100%;
   table-layout: fixed;
+  font-size: 13px;
 }
 
 .driver-table th, .driver-table td {
@@ -148,7 +234,20 @@ body {
   background-color: #f9f9f9;
 }
 
-.delete-button {
+
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; 
+}
+
+.driver-update-button,
+.driver-delete-button {
+  width: 100%; 
+}
+
+.driver-delete-button {
   background-color: #782324;
   color: white;
   border: none;
@@ -156,9 +255,10 @@ body {
   padding: 8px 12px;
   cursor: pointer;
   margin-right: 5px;
+  font-size: 12px;
 }
 
-.update-button {
+.driver-update-button {
   background-color: rgb(0, 104, 0) !important;
   color: white;
   border: none;
@@ -166,6 +266,7 @@ body {
   padding: 8px 12px;
   cursor: pointer;
   margin-right: 5px;
+  font-size: 12px;
 }
 
 .update-button:hover, .delete-button:hover {
@@ -225,6 +326,21 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+}
+
+.confirm-modal-content,
+.msg-modal-content{
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+}
+
+.driver-modal-buttons {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 20px;
 }
 
 .driver-modal {
@@ -293,14 +409,21 @@ body {
 }
 
 .leave-date-container {
+  margin-left: 30px;
   display: flex;
-  gap: 20px; 
-
+  gap: 70px; 
+  align-items: center;
 }
 
-.leave-date-container label {
-  margin-right: 5px; 
+.yes-button-confirm {
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
 }
+
 
 .driver-input {
   flex: 1;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '../UserSide/Header';
 import VipSideNavbar from './VipSideNavbar';
 import Skeleton from 'react-loading-skeleton';
+import ReserveCalendar from '../UserSide/ReserveCalendar';
 import 'react-loading-skeleton/dist/skeleton.css';
 import logoImage1 from '../../Images/citbglogo.png';
 import vehicleImage from '../../Images/Vehicle1.jpg'; 
@@ -13,10 +14,9 @@ import vehiclesubImage4 from "../../Images/coasterimage.jpg";
 import vehiclesubImage5 from "../../Images/coasterimage2.jpg";
 import vehiclesubImage6 from "../../Images/coasterimage3.jpg";
 import defaultVehicleImage from "../../Images/defualtVehicle.png";
-import { BiSolidDiamond } from "react-icons/bi";
 import { FaBook, FaBus } from "react-icons/fa";
 import '../../CSS/UserCss/UserSide.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const VipSide = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -163,6 +163,9 @@ const VipSide = () => {
                   ))}
                 </div>
                 <div className="another-container">
+                <div className="user-calendar-events">
+                <ReserveCalendar />
+              </div>
                   <div className="inner-container">
                   <label className="events-label">📣 Events and Updates</label>
                   </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -10,7 +10,7 @@ import { GiCarSeat } from "react-icons/gi";
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import '../../CSS/OpcCss/OpcDashboard.css';
-import LoadingScreen from '../../Components/UserSide/LoadingScreen'; 
+import LoadingScreen from '../../Components/UserSide/LoadingScreen';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -18,10 +18,10 @@ const useCounter = (target, duration, startCounting) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!startCounting) return; 
+    if (!startCounting) return;
     const stepTime = Math.abs(Math.floor(duration / target));
     const timer = setInterval(() => {
-      setCount((prevCount) => {
+      setCount(prevCount => {
         const newCount = Math.min(prevCount + 1, target);
         if (newCount >= target) {
           clearInterval(timer);
@@ -29,7 +29,7 @@ const useCounter = (target, duration, startCounting) => {
         return newCount;
       });
     }, stepTime);
-    
+
     return () => clearInterval(timer);
   }, [target, duration, startCounting]);
 
@@ -39,78 +39,49 @@ const useCounter = (target, duration, startCounting) => {
 const OpcDashboard = () => {
   const [drivers, setDrivers] = useState([]);
   const [vehicles, setVehicles] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [requests, setRequests] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [startCounting, setStartCounting] = useState(false);
-  const requestCount = useCounter(requests.length, 1000, startCounting);
-  const driverCount = useCounter(drivers.length, 1000, startCounting);
-  const vehicleCount = useCounter(vehicles.length, 1000, startCounting);
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
 
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    const fetchNumberOfDrivers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("https://citumovebackend.up.railway.app/opc/driver/getAll", {
-          headers: {"Authorization" : `Bearer ${token}`}
-        });
-        const data = await response.json();
-        setDrivers(data);
+        const [driversRes, vehiclesRes, requestsRes] = await Promise.all([
+          fetch("https://citumovebackend.up.railway.app/opc/driver/getAll", { headers: { "Authorization": `Bearer ${token}` } }),
+          fetch("https://citumovebackend.up.railway.app/vehicle/getAll", { headers: { "Authorization": `Bearer ${token}` } }),
+          fetch("https://citumovebackend.up.railway.app/reservations/getAll", { headers: { "Authorization": `Bearer ${token}` } })
+        ]);
+
+        const driversData = await driversRes.json();
+        const vehiclesData = await vehiclesRes.json();
+        const requestsData = await requestsRes.json();
+
+        setDrivers(driversData);
+        setVehicles(vehiclesData);
+        setRequests(requestsData);
+        setStartCounting(true);
       } catch (error) {
-        console.error("Failed to fetch driver details.", error);
+        console.error("Failed to fetch data.", error);
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchNumberOfDrivers();
+    fetchData();
   }, [token]);
 
-  useEffect(() => {
-    const fetchNumberOfVehicles = async () => {
-      try {
-        const response = await fetch("https://citumovebackend.up.railway.app/vehicle/getAll", {
-          headers: {"Authorization" : `Bearer ${token}`}
-        });
-        const data = await response.json();
-        setVehicles(data);
-      } catch (error) {
-        console.error("Failed to fetch vehicle data", error);
-      }
-    };
-    fetchNumberOfVehicles();
-  }, [token]);
+  const handleMonthChange = (e) => setMonth(e.target.value);
+  const handleYearChange = (e) => setYear(e.target.value);
 
-  useEffect(() => {
-    const fetchNumbersOfRequests = async () => {
-      try {
-        const response = await fetch("https://citumovebackend.up.railway.app/reservations/getAll", {
-          headers: {"Authorization" : `Bearer ${token}`}
-        });
-        const data = await response.json();
-        setRequests(data);
-      } catch (error) {
-        console.error("Failed to fetch numbers of requests.", error);
-      }
-    };
-    fetchNumbersOfRequests();
-  }, [token]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      setStartCounting(true); 
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
+  // Define countReservationsPerDepartment here
   const countReservationsPerDepartment = (reservations) => {
     const counts = {};
     reservations.forEach(request => {
       const department = request.department;
-      if (counts[department]) {
-        counts[department]++;
-      } else {
-        counts[department] = 1;
-      }
+      counts[department] = (counts[department] || 0) + 1;
     });
     return counts;
   };
@@ -123,14 +94,26 @@ const OpcDashboard = () => {
     'College of Nursing and Allied Health Sciences': 'CNAHS',
     'College of Criminal Justice': 'CCJ',
   };
-  
-  const reservationCounts = countReservationsPerDepartment(requests);
-  
-  
+
+  const filteredReservations = useMemo(() => {
+    return requests.filter(request => {
+      const reservationDate = new Date(request.date);
+      const reservationMonth = reservationDate.getMonth() + 1;
+      const reservationYear = reservationDate.getFullYear();
+
+      return (month ? reservationMonth === Number(month) : true) &&
+             (year ? reservationYear === Number(year) : true);
+    });
+  }, [requests, month, year]);
+
+  const reservationCounts = useMemo(() => {
+    return countReservationsPerDepartment(filteredReservations);
+  }, [filteredReservations]);
+
   const labels = Object.keys(reservationCounts).map(department => departmentAcronyms[department] || department);
-  
-  const data = {
-    labels: labels,  
+
+  const data = useMemo(() => ({
+    labels: labels,
     datasets: [
       {
         label: 'Number of Reservations per Department',
@@ -138,14 +121,12 @@ const OpcDashboard = () => {
         backgroundColor: ['orange', 'green', 'violet', 'gold', 'red', 'blue'],
       },
     ],
-  };
-  
+  }), [labels, reservationCounts]);
+
   const options = {
     scales: {
       x: {
-        ticks: {
-          display: false,  
-        },
+        ticks: { display: false },
       },
       y: {
         beginAtZero: true,
@@ -157,13 +138,11 @@ const OpcDashboard = () => {
         position: 'top',
         labels: {
           color: 'black',
-          font: {
-            size: 12,
-          },
+          font: { size: 12 },
           generateLabels: (chart) => {
             const datasets = chart.data.datasets;
             return datasets[0].backgroundColor.map((color, index) => ({
-              text: chart.data.labels[index], 
+              text: chart.data.labels[index],
               fillStyle: color,
               strokeStyle: color,
               lineWidth: 1,
@@ -173,6 +152,10 @@ const OpcDashboard = () => {
       },
     },
   };
+
+  const requestCount = useCounter(requests.length, 1000, startCounting);
+  const driverCount = useCounter(drivers.length, 1000, startCounting);
+  const vehicleCount = useCounter(vehicles.length, 1000, startCounting);
 
   return (
     <div className="dashboard">
@@ -194,7 +177,7 @@ const OpcDashboard = () => {
                       <FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Requests
                     </h3>
-                    <span className="number-badge">{requestCount}</span> 
+                    <span className="number-badge">{requestCount}</span>
                   </div>
                   <div className="dashcontainer2">
                     <h3 style={{ fontWeight: "700", marginLeft: "10px" }}>
@@ -208,7 +191,7 @@ const OpcDashboard = () => {
                       <FaBus style={{ marginRight: "10px", marginBottom: "-2px" }} />
                       Vehicles
                     </h3>
-                    <span className="number-badge">{vehicleCount}</span> 
+                    <span className="number-badge">{vehicleCount}</span>
                   </div>
                 </div>
                 <div className="calendar-container">
@@ -216,8 +199,29 @@ const OpcDashboard = () => {
                 </div>
               </div>
               <div className="full-width-container">
-                <h3><FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />Usage Per Department</h3>
-                <Bar data={data} options={options} />
+                <div className="container-header">
+                  <h3><FaFileLines style={{ marginRight: "10px", marginBottom: "-2px" }} />Usage Per Department</h3>
+                  <div className="filter-container">
+                    <label>Month: </label>
+                    <select value={month} onChange={handleMonthChange}>
+                      <option value="">Select Month</option>
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>{new Date(0, i).toLocaleString('default', { month: 'long' })}</option>
+                      ))}
+                    </select>
+
+                    <label style={{ marginLeft: '10px' }}>Year: </label>
+                    <select value={year} onChange={handleYearChange}>
+                      <option value="">Select Year</option>
+                      {Array.from({ length: 3 }, (_, i) => (
+                        <option key={2022 + i} value={2022 + i}>{2022 + i}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="bar-chart-container">
+                  <Bar data={data} options={options} />
+                </div>
               </div>
             </div>
           </div>

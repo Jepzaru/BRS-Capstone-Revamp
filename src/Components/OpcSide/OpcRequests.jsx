@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { FaFlag, FaSortAlphaDown, FaSwatchbook } from "react-icons/fa";
+import { FaFlag, FaSortAlphaDown, FaSwatchbook, FaBus } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { IoCloseCircle, IoSearch } from "react-icons/io5";
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
-import { FaBus } from "react-icons/fa";
 import '../../CSS/OpcCss/OpcRequests.css';
 
 const OpcRequests = () => {
@@ -19,38 +18,42 @@ const OpcRequests = () => {
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [sortBy, setSortBy] = useState('');
+  const [loading, setLoading] = useState(false);
 
   
 const token = localStorage.getItem('token');
 
-  const fetchHeadIsApprovedRequests = async () => {
-    try {
-      const response = await fetch("https://citumovebackend.up.railway.app/reservations/head-approved", {
-        headers: { "Authorization": `Bearer ${token}` },
-      });
-      const data = await response.json();
-      const currentDate = new Date(); 
-  
-      if (Array.isArray(data)) {
-        const filteredRequests = data.filter(request => {
-          const scheduleDate = new Date(request.schedule);
-          const returnScheduleDate = new Date(request.returnSchedule);
+const fetchHeadIsApprovedRequests = async () => {
+  setLoading(true); 
+  try {
+    const response = await fetch("https://citumovebackend.up.railway.app/reservations/head-approved", {
+      headers: { "Authorization": `Bearer ${token}` },
+    });
+    const data = await response.json();
+    const currentDate = new Date();
 
-          return (
-            (!request.opcIsApproved && !request.rejected) &&
-            (scheduleDate >= currentDate || returnScheduleDate >= currentDate) 
-          );
-        });
-        setRequests(filteredRequests);
-      } else {
-        console.error("Unexpected data format:", data);
-        setRequests([]);
-      }
-    } catch (error) {
-      console.error("Failed to fetch requests.", error);
+    if (Array.isArray(data)) {
+      const filteredRequests = data.filter(request => {
+        const scheduleDate = new Date(request.schedule);
+        const returnScheduleDate = new Date(request.returnSchedule);
+
+        return (
+          (!request.opcIsApproved && !request.rejected) &&
+          (scheduleDate >= currentDate || returnScheduleDate >= currentDate)
+        );
+      });
+      setRequests(filteredRequests);
+    } else {
+      console.error("Unexpected data format:", data);
       setRequests([]);
     }
-  };
+  } catch (error) {
+    console.error("Failed to fetch requests.", error);
+    setRequests([]);
+  } finally {
+    setLoading(false); 
+  }
+};
 
   useEffect(() => {
     fetchHeadIsApprovedRequests();
@@ -339,6 +342,11 @@ const token = localStorage.getItem('token');
           </div>
           <div className='opc-request-container1'>
             <div className="table-container">
+            {loading ? (
+          <div className="spinner-container">
+            <div className="spinner"></div> 
+          </div>
+        ) : (
               <table className="opc-requests-table">
                 <thead>
                   <tr>
@@ -540,6 +548,7 @@ const token = localStorage.getItem('token');
                     )}
                   </tbody>
               </table>
+               )}
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />

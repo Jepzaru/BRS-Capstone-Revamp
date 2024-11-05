@@ -177,6 +177,7 @@
     }
 }
 
+
 .login-button,
 .clear-button {
     width: 100%;
@@ -208,4 +209,20 @@
 .clear-button:hover {
     background-color: rgb(255, 225, 54);
     color: #782324;
+}
+
+.forgot-password {
+    display: flex;               
+    justify-content: flex-end;    
+    margin-top: -5px;
+    font-size: 0.9em;
+    width: 100%;                 
+}
+
+.forgot-password a {
+    color: #76499A;                  
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;  
 }

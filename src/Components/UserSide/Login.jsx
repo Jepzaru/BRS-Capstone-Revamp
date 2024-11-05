@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import '../../CSS/UserCss/Login.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -12,47 +12,41 @@ const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null); 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 4000); 
+  const headers = useMemo(() => ({
+    'Content-Type': 'application/json'
+  }), []);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  const handleLogin = async (e) => {
+  const handleLogin = useCallback(async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-  
+
     try {
       const response = await fetch('https://citumovebackend.up.railway.app/authenticate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: JSON.stringify({ email, password }),
       });
-  
+
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error('Invalid email or password.');
         }
         throw new Error('Login failed.');
       }
-  
+
       const data = await response.json();
       const { token, role, userId, department } = data;
-  
+
       if (token && role && userId && department) {
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('email', email);
         localStorage.setItem('userId', userId);
         localStorage.setItem('department', department);
-  
+
         switch (role) {
           case 'ROLE_USER':
             navigate('/user-side');
@@ -81,16 +75,24 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
-  }; 
-  
-  const handleClear = () => {
+  }, [email, password, headers, navigate]);
+
+  const handleClear = useCallback(() => {
     setEmail('');
     setPassword('');
-  };
+  }, []);
 
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
-  };
+  const togglePasswordVisibility = useCallback(() => {
+    setPasswordVisible(prev => !prev);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -98,7 +100,7 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      <img src={logoImage} alt="Logo" className="logo-image" />
+      <img src={logoImage} alt="Logo" className="logo-image" loading="lazy" />
       <div className="label-container">
         <h1 className="label-text">TRANSPORTATION RESERVATION SYSTEM</h1>
       </div>
@@ -114,7 +116,7 @@ const Login = () => {
               className="input-field"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder='Email'
+              placeholder="Email"
               required
             />
           </div>
@@ -126,21 +128,24 @@ const Login = () => {
               className="input-field"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder='Password'
+              placeholder="Password"
               required
             />
             <span className="toggle-icon" onClick={togglePasswordVisibility}>
               {passwordVisible ? <FaEyeSlash style={{ marginRight: "5px", marginTop: "8px" }} /> : <FaEye style={{ marginRight: "5px", marginTop: "8px" }} />}
             </span>
           </div>
+          <p className="forgot-password">
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </p>
           <button type="submit" className="login-button">LOGIN</button>
           <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTITIES</button>
-          <p className='admin-path'>
+          <p className="admin-path">
             Are you an admin? <Link to="/admin-authentication">Click Here</Link>
           </p>
         </form>
       </div>
-      <img src={logoImage1} alt="Logo" className="logo-image1" />
+      <img src={logoImage1} alt="Logo" className="logo-image1" loading="lazy" />
     </div>
   );
 };

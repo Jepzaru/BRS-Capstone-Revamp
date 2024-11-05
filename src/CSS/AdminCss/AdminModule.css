@@ -1,263 +1,306 @@
 body, html {
-    margin: 0;
-    padding: 0;
-  }
-  
-  body {
-    background-color: white;
-    font-family: 'Poppins', sans-serif;
-    color: black;
-    z-index: -999;
-  }
-  
-  .admin {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: white;
+  font-family: 'Poppins', sans-serif;
+  color: black;
+  z-index: -999;
+}
+
+.admin {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.admin-content1 {
+  display: flex;
+  flex: 1;
+}
+
+.admin1 {
+  padding: 20px;
+  flex: 1;
+  margin-left: 300px;
+  margin-top: 50px;
+}
+
+.admin1 h1 {
+  font-size: 32px;
+}
+
+.admin-logo-image {
+  position: fixed;
+  top: 150px;
+  right: -100px;
+  height: 1000px;
+  max-width: 1000px;
+  z-index: -1;
+  filter: grayscale(100%);
+  opacity: 0.2;
+}
+
+.header-with-search {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-with-search h1 {
+  margin-right: 20px;
+  font-size: 32px;
+}
+
+.search-bar {
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-account-button {
+  padding: 8px 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #782324; 
+  color: white;
+  cursor: pointer;
+}
+
+.add-account-button:hover {
+  background-color: #5c1a1a; 
+}
+.accounts-container {
+  width: 100%; 
+  max-height: 700px; 
+  background-color: #ccc;
+  border-radius: 10px;
+  overflow-y: auto; 
+}
+
+
+.accounts-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; 
+  overflow-y: auto; 
+}
+
+
+.accounts-table thead {
+  position: sticky;
+  top: 0;
+  background-color: #f4f4f4; 
+  z-index: 1; 
+}
+
+
+.accounts-table th, .accounts-table td {
+  text-align: center;
+  padding: 12px;
+  border: 1px solid #ddd;
+  word-wrap: break-word; 
+}
+
+.accounts-table tr {
+  transition: background-color 0.3s ease; 
+}
+
+.accounts-table tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer; 
+}
+
+.admin-update-button {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 4px;
+  background-color: green;
+  color: white;
+  cursor: pointer;
+  font-size: 14px; 
+  transition: background-color 0.3s;
+}
+
+.admin-update-button:hover {
+  background-color: rgb(3, 209, 3); 
+}
+
+.admin-delete-button {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 4px;
+  background-color: #782324;
+  color: white;
+  cursor: pointer;
+  font-size: 14px; 
+  transition: background-color 0.3s;
+}
+
+.admin-delete-button:hover {
+  background-color: #5c1a1a; 
+}
+.addacc-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.addacc-modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.addacc-modal-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.addacc-modal-form label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.addacc-modal-form input {
+  margin-bottom: 15px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.addacc-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.addacc-modal-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.action-td{
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.addacc-modal-buttons button:first-of-type {
+  background-color: #ccc;
+}
+
+.addacc-modal-buttons button:first-of-type:hover {
+  background-color: #aaa;
+}
+
+.addacc-modal-buttons button:last-of-type {
+  background-color: #782324;
+  color: white;
+}
+
+.addacc-modal-buttons button:last-of-type:hover {
+  background-color: #5c1a1a;
+}
+
+.del-cancel{
+  background-color: #aaa;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.del-delete{
+  background-color: #782324;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.del-cancel:hover{
+  background-color: #333;
+  transition: background-color 0.3s;
+}
+
+.del-delete:hover{
+  background-color: #5c1a1a;
+  transition: background-color 0.3s;
+}
+
+.addacc-modal-buttons{
+  margin-top: 30px;
+}
+
+.error-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);  /* Dimmed background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.error-modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.error-modal-content h2 {
+  margin-bottom: 10px;
+}
+
+.error-modal-content p {
+  margin-bottom: 20px;
+}
+
+.error-modal-content button {
+  background-color: #782324;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.error-modal-content button:hover {
+  background-color: #a33327;
+}
+
+
+
+@media (max-width: 767px) {
   .admin-content1 {
-    display: flex;
-    flex: 1;
+    margin-left: -300px;
   }
-  
-  .admin1 {
-    padding: 20px;
-    flex: 1;
-    margin-left: 300px;
-    margin-top: 50px;
-  }
-  
-  .admin1 h1 {
-    font-size: 32px;
-  }
-  
-  .admin-logo-image {
-    position: fixed;
-    top: 150px;
-    right: -100px;
-    height: 1000px;
-    max-width: 1000px;
-    z-index: -1;
-    filter: grayscale(100%);
-    opacity: 0.2;
+  .admin-container1 {
+    width: 530px;
+    height: 650px;
   }
 
-  .header-with-search {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .header-with-search h1 {
-    margin-right: 20px;
-    font-size: 32px;
-  }
-  
-  .search-bar {
-    padding: 8px 12px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-
-  .add-account-button {
-    padding: 8px 16px;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    background-color: #782324; 
-    color: white;
-    cursor: pointer;
-  }
-  
-  .add-account-button:hover {
-    background-color: #5c1a1a; 
-  }
-  .accounts-container {
-    width: 100%; 
-    max-height: 700px; 
-    background-color: #ccc;
-    border-radius: 10px;
-    overflow-y: auto; 
-  }
-  
-
-  .accounts-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed; 
-    overflow-y: auto; 
-  }
-  
-
-  .accounts-table thead {
-    position: sticky;
-    top: 0;
-    background-color: #f4f4f4; 
-    z-index: 1; 
-  }
-  
-  
-  .accounts-table th, .accounts-table td {
-    text-align: center;
-    padding: 12px;
-    border: 1px solid #ddd;
-    word-wrap: break-word; 
-  }
-  
-  .accounts-table tr {
-    transition: background-color 0.3s ease; 
-  }
-  
-  .accounts-table tr:hover {
-    background-color: #f1f1f1;
-    cursor: pointer; 
-  }
-  
-  .admin-update-button {
-    padding: 10px 25px;
-    border: none;
-    border-radius: 4px;
-    background-color: green;
-    color: white;
-    cursor: pointer;
-    font-size: 14px; 
-    transition: background-color 0.3s;
-  }
-  
-  .admin-update-button:hover {
-    background-color: rgb(3, 209, 3); 
-  }
-
-  .admin-delete-button {
-    padding: 10px 25px;
-    border: none;
-    border-radius: 4px;
-    background-color: #782324;
-    color: white;
-    cursor: pointer;
-    font-size: 14px; 
-    transition: background-color 0.3s;
-  }
-  
-  .admin-delete-button:hover {
-    background-color: #5c1a1a; 
-  }
-  .addacc-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  .addacc-modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 500px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .addacc-modal-form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .addacc-modal-form label {
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .addacc-modal-form input {
-    margin-bottom: 15px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .addacc-modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .addacc-modal-buttons button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    margin-left: 10px;
-    cursor: pointer;
-  }
-
-  .action-td{
-    display: flex;
-    justify-content: space-evenly;
-  }
-  
-  .addacc-modal-buttons button:first-of-type {
-    background-color: #ccc;
-  }
-  
-  .addacc-modal-buttons button:first-of-type:hover {
-    background-color: #aaa;
-  }
-  
-  .addacc-modal-buttons button:last-of-type {
-    background-color: #782324;
-    color: white;
-  }
-  
-  .addacc-modal-buttons button:last-of-type:hover {
-    background-color: #5c1a1a;
-  }
-
-  .del-cancel{
-    background-color: #aaa;
-    color: #fff;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .del-delete{
-    background-color: #782324;
-    color: #fff;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .del-cancel:hover{
-    background-color: #333;
-    transition: background-color 0.3s;
-  }
-
-  .del-delete:hover{
-    background-color: #5c1a1a;
-    transition: background-color 0.3s;
-  }
-  
-  .addacc-modal-buttons{
-    margin-top: 30px;
-  }
-
-
-  @media (max-width: 767px) {
-    .admin-content1 {
-      margin-left: -300px;
-    }
-    .admin-container1 {
-      width: 530px;
-      height: 650px;
-    }
-  
-  }
-  
+}

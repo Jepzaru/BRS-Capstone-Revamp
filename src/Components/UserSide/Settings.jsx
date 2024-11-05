@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { BsPersonSquare } from "react-icons/bs";
 import { FaLock } from "react-icons/fa";
 import { IoMdSettings } from 'react-icons/io';
@@ -38,10 +38,13 @@ const Settings = () => {
   const token = localStorage.getItem('token');
   const userId = localStorage.getItem('userId');
   const department = localStorage.getItem('department');
-  const namePart = email.split('@')[0];
-  const [firstName, lastName] = namePart.split('.');
-  const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  const formattedName = `${capitalize(firstName)} ${capitalize(lastName)}`;
+  
+  const formattedName = useMemo(() => {
+    const namePart = email.split('@')[0];
+    const [firstName, lastName] = namePart.split('.');
+    const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    return `${capitalize(firstName)} ${capitalize(lastName)}`;
+  }, [email]);
 
   useEffect(() => {
     const fetchProfilePic = async () => {
@@ -69,10 +72,10 @@ const Settings = () => {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-  
+
     const formData = new FormData();
     formData.append('imageFile', file);
-  
+
     try {
       const response = await fetch(`https://citumovebackend.up.railway.app/users/upload-profile-pic/${userId}`, {
         method: 'POST',
@@ -81,9 +84,8 @@ const Settings = () => {
         },
         body: formData,
       });
-  
+
       if (response.ok) {
-  
         window.location.reload();
       } else {
         console.error('Failed to upload image');
@@ -98,17 +100,15 @@ const Settings = () => {
   };
 
   const handleNewPasswordChange = (e) => {
-    setNewPassword(e.target.value);
-    setPasswordTooShort(e.target.value.length < 6);
+    const newPass = e.target.value;
+    setNewPassword(newPass);
+    setPasswordTooShort(newPass.length < 6);
   };
 
   const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
-    if (newPassword.length < 6) {
-      setPasswordTooShort(true);
-    } else {
-      setPasswordTooShort(false);
-    }
+    const confirmPass = e.target.value;
+    setConfirmPassword(confirmPass);
+    setPasswordTooShort(newPassword.length < 6);
   };
 
   const handleSubmit = async (e) => {
@@ -128,14 +128,12 @@ const Settings = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          oldPassword: oldPassword,
-          newPassword: newPassword
+          oldPassword,
+          newPassword
         })
       });
 
       if (response.ok) {
-        const data = await response.text();
-        console.log(data);
         setShowModal(true);
         setOldPassword('');
         setNewPassword('');
@@ -305,7 +303,7 @@ const Settings = () => {
                         </p>
                       )}
                     </div>
-                    <button type="submit" disabled={!passwordMatch}>Change Password</button>
+                    <button type="submit" disabled={!passwordMatch || passwordTooShort}>Change Password</button>
                   </form>
                 </div>
               )}

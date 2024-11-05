@@ -36,6 +36,7 @@ public class ReservationEntity {
     private String status;
     private Boolean opcIsApproved; 
     private Boolean isRejected = false;
+    private Boolean isCompleted = false;
     private Boolean headIsApproved;
     private String userName;
     private String feedback;
@@ -204,6 +205,14 @@ public class ReservationEntity {
         this.isRejected = isRejected;
     }
 
+    public Boolean getIsCompleted() {
+        return isCompleted;
+    }
+    
+    public void setIsCompleted(Boolean isCompleted) {
+        this.isCompleted = isCompleted;
+    }
+
     public Boolean isHeadIsApproved() {
         return headIsApproved;
     }
@@ -267,7 +276,7 @@ public class ReservationEntity {
     public ReservationEntity(String transactionId, String typeOfTrip, String destinationTo, String destinationFrom,
             int capacity, String department, LocalDate schedule, LocalDate returnSchedule, String vehicleType,
             String plateNumber, String pickUpTime, String departureTime, String reason, String fileUrl, String status,
-            Boolean opcIsApproved, Boolean isRejected, Boolean headIsApproved, String userName, String feedback,
+            Boolean opcIsApproved, Boolean isRejected, Boolean isCompleted, Boolean headIsApproved, String userName, String feedback,
             int driverId, String driverName, String rejectedBy) {
         this.transactionId = transactionId;
         this.typeOfTrip = typeOfTrip;
@@ -286,6 +295,7 @@ public class ReservationEntity {
         this.status = status;
         this.opcIsApproved = opcIsApproved;
         this.isRejected = isRejected;
+        this.isCompleted = isCompleted;
         this.headIsApproved = headIsApproved;
         this.userName = userName;
         this.feedback = feedback;

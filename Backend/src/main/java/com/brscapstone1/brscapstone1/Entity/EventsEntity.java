@@ -16,20 +16,20 @@ public class EventsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventId;
 
-    @Column(name = "event_date") // Ensure this matches your database column name
+    @Column(name = "event_date") 
     private Date eventDate;
 
-    @Column(name = "event_description") // Ensure this matches your database column name
+    @Column(name = "event_description") 
     private String eventDescription;
 
-    @Column(name = "event_title") // Ensure this matches your database column name
+    @Column(name = "event_title") 
     private String eventTitle;
 
-    @Column(name = "is_deleted") // Ensure this matches your database column name
+    @Column(name = "is_deleted") 
     private boolean isDeleted = false;
 
     public EventsEntity() {
-        // Default constructor for JPA
+        
     }
 
     public EventsEntity(int eventId, Date eventDate, String eventDescription, String eventTitle) {

@@ -7,7 +7,6 @@ import { FaSortAlphaDown } from "react-icons/fa";
 import { FaClipboardCheck } from "react-icons/fa6";
 import { RiFileExcel2Fill } from "react-icons/ri";
 import * as XLSX from 'xlsx'; 
-import LoadingScreen from '../../Components/UserSide/LoadingScreen'; 
 import '../../CSS/OpcCss/OpcRequests.css';
 
 const OpcApprovedRequests = () => {
@@ -23,12 +22,23 @@ const OpcApprovedRequests = () => {
     const fetchApprovedRequests = async () => {
       setLoading(true); 
       const token = localStorage.getItem('token'); 
-
+    
+      if (!token) {
+        console.error("No token found");
+        setLoading(false);
+        return;
+      }
+    
       try {
         const response = await fetch('https://citumovebackend.up.railway.app/reservations/opc-approved', {
           headers: { "Authorization": `Bearer ${token}` }
         });
-        if (!response.ok) throw new Error("Network response was not ok");
+    
+        if (!response.ok) {
+          const errorMessage = await response.text();
+          console.error("Error fetching approved requests:", response.status, errorMessage);
+          throw new Error("Network response was not ok");
+        }
         
         const data = await response.json();
         const approvedRequests = data.filter(request => request.opcIsApproved === true);
@@ -98,28 +108,55 @@ const OpcApprovedRequests = () => {
 
   const exportToExcel = () => {
     const selectedRequests = requests.filter(request => selectedRows.has(request.transactionId));
-    const ws = XLSX.utils.json_to_sheet(selectedRequests, {
-      header: [
-        "userName", "typeOfTrip", "destinationFrom", "destinationTo", 
-        "capacity", "vehicleType", "schedule", "departureTime", 
-        "pickUpTime", "driverName", "reason"
-      ]
-    });
+    const requestsToExport = selectedRequests.length > 0 ? selectedRequests : requests;
+
+    const dataToExport = requestsToExport.map(request => ({
+        Requestor: request.userName,
+        TripType: request.typeOfTrip,
+        From: request.destinationFrom,
+        To: request.destinationTo,
+        Capacity: request.capacity,
+        Vehicle: `${request.vehicleType} - ${request.plateNumber}`,
+        Schedule: formatDate(request.schedule),
+        ReturnSchedule: formatDate(request.returnSchedule) || "N/A",
+        Departure: request.departureTime,
+        PickUp: request.pickUpTime || "N/A",
+        Driver: request.driverName || "N/A",
+        // Combine added drivers and their vehicles into a single string
+        "Added Driver and Vehicle": request.reservedVehicles && request.reservedVehicles.length > 0
+            ? request.reservedVehicles.map(vehicle => `${vehicle.driverName || "N/A"} - ${vehicle.vehicleType || "N/A"} : ${vehicle.plateNumber}`).join(', ')
+            : "No Drivers Added",
+        Reason: request.reason
+    }));
+
+    // Create a worksheet from the modified data
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+
+    // Define custom headers
+    const headerNames = [
+        "Requestor", "TripType", "From", "To", 
+        "Capacity", "Vehicle", "Schedule", "Return Schedule",
+        "Departure", "PickUp", "Driver", "Added Driver and Vehicle", "Reason"
+    ];
     
+    // Update the worksheet with the custom headers
+    XLSX.utils.sheet_add_aoa(ws, [headerNames], { origin: 'A1' });
+
+    // Append the modified data starting from the second row
+    XLSX.utils.sheet_add_json(ws, dataToExport, { skipHeader: true, origin: 'A2' });
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Approved Requests");
-    
+
+    // Export the workbook
     XLSX.writeFile(wb, "Approved_Requests.xlsx");
-  };
+};
+
 
   const handleCancel = () => {
     setSelectedRows(new Set());
     setConfirmMode(false);
   };
-
-  if (loading) {
-    return <LoadingScreen />;
-  }
 
   return (
     <div className="opcrequest">
@@ -128,7 +165,10 @@ const OpcApprovedRequests = () => {
         <SideNavbar />
         <div className="opc1">
           <div className="header-container">
-            <h1><FaClipboardCheck style={{ marginRight: "15px", color: "#782324" }} />Approved Requests</h1>
+            <h1>
+              <FaClipboardCheck style={{ marginRight: "15px", color: "#782324" }} />
+              Approved Requests
+            </h1>
             <div className="search-container">
               <input
                 type="text"
@@ -137,7 +177,9 @@ const OpcApprovedRequests = () => {
                 onChange={handleSearchChange}
                 className="search-bar"
               />
-              <button onClick={handleSearchChange} className="search-button"><IoSearch style={{ marginBottom: "-3px" }} /> Search</button>
+              <button onClick={handleSearchChange} className="search-button">
+                <IoSearch style={{ marginBottom: "-3px" }} /> Search
+              </button>
               <FaSortAlphaDown style={{ color: "#782324" }} />
               <select onChange={handleSortChange} className="sort-dropdown">
                 <option value="">Sort By</option>
@@ -154,7 +196,7 @@ const OpcApprovedRequests = () => {
                 }}
                 className="generate-report-button"
               >
-                <RiFileExcel2Fill style={{marginRight: '10px'}}/>
+                <RiFileExcel2Fill style={{ marginRight: '10px' }} />
                 {confirmMode ? 'Confirm' : 'Generate Report'}
               </button>
               {confirmMode && (
@@ -169,91 +211,95 @@ const OpcApprovedRequests = () => {
           </div>
           <div className='opc-request-container1'>
             <div className='table-container'>
-              <table className="opc-requests-table">
-                <thead>
-                  <tr>
-                    {confirmMode && <th>Select</th>}
-                    <th>Transaction ID</th>
-                    <th>Requestor Name</th>
-                    <th>Type of Trip</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Capacity</th>
-                    <th>Vehicle</th>
-                    <th>Added Vehicle</th>
-                    <th>Schedule</th>
-                    <th>Return Schedule</th>
-                    <th>Departure Time</th>
-                    <th>Pick Up Time</th>
-                    <th>Assigned Driver</th>
-                    <th>Extra Drivers</th>
-                    <th>Reason</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {requests.length === 0 ? (
+              {loading ? (
+                <div className="spinner-container">
+                  <div className="spinner"></div>
+                </div>
+              ) : (
+                <table className="opc-requests-table">
+                  <thead>
                     <tr>
-                      <td colSpan={confirmMode ? "14" : "13"} className="no-requests">No Requests Available</td>
+                      {confirmMode && <th>Select</th>}
+                      <th>Transaction ID</th>
+                      <th>Requestor Name</th>
+                      <th>Type of Trip</th>
+                      <th>From</th>
+                      <th>To</th>
+                      <th>Capacity</th>
+                      <th>Vehicle</th>
+                      <th>Added Vehicle</th>
+                      <th>Schedule</th>
+                      <th>Return Schedule</th>
+                      <th>Departure Time</th>
+                      <th>Pick Up Time</th>
+                      <th>Assigned Driver</th>
+                      <th>Extra Drivers</th>
+                      <th>Reason</th>
                     </tr>
-                  ) : (
-                    sortedRequests.map((request, index) => (
-                      <tr
-                      key={index}
-                      className={
-                        selectedRows.has(request.transactionId) ? 'selected-row' :
-                        request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
-                        request.department.trim().toLowerCase() === "office of the vice-president (vip)" ? 'highlight-vip' :
-                        request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
-                        'default-highlight'
-                    }
-                    >
-                        {confirmMode && (
-                          <td>
-                            <input
-                              type="checkbox"
-                              checked={selectedRows.has(request.transactionId)}
-                              onChange={() => handleRowSelection(request.transactionId)}
-                            />
-                          </td>
-                        )}
-                        <td>{request.transactionId}</td>
-                        <td>{request.userName}</td>
-                        <td>{request.typeOfTrip}</td>
-                        <td>{request.destinationFrom}</td>
-                        <td>{request.destinationTo}</td>
-                        <td>{request.capacity}</td>
-                        <td>{request.vehicleType} - {request.plateNumber} </td>
-                      <td>
-                        {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
-                          request.reservedVehicles.map((vehicle, index) => (
-                            <div key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</div>
-                          ))
-                        ) : (
-                          "No Vehicles Added"
-                        )}
-                      </td>
-                      <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
-                      <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
-                        <td>{request.departureTime}</td>
-                        <td>{request.pickUpTime || "N/A"}</td>
-                        <td>{request.driverName || "N/A"}</td>
-                        <td>
-                        {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
-                          request.reservedVehicles.map((vehicle, index) => (
-                            <div key={index}>
-                              - {vehicle.driverName || 'N/A'}
-                            </div>
-                          ))
-                        ) : (
-                          <div>No Drivers Added</div>
-                        )}
-                      </td>
-                        <td>{request.reason}</td>
+                  </thead>
+                  <tbody>
+                    {requests.length === 0 ? (
+                      <tr>
+                        <td colSpan={confirmMode ? "14" : "13"} className="no-requests">No Requests Available</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      sortedRequests.map((request, index) => (
+                        <tr
+                          key={index}
+                          className={
+                            selectedRows.has(request.transactionId) ? 'selected-row' :
+                            request.department.trim().toLowerCase() === "office of the president (vip)" ? 'highlight-vip' :
+                            request.department.trim().toLowerCase() === "office of the vice-president (vip)" ? 'highlight-vip' :
+                            request.department.trim().toLowerCase() === "college of computer studies (ccs)" ? 'highlight-ccs' :
+                            'default-highlight'
+                          }
+                        >
+                          {confirmMode && (
+                            <td>
+                              <input
+                                type="checkbox"
+                                checked={selectedRows.has(request.transactionId)}
+                                onChange={() => handleRowSelection(request.transactionId)}
+                              />
+                            </td>
+                          )}
+                          <td>{request.transactionId}</td>
+                          <td>{request.userName}</td>
+                          <td>{request.typeOfTrip}</td>
+                          <td>{request.destinationFrom}</td>
+                          <td>{request.destinationTo}</td>
+                          <td>{request.capacity}</td>
+                          <td>{request.vehicleType} - {request.plateNumber}</td>
+                          <td>
+                            {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
+                              request.reservedVehicles.map((vehicle, index) => (
+                                <div key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</div>
+                              ))
+                            ) : (
+                              "No Vehicles Added"
+                            )}
+                          </td>
+                          <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
+                          <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
+                          <td>{request.departureTime}</td>
+                          <td>{request.pickUpTime || "N/A"}</td>
+                          <td>{request.driverName || "N/A"}</td>
+                          <td>
+                            {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
+                              request.reservedVehicles.map((vehicle, index) => (
+                                <div key={index}>- {vehicle.driverName || 'N/A'}</div>
+                              ))
+                            ) : (
+                              <div>No Drivers Added</div>
+                            )}
+                          </td>
+                          <td>{request.reason}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />
@@ -261,6 +307,5 @@ const OpcApprovedRequests = () => {
       </div>
     </div>
   );
-};
-
+}
 export default OpcApprovedRequests;

@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @RestController
 @CrossOrigin
 public class ReservationController {
@@ -235,6 +237,20 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    
-    
+
+    // [PUT] Complete a reservation
+    @PutMapping("/user/reservations/complete/{reservationId}")
+    public ResponseEntity<String> completeReservation(@PathVariable int reservationId) {
+    try {
+        ReservationEntity completedReservation = resServ.completeReservation(reservationId);
+        
+        return ResponseEntity.ok("Reservation completed successfully: " + completedReservation.getId());
+    } catch (EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Reservation not found: " + e.getMessage());
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to complete reservation: " + e.getMessage());
+    }
+}
 }

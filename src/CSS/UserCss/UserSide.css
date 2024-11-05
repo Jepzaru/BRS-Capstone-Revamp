@@ -1,13 +1,13 @@
-body, html {
-  margin: 0;
-  padding: 0;
+:root {
+  --primary-color: #782324;
+  --secondary-color: gold;
+  --background-color: #CBC3C3;
+  --light-background: #f4f4f4;
+  --text-color: #333;
+  --border-radius: 5px;
+  --font-family: 'Poppins', sans-serif;
 }
 
-body {
-  background-color: white;
-  font-family: 'Poppins', sans-serif;
-  color: black;
-}
 
 .app {
   display: flex;
@@ -32,70 +32,80 @@ body {
   display: flex;
 }
 
-.vehicle-list {
-  background-color: #CBC3C3;
+.vehicle-list,
+.another-container {
+  background-color: var(--background-color);
   height: 650px;
-  width: 800px;
   border-radius: 10px;
   padding: 10px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+.vehicle-list {
+  width: 800px;
   margin-right: 20px;
   overflow-y: auto;
-  z-index: 999;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .another-container {
-  background-color: #CBC3C3; 
-  border-radius: 10px;
-  padding: 10px;
-  height: 650px;
-  width: 400px;
-  z-index: 999;
+  width: 480px;
   position: relative;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
 }
+
 .inner-container {
   padding: 20px;
-  background-color: #f4f4f4; 
+  background-color: var(--light-background);
   border-radius: 8px;
+  margin-top: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .events-label {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-color);
 }
 
 .events-list {
-  margin-top: 20px;
-  background-color: #f4f4f4;
-  height: 550px;
+  margin-top: 10px;
+  background-color: var(--light-background);
+  height: 160px;
   border-radius: 8px;
   overflow-y: auto;
 }
 
 .event-item {
   padding: 10px;
-  background-color: #f9f9f9; 
-  border-radius: 5px;
+  background-color: #f9f9f9;
+  border-radius: var(--border-radius);
   margin-bottom: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.item-container {
+  background-color: white;
+  padding: 10px;
+  border-radius: var(--border-radius);
+}
+
+.evnt-title {
+  background-color: var(--primary-color);
+  color: var(--light-background);
+  padding: 5px;
+  border-radius: var(--border-radius);
 }
 
 .no-events-label {
   font-size: 1.2rem;
   color: #888;
   text-align: center;
-  justify-content: center;
-  align-items: center;
-
 }
 
 .vehicle-item {
   background-color: white;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   margin-bottom: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -112,9 +122,9 @@ body {
   width: 300px;
   height: auto;
   margin-right: 20px;
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   object-fit: cover;
-  border: solid #782324;
+  border: solid var(--primary-color);
 }
 
 .vehicle-text {
@@ -123,7 +133,7 @@ body {
 }
 
 .vehicle-text h2 {
-  color: #782324;
+  color: var(--primary-color);
   font-size: 26px;
   margin-bottom: 40px;
 }
@@ -134,16 +144,14 @@ body {
 
 .vehicle-text p {
   font-weight: 800;
-  display: flex;
-  align-items: center;
 }
 
 .btn-inline {
   padding: 8px 12px;
-  background-color: #782324;
+  background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   cursor: pointer;
   font-size: 14px;
   margin-left: 10px;
@@ -152,8 +160,8 @@ body {
 }
 
 .btn-inline:hover {
-  background-color: gold;
-  color: #782324;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
 .instruction-and-button {
@@ -163,33 +171,31 @@ body {
 
 .btn-beside-text {
   padding: 8px 18px;
-  background-color: gold;
+  background-color: var(--secondary-color);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   cursor: pointer;
   font-size: 14px;
   margin-left: 170px;
   transition: background-color 0.3s;
   font-weight: 800;
   z-index: 999;
-  font-size: 16px;
-  color: #782324;
-  border: solid #782324;
+  border: solid var(--primary-color);
 }
 
 .btn-beside-text:hover {
-  background-color: #782324;
-  color: gold;
-  border: solid gold;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  border: solid var(--secondary-color);
 }
 
 .btn-right-corner {
   padding: 10px 16px;
-  background-color: #782324;
+  background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   cursor: pointer;
   font-size: 14px;
   align-self: flex-end;
@@ -199,8 +205,8 @@ body {
 }
 
 .btn-right-corner:hover {
-  background-color: gold;
-  color: #782324;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
 .content h1 {
@@ -219,7 +225,7 @@ body {
 
 .prev-button, .next-button {
   padding: 10px 13px;
-  background-color: #782324;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 25px;
@@ -229,8 +235,8 @@ body {
 }
 
 .prev-button:hover, .next-button:hover {
-  background-color: gold;
-  color: #782324;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
 .btn-right-corner.disabled {
@@ -247,7 +253,6 @@ body {
   .content {
     margin-left: 0;
     padding-top: 60px;
-    
   }
   .vehicle-list {
     height: 800px;
@@ -270,7 +275,6 @@ body {
     font-size: 12px;
   }
   .btn-beside-text {
- 
     font-size: 14px;
     width: 200px;
     height: 60px;

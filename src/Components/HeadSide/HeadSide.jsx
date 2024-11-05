@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { FaFileAlt, FaSortAlphaDown, FaSwatchbook } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { IoCloseCircle, IoSearch } from "react-icons/io5";
@@ -18,38 +18,33 @@ const HeadSide = () => {
   const token = localStorage.getItem('token');
   const [errorMessage, setErrorMessage] = useState(''); 
 
-  const fetchRequestsData = async () => {
+  const fetchRequestsData = useCallback(async () => {
     try {
-        const department = localStorage.getItem('department');
-        const response = await fetch("https://citumovebackend.up.railway.app/reservations/getAll", {
-            headers: { "Authorization": `Bearer ${token}` },
-        });
-        const data = await response.json();
-        const matchingReservations = data.filter(reservation =>
-            reservation.department === department && !reservation.headIsApproved && !reservation.rejected
-        ).sort((a, b) => new Date(b.schedule) - new Date(a.schedule));
-        setRequests(matchingReservations);
+      const department = localStorage.getItem('department');
+      const response = await fetch("https://citumovebackend.up.railway.app/reservations/getAll", {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      const data = await response.json();
+      const matchingReservations = data.filter(reservation =>
+        reservation.department === department && !reservation.headIsApproved && !reservation.rejected
+      ).sort((a, b) => new Date(b.schedule) - new Date(a.schedule)); 
+
+      setRequests(matchingReservations);
     } catch (error) {
-        console.error("Failed to fetch requests.", error);
+      console.error("Failed to fetch requests.", error);
     }
-};
+  }, [token]);
 
   const handleApproveRequests = async () => {
     try {
-      const reservationData = {
-        headIsApproved: true,
-      };
-
-      const formData = new FormData();
-      formData.append("reservation", JSON.stringify(reservationData));
-
-      const response = await fetch(`https://citumovebackend.up.railway.app/reservations/update/${selectedRequest.id}`, {
+      const reservationData = { headIsApproved: true };
+      const response = await fetch(`https://citumovebackend.up.railway.app/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,  
         },
-          body: JSON.stringify(reservationData),
+        body: JSON.stringify(reservationData),
       });
 
       if (response.ok) {
@@ -71,22 +66,14 @@ const HeadSide = () => {
     }
 
     try {
-      const reservationData = {
-        rejected: true,
-        status: 'Rejected',
-        feedback: feedback,
-      };
-
-      const formData = new FormData();
-      formData.append("reservation", JSON.stringify(reservationData));
-
+      const reservationData = { rejected: true, status: 'Rejected', feedback };
       const response = await fetch(`https://citumovebackend.up.railway.app/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json", 
-      },
-      body: JSON.stringify(reservationData),
+        },
+        body: JSON.stringify(reservationData),
       });
 
       if (response.ok) {
@@ -120,37 +107,43 @@ const HeadSide = () => {
     setErrorMessage('');
   };
 
+  const handleSearchClick = () => {
+  };
+
   const handleViewFileError = () => {
     setErrorMessage('No file is attached.'); 
   };
 
   useEffect(() => {
     fetchRequestsData();
-  }, [token]);
+  }, [fetchRequestsData]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSearchClick = () => {
-  };
-
   const handleSortChange = (event) => {
     const sortOption = event.target.value;
-    let sortedRequests = [...request];
 
-    if (sortOption === 'scheduleDescending') {
+    setRequests(prevRequests => {
+      const sortedRequests = [...prevRequests];
+      if (sortOption === 'scheduleDescending') {
         sortedRequests.sort((a, b) => new Date(b.schedule) - new Date(a.schedule));
-    } else if (sortOption === 'scheduleAscending') {
+      } else if (sortOption === 'scheduleAscending') {
         sortedRequests.sort((a, b) => new Date(a.schedule) - new Date(b.schedule));
-    }
-    
-    setRequests(sortedRequests);
-};
+      }
+      return sortedRequests;
+    });
+  };
+
+  const filteredRequests = useMemo(() => {
+    return request.filter(request =>
+      request.reason.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [request, searchTerm]);
 
   const splitText = (text, maxLength) => {
-    const regex = new RegExp(`.{1,${maxLength}}`, 'g');
-    return text.match(regex).join('\n');
+    return text.match(new RegExp(`.{1,${maxLength}}`, 'g')).join('\n');
   };
 
   const formatDate = (dateString) => {

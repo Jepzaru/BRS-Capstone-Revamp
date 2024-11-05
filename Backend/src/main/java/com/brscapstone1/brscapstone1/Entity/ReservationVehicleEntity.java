@@ -27,6 +27,7 @@ public class ReservationVehicleEntity {
     private String plateNumber;
     private int capacity;
     private String status;
+    private Boolean isCompleted = false;
     
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate schedule;
@@ -133,5 +134,13 @@ public class ReservationVehicleEntity {
 
     public void setDriverName(String driverName) {
         this.driverName = driverName;
+    }
+
+    public Boolean getIsCompleted() {
+        return isCompleted;
+    }
+    
+    public void setIsCompleted(Boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 }

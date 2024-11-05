@@ -246,6 +246,7 @@ const OpcCalendar = () => {
                       <p style={{marginLeft: '15px'}}><strong>Date:</strong> {new Date(event.schedule).toLocaleDateString()}</p>
                       <p style={{marginLeft: '15px'}}><strong>Time:</strong> {new Date(event.schedule).toLocaleTimeString()}</p>
                       <p style={{marginLeft: '15px'}}><strong>Reason:</strong> {event.reason}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Vehicle:</strong> {event.vehicleType} - {event.plateNumber}</p>
                     </div>
                   )}
                 </div>

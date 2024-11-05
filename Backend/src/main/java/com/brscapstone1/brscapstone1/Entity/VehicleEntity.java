@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "vehicle")
@@ -17,7 +18,10 @@ public class VehicleEntity {
   private String plateNumber;
   private int capacity;
   private String status;
-  
+  private LocalDate maintenanceStartDate;
+  private LocalDate maintenanceEndDate;
+  private String maintenanceDetails;
+
   public int getId() {
     return id;
   }
@@ -58,11 +62,38 @@ public class VehicleEntity {
     this.status = status;
   }
 
-  public VehicleEntity(String vehicleType, String plateNumber, int capacity, String status) {
+  public LocalDate getMaintenanceStartDate() {
+    return maintenanceStartDate;
+  }
+
+  public void setMaintenanceStartDate(LocalDate maintenanceStartDate) {
+    this.maintenanceStartDate = maintenanceStartDate;
+  }
+
+  public LocalDate getMaintenanceEndDate() {
+    return maintenanceEndDate;
+  }
+
+  public void setMaintenanceEndDate(LocalDate maintenanceEndDate) {
+    this.maintenanceEndDate = maintenanceEndDate;
+  }
+
+  public String getMaintenanceDetails() {
+    return maintenanceDetails;
+}
+
+  public void setMaintenanceDetails(String maintenanceDetails) {
+    this.maintenanceDetails = maintenanceDetails;
+}
+
+  public VehicleEntity(String vehicleType, String plateNumber, int capacity, String status, LocalDate maintenanceStartDate, LocalDate maintenanceEndDate, String maintenanceDetails) {
     this.vehicleType = vehicleType;
     this.plateNumber = plateNumber;
     this.capacity = capacity;
     this.status = status;
+    this.maintenanceStartDate = maintenanceStartDate;
+    this.maintenanceEndDate = maintenanceEndDate;
+    this.maintenanceDetails = maintenanceDetails;
   }
 
   public VehicleEntity() {

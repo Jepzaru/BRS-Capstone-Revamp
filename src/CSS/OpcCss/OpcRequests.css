@@ -47,7 +47,7 @@ body {
 }
 
 .table-container {
-  height: 670px; 
+  height: 690px; 
   width: 1530px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -177,6 +177,7 @@ body {
   font-weight: bolder;
   position: sticky;
   top: 0;
+  margin: 0;
   z-index: 999;
 }
 
@@ -429,6 +430,27 @@ body {
 
 .conflict-status {
   color: yellow; 
+}
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%; 
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #782324;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @media (max-width: 767px) {

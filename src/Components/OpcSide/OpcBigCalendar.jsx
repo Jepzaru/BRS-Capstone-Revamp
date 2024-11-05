@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import '../../CSS/OpcCss/OpcBigCalendar.css'; 
 import SideNavbar from './OpcNavbar';
-import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
+import logoImage1 from "../../Images/citbglogo.png";
+import { BiSolidRightArrow, BiSolidLeftArrow, BiSolidMessageAltDetail } from "react-icons/bi";
 import Header from '../../Components/UserSide/Header';
 import { MdEvent, MdDelete, MdEdit } from 'react-icons/md';
 import { IoMdAddCircle } from "react-icons/io";
+import { IoTime } from "react-icons/io5";
+import { FaCalendarDay, FaBus } from "react-icons/fa";
 
 const OpcBigCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -19,8 +22,7 @@ const OpcBigCalendar = () => {
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const token = localStorage.getItem('token');
- 
-
+  const isPastDate = selectedDate < new Date();
 
   useEffect(() => {
     fetchEventsForMonth();
@@ -247,8 +249,14 @@ const OpcBigCalendar = () => {
       <div className="opc-big-calendar-events-content">
         <div className="opc-big-calendar-events-content-header">
           <h2>Events on {selectedDate.toDateString()}   
-            <button className='opc-big-calendar-event-btn' onClick={() => setShowAddEvent(true)}>
-              <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> Add New Event
+          <button 
+              className='opc-big-calendar-event-btn' 
+              onClick={() => setShowAddEvent(true)} 
+              disabled={isPastDate} 
+              style={{ opacity: isPastDate ? 0.5 : 1, cursor: 'not-allowed' }}
+            >
+              <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> 
+              Add New Event
             </button>
           </h2>
         </div>
@@ -256,9 +264,9 @@ const OpcBigCalendar = () => {
           dayEvents.map((event, index) => (
             <div key={index} className="opc-big-calendar-event-item">
               <div className="opc-big-calendar-event-details">
-                <div className="opc-big-calendar-event-title">🚩 {event.eventTitle}</div>
+                <div className="opc-big-calendar-event-title">📅  {event.eventTitle}</div>
                 <div className="opc-big-calendar-event-description">
-                  {event.eventDescription}
+                  <span style={{fontWeight: "600"}}>Description:</span> {event.eventDescription}
                 </div>
               </div>
               <div className="opc-big-calendar-event-actions">
@@ -288,11 +296,23 @@ const OpcBigCalendar = () => {
             {dayApprovedReservations.map((res, index) => (
               <div key={index} className="opc-big-calendar-event-item">
                 <div className="opc-big-calendar-event-details">
-                  <div className="opc-big-calendar-event-title">🚩 {res.reason} (Departure)</div>
-                  <div className="opc-big-calendar-event-description">
-                    <p><strong>Date:</strong> {new Date(res.schedule).toLocaleDateString()}</p>
-                    <p><strong>Time:</strong> {new Date(res.schedule).toLocaleTimeString()}</p>
-                    <p><strong>Reason:</strong> {res.reason}</p>
+                  <div className="opc-big-calendar-event-title1">🚩 {res.reason} (Departure)</div>
+                  <div className="opc-big-calendar-event-description1">
+                    <p><strong><FaCalendarDay style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Date:</strong> {new Date(res.schedule).toLocaleDateString()}</p>
+                    <p><strong><IoTime style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Time:</strong> {new Date(res.schedule).toLocaleTimeString()}</p>
+                    <p><strong><BiSolidMessageAltDetail style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Reason:</strong> {res.reason}</p>
+                    <p><strong><FaBus style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Vehicle:</strong> {res.vehicleType} - {res.plateNumber}</p>
+                    <p><strong><FaBus style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Added Vehicle:</strong> 
+                    {res.reservedVehicles && res.reservedVehicles.length > 0 ? (
+                        <ul style={{ paddingLeft: "45px", marginTop: "10px" }}>
+                          {res.reservedVehicles.map((vehicle, index) => (
+                            <li key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No Vehicles Added</p>
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -300,11 +320,12 @@ const OpcBigCalendar = () => {
             {dayApprovedReturn.map((res, index) => (
               <div key={index} className="opc-big-calendar-event-item">
                 <div className="opc-big-calendar-event-details">
-                  <div className="opc-big-calendar-event-title">🚩 {res.reason} (Pick Up)</div>
-                  <div className="opc-big-calendar-event-description">
-                    <p><strong>Date:</strong> {new Date(res.returnSchedule).toLocaleDateString()}</p>
-                    <p><strong>Time:</strong> {new Date(res.returnSchedule).toLocaleTimeString()}</p>
-                    <p><strong>Reason:</strong> {res.reason}</p>
+                  <div className="opc-big-calendar-event-title1">🚩 {res.reason} (Pick Up)</div>
+                  <div className="opc-big-calendar-event-description1">
+                    <p><strong><FaCalendarDay style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Date:</strong> {new Date(res.returnSchedule).toLocaleDateString()}</p>
+                    <p><strong><IoTime style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Time:</strong> {new Date(res.returnSchedule).toLocaleTimeString()}</p>
+                    <p><strong><BiSolidMessageAltDetail style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Reason:</strong> {res.reason}</p>
+                    <p><strong><FaBus style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Vehicle:</strong> {res.vehicleType} - {res.plateNumber}</p>
                   </div>
                 </div>
               </div>
@@ -386,6 +407,7 @@ const OpcBigCalendar = () => {
           </div>
         )}
       </div>
+      <img src={logoImage1} alt="Logo" className="driver-logo-image" />
     </div>
   );
 };

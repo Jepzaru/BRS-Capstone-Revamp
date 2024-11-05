@@ -108,11 +108,6 @@ const Reservation = () => {
     setAddedVehiclePlates(prev => prev.filter(p => p !== plateNumber));
   };
 
-  const vehiclesList = [
-    { type: 'van', capacity: 16 },
-    { type: 'coaster', capacity: 28 },
-    { type: 'bus', capacity: 60 }
-  ];
 
   const calculateMaxCapacity = () => {
     let totalCapacity = 0;
@@ -125,45 +120,41 @@ const Reservation = () => {
     return totalCapacity;
   };
   
-  const handleVehicleModeToggle = () => {
-    setIsMultipleVehicles(prevState => !prevState); 
-    setShowVehicleContainer(prevState => !prevState); 
-  };
   
   const handleInputChange = (event) => {
     const { name, value, files } = event.target;
-
+  
     if (name === 'capacity') {
       const capacity = Number(value);
-      const maxCapacity = calculateMaxCapacity(); 
-
       setFormData({ ...formData, [name]: value });
-      setIsAddVehicleDisabled(capacity <= maxCapacity);
-
-      if (capacity < maxCapacity) {
-        let remainingCapacity = capacity;
-        const vehiclesToRemove = [];
-
-        addedVehicles.forEach(vehicle => {
-          if (remainingCapacity < vehicle.capacity) {
-            vehiclesToRemove.push(vehicle.plateNumber); 
-          } else {
-            remainingCapacity -= vehicle.capacity; 
-          }
-        });
-
-        vehiclesToRemove.forEach(plateNumber => handleRemoveVehicle(plateNumber));
-      }
+  
+    
+      evaluateButtonState(capacity, selectedDate, returnScheduleDate);
     } else if (name === 'approvalProof') {
       if (files && files.length > 0) {
-          setFormData({ ...formData, [name]: files[0] }); 
+        setFormData({ ...formData, [name]: files[0] });
       } else {
-          setFormData({ ...formData, [name]: null });
+        setFormData({ ...formData, [name]: null });
       }
     } else {
-        setFormData({ ...formData, [name]: value });
+      setFormData({ ...formData, [name]: value });
     }
   };
+  
+  
+  const isScheduleValid = (scheduleDate, returnDate) => {
+    if (tripType === 'oneWay' && scheduleDate) {
+      return true; 
+    }
+    if (tripType === 'roundTrip' && scheduleDate && returnDate) {
+      return true; 
+    }
+    return false; 
+  };
+  
+  
+  
+  
   
   const handleClear = () => {
     setFormData({
@@ -197,20 +188,35 @@ const Reservation = () => {
     if (isSelectingReturn) {
       if (date >= selectedDate || !selectedDate) {
         setReturnScheduleDate(date);
+        evaluateButtonState(Number(formData.capacity), selectedDate, date);
       } else {
         alert('Return schedule date cannot be before the schedule date.');
       }
     } else {
-      
       setSelectedDate(date);
-      
- 
+  
       if (returnScheduleDate && returnScheduleDate < date) {
         setReturnScheduleDate(null);
       }
+  
+  
+      evaluateButtonState(Number(formData.capacity), date, returnScheduleDate);
     }
-    
+  
     setShowCalendar(false);
+  };
+  
+  const evaluateButtonState = (capacity, scheduleDate, returnDate) => {
+    const maxCapacity = calculateMaxCapacity();
+  
+  
+    const isValidSchedule = isScheduleValid(scheduleDate, returnDate);
+  
+    if (capacity > maxCapacity && isValidSchedule) {
+      setIsAddVehicleDisabled(false);
+    } else {
+      setIsAddVehicleDisabled(true);
+    }
   };
   
   

@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.brscapstone1.brscapstone1.Entity.VehicleEntity;
+import com.brscapstone1.brscapstone1.Entity.VehicleMaintenanceDetailsEntity;
 import com.brscapstone1.brscapstone1.Service.VehicleService;
 
 @RestController
@@ -32,4 +33,14 @@ public class VehicleController {
     public String delete(@PathVariable int id) {
         return vehicleService.delete(id);
     }
+
+     @GetMapping("/opc/vehicle/maintenance-details")
+    public List<VehicleMaintenanceDetailsEntity> getAllMaintenanceDetails() {
+        return vehicleService.getAllMaintenanceDetails();
+    }
+
+    @PutMapping("/opc/vehicle/maintenance-status/{id}")
+public VehicleMaintenanceDetailsEntity updateMaintenanceStatus(@PathVariable int id, @RequestParam Boolean isCompleted) {
+    return vehicleService.updateMaintenanceStatus(id, isCompleted);
+}
 }
