@@ -174,7 +174,7 @@ const HeadApprovedRequests = () => {
                         <td>{request.departureTime}</td>
                         <td>{request.pickUpTime || 'N/A'}</td>
                         <td>{request.reason}</td>
-                        <td className={request.status === 'Pending' ? 'status-pending' : request.status === 'Approved' ? 'status-approved' :  request.status === 'Rejected' ? 'status-rejected' : ''}>
+                        <td className={request.status === 'Pending' ? 'status-pending' : request.status === 'Approved' ? 'status-approved' :  request.status === 'Rejected' ? 'status-rejected' : request.status === 'Completed' ? 'status-approved' : ''}>
                         {request.status} by OPC
                       </td>
                       </tr>
