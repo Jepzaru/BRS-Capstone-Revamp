@@ -38,7 +38,7 @@ const HeadSide = () => {
   const handleApproveRequests = async () => {
     try {
       const reservationData = { headIsApproved: true };
-      const response = await fetch(`https://citumovebackend.up.railway.app/update/${selectedRequest.id}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
