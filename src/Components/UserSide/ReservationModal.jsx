@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../../CSS/UserCss/ReservationModal.css'; 
 
 const ReservationModal = ({ isOpen, onClose, onConfirm, message, type }) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+
   if (!isOpen) return null;
+
+  const handleConfirm = () => {
+    setIsProcessing(true);
+    onConfirm();
+  };
 
   return (
     <div className="modal-overlay">
@@ -12,7 +19,13 @@ const ReservationModal = ({ isOpen, onClose, onConfirm, message, type }) => {
           {type === 'confirmation' && (
             <>
               <button onClick={onClose} className="modal-button-cancel-button">Cancel</button>
-              <button onClick={onConfirm} className="modal-button-confirm-button">Yes, I confirm</button>
+              <button
+                onClick={handleConfirm}
+                disabled={isProcessing}
+                className="modal-button-confirm-button"
+              >
+                {isProcessing ? 'Processing' : 'Yes, I confirm'}
+              </button>
             </>
           )}
           {type === 'success' && (
