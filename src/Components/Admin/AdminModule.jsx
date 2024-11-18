@@ -96,7 +96,6 @@ const closeErrorModal = () => {
         return;
     }
 
-    // Check if email already exists
     const emailExists = users.some(user => user.email === email);
     if (emailExists) {
         openErrorModal("This email is already in use.");
@@ -131,13 +130,34 @@ const closeErrorModal = () => {
     }
 };
 
+const handleDeleteAccount = async () => {
+  if (!userToDelete) return;
+
+  try {
+    const response = await fetch(`https://citumovebackend.up.railway.app/admin/users/delete/${userToDelete.id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      fetchUsers();
+      closeDeleteModal();
+    } else {
+      openErrorModal("Failed to delete the user.");
+    }
+  } catch (error) {
+    openErrorModal("An error occurred while deleting the user.");
+  }
+};
+
 
 const handleUpdateAccount = async (event) => {
   event.preventDefault();
   const formData = new FormData(event.target);
   const updatedEmail = formData.get('email');
 
-  // Check if the email already exists in another account
   const emailExists = users.some(user => user.email === updatedEmail && user.id !== selectedUser.id);
   if (emailExists) {
       openErrorModal("This email is already in use.");
@@ -170,9 +190,6 @@ const handleUpdateAccount = async (event) => {
     openErrorModal("Failed to update user.");
   }
 };
-
-
-
 
 
   const openUpdateModal = (user) => {
@@ -218,28 +235,6 @@ const handleUpdateAccount = async (event) => {
     const fullName = `${getFirstName(user.email)} ${getLastName(user.email)}`.toLowerCase();
     return fullName.includes(searchQuery.toLowerCase()) || user.email.toLowerCase().includes(searchQuery.toLowerCase());
   });
-
-  const handleDeleteAccount = async () => {
-    if (!userToDelete) return;
-  
-    try {
-      const response = await fetch(`https://citumovebackend.up.railway.app/admin/users/delete/${userToDelete.id}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-  
-      if (response.ok) {
-        fetchUsers();
-        closeDeleteModal();
-      } else {
-        openErrorModal("Failed to delete the user.");
-      }
-    } catch (error) {
-      openErrorModal("An error occurred while deleting the user.");
-    }
-  };
 
   return (
     <div className="admin">

@@ -27,6 +27,20 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
         reservedVehicles: [],
         ...request
     });
+    
+    const formatTime = (time) => {
+        if (!time || time === "N/A") return '';
+      
+        
+        if (time.includes("AM") || time.includes("PM")) {
+          return time; 
+        }
+      
+        const [hours, minutes] = time.split(':');
+        const formattedHours = (parseInt(hours, 10) % 12) || 12;
+        const amPm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
+        return `${formattedHours}:${minutes} ${amPm}`;
+      };
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [isSelectingReturn, setIsSelectingReturn] = useState(false);
@@ -34,32 +48,23 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
     const [returnScheduleDate, setReturnScheduleDate] = useState(null);
     const [addedVehicles, setAddedVehicles] = useState([]);
     const token = localStorage.getItem('token');
-    const [responseModal, setResponseModal] = useState({ show: false, success: null, message: '' }); 
-
-    const formatTime = (time) => {
-        if (!time || time === "N/A") return '';
-        const [hours, minutes] = time.split(':');
-        const formattedHours = (parseInt(hours, 10) % 12) || 12;
-        const amPm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
-        return `${formattedHours}:${minutes} ${amPm}`;
-      };
+    const [responseModal, setResponseModal] = useState({ show: false, success: null, message: '' });
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === "approvalProof" && files.length > 0) {
             setFormData((prevData) => ({
                 ...prevData,
-                [name]: files[0],
+                [name]: files[0],  
             }));
         } else {
             setFormData((prevData) => ({
                 ...prevData,
                 [name]: value,  
             }));
-            console.log(`${name}: ${value}`);
         }
-    }
-
+    };
+    
     useEffect(() => {
         if (request) {
             setFormData((prevData) => ({
@@ -113,9 +118,15 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
     };
 
     const handleResendRequest = async () => {
+        if (!formData.destinationFrom || !formData.destinationTo || !formData.capacity || !formData.reason) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+    
         try {
             let fileUrl = null;
     
+            // Check if there is a file to upload
             if (formData.approvalProof instanceof File) {
                 const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
                 const snapshot = await uploadBytes(fileRef, formData.approvalProof);
@@ -131,13 +142,15 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
                 plateNumber: formData.plateNumber || '',
                 schedule: formData.schedule,
                 returnSchedule: formData.returnSchedule,
-                pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
                 departureTime: formatTime(formData.departureTime),
+                pickUpTime: formatTime(formData.pickUpTime),
                 department: formData.department,
                 reason: formData.reason,
                 reservedVehicles: formData.reservedVehicles,
-                approvalProof: fileUrl,
+                fileUrl: fileUrl || formData.approvalProof,
                 rejected: false,
+                status: 'Pending',
+                [formData.rejectedBy === 'OPC' ? 'opcIsApproved' : 'headIsApproved']: formData.rejectedBy === 'HEAD' ? true : false,
             };
     
             const response = await fetch(`https://citumovebackend.up.railway.app/reservations/resend/${request.id}`, {
@@ -155,7 +168,7 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
     
                 setTimeout(() => {
                     window.location.reload();
-                }, 2000); 
+                }, 1000); 
             } else {
                 const errorBody = await response.text();
                 setResponseModal({ show: true, success: false, message: 'Failed to resend request: ' + errorBody }); 
@@ -165,6 +178,7 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
         }
     };
     
+
     const handleCloseResponseModal = () => {
         setResponseModal({ show: false, success: null, message: '' });
         refreshManageRequests(); 
@@ -321,14 +335,20 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
                                 <FaFileAlt style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
                                 Proof of Approval (optional):
                             </label>
-                            <input type="file" id="approvalProof" name="approvalProof" accept="application/pdf" onChange={handleInputChange} />
+                            <input
+                            type="file"
+                            id="approvalProof"
+                            name="approvalProof"
+                            accept="application/pdf"
+                            onChange={handleInputChange} 
+                        />
                         </div>
                     </div>
                     <div className="form-group-inline">
                         <div className="form-group">
                             <label htmlFor="reservationReason">
                                 <CgDetailsMore style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
-                                Reason of Reservation:
+                                Purpose of Reservation:
                             </label>
                             <textarea
                                 id="reservationReason"
@@ -372,12 +392,12 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
 
             {responseModal.show && (
                 <div className="close-overlay">
-    <div className={`response-modal ${responseModal.success ? 'success' : 'error'}`}>
-        <h4>{responseModal.message}</h4>
-        <button onClick={handleCloseResponseModal} className="close-mdl">Close</button>
-    </div>
-    </div>
-)}
+                    <div className={`response-modal ${responseModal.success ? 'success' : 'error'}`}>
+                        <h4>{responseModal.message}</h4>
+                        <button onClick={handleCloseResponseModal} className="close-mdl"></button>
+                    </div>
+                </div>
+            )}
 
             {showCalendar && (
                 <div className="calendar-modal">
@@ -390,9 +410,9 @@ const VipResendRequestModal = ({ request, showModal, onClose, refreshManageReque
                     </div>
                 </div>
             )}
-
         </div>
     );
 };
+
 
 export default VipResendRequestModal;

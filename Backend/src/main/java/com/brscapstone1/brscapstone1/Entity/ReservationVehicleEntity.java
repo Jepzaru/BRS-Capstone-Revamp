@@ -1,6 +1,8 @@
 package com.brscapstone1.brscapstone1.Entity;
 
 import java.time.LocalDate;
+
+import com.brscapstone1.brscapstone1.Constants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
@@ -12,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "reservation_vehicle")
+@Table(name = Constants.DataAnnotations.RESERVATION_VEHICLE)
 public class ReservationVehicleEntity {
 
     @Id
@@ -20,7 +22,7 @@ public class ReservationVehicleEntity {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "reservation_id", nullable = false)
+    @JoinColumn(name = Constants.DataAnnotations.RESERVATION_ID, nullable = false)
     @JsonIgnore
     private ReservationEntity reservation;
     private String vehicleType;
@@ -29,10 +31,10 @@ public class ReservationVehicleEntity {
     private String status;
     private Boolean isCompleted = false;
     
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = Constants.DataAnnotations.DATE_FORMAT)
     private LocalDate schedule;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = Constants.DataAnnotations.DATE_FORMAT)
     private LocalDate returnSchedule;
 
     private String pickUpTime;

@@ -19,12 +19,14 @@ const OpcRequests = () => {
   const [feedback, setFeedback] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [loading, setLoading] = useState(false);
+  const [requestCount, setRequestCount] = useState(0);
+
 
   
 const token = localStorage.getItem('token');
 
 const fetchHeadIsApprovedRequests = async () => {
-  setLoading(true); 
+  setLoading(true);
   try {
     const response = await fetch("https://citumovebackend.up.railway.app/reservations/head-approved", {
       headers: { "Authorization": `Bearer ${token}` },
@@ -42,18 +44,33 @@ const fetchHeadIsApprovedRequests = async () => {
           (scheduleDate >= currentDate || returnScheduleDate >= currentDate)
         );
       });
+
+      const count = filteredRequests.length;
       setRequests(filteredRequests);
+      setRequestCount(count); 
+
+      localStorage.setItem('requestCount', count);
+      
+      console.log(count);  
     } else {
       console.error("Unexpected data format:", data);
       setRequests([]);
+      setRequestCount(0);  
+
+      localStorage.setItem('requestCount', 0);
     }
   } catch (error) {
     console.error("Failed to fetch requests.", error);
     setRequests([]);
+    setRequestCount(0);  
+
+    localStorage.setItem('requestCount', 0);
   } finally {
-    setLoading(false); 
+    setLoading(false);
   }
 };
+
+
 
   useEffect(() => {
     fetchHeadIsApprovedRequests();
@@ -168,19 +185,16 @@ const fetchHeadIsApprovedRequests = async () => {
 
   const handleReject = async () => {
     if (!feedback.trim()) {
-      alert('Please provide feedback.');
+      alert('Please provide reason of rejection.');
       return;
     }
-
+  
     const reservationData = {
       rejected: true,
       status: 'Rejected',
       feedback: feedback
     };
-
-    const formData = new FormData();
-    formData.append("reservation", JSON.stringify(reservationData));
-
+  
     try {
       const response = await fetch(`https://citumovebackend.up.railway.app/reservations/update/${selectedRequest.id}`, {
         method: "PUT",
@@ -188,12 +202,13 @@ const fetchHeadIsApprovedRequests = async () => {
           "Content-Type": "application/json", 
           "Authorization": `Bearer ${token}`,
         }, 
-      body: JSON.stringify(reservationData),
+        body: JSON.stringify(reservationData),
       });
-
+  
       if (response.ok) {
-        fetchHeadIsApprovedRequests();
+        await fetchHeadIsApprovedRequests();
         handleCloseModal();
+        window.location.reload();
       } else {
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
@@ -212,10 +227,10 @@ const fetchHeadIsApprovedRequests = async () => {
   
     const reservationData = {
       opcIsApproved: true,
-      driverId: selectedDriver.id, 
+      driverId: selectedDriver.id,
       driverName: selectedDriver.driverName,
       status: 'Approved',
-      reservedVehicles: selectedRequest.reservedVehicles 
+      reservedVehicles: selectedRequest.reservedVehicles,
     };
   
     try {
@@ -225,12 +240,13 @@ const fetchHeadIsApprovedRequests = async () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(reservationData), 
+        body: JSON.stringify(reservationData),
       });
   
       if (response.ok) {
-        fetchHeadIsApprovedRequests();
-        handleCloseModal();
+        await fetchHeadIsApprovedRequests(); 
+        handleCloseModal(); 
+        window.location.reload(); 
       } else {
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
@@ -307,7 +323,7 @@ const fetchHeadIsApprovedRequests = async () => {
     <div className="opcrequest">
       <Header />
       <div className="opc-request-content1">
-        <SideNavbar />
+        <SideNavbar requestCount={requestCount} />
         <div className="opc1">
           <div className="header-container">
             <h1><FaSwatchbook style={{ marginRight: "15px", color: "#782324" }} />Requests</h1>
@@ -458,21 +474,21 @@ const fetchHeadIsApprovedRequests = async () => {
                         >
                             <td>{request.transactionId}</td>
                             <td>{request.userName}</td>
-                            <td>{request.department}</td>
+                            <td><span style={{color: "#782324", fontWeight: "700"}}>{request.department}</span></td>
                             <td>{request.typeOfTrip}</td>
                             <td>{request.destinationFrom}</td>
                             <td>{request.destinationTo}</td>
                             <td><span style={{color: "#782324", fontWeight: "700"}}>{request.capacity}</span></td>
-                            <td>{request.vehicleType} - {request.plateNumber}</td>
+                            <td><span style={{color: "#782324", fontWeight: "700"}}>{request.vehicleType}</span> : <span style={{color: "green", fontWeight: "700"}}>{request.plateNumber}</span></td>
                             <td>
                               {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
                                 request.reservedVehicles.map((vehicle, index) => (
                                   <div key={index}>
-                                    {vehicle.vehicleType} - {vehicle.plateNumber} 
+                                    <span style={{color: "#782324", fontWeight: "700"}}>{vehicle.vehicleType}</span> : <span style={{color: "green", fontWeight: "700"}}>{vehicle.plateNumber}</span> 
                                   </div>
                                 ))
                               ) : (
-                                <div>No Vehicles Added</div>
+                                <div><span style={{fontWeight: "700"}}>No Vehicles Added</span></div>
                               )}
                             </td>
                             <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
@@ -636,7 +652,7 @@ const fetchHeadIsApprovedRequests = async () => {
                 id="feedback-input"
                 className="feedback-input"
                 type="text"
-                placeholder="Enter feedback"
+                placeholder="Enter reason of rejection"
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
               />

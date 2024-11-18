@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../../CSS/UserCss/TimeDropdown.css';
 
-const PickUpDropdown = ({ selectedTime, onChange, name, disabled, plateNumber, addedPlateNumbers, date, token }) => {
+const PickUpDropdown = ({ selectedTime, onChange, name, disabled, plateNumber, addedPlateNumbers, date, token, departureTime }) => {
   const [reservedTimes, setReservedTimes] = useState([]);
 
   const formatDate = (date) => {
@@ -124,15 +124,20 @@ const PickUpDropdown = ({ selectedTime, onChange, name, disabled, plateNumber, a
         name={name}
         value={selectedTime}
         onChange={onChange}
-        disabled={disabled}
       >
-        <option value="" disabled>Select Pick Up Time &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
+        <option value="" disabled>Select Pick Up Time &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
         {times.map(time => (
           <option
             key={time}
             value={time}
-            style={{ color: isReserved(time) ? 'red' : 'black', fontWeight: '700' }}
-            disabled={isReserved(time)}
+            style={{
+              color: isReserved(time) ? 'red' : 'black',
+              fontWeight: '700',
+            }}
+            disabled={
+              isReserved(time) || 
+              (departureTime === time) 
+            }
           >
             {formatTime(time)}
           </option>

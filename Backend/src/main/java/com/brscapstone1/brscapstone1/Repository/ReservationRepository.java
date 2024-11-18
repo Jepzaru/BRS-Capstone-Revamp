@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.brscapstone1.brscapstone1.Constants;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
-
 
 public interface ReservationRepository extends JpaRepository<ReservationEntity, Integer> {
     List<ReservationEntity> findByStatus(String status);
@@ -17,11 +17,14 @@ public interface ReservationRepository extends JpaRepository<ReservationEntity, 
     List<ReservationEntity> findByOpcIsApproved(boolean opcIsApproved);
     List<ReservationEntity> findByScheduleBetween(LocalDate startDate, LocalDate endDate);
     List<ReservationEntity> findByPlateNumber(String plateNumber);
-    @Query("SELECT r FROM ReservationEntity r WHERE r.plateNumber = :plateNumber AND (r.schedule = :date OR r.returnSchedule = :date)")
-List<ReservationEntity> findByPlateNumberAndDate(@Param("plateNumber") String plateNumber, @Param("date") LocalDate date);
+    
+    @Query(Constants.RepositoryQuery.FIND_PLATENUMBER_AND_DATE)
+    List<ReservationEntity> findByPlateNumberAndDate(
+        @Param(Constants.Annotation.PLATENUMBER) String plateNumber, 
+        @Param(Constants.Annotation.DATE) LocalDate date);
 
-@Query("SELECT r FROM ReservationEntity r WHERE r.schedule = :schedule OR r.returnSchedule = :returnSchedule")
-List<ReservationEntity> findByMainScheduleOrReturnSchedule(@Param("schedule") LocalDate schedule,
-                                                            @Param("returnSchedule") LocalDate returnSchedule);
-
+    @Query(Constants.RepositoryQuery.FIND_MAIN_SCHEDULE_OR_RETURN)
+    List<ReservationEntity> findByMainScheduleOrReturnSchedule(
+        @Param(Constants.Annotation.SCHEDULE) LocalDate schedule,
+        @Param(Constants.Annotation.RETURN_SCHEDULE) LocalDate returnSchedule);
 }

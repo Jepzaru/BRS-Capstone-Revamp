@@ -7,8 +7,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 
+import com.brscapstone1.brscapstone1.Constants;
+
 @Entity
-@Table(name = "vehicle")
+@Table(name = Constants.DataAnnotations.VEHICLE)
 public class VehicleEntity {
 
   @Id

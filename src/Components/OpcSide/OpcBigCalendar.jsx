@@ -250,14 +250,17 @@ const OpcBigCalendar = () => {
         <div className="opc-big-calendar-events-content-header">
           <h2>Events on {selectedDate.toDateString()}   
           <button 
-              className='opc-big-calendar-event-btn' 
-              onClick={() => setShowAddEvent(true)} 
-              disabled={isPastDate} 
-              style={{ opacity: isPastDate ? 0.5 : 1, cursor: 'not-allowed' }}
-            >
-              <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> 
-              Add New Event
-            </button>
+            className='opc-big-calendar-event-btn' 
+            onClick={() => setShowAddEvent(true)} 
+            disabled={isPastDate} 
+            style={{ 
+              opacity: isPastDate ? 0.5 : 1,
+              cursor: isPastDate ? 'not-allowed' : 'pointer' 
+            }}
+          >
+            <IoMdAddCircle style={{ marginBottom: "-2px", marginRight: "10px" }} /> 
+            Add New Event
+          </button>
           </h2>
         </div>
         {dayEvents.length > 0 ? (

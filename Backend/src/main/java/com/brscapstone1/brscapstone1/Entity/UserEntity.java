@@ -1,5 +1,7 @@
 package com.brscapstone1.brscapstone1.Entity;
 
+import com.brscapstone1.brscapstone1.Constants;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,7 +10,7 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "users")
+@Table(name = Constants.DataAnnotations.USER)
 public class UserEntity {
 	
 	@Id

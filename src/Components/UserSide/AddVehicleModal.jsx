@@ -16,7 +16,7 @@ const AddVehicleModal = ({ isOpen, onClose, onAdd, selectedPlateNumber, addedVeh
   const fetchVehicles = async () => {
     try {
         
-        const vehicleResponse = await fetch('https://citumovebackend.up.railway.app/vehicle/getAll', {
+        const vehicleResponse = await fetch('http://localhost:8080/vehicle/getAll', {
             headers: {
                 "Authorization": `Bearer ${token}`
             }

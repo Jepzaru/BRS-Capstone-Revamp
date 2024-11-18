@@ -224,13 +224,14 @@ const AdminDepartment = () => {
         </div>
       )}
 
-      {isDeleteModalOpen && (
+{isDeleteModalOpen && (
         <div className="delete-modal-overlay" onClick={closeDeleteModal}>
           <div className="delete-modal-content" onClick={(e) => e.stopPropagation()}>
-            <p>Are you sure you want to delete this Department?</p>
+            <h2>Confirm Delete</h2>
+            <p>Are you sure you want to delete this department?</p>
             <div className="delete-modal-buttons">
-              <button type="button" onClick={closeDeleteModal}>Cancel</button>
-              <button type="button" onClick={handleDeleteDepartment}>Delete</button>
+              <button type="button" className="del-cancel" onClick={closeDeleteModal}>Cancel</button>
+              <button type="button" className="del-delete" onClick={handleDeleteDepartment}>Yes, Delete this Department</button>
             </div>
           </div>
         </div>

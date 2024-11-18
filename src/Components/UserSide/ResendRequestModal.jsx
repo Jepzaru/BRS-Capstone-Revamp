@@ -345,7 +345,7 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                         <div className="form-group">
                             <label htmlFor="reservationReason">
                                 <CgDetailsMore style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
-                                Reason of Reservation:
+                                Purpose of Reservation:
                             </label>
                             <textarea
                                 id="reservationReason"

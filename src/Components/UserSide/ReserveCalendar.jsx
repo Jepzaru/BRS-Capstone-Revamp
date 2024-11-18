@@ -86,7 +86,7 @@ const ReserveCalendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => 
 
     for (let i = 1; i <= totalDays; i++) {
         const date = new Date(currentYear, currentMonth, i);
-        const isPast = date < currentDate && date.toDateString() !== currentDate.toDateString(); // Exclude today from being past
+        const isPast = date < currentDate && date.toDateString() !== currentDate.toDateString(); 
         const isBeforeMinDate = minDate && date < minDate;
 
         const reservedInfo = reservedDates.find(res =>

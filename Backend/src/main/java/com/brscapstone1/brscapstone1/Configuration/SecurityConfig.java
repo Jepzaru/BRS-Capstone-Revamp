@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,9 +15,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import com.brscapstone1.brscapstone1.Service.MyUserDetailsService;
 import com.brscapstone1.brscapstone1.WebToken.JwtService;
 import com.brscapstone1.brscapstone1.WebToken.JwtAuthenticationFilter;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
@@ -35,7 +37,10 @@ public class SecurityConfig {
         httpSecurity
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(registry -> {
-                registry.requestMatchers("/", "/authenticate", "/admin/users/add", "/profile-pictures/upload").permitAll();
+                registry.requestMatchers("/api/email/**").permitAll();
+                registry.requestMatchers("/api/change-password-by-email").permitAll();
+
+                registry.requestMatchers("/", "/authenticate", "/admin/users/add", "/profile-pictures/upload", "/api/mail", "/api/change-password-by-email").permitAll();
                 registry.requestMatchers("/admin/**", "/user/profile-pictures/upload" ).hasRole("ADMIN");
                 registry.requestMatchers("/user/**", "/opc/events/getAll").hasAnyRole("USER", "VIP", "OPC", "HEAD");
                 registry.requestMatchers("/opc/**").hasRole("OPC");

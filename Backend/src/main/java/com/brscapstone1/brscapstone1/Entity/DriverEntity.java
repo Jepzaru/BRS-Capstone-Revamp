@@ -1,6 +1,9 @@
 package com.brscapstone1.brscapstone1.Entity;
 
 import java.time.LocalDate;
+
+import com.brscapstone1.brscapstone1.Constants;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,19 +11,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "drivers")
+@Table(name = Constants.DataAnnotations.DRIVER)
 public class DriverEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id; 
-
   private String driverName;
   private String contactNumber;
   private String status;
   private LocalDate leaveStartDate;
   private LocalDate leaveEndDate;
-
 
   public Long getId() {
     return id;
@@ -70,7 +71,6 @@ public class DriverEntity {
     this.leaveEndDate = leaveEndDate;
   }
 
-  
   public DriverEntity(String driverName, String contactNumber, String status, LocalDate leaveStartDate, LocalDate leaveEndDate) {
     this.driverName = driverName;
     this.contactNumber = contactNumber;

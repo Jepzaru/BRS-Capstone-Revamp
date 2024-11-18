@@ -396,9 +396,10 @@ const Reservation = () => {
                           borderRadius: "20px",
                           padding: "3px",
                           marginBottom: "-5px",
+                          marginRight: "5px"
                         }}
                       />
-                      Capacity:
+                      No. of Passengers:
                     </label>
                     <input
                       type="number"
@@ -497,16 +498,14 @@ const Reservation = () => {
                         Pick-Up Time:
                       </label>
                       <PickUpDropdown
-                      name="pickUpTime"
-                      selectedTime={formData.pickUpTime}
-                      onChange={handleInputChange}
-                      disabled={!returnScheduleDate}
-                      date={returnScheduleDate}
-                      plateNumber={selectedVehiclePlateNumber}
-                      addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
-                      token={token}
-
-                    />
+                        name="pickUpTime"
+                        selectedTime={formData.pickUpTime}
+                        onChange={handleInputChange}
+                        plateNumber={selectedVehiclePlateNumber}
+                        addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
+                        token={token}
+                        departureTime={formData.departureTime} 
+                      />
                     </div>
                   )} 
               </div>
@@ -523,14 +522,14 @@ const Reservation = () => {
               <div className="form-group-inline">
               <div className="form-group">
                   <label htmlFor="reservationReason">
-                    <CgDetailsMore style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}} /> Reason of Reservation:
+                    <CgDetailsMore style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}} /> Purpose of Reservation:
                   </label>
                   <textarea
                     type="text" 
                     id="reservationReason" 
                     name="reservationReason" 
                     className="reservation-reason-textarea" 
-                    placeholder="State the reason of your reservation"
+                    placeholder="State the purpose of your reservation"
                     value={formData.reservationReason}
                     required 
                     onChange={handleInputChange}
@@ -538,7 +537,7 @@ const Reservation = () => {
                 </div>
                   <div className="form-group">
                     <label htmlFor="addedVehicle">
-                      <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> 
+                      <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} /> 
                       Vehicle Added:
                       <button 
                         type="button"
@@ -573,9 +572,6 @@ const Reservation = () => {
             <div className="summary-container">
               <h2>Reservation Summary</h2>
               <div className="summary-item">
-                <strong>Reservation Type:</strong> 
-              </div>
-              <div className="summary-item">
                 <strong>Trip Type:</strong> {tripType === 'oneWay' ? 'One Way' : 'Round Trip'}
               </div>
               <div className="summary-item">
@@ -585,7 +581,7 @@ const Reservation = () => {
                 <strong>To:</strong> {formData.to}
               </div>
               <div className="summary-item">
-              <strong>Capacity: {formData.capacity || 0} /</strong> {calculateMaxCapacity()}
+              <strong>No. of Passengers: {formData.capacity || 0} /</strong> {calculateMaxCapacity()}
               </div>
               <div className="summary-item">
                 <strong>Plate Number:</strong> {vehicle.plateNumber}
@@ -628,7 +624,7 @@ const Reservation = () => {
                 <strong>Proof of Approval:</strong> {formData.fileName || 'Not Attached'}
               </div>
               <div className="summary-item">
-                <strong>Reason:</strong> {formData.reservationReason}
+                <strong>Purpose:</strong> {formData.reservationReason}
               </div>
               <div className="button-group">
               <button type="button" className="reset-button" onClick={handleClear}>

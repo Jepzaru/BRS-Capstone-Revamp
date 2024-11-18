@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.brscapstone1.brscapstone1.Constants;
 import com.brscapstone1.brscapstone1.Entity.UserEntity;
 import com.brscapstone1.brscapstone1.Repository.UserRepository;
 
@@ -32,12 +33,12 @@ public class UserService {
 
 	public UserEntity findById(int id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
+                .orElseThrow(() -> new NoSuchElementException(Constants.ExceptionMessage.USER_NOT_FOUND));
     }
 
     public UserEntity update(int id, UserEntity newUser) {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
+                .orElseThrow(() -> new NoSuchElementException(Constants.ExceptionMessage.USER_NOT_FOUND));
 
         user.setEmail(newUser.getEmail());
 
@@ -53,36 +54,34 @@ public class UserService {
     public String delete(int id) {
         if (userRepository.findById(id).isPresent()) {
             userRepository.deleteById(id);
-            return "User with id " + id + " successfully deleted.";
+            return Constants.ResponseMessages.USER_DELETE_SUCCESS;
         } else {
-            return "User with id " + id + " does not exist.";
+            return Constants.ExceptionMessage.USER_NOT_FOUND;
         }
     }
 
     public String changePassword(int id, String oldPassword, String newPassword) {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
+                .orElseThrow(() -> new NoSuchElementException(Constants.ExceptionMessage.USER_NOT_FOUND));
 
         if (passwordEncoder.matches(oldPassword, user.getPassword())) {
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
-            return "Password successfully changed.";
+            return Constants.ResponseMessages.CHANGE_PASS_SUCCESS;
         } else {
-            throw new IllegalArgumentException("Old password is incorrect.");
+            throw new IllegalArgumentException(Constants.ResponseMessages.OLD_PASS_INCORRECT);
         }
-    }
+    }    
 
     public UserEntity findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException(Constants.ExceptionMessage.USERNAME_NOT_FOUND + email));
     }
 
-    // New method to upload and set profile picture
     public UserEntity uploadProfilePic(int id, MultipartFile imageFile) throws IOException {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
+                .orElseThrow(() -> new NoSuchElementException(Constants.ExceptionMessage.USER_NOT_FOUND));
 
-        // Save image data and metadata
         user.setImageName(imageFile.getOriginalFilename());
         user.setImageType(imageFile.getContentType());
         user.setImageData(imageFile.getBytes());
@@ -92,9 +91,8 @@ public class UserService {
 
 	public UserEntity updateProfilePic(int id, MultipartFile imageFile) throws IOException {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User with id " + id + " does not exist."));
+                .orElseThrow(() -> new NoSuchElementException(Constants.ExceptionMessage.USER_NOT_FOUND));
 
-        // Save new image data and metadata
         user.setImageName(imageFile.getOriginalFilename());
         user.setImageType(imageFile.getContentType());
         user.setImageData(imageFile.getBytes());

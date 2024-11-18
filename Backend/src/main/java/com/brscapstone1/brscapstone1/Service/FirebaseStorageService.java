@@ -1,5 +1,6 @@
 package com.brscapstone1.brscapstone1.Service;
 
+import com.brscapstone1.brscapstone1.Constants;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -17,7 +18,7 @@ public class FirebaseStorageService {
 
     public String uploadFile(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("File is empty.");
+            throw new IllegalArgumentException(Constants.ExceptionMessage.FILE_EMPTY);
         }
 
         String fileName = "approvalProofs/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();

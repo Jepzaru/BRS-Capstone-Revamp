@@ -2,6 +2,9 @@ package com.brscapstone1.brscapstone1.Entity;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import com.brscapstone1.brscapstone1.Constants;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,7 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "reservation")
+@Table(name = Constants.DataAnnotations.RESERVATION)
 public class ReservationEntity {
     
     @Id
@@ -45,10 +48,10 @@ public class ReservationEntity {
     private String rejectedBy;
     
     @OneToMany(orphanRemoval = true)
-    @JoinColumn(name = "reservation_id")
+    @JoinColumn(name = Constants.DataAnnotations.RESERVATION_ID)
     private List<VehicleEntity> vehicles;
 
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = Constants.DataAnnotations.RESERVATION, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReservationVehicleEntity> reservedVehicles;
 
     
@@ -178,9 +181,9 @@ public class ReservationEntity {
 
     public void setStatus(String status) {
         this.status = status;
-        if ("Approved".equals(status) && reservedVehicles != null) {
+        if (Constants.Annotation.APPROVED.equals(status) && reservedVehicles != null) {
             for (ReservationVehicleEntity vehicle : reservedVehicles) {
-                vehicle.setStatus("Approved");
+                vehicle.setStatus(Constants.Annotation.APPROVED);
                 vehicle.setSchedule(this.schedule);
                 vehicle.setReturnSchedule(this.returnSchedule);
                 vehicle.setPickUpTime(this.pickUpTime);

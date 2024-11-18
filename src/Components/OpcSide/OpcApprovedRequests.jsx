@@ -21,37 +21,39 @@ const OpcApprovedRequests = () => {
   useEffect(() => {
     const fetchApprovedRequests = async () => {
       setLoading(true); 
-      const token = localStorage.getItem('token'); 
-    
+  
+      const token = localStorage.getItem('token');
       if (!token) {
         console.error("No token found");
         setLoading(false);
         return;
       }
-    
+  
       try {
         const response = await fetch('https://citumovebackend.up.railway.app/reservations/opc-approved', {
           headers: { "Authorization": `Bearer ${token}` }
         });
-    
+  
         if (!response.ok) {
           const errorMessage = await response.text();
           console.error("Error fetching approved requests:", response.status, errorMessage);
           throw new Error("Network response was not ok");
         }
-        
+  
         const data = await response.json();
         const approvedRequests = data.filter(request => request.opcIsApproved === true);
-        setRequests(approvedRequests);
+        setRequests(approvedRequests); 
       } catch (error) {
         console.error("Error fetching approved requests:", error);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
-    
-    fetchApprovedRequests();
+  
+    fetchApprovedRequests(); 
   }, []); 
+   
+  
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -122,33 +124,28 @@ const OpcApprovedRequests = () => {
         Departure: request.departureTime,
         PickUp: request.pickUpTime || "N/A",
         Driver: request.driverName || "N/A",
-        // Combine added drivers and their vehicles into a single string
+  
         "Added Driver and Vehicle": request.reservedVehicles && request.reservedVehicles.length > 0
             ? request.reservedVehicles.map(vehicle => `${vehicle.driverName || "N/A"} - ${vehicle.vehicleType || "N/A"} : ${vehicle.plateNumber}`).join(', ')
             : "No Drivers Added",
         Reason: request.reason
     }));
 
-    // Create a worksheet from the modified data
     const ws = XLSX.utils.json_to_sheet(dataToExport);
 
-    // Define custom headers
     const headerNames = [
         "Requestor", "TripType", "From", "To", 
         "Capacity", "Vehicle", "Schedule", "Return Schedule",
         "Departure", "PickUp", "Driver", "Added Driver and Vehicle", "Reason"
     ];
     
-    // Update the worksheet with the custom headers
     XLSX.utils.sheet_add_aoa(ws, [headerNames], { origin: 'A1' });
 
-    // Append the modified data starting from the second row
     XLSX.utils.sheet_add_json(ws, dataToExport, { skipHeader: true, origin: 'A2' });
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Approved Requests");
 
-    // Export the workbook
     XLSX.writeFile(wb, "Approved_Requests.xlsx");
 };
 
@@ -234,7 +231,7 @@ const OpcApprovedRequests = () => {
                       <th>Pick Up Time</th>
                       <th>Assigned Driver</th>
                       <th>Extra Drivers</th>
-                      <th>Reason</th>
+                      <th>Purpose</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -268,12 +265,14 @@ const OpcApprovedRequests = () => {
                           <td>{request.typeOfTrip}</td>
                           <td>{request.destinationFrom}</td>
                           <td>{request.destinationTo}</td>
-                          <td>{request.capacity}</td>
-                          <td>{request.vehicleType} - {request.plateNumber}</td>
+                          <td><span style={{color: "#782324", fontWeight: "700"}}>{request.capacity}</span></td>
+                          <td><span style={{color: "#782324", fontWeight: "700"}}>{request.vehicleType}</span> : <span style={{color: "green", fontWeight: "700"}}>{request.plateNumber}</span></td>
                           <td>
                             {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
                               request.reservedVehicles.map((vehicle, index) => (
-                                <div key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</div>
+                                <div key={index}>
+                                  <span style={{color: "#782324", fontWeight: "700"}}>{vehicle.vehicleType}</span> : <span style={{color: "green", fontWeight: "700"}}>{vehicle.plateNumber}</span> 
+                                </div>
                               ))
                             ) : (
                               "No Vehicles Added"

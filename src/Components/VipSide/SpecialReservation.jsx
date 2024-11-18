@@ -48,7 +48,7 @@ const VipSpecialReservation = () => {
   const [selectedVehiclePlateNumber, setSelectedVehiclePlateNumber] = useState(vehicle ? vehicle.plateNumber : '');
   const [capacityExceeded, setCapacityExceeded] = useState(false);
   const [capacityError, setCapacityError] = useState('');
-  
+
   useEffect(() => {
     if (vehicle && vehicle.plateNumber) {
       setSelectedVehiclePlateNumber(vehicle.plateNumber);
@@ -88,6 +88,8 @@ const VipSpecialReservation = () => {
     }
   }, [selectedVehicle]);
 
+  const [isAddVehicleDisabled, setIsAddVehicleDisabled] = useState(true); 
+
   const handleAddVehicleClick = () => {
     setAddVehicleModalOpen(true);
   };
@@ -95,7 +97,7 @@ const VipSpecialReservation = () => {
   const handleCloseModal = () => {
     setAddVehicleModalOpen(false);
   };
-
+  
   const handleAddVehicle = (vehicle) => {
     setAddedVehiclePlates(prev => [...prev, vehicle.plateNumber]);
     setAddedVehicles(prevVehicles => [...prevVehicles, vehicle]);
@@ -107,65 +109,54 @@ const VipSpecialReservation = () => {
     setAddedVehiclePlates(prev => prev.filter(p => p !== plateNumber));
   };
 
-  const [isAddVehicleDisabled, setIsAddVehicleDisabled] = useState(true); 
-
-  const vehiclesList = [
-    { type: 'van', capacity: 16 },
-    { type: 'coaster', capacity: 28 },
-    { type: 'bus', capacity: 60 }
-  ];
 
   const calculateMaxCapacity = () => {
     let totalCapacity = 0;
     if (vehicle) {
-      totalCapacity += vehicle.capacity;
+      totalCapacity += vehicle.capacity; 
     }
     addedVehicles.forEach(v => {
       totalCapacity += v.capacity; 
     });
-    return totalCapacity; 
+    return totalCapacity;
   };
   
-  const handleVehicleModeToggle = () => {
-    setIsMultipleVehicles(prevState => !prevState); 
-    setShowVehicleContainer(prevState => !prevState); 
-  };
   
   const handleInputChange = (event) => {
     const { name, value, files } = event.target;
-
+  
     if (name === 'capacity') {
       const capacity = Number(value);
-      const maxCapacity = calculateMaxCapacity(); 
-
       setFormData({ ...formData, [name]: value });
-      setIsAddVehicleDisabled(capacity <= maxCapacity); 
-
-      if (capacity < maxCapacity) {
-        let remainingCapacity = capacity;
-        const vehiclesToRemove = [];
-
-        addedVehicles.forEach(vehicle => {
-          if (remainingCapacity < vehicle.capacity) {
-            vehiclesToRemove.push(vehicle.plateNumber); 
-          } else {
-            remainingCapacity -= vehicle.capacity; 
-          }
-        });
-
-        vehiclesToRemove.forEach(plateNumber => handleRemoveVehicle(plateNumber));
-      }
+  
+    
+      evaluateButtonState(capacity, selectedDate, returnScheduleDate);
     } else if (name === 'approvalProof') {
       if (files && files.length > 0) {
-          setFormData({ ...formData, [name]: files[0] }); 
+        setFormData({ ...formData, [name]: files[0] });
       } else {
-          setFormData({ ...formData, [name]: null });
+        setFormData({ ...formData, [name]: null });
       }
     } else {
-        setFormData({ ...formData, [name]: value });
+      setFormData({ ...formData, [name]: value });
     }
   };
-
+  
+  
+  const isScheduleValid = (scheduleDate, returnDate) => {
+    if (tripType === 'oneWay' && scheduleDate) {
+      return true; 
+    }
+    if (tripType === 'roundTrip' && scheduleDate && returnDate) {
+      return true; 
+    }
+    return false; 
+  };
+  
+  
+  
+  
+  
   const handleClear = () => {
     setFormData({
       to: '',
@@ -183,7 +174,7 @@ const VipSpecialReservation = () => {
     setSelectedDate(null);
     setReturnScheduleDate(null);  
   };
- 
+
   useEffect(() =>{
     const departmentFromStorage = localStorage.getItem('department');
     setUserDepartment(departmentFromStorage || '');
@@ -198,18 +189,38 @@ const VipSpecialReservation = () => {
     if (isSelectingReturn) {
       if (date >= selectedDate || !selectedDate) {
         setReturnScheduleDate(date);
+        evaluateButtonState(Number(formData.capacity), selectedDate, date);
       } else {
         alert('Return schedule date cannot be before the schedule date.');
       }
     } else {
       setSelectedDate(date);
+  
       if (returnScheduleDate && returnScheduleDate < date) {
         setReturnScheduleDate(null);
       }
+  
+  
+      evaluateButtonState(Number(formData.capacity), date, returnScheduleDate);
     }
+  
     setShowCalendar(false);
   };
-
+  
+  const evaluateButtonState = (capacity, scheduleDate, returnDate) => {
+    const maxCapacity = calculateMaxCapacity();
+  
+  
+    const isValidSchedule = isScheduleValid(scheduleDate, returnDate);
+  
+    if (capacity > maxCapacity && isValidSchedule) {
+      setIsAddVehicleDisabled(false);
+    } else {
+      setIsAddVehicleDisabled(true);
+    }
+  };
+  
+  
   const handleTripTypeChange = (event) => {
     const selectedTripType = event.target.value;
     setTripType(selectedTripType);
@@ -222,7 +233,7 @@ const VipSpecialReservation = () => {
     const maxCapacity = calculateMaxCapacity();
 
     if (capacity > maxCapacity) {
-      setCapacityError(`Capacity cannot exceed ${maxCapacity}`);
+      setCapacityError(`Capacity should not exceed ${maxCapacity} or add vehicle if needed so.`);
       return;
     }
     const {
@@ -247,9 +258,9 @@ const VipSpecialReservation = () => {
     const isValid = isFormValid && isTripTypeValid;
 
     if (isValid) {
-      setModalMessage('Are you sure you want to submit this reservation?');
-      setModalType('confirmation');
-      setIsModalOpen(true);
+        setModalMessage('Are you sure you want to submit this reservation?');
+        setModalType('confirmation');
+        setIsModalOpen(true);
     } else {
         setModalMessage('Please fill out all required fields.');
         setModalType('error');
@@ -258,79 +269,78 @@ const VipSpecialReservation = () => {
   };
 
   const handleConfirm = async () => {
-    const vehicleIds = addedVehicles.map(v => v.id).filter(id => id != null);
-    const reservation = {
-        typeOfTrip: tripType,
-        destinationTo: formData.to,
-        destinationFrom: formData.from,
-        capacity: formData.capacity,
-        department: userDepartment,
-        schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
-        returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null,
-        vehicleType: vehicle.vehicleType || null,  
-        plateNumber: vehicle.plateNumber || null, 
-        pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
-        departureTime: formatTime(formData.departureTime),
-        reason: formData.reservationReason || "",
-        fileUrl: "No file(s) attached", 
-        status: "Pending",
-        opcIsApproved: false,
-        isRejected: false,
-        headIsApproved: true, 
-        feedback: "",
-        driverId: 0,
-        driverName: "",
-    };
-    console.log("Reservation data: ", reservation);
-
     try {
-      let fileUrl = "No file(s) attached";
-      if (formData.approvalProof) {
-        const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
-        await uploadBytes(fileRef, formData.approvalProof);
-        fileUrl = await getDownloadURL(fileRef);
-      }
-      reservation.fileUrl = fileUrl;
+        let fileUrl = null;
 
-      const reservationFormData = new FormData();
-      reservationFormData.append('reservation', JSON.stringify(reservation));
-      reservationFormData.append('userName', `${formatName(firstName)} ${formatName(lastName)}`);
+        if (formData.approvalProof) {
+            const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
+            const snapshot = await uploadBytes(fileRef, formData.approvalProof);
 
-      if (formData.approvalProof) {
-        reservationFormData.append('file', formData.approvalProof);
-      }
-      reservationFormData.append('vehicleIds', vehicleIds.join(','));
+            fileUrl = await getDownloadURL(snapshot.ref);
+        }
+        const vehicleIds = addedVehicles.map(v => v.id).filter(id => id != null);
 
-      console.log("Form Data:", [...reservationFormData.entries()]);
+        const reservation = {
+            typeOfTrip: tripType,
+            destinationTo: formData.to,
+            destinationFrom: formData.from,
+            capacity: formData.capacity, 
+            department: userDepartment,
+            schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
+            returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null,
+            vehicleType: vehicle.vehicleType || null,
+            plateNumber: vehicle.plateNumber || null,
+            pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
+            departureTime: formatTime(formData.departureTime),
+            reason: formData.reservationReason || "",
+            status: "Pending",
+            opcIsApproved: false,
+            headIsApproved: true,
+            feedback: formData.feedback || "No feedback",
+            driverId: 0,
+            driverName: null,
+            rejected: false,
+            approvalProofUrl: fileUrl
+        };
 
-      const response = await fetch('https://citumovebackend.up.railway.app/user/reservations/add', {
-        method: 'POST',
-        headers: {
-          "Authorization": `Bearer ${token}`
-        },
-        body: reservationFormData,
-      });
+        const reservationFormData = new FormData();
+        reservationFormData.append('reservation', JSON.stringify(reservation));
+        reservationFormData.append('userName', `${formatName(firstName)} ${formatName(lastName)}`);
+        reservationFormData.append('vehicleIds', vehicleIds.join(','));
+        reservationFormData.append('fileUrl', fileUrl);
 
-      if (!response.ok) {
-        const errorResponse = await response.text(); 
-        throw new Error(`HTTP error! Status: ${response.status}. Response: ${errorResponse}`);
-      }
+        const response = await fetch('https://citumovebackend.up.railway.app/user/reservations/add', {
+            method: 'POST',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: reservationFormData,
+        });
 
-      setModalMessage('Reservation submitted successfully!');
-      setModalType('success');
-      navigate('/vip-side');
+        if (!response.ok) {
+            const errorResponse = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status}. Response: ${errorResponse}`);
+        }
+
+        const result = await response.json(); 
+        console.log("Server Response:", result);
+
+        setModalMessage('Reservation submitted successfully!');
+        setModalType('success');
+        navigate('/vip-side');
+
     } catch (error) {
-      console.error('Error submitting reservation:', error);
-      setModalMessage('Failed to submit reservation. Please try again.');
-      setModalType('error');
+        console.error('Error submitting reservation:', error);
+        setModalMessage('Failed to submit reservation. Please try again.');
+        setModalType('error');
     } finally {
-      setIsModalOpen(true);
+        setIsModalOpen(true);
     }
-  };  
-
-const closeModal = () => {
-  setIsModalOpen(false);
-};
+  };
+  
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="reservation-app">
@@ -367,19 +377,6 @@ const closeModal = () => {
                     <span>Round Trip</span>
                   </label>
                 </div>
-                <div className='mult-vehicle'>
-                {/* <button type='button' className='mult-vehicle-btn' onClick={handleVehicleModeToggle}>
-                    {isMultipleVehicles ? (
-                      <>
-                        <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Single vehicle
-                      </>
-                    ) : (
-                      <>
-                        <TbBus style={{marginRight: "5px", marginBottom: "-2px", color: "gold"}}/> Multiple vehicles
-                      </>
-                    )}
-                  </button> */}
-                </div>
               </div>
               <br/>
               <div className="form-group-inline">
@@ -400,9 +397,10 @@ const closeModal = () => {
                           borderRadius: "20px",
                           padding: "3px",
                           marginBottom: "-5px",
+                          marginRight: "5px"
                         }}
                       />
-                      Capacity:
+                      No. of Passengers:
                     </label>
                     <input
                       type="number"
@@ -501,16 +499,14 @@ const closeModal = () => {
                         Pick-Up Time:
                       </label>
                       <PickUpDropdown
-                      name="pickUpTime"
-                      selectedTime={formData.pickUpTime}
-                      onChange={handleInputChange}
-                      disabled={!returnScheduleDate}
-                      date={returnScheduleDate}
-                      plateNumber={selectedVehiclePlateNumber}
-                      addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
-                      token={token}
-
-                    />
+                        name="pickUpTime"
+                        selectedTime={formData.pickUpTime}
+                        onChange={handleInputChange}
+                        plateNumber={selectedVehiclePlateNumber}
+                        addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
+                        token={token}
+                        departureTime={formData.departureTime} 
+                      />
                     </div>
                   )} 
               </div>
@@ -521,28 +517,28 @@ const closeModal = () => {
                   </div>
                 <div className="form-group">
                   <label htmlFor="approvalProof"><FaFileAlt style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Proof of Approval (optional):</label>
-                  <input type="file" id="approvalProof" name="approvalProof" onChange={handleInputChange} />
+                  <input type="file" id="approvalProof" name="approvalProof" accept="application/pdf" onChange={handleInputChange} />
                 </div>
               </div>
               <div className="form-group-inline">
               <div className="form-group">
                   <label htmlFor="reservationReason">
-                    <CgDetailsMore style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}} /> Reason of Reservation:
+                    <CgDetailsMore style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}} /> Purpose of Reservation:
                   </label>
                   <textarea
                     type="text" 
                     id="reservationReason" 
                     name="reservationReason" 
                     className="reservation-reason-textarea" 
-                    placeholder="State the reason of your reservation"
+                    placeholder="State the purpose of your reservation"
                     value={formData.reservationReason}
                     required 
                     onChange={handleInputChange}
                   />
                 </div>
-                <div className="form-group">
+                  <div className="form-group">
                     <label htmlFor="addedVehicle">
-                      <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} /> 
+                      <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} /> 
                       Vehicle Added:
                       <button 
                         type="button"
@@ -551,7 +547,7 @@ const closeModal = () => {
                         disabled={isAddVehicleDisabled} 
                         style={{ 
                           opacity: isAddVehicleDisabled ? 0.5 : 1, 
-                          cursor: isAddVehicleDisabled ? 'not-allowed' : 'pointer'
+                          cursor: isAddVehicleDisabled ? 'not-allowed' : 'pointer' 
                         }}
                       >
                         <IoMdAddCircle style={{ color: "gold", marginRight: "5px", marginBottom: "-2px" }} /> 
@@ -569,16 +565,13 @@ const closeModal = () => {
                       ))}
                     </div>
                   </div>
-                  </div>
+                </div>
             </form>
             ) : (
               <p>No Selected Vehicle.</p>
             )}
             <div className="summary-container">
               <h2>Reservation Summary</h2>
-              <div className="summary-item">
-                <strong>Reservation Type:</strong> 
-              </div>
               <div className="summary-item">
                 <strong>Trip Type:</strong> {tripType === 'oneWay' ? 'One Way' : 'Round Trip'}
               </div>
@@ -589,7 +582,7 @@ const closeModal = () => {
                 <strong>To:</strong> {formData.to}
               </div>
               <div className="summary-item">
-              <strong>Capacity: {formData.capacity || 0} /</strong> {calculateMaxCapacity()}
+              <strong>No. of Passengers: {formData.capacity || 0} /</strong> {calculateMaxCapacity()}
               </div>
               <div className="summary-item">
                 <strong>Plate Number:</strong> {vehicle.plateNumber}
@@ -632,7 +625,7 @@ const closeModal = () => {
                 <strong>Proof of Approval:</strong> {formData.fileName || 'Not Attached'}
               </div>
               <div className="summary-item">
-                <strong>Reason:</strong> {formData.reservationReason}
+                <strong>Purpose:</strong> {formData.reservationReason}
               </div>
               <div className="button-group">
               <button type="button" className="reset-button" onClick={handleClear}>

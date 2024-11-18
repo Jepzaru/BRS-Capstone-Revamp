@@ -8,6 +8,8 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.brscapstone1.brscapstone1.Constants;
 import com.brscapstone1.brscapstone1.DTO.ReservedDateDTO;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
 import com.brscapstone1.brscapstone1.Entity.ReservationVehicleEntity;
@@ -38,7 +40,7 @@ public class ReservationService {
 
     //[POST] approved reservations by HEAD
     public void headApproveReservation(int reservationId) {
-        ReservationEntity reservation = resRepo.findById(reservationId).orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+        ReservationEntity reservation = resRepo.findById(reservationId).orElseThrow(() -> new IllegalArgumentException(Constants.ExceptionMessage.RESERVATION_NOT_FOUND));
         reservation.setHeadIsApproved(true); 
         resRepo.save(reservation);
     }
@@ -46,15 +48,15 @@ public class ReservationService {
     //[POST] approved reservations by OPC
     public void opcApproveReservation(int reservationId, int driverId, String driverName) {
         ReservationEntity reservation = resRepo.findById(reservationId)
-            .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+            .orElseThrow(() -> new IllegalArgumentException(Constants.ExceptionMessage.RESERVATION_NOT_FOUND));
     
         // Check if driver name is set
         if (reservation.getDriverName() == null || reservation.getDriverName().isEmpty()) {
-            reservation.setDriverName("No driver assigned");
+            reservation.setDriverName(Constants.Annotation.NO_DRIVER);
         }
     
         // Set the reservation status to "Approved"
-        reservation.setStatus("Approved");
+        reservation.setStatus(Constants.Annotation.APPROVED);
         reservation.setOpcIsApproved(true);
         reservation.setDriverId(driverId);
         reservation.setDriverName(driverName);
@@ -62,31 +64,29 @@ public class ReservationService {
         // Fetch associated ReservationVehicleEntities
         List<ReservationVehicleEntity> reservationVehicles = reservationVehicleRepository.findByReservation(reservation);
         for (ReservationVehicleEntity vehicle : reservationVehicles) {
-            vehicle.setStatus("Approved");  // Update vehicle status to "Approved"
-            reservationVehicleRepository.save(vehicle);  // Save each vehicle with updated status
+            vehicle.setStatus(Constants.Annotation.APPROVED); 
+            reservationVehicleRepository.save(vehicle); 
         }
     
-        resRepo.save(reservation);  // Save the reservation
+        resRepo.save(reservation);
     }
     
     //[POST] approved reservations
     public void assignDriverToAddedVehicles(int reservationId, String plateNumber, int driverId, String driverName) {
-        // Find the vehicle by reservation ID and plate number
         ReservationVehicleEntity vehicle = reservationVehicleRepository
                 .findByReservationIdAndPlateNumber(reservationId, plateNumber)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+                .orElseThrow(() -> new RuntimeException(Constants.ExceptionMessage.VEHICLE_NOT_FOUND));
     
         vehicle.setDriverId(driverId);
         vehicle.setDriverName(driverName);
     
-        // Save the updated vehicle entity
         reservationVehicleRepository.save(vehicle);
     }
     
     //[isRejected] rejects a reservation and returns boolean output
     public void rejectReservation(int reservationId, String feedback) {
-        ReservationEntity reservation = resRepo.findById(reservationId).orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
-        reservation.setStatus("Rejected");
+        ReservationEntity reservation = resRepo.findById(reservationId).orElseThrow(() -> new IllegalArgumentException(Constants.ExceptionMessage.RESERVATION_NOT_FOUND));
+        reservation.setStatus(Constants.Annotation.REJECTED);
         reservation.setRejected(true); 
         reservation.setFeedback(feedback);
         resRepo.save(reservation);
@@ -96,14 +96,14 @@ public class ReservationService {
         if (fileUrl != null && !fileUrl.isEmpty()) {
             reservation.setFileUrl(fileUrl); 
         } else {
-            reservation.setFileUrl("No file(s) attached");
+            reservation.setFileUrl(Constants.Annotation.NO_FILE);
         }
     
         if (reservation.getStatus() == null || reservation.getStatus().isEmpty()) {
-            reservation.setStatus("Pending");
+            reservation.setStatus(Constants.Annotation.PENDING);
         }
         if (reservation.getFeedback() == null || reservation.getFeedback().isEmpty()) {
-            reservation.setFeedback("No feedback");
+            reservation.setFeedback(Constants.Annotation.NO_FEEDBACK);
         }
         reservation.setUserName(userName);
         reservation.setTransactionId(generateTransactionId());
@@ -150,7 +150,7 @@ public class ReservationService {
     //[POST] || add assigned driver
     public void updateAssignedDriver(int reservationId, int driverId, String assignedDriverName) {
         ReservationEntity reservation = resRepo.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+                .orElseThrow(() -> new IllegalArgumentException(Constants.ExceptionMessage.RESERVATION_NOT_FOUND));
         reservation.setDriverId(driverId);
         reservation.setDriverName(assignedDriverName);
         resRepo.save(reservation);
@@ -159,23 +159,23 @@ public class ReservationService {
     //[PUT] update a reservation
     public ReservationEntity updateReservation(int reservationId, ReservationEntity updatedReservation, MultipartFile file, boolean isResending) throws IOException {
         ReservationEntity existingReservation = resRepo.findById(reservationId)
-            .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+            .orElseThrow(() -> new IllegalArgumentException(Constants.ExceptionMessage.RESERVATION_NOT_FOUND));
     
         if (isResending) {
             existingReservation.setRejected(false);
-            existingReservation.setStatus("Pending");
+            existingReservation.setStatus(Constants.Annotation.PENDING);
     
-            if ("OPC".equals(existingReservation.getRejectedBy())) {
+            if (Constants.Annotation.OPC.equals(existingReservation.getRejectedBy())) {
                 existingReservation.setOpcIsApproved(false);
-            } else if ("Head".equals(existingReservation.getRejectedBy())) {
+            } else if (Constants.Annotation.HEAD.equals(existingReservation.getRejectedBy())) {
                 existingReservation.setHeadIsApproved(false);
             }
         } else {
             if (updatedReservation.isRejected() != null && updatedReservation.isRejected()) {
                 if (updatedReservation.isOpcIsApproved() != null && !updatedReservation.isOpcIsApproved()) {
-                    existingReservation.setRejectedBy("OPC");
+                    existingReservation.setRejectedBy(Constants.Annotation.OPC);
                 } else if (updatedReservation.isHeadIsApproved() != null && !updatedReservation.isHeadIsApproved()) {
-                    existingReservation.setRejectedBy("Head");
+                    existingReservation.setRejectedBy(Constants.Annotation.HEAD);
                 }
             }
             updateFields(existingReservation, updatedReservation);
@@ -233,7 +233,7 @@ public class ReservationService {
     public List<ReservedDateDTO> getAllReservedDatesByPlateNumber(String plateNumber) {
         List<ReservationVehicleEntity> reservedVehicles = reservationVehicleRepository.findByPlateNumber(plateNumber);
         return reservedVehicles.stream()
-        .filter(vehicle -> "Approved".equals(vehicle.getStatus()))
+        .filter(vehicle -> Constants.Annotation.APPROVED.equals(vehicle.getStatus()))
             .map(vehicle -> new ReservedDateDTO(
                 vehicle.getSchedule(),
                 vehicle.getReturnSchedule(),
@@ -249,7 +249,7 @@ public class ReservationService {
     public List<ReservedDateDTO> getAllReservationDatesByPlateNumber(String plateNumber) {
         List<ReservationEntity> reservations = resRepo.findByPlateNumber(plateNumber);
         return reservations.stream()
-            .filter(res -> "Approved".equals(res.getStatus()))
+            .filter(res -> Constants.Annotation.APPROVED.equals(res.getStatus()))
             .map(res -> new ReservedDateDTO(
                 res.getSchedule(),
                 res.getReturnSchedule(),
@@ -265,7 +265,7 @@ public class ReservationService {
     public List<ReservedDateDTO> getReservationsByPlateAndDate(String plateNumber, LocalDate date) {
         List<ReservationEntity> reservations = resRepo.findByPlateNumberAndDate(plateNumber, date);
         return reservations.stream()
-            .filter(res -> "Approved".equals(res.getStatus()))
+            .filter(res -> Constants.Annotation.APPROVED.equals(res.getStatus()))
             .map(res -> new ReservedDateDTO(
                 res.getSchedule(),
                 res.getReturnSchedule(),
@@ -280,7 +280,7 @@ public class ReservationService {
     public List<ReservedDateDTO> getReservedByPlateAndDate(String plateNumber, LocalDate date) {
         List<ReservationVehicleEntity> reservedVehicles = reservationVehicleRepository.findByPlateNumberAndSchedule(plateNumber, date);
         return reservedVehicles.stream()
-            .filter(vehicle -> "Approved".equals(vehicle.getStatus()) && vehicle.getSchedule().equals(date))
+            .filter(vehicle -> Constants.Annotation.APPROVED.equals(vehicle.getStatus()) && vehicle.getSchedule().equals(date))
             .map(vehicle -> new ReservedDateDTO(
                 vehicle.getSchedule(),
                 vehicle.getReturnSchedule(),
@@ -299,9 +299,9 @@ public class ReservationService {
         if(resRepo.findById(id).isPresent()){
             resRepo.deleteById(id);
             
-            msg = "Reservation with id " +id+ " is successfully deleted.";
+            msg = Constants.ResponseMessages.RESERVATION_DELETE_SUCCESS;
         }else{
-            msg = "Reservation with id " +id+ " does not exist.";
+            msg = Constants.ResponseMessages.RESERVATION_NOT_EXISTS;
         }
         return msg;
     }
@@ -340,7 +340,7 @@ public class ReservationService {
     // Resend request and update reservation status
     public ReservationEntity resendReservationStatus(int reservationId, ReservationEntity updatedReservation, String fileUrl) {
         ReservationEntity existingReservation = resRepo.findById(reservationId)
-            .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+            .orElseThrow(() -> new IllegalArgumentException(Constants.ExceptionMessage.RESERVATION_NOT_FOUND));
 
         // Update fields as needed
         existingReservation.setTypeOfTrip(updatedReservation.getTypeOfTrip());
@@ -370,7 +370,7 @@ public class ReservationService {
         setRejectionStatus(existingReservation, updatedReservation);
 
         // Set status to Pending and reset rejection
-        existingReservation.setStatus("Pending");
+        existingReservation.setStatus(Constants.Annotation.PENDING);
         existingReservation.setRejected(false);
 
         // Save and return the updated reservation
@@ -380,10 +380,10 @@ public class ReservationService {
     
     // Existing methods remain unchanged
     private void resetRejectionStatus(ReservationEntity reservation) {
-        if ("OPC".equals(reservation.getRejectedBy())) {
+        if (Constants.Annotation.OPC.equals(reservation.getRejectedBy())) {
             reservation.setOpcIsApproved(false);
             reservation.setRejectedBy(null);
-        } else if ("Head".equals(reservation.getRejectedBy())) {
+        } else if (Constants.Annotation.HEAD.equals(reservation.getRejectedBy())) {
             reservation.setHeadIsApproved(false);
             reservation.setRejectedBy(null);
         }
@@ -391,22 +391,22 @@ public class ReservationService {
     
     private void setRejectionStatus(ReservationEntity existingReservation, ReservationEntity updatedReservation) {
         if (updatedReservation.isOpcIsApproved() != null && !updatedReservation.isOpcIsApproved()) {
-            existingReservation.setRejectedBy("OPC");
+            existingReservation.setRejectedBy(Constants.Annotation.OPC);
         } else if (updatedReservation.isHeadIsApproved() != null && !updatedReservation.isHeadIsApproved()) {
-            existingReservation.setRejectedBy("Head");
+            existingReservation.setRejectedBy(Constants.Annotation.HEAD);
         }
     }
 
     public ReservationEntity completeReservation(int reservationId) {
         ReservationEntity reservation = resRepo.findById(reservationId)
-                .orElseThrow(() -> new EntityNotFoundException("Reservation not found"));
+                .orElseThrow(() -> new EntityNotFoundException(Constants.ExceptionMessage.RESERVATION_NOT_FOUND));
 
-        reservation.setStatus("Completed");
+        reservation.setStatus(Constants.Annotation.COMPLETED);
         reservation.setIsCompleted(true);
 
         if (reservation.getReservedVehicles() != null) {
             for (ReservationVehicleEntity vehicle : reservation.getReservedVehicles()) {
-                vehicle.setStatus("Completed");
+                vehicle.setStatus(Constants.Annotation.COMPLETED);
                 vehicle.setIsCompleted(true); 
                 reservationVehicleRepository.save(vehicle); 
             }

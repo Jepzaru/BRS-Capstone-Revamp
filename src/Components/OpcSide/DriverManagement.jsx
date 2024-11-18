@@ -626,7 +626,7 @@ const DriverManagement = () => {
       {isDeleteModalOpen && (
         <div className="delete-modal-overlay">
           <div className="delete-modal-content">
-            <h2>Are you sure you want to delete this vehicle?</h2>
+            <h2>Are you sure you want to delete this Driver?</h2>
             <div className="delete-modal-buttons">
               <button className="cancel-button" onClick={closeDeleteModal}>Cancel</button>
               <button className="delete-button-confirm" onClick={() => handleDeleteDriver(selectedDriverId)}>Delete</button>

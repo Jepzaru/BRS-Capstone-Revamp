@@ -94,9 +94,15 @@ body {
 .accounts-table thead {
   position: sticky;
   top: 0;
-  background-color: #f4f4f4; 
+  background-color: #782324; 
+  color: #f4f4f4;
   z-index: 1; 
 }
+
+.accounts-table tbody {
+  background-color: #f4f4f4; 
+}
+
 
 
 .accounts-table th, .accounts-table td {
@@ -111,7 +117,8 @@ body {
 }
 
 .accounts-table tr:hover {
-  background-color: #f1f1f1;
+  background-color: gold;
+  color: black;
   cursor: pointer; 
 }
 
@@ -123,6 +130,7 @@ body {
   color: white;
   cursor: pointer;
   font-size: 14px; 
+  margin-right: 10px;
   transition: background-color 0.3s;
 }
 
@@ -193,11 +201,6 @@ body {
   border-radius: 4px;
   margin-left: 10px;
   cursor: pointer;
-}
-
-.action-td{
-  display: flex;
-  justify-content: space-evenly;
 }
 
 .addacc-modal-buttons button:first-of-type {

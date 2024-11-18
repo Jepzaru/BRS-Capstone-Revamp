@@ -1,14 +1,16 @@
 package com.brscapstone1.brscapstone1.DTO;
 
 import java.time.LocalDate;
+
+import com.brscapstone1.brscapstone1.Constants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ReservedDateDTO {
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = Constants.DataAnnotations.DATE_FORMAT)
     private LocalDate schedule;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = Constants.DataAnnotations.DATE_FORMAT)
     private LocalDate returnSchedule;
 
     private String pickUpTime;

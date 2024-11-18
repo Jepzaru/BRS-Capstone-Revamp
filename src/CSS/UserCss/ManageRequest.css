@@ -93,7 +93,7 @@ body {
 
 .container1 {
   background-color: #CBC3C3;
-  height: 690px;
+  height: 700px;
   width: 1530px;
   border-radius: 10px;
   padding: 20px;
@@ -106,6 +106,7 @@ body {
   border-collapse: collapse;
   background-color: white;
   table-layout: fixed;
+  height: auto;
 }
 
 .mrg-t-v-row{
@@ -130,11 +131,6 @@ body {
   top: 0;
   position: sticky;
 }
-
-.requests-table tbody {
-  background-color: white;
-}
-
 
 .no-requests {
   text-align: center;

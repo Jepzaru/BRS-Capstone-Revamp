@@ -1,6 +1,9 @@
 package com.brscapstone1.brscapstone1.Entity;
 
 import java.util.Date;
+
+import com.brscapstone1.brscapstone1.Constants;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,27 +12,26 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 
 @Entity
-@Table(name = "events")
+@Table(name = Constants.DataAnnotations.EVENT)
 public class EventsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int eventId;
 
-    @Column(name = "event_date") 
+    @Column(name = Constants.DataAnnotations.EVENT_DATE) 
     private Date eventDate;
 
-    @Column(name = "event_description") 
+    @Column(name = Constants.DataAnnotations.EVENT_DESCRIPTION) 
     private String eventDescription;
 
-    @Column(name = "event_title") 
+    @Column(name = Constants.DataAnnotations.EVENT_TITLE)
     private String eventTitle;
 
-    @Column(name = "is_deleted") 
+    @Column(name = Constants.DataAnnotations.IS_DELETED)
     private boolean isDeleted = false;
 
     public EventsEntity() {
-        
     }
 
     public EventsEntity(int eventId, Date eventDate, String eventDescription, String eventTitle) {
@@ -39,7 +41,6 @@ public class EventsEntity {
         this.eventTitle = eventTitle;
     }
 
-    // Getters and Setters
     public int getEventId() {
         return eventId;
     }

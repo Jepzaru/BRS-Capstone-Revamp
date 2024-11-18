@@ -226,3 +226,23 @@
 .forgot-password a:hover {
     text-decoration: underline;  
 }
+
+.snackbar {
+    position: absolute;
+    top: -30px;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+    width: 95%;
+    transition: opacity 0.5s ease;
+}
+
+.snackbar.success {
+    background-color: #4caf50; 
+}
+
+.snackbar.error {
+    background-color: #f44336;  
+}

@@ -1,4 +1,4 @@
-// Calendar.jsx
+
 
 import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/calendar.css';
@@ -63,8 +63,9 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     
         const data = await response.json();
-        console.log("Fetched events:", data); 
+        console.log("Fetched events:", data);
     
+  
         setEvents(data.map(event => new Date(event.eventDate))); 
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -97,13 +98,12 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         const isReserved = reservedInfo !== undefined;
         const hasEvent = events.some(event => event.toDateString() === date.toDateString());
 
-  
         const isHighlighted = hasEvent; 
 
         days.push({
             day: i,
             selected: selectedDay === i,
-            disabled: isPast || isBeforeMinDate || isHighlighted,
+            disabled: isPast || isBeforeMinDate || isHighlighted, 
             reserved: isReserved,
             highlight: isHighlighted 
         });

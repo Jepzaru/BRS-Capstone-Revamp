@@ -34,12 +34,12 @@ const VehicleManagement = () => {
   const [updateMaintenanceStartDate, setUpdateMaintenanceStartDate] = useState('');
   const [updateMaintenanceEndDate, setUpdateMaintenanceEndDate] = useState('');
   const [filterType, setFilterType] = useState("all");
+  const [vehicleSchedList, setVehicleSchedList] = useState([]);
+  const [maintenanceFilterType, setMaintenanceFilterType] = useState('all');
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [vehicleToComplete, setVehicleToComplete] = useState(null);
   const [updateMaintenanceDetails, setUpdateMaintenanceDetails] = useState('');
   const [maintenanceDetails, setMaintenanceDetails] = useState([]);
-
-
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -50,17 +50,11 @@ const VehicleManagement = () => {
         });
         if (!response.ok) throw new Error('Failed to fetch vehicles');
         const data = await response.json();
-        if (Array.isArray(data)) setVehicles(data);
-        else {
-          console.error('Expected an array but got:', data);
-          setVehicles([]);
-        }
+        setVehicles(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching vehicles:', error);
-        setVehicles([]);
       }
     };
-
     fetchVehicles();
   }, [token]);
 
@@ -70,16 +64,13 @@ const VehicleManagement = () => {
         const response = await fetch('https://citumovebackend.up.railway.app/opc/vehicle/maintenance-details', {
           headers: { 'Authorization': `Bearer ${token}` },
         });
-        if (!response.ok) {
-          throw new Error('Failed to fetch maintenance details');
-        }
+        if (!response.ok) throw new Error('Failed to fetch maintenance details');
         const data = await response.json();
         setMaintenanceDetails(data); 
       } catch (error) {
         console.error('Error fetching maintenance details:', error);
       }
     };
-  
     fetchMaintenanceDetails();
   }, [token]);
   
@@ -94,7 +85,13 @@ const VehicleManagement = () => {
       });
   
       if (response.ok) {
-        await response.json(); 
+        const updatedVehicle = await response.json();
+  
+        setVehicles((prevVehicles) => 
+          prevVehicles.map((vehicle) => 
+            vehicle.id === vehicleId ? { ...vehicle, status: 'Completed' } : vehicle
+          )
+        );
   
         fetchMaintenanceDetails(); 
         setIsConfirmModalOpen(false);
@@ -116,7 +113,6 @@ const VehicleManagement = () => {
         setSuccessMessage('');
         setErrorMessage('');
       }, 3000);
-
       return () => clearTimeout(timer); 
     }
   }, [successMessage, errorMessage]);
@@ -128,7 +124,6 @@ const VehicleManagement = () => {
         if (isUpdateModalOpen) closeUpdateModal();
         if (isDeleteModalOpen) closeDeleteModal();
       }, 2000);
-
       return () => clearTimeout(timer);
     }
   }, [successMessage, isAddModalOpen, isUpdateModalOpen, isDeleteModalOpen]);
@@ -140,16 +135,10 @@ const VehicleManagement = () => {
 
   const closeAddModal = useCallback(() => {
     setIsClosing(true);
-    setTimeout(() => {
-      setIsAddModalOpen(false);
-    }, 300);
+    setTimeout(() => setIsAddModalOpen(false), 300);
   }, []);
 
   const openUpdateModal = useCallback((vehicle) => {
-    if (!vehicle) {
-      console.error('Vehicle object is missing');
-      return;
-    }
     setUpdateVehicleType(vehicle.vehicleType);
     setUpdatePlateNumber(vehicle.plateNumber);
     setUpdateCapacity(vehicle.capacity);
@@ -163,9 +152,7 @@ const VehicleManagement = () => {
 
   const closeUpdateModal = useCallback(() => {
     setIsClosing(true);
-    setTimeout(() => {
-      setIsUpdateModalOpen(false);
-    }, 300);
+    setTimeout(() => setIsUpdateModalOpen(false), 300);
   }, []);
 
   const openDeleteModal = useCallback((vehicleId) => {
@@ -178,29 +165,23 @@ const VehicleManagement = () => {
     setSelectedVehicleId(null);
   }, []);
 
-  const validatePlateNumber = (plateNumber) => {
-    return plateNumberPattern.test(plateNumber);
-  };
+  const validatePlateNumber = (plateNumber) => plateNumberPattern.test(plateNumber);
 
   const handleAddVehicle = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     if (!validatePlateNumber(plateNumber)) {
       setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
       return;
     }
-    
     try {
       const response = await fetch('https://citumovebackend.up.railway.app/vehicle/getAll', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
-      if (!response.ok) throw new Error('Failed to fetch vehicles');
       const data = await response.json();
-      const existingVehicle = data.find(vehicle => vehicle.plateNumber === plateNumber);
-      if (existingVehicle) {
+      if (data.find(vehicle => vehicle.plateNumber === plateNumber)) {
         setErrorMessage(`A vehicle with plate number ${plateNumber} already exists.`);
-        return; 
+        return;
       }
-  
       const vehicleData = { vehicleType, plateNumber, capacity: Number(capacity) };
       const addResponse = await fetch('https://citumovebackend.up.railway.app/opc/vehicle/post', {
         method: 'POST',
@@ -210,12 +191,7 @@ const VehicleManagement = () => {
         },
         body: JSON.stringify(vehicleData),
       });
-  
-      if (!addResponse.ok) {
-        const errorText = await addResponse.text();
-        throw new Error('Failed to add vehicle: ' + errorText);
-      }
-  
+      if (!addResponse.ok) throw new Error('Failed to add vehicle');
       const newVehicle = await addResponse.json();
       setVehicles((prevVehicles) => [newVehicle, ...prevVehicles]);
       setSuccessMessage('Vehicle added successfully!');
@@ -223,7 +199,6 @@ const VehicleManagement = () => {
       setPlateNumber('');
       setCapacity('');
       closeAddModal();
-  
     } catch (error) {
       setErrorMessage('Error adding vehicle: ' + error.message);
     }
@@ -231,34 +206,24 @@ const VehicleManagement = () => {
 
   const handleUpdateVehicle = async (e, vehicleId = selectedVehicleId) => {
     e.preventDefault();
-  
     if (!validatePlateNumber(updatePlateNumber)) {
       setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
       return;
     }
-  
-    const capacityNumber = Number(updateCapacity);
-    if (isNaN(capacityNumber) || capacityNumber < 0) {
-      setErrorMessage('Capacity must be a non-negative number');
-      return;
-    }
-  
     if (updateStatus === 'Maintenance' && (!updateMaintenanceStartDate || !updateMaintenanceEndDate)) {
       setErrorMessage('Please provide both start and end dates for maintenance.');
       return;
     }
-  
+    const requestData = {
+      vehicleType: updateVehicleType,
+      plateNumber: updatePlateNumber,
+      capacity: Number(updateCapacity),
+      status: updateStatus,
+      maintenanceStartDate: updateStatus === 'Maintenance' ? updateMaintenanceStartDate : null,
+      maintenanceEndDate: updateStatus === 'Maintenance' ? updateMaintenanceEndDate : null,
+      maintenanceDetails: updateStatus === 'Maintenance' ? updateMaintenanceDetails : null, 
+    };
     try {
-      const requestData = {
-        vehicleType: updateVehicleType,
-        plateNumber: updatePlateNumber,
-        capacity: capacityNumber,
-        status: updateStatus,
-        maintenanceStartDate: updateStatus === 'Maintenance' ? updateMaintenanceStartDate : null,
-        maintenanceEndDate: updateStatus === 'Maintenance' ? updateMaintenanceEndDate : null,
-        maintenanceDetails: updateStatus === 'Maintenance' ? updateMaintenanceDetails : null, 
-      };
-  
       const response = await fetch(`https://citumovebackend.up.railway.app/opc/vehicle/update/${vehicleId}`, {
         method: 'PUT',
         headers: {
@@ -267,74 +232,52 @@ const VehicleManagement = () => {
         },
         body: JSON.stringify(requestData),
       });
-  
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error('Failed to update vehicle: ' + errorText);
-      }
-  
-      const updatedVehicle = await response.json();
+      if (!response.ok) throw new Error('Failed to update vehicle');
       setVehicles((prevVehicles) =>
-        prevVehicles.map(vehicle =>
-          vehicle.id === vehicleId ? updatedVehicle : vehicle
-        )
+        prevVehicles.map((vehicle) => (vehicle.id === vehicleId ? { ...vehicle, ...requestData } : vehicle))
       );
-      
       setSuccessMessage('Vehicle updated successfully!');
       closeUpdateModal();
-
-      window.location.reload();
-  
     } catch (error) {
       setErrorMessage('Error updating vehicle: ' + error.message);
     }
-};
-  
-  
-  const handleDeleteVehicle = async () => {
-    if (!selectedVehicleId) return;
+  };
+
+  const handleDeleteVehicle = async (vehicleId = selectedVehicleId) => {
     try {
-      const response = await fetch(`https://citumovebackend.up.railway.app/opc/vehicle/delete/${selectedVehicleId}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/vehicle/delete/${vehicleId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
       });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error('Failed to delete vehicle: ' + errorText);
-      }
+      if (!response.ok) throw new Error('Failed to delete vehicle');
+      setVehicles((prevVehicles) => prevVehicles.filter((vehicle) => vehicle.id !== vehicleId));
       setSuccessMessage('Vehicle deleted successfully!');
       closeDeleteModal();
-  
-      setVehicles((prevVehicles) => prevVehicles.filter(vehicle => vehicle.id !== selectedVehicleId));
     } catch (error) {
       setErrorMessage('Error deleting vehicle: ' + error.message);
     }
   };
 
-  const filteredVehicles = useMemo(() => {
-    return vehicles.filter(vehicle => {
-      const lowerCaseSearchTerm = searchTerm.toLowerCase();
-      return (
-        vehicle.vehicleType.toLowerCase().includes(lowerCaseSearchTerm) ||
-        vehicle.plateNumber.toLowerCase().includes(lowerCaseSearchTerm)
-      );
-    });
-  }, [vehicles, searchTerm]);
+  const handleSearchChange = (event) => setSearchTerm(event.target.value);
 
-  const sortedVehicles = useMemo(() => {
-    return [...filteredVehicles].sort((a, b) => {
-      if (sortOption === 'vehicleType') {
-        return a.vehicleType.localeCompare(b.vehicleType);
-      } else if (sortOption === 'plateNumber') {
-        return a.plateNumber.localeCompare(b.plateNumber);
-      } else if (sortOption === 'capacity') {
-        return a.capacity - b.capacity;
-      }
-      return 0; 
-    });
-  }, [filteredVehicles, sortOption]);
+  const filteredVehicles = useMemo(() => {
+    let sortedVehicles = vehicles;
+    if (filterType !== 'all') sortedVehicles = sortedVehicles.filter((vehicle) => vehicle.status === filterType);
+    if (sortOption === 'vehicleType') sortedVehicles = sortedVehicles.sort((a, b) => a.vehicleType.localeCompare(b.vehicleType));
+    return sortedVehicles.filter((vehicle) =>
+      vehicle.vehicleType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vehicle.plateNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      String(vehicle.capacity).includes(searchTerm)
+    );
+  }, [vehicles, searchTerm, sortOption, filterType]);
+
+  useEffect(() => {
+  // Assuming you have a function to filter vehicle schedules
+  const filteredSchedList = vehicles.filter(vehicle => 
+    filterType === 'all' || vehicle.vehicleType === filterType
+  );
+  setVehicleSchedList(filteredSchedList);
+}, [filterType, vehicles]);
 
   return (
     <div className="vehiclemanage">
@@ -385,7 +328,7 @@ const VehicleManagement = () => {
                         <td>{vehicle.vehicleType}</td>
                         <td>{vehicle.plateNumber}</td>
                         <td>{vehicle.capacity}</td>
-                        <td style={{ fontWeight: '700',color: vehicle.status === 'Available' ? 'green' : vehicle.status === 'Reserved' ? 'red' : 'orange' }}>
+                        <td style={{ fontWeight: '700',color: vehicle.status === 'Available' ? 'green' : vehicle.status === 'Unavailable' ? 'red' : 'orange' }}>
                         {vehicle.status}
                         </td>
                         <td className='td-action'>
@@ -408,17 +351,18 @@ const VehicleManagement = () => {
       <div className="vehicle-schedlist2">
         <h3><FaTools style={{ color: "#782324", marginRight: "10px", marginBottom: "-2px" }} />Vehicle Maintenance</h3>
         <FaBus style={{ color: "#782324", marginLeft: "120px", marginBottom: "-2px" }} />
-        <select
-                  className="reservation-filter"
-                  onChange={(e) => setFilterType(e.target.value)}
-                  value={filterType}
-                >
-                  <option value="all">All Vehicles</option>
-                  {[...new Set(vehicles.map(vehicle => vehicle.vehicleType))].map((type) => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
+                <select
+          className="reservation-filter"
+          onChange={(e) => setMaintenanceFilterType(e.target.value)}
+          value={maintenanceFilterType}
+        >
+          <option value="all">All Vehicles</option>
+          {[...new Set(vehicles.map(vehicle => vehicle.vehicleType))].map((type) => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
       </div>
+      <div className='vehicle-table-container'>
       <table className="vehicle-table">
         <thead>
           <tr>
@@ -428,9 +372,9 @@ const VehicleManagement = () => {
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
+                <tbody>
           {maintenanceDetails
-            .filter(detail => filterType === 'all' || detail.vehicleType === filterType)
+            .filter(detail => maintenanceFilterType === 'all' || detail.vehicleType === maintenanceFilterType)
             .map(detail => {
               const startDate = detail.maintenanceStartDate
                 ? new Date(detail.maintenanceStartDate).toLocaleDateString("en-US", {
@@ -471,14 +415,10 @@ const VehicleManagement = () => {
                 </tr>
               );
             })}
-          {maintenanceDetails.filter(detail => filterType === 'all' || detail.vehicleType === filterType).length === 0 && (
-            <tr>
-              <td colSpan="4">No vehicles currently under maintenance</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+          </tbody>
+          </table>
+          </div>
+        </div>
           </div>
           <img src={logoImage1} alt="Logo" className="vehicle-logo-image" />
         </div>
@@ -582,6 +522,7 @@ const VehicleManagement = () => {
           >
             <option value="Available">Available</option>
             <option value="Maintenance">Maintenance</option>
+            <option value="Unavailable">Unavailable</option>
           </select>
 
           {updateStatus === 'Maintenance' && (
@@ -654,7 +595,7 @@ const VehicleManagement = () => {
 {isConfirmModalOpen && (
   <div className="confirm-modal-overlay">
     <div className="confirm-modal-content">
-      <h2>Are you sure to complete the maintenance?</h2>
+      <h2>Are you sure you want to complete the maintenance?</h2>
       <div className="confirm-modal-buttons">
         <button className="cancel-button" onClick={() => setIsConfirmModalOpen(false)}>Cancel</button>
         <button 
@@ -662,7 +603,14 @@ const VehicleManagement = () => {
           onClick={() => {
             completeMaintenance(vehicleToComplete); 
             setIsConfirmModalOpen(false); 
-            window.location.reload(); 
+            setSuccessMessage("Maintenance completed successfully!");
+            setVehicles((prevVehicles) =>
+              prevVehicles.map((vehicle) => 
+                vehicle.id === vehicleToComplete.id 
+                ? { ...vehicle, status: "Completed" } 
+                : vehicle
+              )
+            );
           }}
         >
           Complete
@@ -671,6 +619,7 @@ const VehicleManagement = () => {
     </div>
   </div>
 )}
+
 
     </div>
   );

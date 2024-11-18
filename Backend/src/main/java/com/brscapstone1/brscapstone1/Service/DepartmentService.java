@@ -1,9 +1,12 @@
 package com.brscapstone1.brscapstone1.Service;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.brscapstone1.brscapstone1.Constants;
 import com.brscapstone1.brscapstone1.Entity.DepartmentEntity;
 import com.brscapstone1.brscapstone1.Repository.DepartmentRepository;
 
@@ -26,9 +29,9 @@ public class DepartmentService {
 
     if(departmentRepository.findById(id).isPresent()){
       departmentRepository.deleteById(id);
-      msg = "Department with id " +id+ " is successfully deleted";
+      msg = (MessageFormat.format(Constants.ResponseMessages.DEPARTMENT_DELETE_SUCCESS, id));
     }else{
-      msg = "Department with id " +id+ " does not exist.";
+      msg = (MessageFormat.format(Constants.ResponseMessages.DEPARTMENT_DELETE_FAILED, id));
     }
     return msg;
   }
@@ -37,7 +40,7 @@ public class DepartmentService {
       DepartmentEntity department;
 
       try {
-          department = departmentRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Department with id " + id + " does not exist"));
+          department = departmentRepository.findById(id).orElseThrow(() -> new NoSuchElementException(MessageFormat.format(Constants.ExceptionMessage.NO_ELEMENT_DEPARTMENT, id)));
           department.setName(newDepartment.getName());
           return departmentRepository.save(department);
       } catch (NoSuchElementException e) {

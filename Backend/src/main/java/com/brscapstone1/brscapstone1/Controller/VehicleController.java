@@ -1,8 +1,11 @@
 package com.brscapstone1.brscapstone1.Controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import com.brscapstone1.brscapstone1.Constants;
 import com.brscapstone1.brscapstone1.Entity.VehicleEntity;
 import com.brscapstone1.brscapstone1.Entity.VehicleMaintenanceDetailsEntity;
 import com.brscapstone1.brscapstone1.Service.VehicleService;
@@ -14,33 +17,33 @@ public class VehicleController {
     @Autowired
     VehicleService vehicleService;
 
-    @PostMapping("/opc/vehicle/post")
+    @PostMapping(Constants.ApiRoutes.POST_VEHICLE)
     public VehicleEntity post(@RequestBody VehicleEntity vehicle) {
         return vehicleService.post(vehicle);
     }
 
-    @GetMapping("/vehicle/getAll")
+    @GetMapping(Constants.ApiRoutes.GET_ALL_VEHICLE)
     public List<VehicleEntity> vehicles() {
         return vehicleService.vehicles();
     }
 
-    @PutMapping("/opc/vehicle/update/{id}")
+    @PutMapping(Constants.ApiRoutes.UPDATE_VEHICLE)
     public VehicleEntity update(@PathVariable int id, @RequestBody VehicleEntity newVehicle) {
         return vehicleService.update(id, newVehicle);
     }
 
-    @DeleteMapping("/opc/vehicle/delete/{id}")
+    @DeleteMapping(Constants.ApiRoutes.DELETE_VEHICLE)
     public String delete(@PathVariable int id) {
         return vehicleService.delete(id);
     }
 
-     @GetMapping("/opc/vehicle/maintenance-details")
+     @GetMapping(Constants.ApiRoutes.VEHICLE_MAINTENANCE_DETAILS)
     public List<VehicleMaintenanceDetailsEntity> getAllMaintenanceDetails() {
         return vehicleService.getAllMaintenanceDetails();
     }
 
-    @PutMapping("/opc/vehicle/maintenance-status/{id}")
-public VehicleMaintenanceDetailsEntity updateMaintenanceStatus(@PathVariable int id, @RequestParam Boolean isCompleted) {
-    return vehicleService.updateMaintenanceStatus(id, isCompleted);
-}
+    @PutMapping(Constants.ApiRoutes.VEHICLE_MAINTENANCE_STATUS)
+    public VehicleMaintenanceDetailsEntity updateMaintenanceStatus(@PathVariable int id, @RequestParam Boolean isCompleted) {
+        return vehicleService.updateMaintenanceStatus(id, isCompleted);
+    }
 }

@@ -112,6 +112,11 @@ body {
   background-color: white;
 }
 
+.opc-requests-table tr:hover{
+  background-color: #ffe44a;
+  cursor: pointer;
+}
+
 .opc-requests-table th, .opc-requests-table td {
   border: 1px solid #ddd;
   padding: 5px;

@@ -3,8 +3,10 @@ package com.brscapstone1.brscapstone1.Entity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+import com.brscapstone1.brscapstone1.Constants;
+
 @Entity
-@Table(name = "vehicle_maintenance_details")
+@Table(name = Constants.DataAnnotations.VEHICLE_MAINTENANCE_DETAILS)
 public class VehicleMaintenanceDetailsEntity {
 
     @Id
@@ -12,9 +14,8 @@ public class VehicleMaintenanceDetailsEntity {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_id", nullable = false) 
+    @JoinColumn(name = Constants.DataAnnotations.VEHICLE_ID, nullable = false)
     private VehicleEntity vehicle;
-
 
     private String vehicleType;
     private String maintenanceDetails;

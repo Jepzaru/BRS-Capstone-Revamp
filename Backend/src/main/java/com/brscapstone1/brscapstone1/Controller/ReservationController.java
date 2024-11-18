@@ -3,16 +3,20 @@ package com.brscapstone1.brscapstone1.Controller;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.brscapstone1.brscapstone1.Constants;
 import com.brscapstone1.brscapstone1.DTO.ReservedDateDTO;
 import com.brscapstone1.brscapstone1.Entity.ReservationEntity;
 import com.brscapstone1.brscapstone1.Entity.ReservationVehicleEntity;
 import com.brscapstone1.brscapstone1.Service.ReservationService;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -28,60 +32,59 @@ public class ReservationController {
     private ReservationService resServ;
 
     //[POST] approved reservations by HEAD
-    @PostMapping("/user/reservations/head-approve/{reservationId}")
+    @PostMapping(Constants.ApiRoutes.APPROVED_BY_HEAD)
     public ResponseEntity<String> headApproveReservation(@PathVariable int reservationId) {
         try {
             resServ.headApproveReservation(reservationId);
-            return ResponseEntity.ok("Reservation approved by Head of the Department successfully");
+            return ResponseEntity.ok(Constants.ResponseMessages.HEAD_APPROVED_SUCCESS);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to approve reservation: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Constants.ResponseMessages.INVALID_RESERVATION + e.getMessage());
         }
     }
 
     //[POST] approved reservations by OPC
-    @PostMapping("/user/reservations/opc-approve/{reservationId}")
+    @PostMapping(Constants.ApiRoutes.APPROVED_BY_OPC)
     public ResponseEntity<String> opcApproveReservation(@PathVariable int reservationId, @RequestParam int driverId, @RequestParam String driverName) {
         try {
             resServ.opcApproveReservation(reservationId, driverId, driverName);
-            return ResponseEntity.ok("Reservation approved successfully");
+            return ResponseEntity.ok(Constants.ResponseMessages.OPC_APPROVED_SUCCESS);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to approve reservation: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Constants.ResponseMessages.INVALID_RESERVATION + e.getMessage());
         }
     }
 
-    @PutMapping("/user/reservations/assign-driver/{reservationId}/{plateNumber}")
+    @PutMapping(Constants.ApiRoutes.ASSIGN_DRIVER)
     public ResponseEntity<String> assignDriverToReservation(
         @PathVariable int reservationId,
         @PathVariable String plateNumber,  
         @RequestBody ReservationVehicleEntity vehicleDetails) {
-    try {
-        // Call your service method to assign the driver
-        resServ.assignDriverToAddedVehicles(reservationId, plateNumber, vehicleDetails.getDriverId(), vehicleDetails.getDriverName());
-        return ResponseEntity.ok("Driver assigned successfully");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Failed to assign driver: " + e.getMessage());
-    }
-}
+        try {
+            resServ.assignDriverToAddedVehicles(reservationId, plateNumber, vehicleDetails.getDriverId(), vehicleDetails.getDriverName());
+            return ResponseEntity.ok(Constants.ResponseMessages.DRIVER_ASSIGN_SUCCESS);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Constants.ResponseMessages.INVALID_DRIVER_ASSIGNMENT + e.getMessage());
+        }
+    }   
 
     //[isRejected] rejects a reservation and returns boolean output
-    @PostMapping("/user/reservations/reject/{reservationId}")
+    @PostMapping(Constants.ApiRoutes.REJECT_RESERVATION)
     public ResponseEntity<String> rejectReservation(@PathVariable int reservationId, @RequestBody String feedback) {
         try {
             resServ.rejectReservation(reservationId, feedback);
-            return ResponseEntity.ok("Reservation rejected successfully");
+            return ResponseEntity.ok(Constants.ResponseMessages.RESERVATION_REJECT_SUCCESS);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to reject reservation: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Constants.ResponseMessages.INVALID_RESERVATION_REJECTION + e.getMessage());
         }
     }
 
     //[POST] || submits a reservation
-    @PostMapping("/user/reservations/add")
+    @PostMapping(Constants.ApiRoutes.ADD_RESERVATION)
     public ReservationEntity addReservation(
-        @RequestParam("userName") String userName, 
-        @RequestParam(value = "fileUrl", required = false) String fileUrl, 
-        @RequestParam("reservation") String reservationJson, 
-        @RequestParam("vehicleIds") List<Integer> vehicleIds
+        @RequestParam(Constants.Annotation.USERNAME) String userName, 
+        @RequestParam(value = Constants.Annotation.FILE_URLS, required = false) String fileUrl, 
+        @RequestParam(Constants.Annotation.RESERVATION) String reservationJson, 
+        @RequestParam(Constants.Annotation.VEHICLE_ID) List<Integer> vehicleIds
     ) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false); 
@@ -94,19 +97,19 @@ public class ReservationController {
     }
 
     //[GET] all Reservations
-    @GetMapping("/reservations/getAll")
+    @GetMapping(Constants.ApiRoutes.GET_ALL_RESERVATION)
     public List<ReservationEntity> getAllReservations() {
         return resServ.getAllReservations();
     }
 
     //[GET] Reservation by ID
-    @GetMapping("/user/reservations/id/{id}")
-    public ReservationEntity getReservationById(@PathVariable("id") int id) {
+    @GetMapping(Constants.ApiRoutes.GET_BY_ID_RESERVATION)
+    public ReservationEntity getReservationById(@PathVariable(Constants.Annotation.ID) int id) {
         return resServ.getReservationById(id);
     }
 
     //[GET] all user's reservations
-    @GetMapping("/user/reservations/{userName}")
+    @GetMapping(Constants.ApiRoutes.GET_BY_USER_RESERVATION)
     public ResponseEntity<List<ReservationEntity>> getUserReservations(@PathVariable String userName) {
       try {
         List<ReservationEntity> userReservations = resServ.getUserReservations(userName);
@@ -117,22 +120,22 @@ public class ReservationController {
     }
 
      //[POST] || update assigned driver
-     @PostMapping("/user/reservations/update-driver/{reservationId}")
+     @PostMapping(Constants.ApiRoutes.UPDATE_ASSIGNED_DRIVER)
      public ResponseEntity<String> updateAssignedDriver(@PathVariable int reservationId, @RequestParam int driverId, @RequestParam String assignedDriverName) {
          try {
              resServ.updateAssignedDriver(reservationId, driverId, assignedDriverName);
-             return ResponseEntity.ok("Assigned driver updated successfully");
+             return ResponseEntity.ok(Constants.ResponseMessages.DRIVER_ASSIGN_UPDATE_SUCCESS);
          } catch (Exception e) {
-             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update assigned driver: " + e.getMessage());
+             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Constants.ResponseMessages.INVALID_ASSIGN_DRIVER_UPDATE + e.getMessage());
          }
      }
      
      // [PUT] update reservation
-     @PutMapping("/reservations/update/{reservationId}")
+     @PutMapping(Constants.ApiRoutes.UPDATE_RESERVATION)
      public ResponseEntity<ReservationEntity> updateReservation(@PathVariable int reservationId,
                                                                  @RequestBody ReservationEntity updatedReservation,
-                                                                 @RequestParam(value = "file", required = false) MultipartFile file,
-                                                                 @RequestParam(value = "isResending", defaultValue = "false") boolean isResending) {
+                                                                 @RequestParam(value = Constants.Annotation.FILE, required = false) MultipartFile file,
+                                                                 @RequestParam(value = Constants.Annotation.RESENDING, defaultValue = Constants.Annotation.FALSE) boolean isResending) {
          try {
              ReservationEntity updatedEntity = resServ.updateReservation(reservationId, updatedReservation, file, isResending);
              return ResponseEntity.ok(updatedEntity);
@@ -149,19 +152,19 @@ public class ReservationController {
      }
 
     //[GET] all OPC approved
-    @GetMapping("/reservations/opc-approved")
+    @GetMapping(Constants.ApiRoutes.GET_OPC_APPROVED)
     public List<ReservationEntity> getOpcApprovedReservations() {
         return resServ.getOpcApprovedReservation();
     }
 
     //[GET] all reservations that is approved by HEAD
-    @GetMapping("/reservations/head-approved")
+    @GetMapping(Constants.ApiRoutes.GET_HEAD_APPROVED)
     public List<ReservationEntity> getApprovedReservations() {
         return resServ.getHeadApprovedReservations();
     }
 
     //Availability date of vehicles
-    @GetMapping("/reservations/vehicle-availability")
+    @GetMapping(Constants.ApiRoutes.VEHICLE_AVAILABILITY)
     public ResponseEntity<List<ReservedDateDTO>> checkVehicleReservation(
         @RequestParam String plateNumber) {
 
@@ -170,7 +173,7 @@ public class ReservationController {
     }
 
     //Availability date of multiple vehicles
-    @GetMapping("/reservations/multiple-vehicle-availability")
+    @GetMapping(Constants.ApiRoutes.MULTIPLE_VEHICLE_AVAILABILITY)
     public ResponseEntity<List<ReservedDateDTO>> checkMultipleVehicleReservation(
         @RequestParam String plateNumber) {
 
@@ -179,7 +182,7 @@ public class ReservationController {
     }
 
     //GET reserve date and time
-    @GetMapping("/reservations/by-plate-and-date")
+    @GetMapping(Constants.ApiRoutes.SINGLE_RESERVED_DATE_AND_TIME)
     public ResponseEntity<List<ReservedDateDTO>> getReservationsByPlateAndDate(
         @RequestParam String plateNumber,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
@@ -188,7 +191,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservations);
     }
 
-    @GetMapping("multiple/reservations/by-plate-and-date")
+    @GetMapping(Constants.ApiRoutes.MULTIPLE_RESERVED_DATE_AND_TIME)
     public ResponseEntity<List<ReservedDateDTO>> getReservedByPlateAndDate(
         @RequestParam String plateNumber,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
@@ -198,21 +201,21 @@ public class ReservationController {
     }
     
     //DELETE
-    @DeleteMapping("/reservations/delete/{id}")
+    @DeleteMapping(Constants.ApiRoutes.DELETE_RESERVATION)
     public ResponseEntity<String> delete(@PathVariable int id){
         return ResponseEntity.ok((resServ.delete(id)));
     }
     
-    //fetches multiple platenumbers 
-    @GetMapping("/reservations/multiple-reserved/plate-numbers")
+    //Fetches multiple platenumbers 
+    @GetMapping(Constants.ApiRoutes.PMULTIPLE_PLATE_NUMBER)
     public List<ReservedDateDTO> getPlateNumbersByScheduleOrReturnSchedule(
             @RequestParam LocalDate schedule,
             @RequestParam(required = false) LocalDate returnSchedule) {
         return resServ.getPlateNumbersByScheduleOrReturnSchedule(schedule, returnSchedule);
     }
 
-    //fetches main platenumbers
-    @GetMapping("/reservations/main-plate-numbers")
+    //Fetches main platenumbers
+    @GetMapping(Constants.ApiRoutes.MAIN_PLATE_NUMBER)
     public List<ReservedDateDTO> getMainPlateNumbersByScheduleOrReturnSchedule(
             @RequestParam LocalDate schedule,
             @RequestParam(required = false) LocalDate returnSchedule) {
@@ -220,13 +223,12 @@ public class ReservationController {
     } 
 
     //Resend Reservation
-    @PutMapping("reservations/resend/{reservationId}")
+    @PutMapping(Constants.ApiRoutes.RESEND_RESERVATION)
     public ResponseEntity<ReservationEntity> resendReservationRequest(
             @PathVariable int reservationId,
             @RequestBody ReservationEntity updatedReservation,
-            @RequestParam(value = "fileUrl", required = false) String fileUrl) {
+            @RequestParam(value = Constants.Annotation.FILE_URLS, required = false) String fileUrl) {
         try {
-            // Pass the file URL along with the updated reservation to the service
             ReservationEntity updatedEntity = resServ.resendReservationStatus(reservationId, updatedReservation, fileUrl);
             return ResponseEntity.ok(updatedEntity);
         } catch (IllegalArgumentException e) {
@@ -239,18 +241,18 @@ public class ReservationController {
     }
 
     // [PUT] Complete a reservation
-    @PutMapping("/user/reservations/complete/{reservationId}")
+    @PutMapping(Constants.ApiRoutes.COMPLETE_RESERVATION)
     public ResponseEntity<String> completeReservation(@PathVariable int reservationId) {
-    try {
-        ReservationEntity completedReservation = resServ.completeReservation(reservationId);
-        
-        return ResponseEntity.ok("Reservation completed successfully: " + completedReservation.getId());
-    } catch (EntityNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("Reservation not found: " + e.getMessage());
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Failed to complete reservation: " + e.getMessage());
+        try {
+            ReservationEntity completedReservation = resServ.completeReservation(reservationId);
+            
+            return ResponseEntity.ok(Constants.ResponseMessages.RESERVATION_COMPLETE_SUCCESS + completedReservation.getId());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Constants.ResponseMessages.NOT_FOUND_RESERVATION + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Constants.ResponseMessages.INVALID_COMPELTE_RESERVATION + e.getMessage());
+        }
     }
-}
 }
