@@ -14,7 +14,7 @@ const OpcNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const token = localStorage.getItem('token');
   const [requestCount, setRequestCount] = useState(
-    parseInt(localStorage.getItem('requestCount'), 10) || 0 // Load initial value from localStorage
+    parseInt(localStorage.getItem('requestCount'), 10) || 0 
   );
 
   const handleToggle = () => {
@@ -41,7 +41,7 @@ const OpcNavbar = () => {
 
         const count = filteredRequests.length;
         setRequestCount(count);
-        localStorage.setItem('requestCount', count); // Store in localStorage for persistence
+        localStorage.setItem('requestCount', count); 
       } else {
         setRequestCount(0);
         localStorage.setItem('requestCount', 0);

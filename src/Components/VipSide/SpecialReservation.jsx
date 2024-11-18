@@ -323,7 +323,6 @@ const VipSpecialReservation = () => {
         }
 
         const result = await response.json(); 
-        console.log("Server Response:", result);
 
         setModalMessage('Reservation submitted successfully!');
         setModalType('success');

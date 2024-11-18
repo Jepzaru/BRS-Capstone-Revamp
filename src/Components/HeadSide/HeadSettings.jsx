@@ -134,7 +134,6 @@ const HeadSettings = () => {
 
       if (response.ok) {
         const data = await response.text();
-        console.log(data);
         setShowModal(true);
         setOldPassword('');
         setNewPassword('');

@@ -34,7 +34,6 @@ const OpcAddEvent = ({ show, handleClose, handleSave }) => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Event added successfully:', result);
         handleSave(result);
       } else {
         console.error('Failed to add event:', response.statusText);

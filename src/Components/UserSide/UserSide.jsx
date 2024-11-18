@@ -98,7 +98,6 @@ const UserSide = () => {
   }, [imageGrids.length]);
 
   const handleSelectVehicle = useCallback((vehicle) => {
-    console.log("Selected Vehicle Plate Number:", vehicle.plateNumber);
     navigate('/user-side/reservation', { state: { vehicle } });
   }, [navigate]);
 

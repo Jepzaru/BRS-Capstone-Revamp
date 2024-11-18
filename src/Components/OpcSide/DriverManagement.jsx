@@ -99,13 +99,11 @@ const DriverManagement = () => {
 
   const handleDriverChange = (event) => {
     setSelectedDriver(event.target.value);
-    console.log("Selected Driver ID:", event.target.value); 
   };
   
   const filteredReservations = selectedDriver === 'all'
   ? reservations
   : reservations.filter(reservation => {
-      console.log('Checking reservation:', reservation);
       return reservation.driverId === Number(selectedDriver); 
     });
 

@@ -44,7 +44,6 @@ const AdminDepartment = () => {
       });
 
       if (response.ok) {
-        console.log("Department added successfully.");
         fetchDepartments();
         closeAddModal();
       } else {
@@ -68,7 +67,6 @@ const AdminDepartment = () => {
       });
 
       if (response.ok) {
-        console.log("Department updated successfully.");
         fetchDepartments();
         closeUpdateModal();
       } else {
@@ -87,7 +85,6 @@ const AdminDepartment = () => {
       });
 
       if (response.ok) {
-        console.log("Department deleted successfully.");
         fetchDepartments();
         closeDeleteModal();
       } else {

@@ -31,7 +31,6 @@ const HeadApprovedRequests = () => {
         reservation.department === department && reservation.headIsApproved
       );
   
-      console.log("Approved Reservations:", approvedReservations);
   
       setRequests(approvedReservations.reverse()); 
       setLoading(false);

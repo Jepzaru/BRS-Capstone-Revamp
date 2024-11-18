@@ -51,7 +51,6 @@ const fetchHeadIsApprovedRequests = async () => {
 
       localStorage.setItem('requestCount', count);
       
-      console.log(count);  
     } else {
       console.error("Unexpected data format:", data);
       setRequests([]);
@@ -267,7 +266,6 @@ const fetchHeadIsApprovedRequests = async () => {
       const returnDate = returnSchedule && returnSchedule !== "0001-01-01" ? new Date(returnSchedule) : null;
   
       if (!leaveStart || !leaveEnd) {
-        console.log("No leave dates for driver.");
         return true;
       }
   

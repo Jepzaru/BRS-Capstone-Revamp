@@ -42,7 +42,6 @@ const closeErrorModal = () => {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();
-      console.log('Fetched users:', data); 
       setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to fetch users", error);

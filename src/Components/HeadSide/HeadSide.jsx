@@ -58,7 +58,6 @@ const HeadSide = () => {
       });
 
       if (response.ok) {
-        console.log("Reservation approved successfully.");
         fetchRequestsData();
         closeModal();
       } else {
@@ -87,7 +86,6 @@ const HeadSide = () => {
       });
 
       if (response.ok) {
-        console.log("Reservation rejected successfully.");
         fetchRequestsData();
         closeModal();
       } else {

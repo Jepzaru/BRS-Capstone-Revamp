@@ -94,7 +94,6 @@ const VipSide = () => {
   }, [imageGrids.length]);
 
   const handleSelectVehicle = (vehicle) => {
-    console.log("Selected Vehicle Plate Number:", vehicle.plateNumber);
     navigate('/vip-side/special-reservation', { state: { vehicle } });
   };  
  
