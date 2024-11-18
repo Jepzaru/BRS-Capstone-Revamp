@@ -223,19 +223,19 @@ const HeadSide = () => {
                       <td style={{width: '70px'}}>{requests.typeOfTrip}</td>
                       <td>{requests.destinationFrom}</td>
                       <td>{requests.destinationTo}</td>
-                      <td>{requests.capacity}</td>
-                      <td>{requests.vehicleType} - {requests.plateNumber} </td>
+                      <td><span style={{color: "#782324", fontWeight: "700"}}>{requests.capacity}</span></td>
+                      <td><span style={{color: "#782324", fontWeight: "700"}}>{requests.vehicleType} : </span><span style={{color: "green", fontWeight: "700"}}>{requests.plateNumber}</span> </td>
                       <td>
-                        {requests.reservedVehicles && requests.reservedVehicles.length > 0 ? (
-                          requests.reservedVehicles.map((vehicle, index) => (
-                            <div key={index}>
-                              {vehicle.vehicleType} - {vehicle.plateNumber} 
-                            </div>
-                          ))
-                        ) : (
-                          <div>No Vehicles Added</div>
-                        )}
-                      </td>
+                          {requests.reservedVehicles.length > 0 ? (
+                            requests.reservedVehicles.map((vehicle, index) => (
+                              <div key={index}>
+                               <span style={{color: "#782324", fontWeight: "700"}}>{vehicle.vehicleType} : </span><span style={{color: "green", fontWeight: "700"}}>{vehicle.plateNumber}</span> 
+                              </div>
+                            ))
+                          ) : (
+                            <div>No Vehicles Added</div>
+                          )}
+                        </td>
                       <td>{requests.schedule ? formatDate(requests.schedule) : 'N/A'}</td>
                       <td>{requests.returnSchedule && requests.returnSchedule !== "0001-01-01" ? formatDate(requests.returnSchedule) : 'N/A'}</td>
                       <td style={{width: '70px'}}>{requests.departureTime}</td>
