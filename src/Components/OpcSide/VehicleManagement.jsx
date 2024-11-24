@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Header from '../../Components/UserSide/Header';
+import VehicleManagementCalendar from './VehicleManagementCalendar';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
 import { FaBus, FaRegTrashAlt, FaSortAlphaDown, FaTools } from "react-icons/fa";
@@ -40,6 +41,10 @@ const VehicleManagement = () => {
   const [vehicleToComplete, setVehicleToComplete] = useState(null);
   const [updateMaintenanceDetails, setUpdateMaintenanceDetails] = useState('');
   const [maintenanceDetails, setMaintenanceDetails] = useState([]);
+
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [isSelectingStartDate, setIsSelectingStartDate] = useState(false);
+
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -272,12 +277,37 @@ const VehicleManagement = () => {
   }, [vehicles, searchTerm, sortOption, filterType]);
 
   useEffect(() => {
-  // Assuming you have a function to filter vehicle schedules
   const filteredSchedList = vehicles.filter(vehicle => 
     filterType === 'all' || vehicle.vehicleType === filterType
   );
   setVehicleSchedList(filteredSchedList);
 }, [filterType, vehicles]);
+
+
+const handleDateSelect = (date) => {
+  if (isSelectingStartDate) {
+    setUpdateMaintenanceStartDate(date);
+  } else {
+    setUpdateMaintenanceEndDate(date);
+  }
+  setShowCalendar(false);
+};
+
+
+const handleCloseCalendar = () => {
+  setShowCalendar(false); 
+  setSelectedVehicle(null); 
+};
+
+const openCalendarForStartDate = () => {
+  setIsSelectingStartDate(true);
+  setShowCalendar(true);
+};
+
+const openCalendarForEndDate = () => {
+  setIsSelectingStartDate(false);
+  setShowCalendar(true);
+};
 
   return (
     <div className="vehiclemanage">
@@ -544,26 +574,27 @@ const VehicleManagement = () => {
               <div>
                 <label htmlFor='maintenance-start-date'>Maintenance Start Date</label>
                 <input
-                  type="date"
+                  type="text"
                   id="maintenance-start-date"
-                  value={updateMaintenanceStartDate}
-                  onChange={(e) => setUpdateMaintenanceStartDate(e.target.value)}
-                  className="vehicle-input"
+                  name="maintenance-start-date"
+                  value={updateMaintenanceStartDate ? new Date(updateMaintenanceStartDate).toLocaleDateString('en-US') : ''}
+                  onClick={openCalendarForStartDate}
+                  placeholder='Select Start Date'
+                  readOnly
                   required
-                  min={new Date().toISOString().split("T")[0]} 
                 />
               </div>
               <div>
                 <label htmlFor='maintenance-end-date'>Maintenance End Date</label>
                 <input
-                  type="date"
+                  type="text"
                   id="maintenance-end-date"
-                  value={updateMaintenanceEndDate}
-                  onChange={(e) => setUpdateMaintenanceEndDate(e.target.value)}
-                  className="vehicle-input"
-                  min={updateMaintenanceStartDate ? updateMaintenanceStartDate : new Date().toISOString().split("T")[0]} 
+                  name="maintenance-end-date"
+                  value={updateMaintenanceEndDate ? new Date(updateMaintenanceEndDate).toLocaleDateString('en-US') : ''}
+                  onClick={openCalendarForEndDate}
+                  placeholder='Select End Date'
+                  readOnly
                   required
-                  disabled={!updateMaintenanceStartDate} 
                 />
               </div>
             </div>
@@ -620,6 +651,20 @@ const VehicleManagement = () => {
   </div>
 )}
 
+{showCalendar && (
+  <div className="calendar-modal">
+    <div className="user-calendar-modal-content">
+      <VehicleManagementCalendar
+        onDateSelect={handleDateSelect}
+        plateNumber={updatePlateNumber} 
+        minDate={updateMaintenanceStartDate} 
+      />
+      <button className="close-button" style={{marginTop: '10px'}} onClick={handleCloseCalendar}>
+        <span style={{fontWeight: "700", fontSize: "16px"}}>Close</span>
+      </button>
+    </div>
+  </div>
+)}
 
     </div>
   );

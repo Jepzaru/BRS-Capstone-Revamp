@@ -55,7 +55,7 @@ const OpcNavbar = () => {
 
   useEffect(() => {
     fetchHeadIsApprovedRequests();
-  }, []); // Only fetch once when the component mounts
+  }, []); 
 
   return (
     <>

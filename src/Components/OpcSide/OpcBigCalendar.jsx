@@ -329,6 +329,17 @@ const OpcBigCalendar = () => {
                     <p><strong><IoTime style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Time:</strong> {new Date(res.returnSchedule).toLocaleTimeString()}</p>
                     <p><strong><BiSolidMessageAltDetail style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Reason:</strong> {res.reason}</p>
                     <p><strong><FaBus style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Vehicle:</strong> {res.vehicleType} - {res.plateNumber}</p>
+                    <p><strong><FaBus style={{color: "#782324", marginRight: "10px", marginBottom: "-2px"}}/>Added Vehicle:</strong> 
+                    {res.reservedVehicles && res.reservedVehicles.length > 0 ? (
+                        <ul style={{ paddingLeft: "45px", marginTop: "10px" }}>
+                          {res.reservedVehicles.map((vehicle, index) => (
+                            <li key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No Vehicles Added</p>
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>

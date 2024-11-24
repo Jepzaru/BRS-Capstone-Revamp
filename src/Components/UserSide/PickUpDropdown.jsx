@@ -124,6 +124,7 @@ const PickUpDropdown = ({ selectedTime, onChange, name, disabled, plateNumber, a
         name={name}
         value={selectedTime}
         onChange={onChange}
+        disabled={disabled}
       >
         <option value="" disabled>Select Pick Up Time &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
         {times.map(time => (

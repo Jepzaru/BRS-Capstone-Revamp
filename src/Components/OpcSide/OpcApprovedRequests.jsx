@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
 import { IoSearch } from "react-icons/io5";
-import { FaSortAlphaDown } from "react-icons/fa";
+import { FaSortAlphaDown, FaEye } from "react-icons/fa";
 import { FaClipboardCheck } from "react-icons/fa6";
 import { RiFileExcel2Fill } from "react-icons/ri";
 import * as XLSX from 'xlsx'; 
@@ -16,15 +16,20 @@ const OpcApprovedRequests = () => {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [confirmMode, setConfirmMode] = useState(false);
   const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
+  const [showModal, setShowModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   
-
   useEffect(() => {
     const fetchApprovedRequests = async () => {
       setLoading(true); 
-  
+      setError(null); 
       const token = localStorage.getItem('token');
+      
       if (!token) {
-        console.error("No token found");
+        setError("Authorization token is missing. Please login again.");
         setLoading(false);
         return;
       }
@@ -37,7 +42,8 @@ const OpcApprovedRequests = () => {
         if (!response.ok) {
           const errorMessage = await response.text();
           console.error("Error fetching approved requests:", response.status, errorMessage);
-          throw new Error("Network response was not ok");
+          setError("Failed to fetch approved requests. Please try again.");
+          return;
         }
   
         const data = await response.json();
@@ -45,6 +51,7 @@ const OpcApprovedRequests = () => {
         setRequests(approvedRequests); 
       } catch (error) {
         console.error("Error fetching approved requests:", error);
+        setError("Network error. Please check your internet connection.");
       } finally {
         setLoading(false);
       }
@@ -54,38 +61,34 @@ const OpcApprovedRequests = () => {
   }, []); 
    
   
-
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-  };
+};
 
-  const handleSortChange = (event) => {
-    setSortOption(event.target.value);
-  };
+const handleSortChange = (event) => {
+  setSortOption(event.target.value);
+};
 
-  const sortRequests = (requests) => {
-    const filteredRequests = requests.filter(request => request.reason.toLowerCase().includes(searchTerm.toLowerCase()));
-  
-    filteredRequests.sort((a, b) => {
-      const dateA = new Date(a.schedule);
-      const dateB = new Date(b.schedule);
-      return dateB - dateA; 
-    });
-  
-    switch (sortOption) {
-      case "alphabetical":
-        return filteredRequests.sort((a, b) => a.reason.localeCompare(b.reason));
-      case "ascending":
-        return filteredRequests.sort((a, b) => a.capacity - b.capacity);
-      case "descending":
-        return filteredRequests.sort((a, b) => b.capacity - a.capacity);
-      default:
-        return filteredRequests; 
-    }
-  };
-  
+const sortRequests = (requests) => {
+  const filteredRequests = requests.filter(request =>
+    Object.values(request).some(value =>
+      value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
-  const sortedRequests = sortRequests(requests);
+  switch (sortOption) {
+    case "alphabetical":
+      return filteredRequests.sort((a, b) => a.reason.localeCompare(b.reason));
+    case "ascending":
+      return filteredRequests.sort((a, b) => a.capacity - b.capacity);
+    case "descending":
+      return filteredRequests.sort((a, b) => b.capacity - a.capacity);
+    default:
+      return filteredRequests;
+  }
+};
+  
+  const sortedRequests = useMemo(() => sortRequests(requests), [requests, searchTerm, sortOption]);
 
   const handleRowSelection = (transactionId) => {
     setSelectedRows((prevSelectedRows) => {
@@ -147,13 +150,31 @@ const OpcApprovedRequests = () => {
     XLSX.utils.book_append_sheet(wb, ws, "Approved Requests");
 
     XLSX.writeFile(wb, "Approved_Requests.xlsx");
-};
-
+  };
 
   const handleCancel = () => {
     setSelectedRows(new Set());
     setConfirmMode(false);
   };
+
+  const totalPages = Math.ceil(sortedRequests.length / recordsPerPage);
+
+  const paginatedRequests = useMemo(() => 
+    sortedRequests.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage),
+    [sortedRequests, currentPage, recordsPerPage]
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handleViewMore = (request) => {
+    setSelectedRequest(request);
+    setShowModal(true);
+  };
+  
 
   return (
     <div className="opcrequest">
@@ -169,7 +190,7 @@ const OpcApprovedRequests = () => {
             <div className="search-container">
               <input
                 type="text"
-                placeholder="Search Reason"
+                placeholder="Search"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="search-bar"
@@ -213,31 +234,26 @@ const OpcApprovedRequests = () => {
                   <div className="spinner"></div>
                 </div>
               ) : (
-                <table className="opc-requests-table">
+                <table className="opcapproved-requests-table">
                   <thead>
                     <tr>
                       {confirmMode && <th>Select</th>}
                       <th>Transaction ID</th>
-                      <th>Requestor Name</th>
+                      <th>Requestor</th>
                       <th>Type of Trip</th>
                       <th>From</th>
                       <th>To</th>
                       <th>Capacity</th>
+                      <th>Schedule</th>
                       <th>Vehicle</th>
                       <th>Added Vehicle</th>
-                      <th>Schedule</th>
-                      <th>Return Schedule</th>
-                      <th>Departure Time</th>
-                      <th>Pick Up Time</th>
-                      <th>Assigned Driver</th>
-                      <th>Extra Drivers</th>
-                      <th>Purpose</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {requests.length === 0 ? (
                       <tr>
-                        <td colSpan={confirmMode ? "14" : "13"} className="no-requests">No Requests Available</td>
+                        <td colSpan={confirmMode ? "10" : "13"} className="no-requests">No Requests Available</td>
                       </tr>
                     ) : (
                       sortedRequests.map((request, index) => (
@@ -266,6 +282,7 @@ const OpcApprovedRequests = () => {
                           <td>{request.destinationFrom}</td>
                           <td>{request.destinationTo}</td>
                           <td><span style={{color: "#782324", fontWeight: "700"}}>{request.capacity}</span></td>
+                          <td>{formatDate(request.schedule)}</td>
                           <td><span style={{color: "#782324", fontWeight: "700"}}>{request.vehicleType}</span> : <span style={{color: "green", fontWeight: "700"}}>{request.plateNumber}</span></td>
                           <td>
                             {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
@@ -278,32 +295,75 @@ const OpcApprovedRequests = () => {
                               "No Vehicles Added"
                             )}
                           </td>
-                          <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
-                          <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
-                          <td>{request.departureTime}</td>
-                          <td>{request.pickUpTime || "N/A"}</td>
-                          <td>{request.driverName || "N/A"}</td>
-                          <td>
-                            {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
-                              request.reservedVehicles.map((vehicle, index) => (
-                                <div key={index}>- {vehicle.driverName || 'N/A'}</div>
-                              ))
-                            ) : (
-                              <div>No Drivers Added</div>
-                            )}
-                          </td>
-                          <td>{request.reason}</td>
+                          <td><button className="view-more-btn" onClick={() => handleViewMore(request)}><FaEye style={{marginRight: "5px", marginBottom: "-2px"}}/>View More</button></td>
                         </tr>
                       ))
                     )}
                   </tbody>
                 </table>
               )}
+               <div className="pagination">
+                      <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                        Previous
+                      </button>
+                      <span>Page {currentPage} of {totalPages}</span>
+                      <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                        Next
+                      </button>
+                    </div>
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />
         </div>
       </div>
+      {showModal && selectedRequest && (
+  <div className="viewmore-modal-overlay">
+    <div className="viewmore-modal-content">
+      <h2>Request Details</h2>
+      <div className='viewmore-modal-container'>
+        <div className='transac-container'>
+          <p style={{color: "#FFD700"}}><strong>Transaction Number:</strong> {selectedRequest.transactionId}</p>
+        </div>
+        <div className='viewmore-inner-container'>
+          <p><strong>Requestor:</strong> {selectedRequest.userName}</p>
+          <p><strong>Type of Trip:</strong> {selectedRequest.typeOfTrip}</p>
+          <p><strong>From:</strong> {selectedRequest.destinationFrom}</p>
+          <p><strong>To:</strong> {selectedRequest.destinationTo}</p>
+          <p><strong>Capacity:</strong> {selectedRequest.capacity}</p>
+          <p><strong>Vehicle:</strong> {selectedRequest.vehicleType} : {selectedRequest.plateNumber}</p>
+          <p><strong>Schedule:</strong> {formatDate(selectedRequest.schedule)}</p>
+          <p><strong>Return Schedule:</strong> {formatDate(selectedRequest.returnSchedule)}</p>
+          <p><strong>Departure Time:</strong> {selectedRequest.departureTime}</p>
+          <p><strong>Pick Up Time:</strong> {selectedRequest.pickUpTime || "N/A"}</p>
+          <p><strong>Driver:</strong> {selectedRequest.driverName || "N/A"}</p>
+          <p><strong>Purpose:</strong> {selectedRequest.reason || "N/A"}</p>
+          <p><strong>Added Vehicles: </strong> 
+            {selectedRequest.reservedVehicles && selectedRequest.reservedVehicles.length > 0 ? (
+                              selectedRequest.reservedVehicles.map((vehicle, index) => (
+                                <div key={index}>
+                                <span style={{color: "#782324", fontWeight: "700"}}>{vehicle.vehicleType}</span> : <span style={{color: "green", fontWeight: "700"}}>{vehicle.plateNumber}</span>
+                                </div>
+                              ))
+                            ) : (
+                              <div>No Vehicle Added</div>
+                            )}
+          </p>
+          <p><strong>Added Drivers: </strong>
+          {selectedRequest.reservedVehicles && selectedRequest.reservedVehicles.length > 0 ? (
+                              selectedRequest.reservedVehicles.map((vehicle, index) => (
+                                <div key={index}>- {vehicle.driverName || 'N/A'}</div>
+                              ))
+                            ) : (
+                              <div>No Drivers Added</div>
+                            )}
+                            </p>
+        </div>
+        <button className="close-view-more-btn" onClick={() => setShowModal(false)}>Close</button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

@@ -92,6 +92,11 @@ const Reservation = () => {
   const handleAddVehicleClick = () => {
     setAddVehicleModalOpen(true);
   };
+
+  const handleCloseCalendar = () => {
+    setShowCalendar(false); 
+    setSelectedVehicle(null); 
+  };
   
   const handleCloseModal = () => {
     setAddVehicleModalOpen(false);
@@ -375,58 +380,14 @@ const Reservation = () => {
                     <span>Round Trip</span>
                   </label>
                 </div>
-              </div>
-              <br/>
-              <div className="form-group-inline">
-                <div className="form-group">
-                  <label htmlFor="from"><FaLocationCrosshairs style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> From:</label>
-                  <input type="text" id="from" name="from" placeholder='Ex. CIT-University' value={formData.from} required onChange={handleInputChange}/>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="to"><FaLocationDot style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> To:</label>
-                  <input type="text" id="to" name="to" placeholder='Ex. SM Seaside' value={formData.to} required onChange={handleInputChange}/>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="capacity">
-                      <FaUserGroup
-                        style={{
-                          backgroundColor: "white",
-                          color: "#782324",
-                          borderRadius: "20px",
-                          padding: "3px",
-                          marginBottom: "-5px",
-                          marginRight: "5px"
-                        }}
-                      />
-                      No. of Passengers:
-                    </label>
-                    <input
-                      type="number"
-                      id="capacity"
-                      name="capacity"
-                      value={formData.capacity}
-                      required
-                      min="0"
-                      max={calculateMaxCapacity()}
-                      onChange={handleInputChange}
-                    />
-                    
-                    {capacityError && (
-                      <div className="capacity-error-cloud">
-                        <span>{capacityError}</span>
-                        <div className="cloud-arrow"></div> 
-                      </div>
-                    )}
-                  </div>
-                <div className="form-group">
-                <label htmlFor="vehicleType"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Vehicle:</label>
+                 <div className="form-group">
                 <input type="text" id="vehicleType" name="vehicleType" value={vehicle.vehicleType} onChange={handleInputChange} disabled={true}/>
                 </div>
                 <div className="form-group">
-                <label htmlFor="plateNumber"><FaBus style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Plate Number:</label>
                 <input type="text" id="plateNumber" name="plateNumber" value={vehicle.plateNumber} onChange={handleInputChange} disabled={true}/>
                 </div>
               </div>
+              <br/>
               <div className="form-group-inline">
                 <div className="form-group">
                   <label htmlFor="schedule">
@@ -438,6 +399,7 @@ const Reservation = () => {
                       name="schedule"
                       value={selectedDate ? selectedDate.toLocaleDateString('en-US') : ''}
                       onClick={() => { setShowCalendar(true); setIsSelectingReturn(false); }}
+                      placeholder='Select Schedule'
                       readOnly
                       required
                     />
@@ -453,6 +415,7 @@ const Reservation = () => {
                          name="returnSchedule"
                          value={returnScheduleDate ? returnScheduleDate.toLocaleDateString('en-US') : ''}
                          onClick={() => { setShowCalendar(true); setIsSelectingReturn(true); }}
+                         placeholder='Select Return Schedule'
                          readOnly
                          required
                       />
@@ -467,6 +430,7 @@ const Reservation = () => {
                           borderRadius: "20px",
                           padding: "3px",
                           marginBottom: "-5px",
+                          marginRight: "3px"
                         }}
                       />
                       Departure Time:
@@ -492,6 +456,7 @@ const Reservation = () => {
                             borderRadius: "20px",
                             padding: "3px",
                             marginBottom: "-5px",
+                            marginRight: "3px"
                           }}
                         />
                         Pick-Up Time:
@@ -503,10 +468,55 @@ const Reservation = () => {
                         plateNumber={selectedVehiclePlateNumber}
                         addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
                         token={token}
+                        disabled={!returnScheduleDate}
+                        date={returnScheduleDate}
                         departureTime={formData.departureTime} 
                       />
                     </div>
                   )} 
+              </div>
+              <div className="form-group-inline">
+                <div className="form-group">
+                  <label htmlFor="from"><FaLocationCrosshairs style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> From:</label>
+                  <input type="text" id="from" name="from" placeholder='Ex. CIT-University' value={formData.from} required onChange={handleInputChange}/>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="to"><FaLocationDot style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> To:</label>
+                  <input type="text" id="to" name="to" placeholder='Ex. SM Seaside' value={formData.to} required onChange={handleInputChange}/>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="capacity">
+                      <FaUserGroup
+                        style={{
+                          backgroundColor: "white",
+                          color: "#782324",
+                          borderRadius: "20px",
+                          padding: "3px",
+                          marginBottom: "-5px",
+                          marginRight: "5px"
+                        }}
+                      />
+                      No. of Passengers:
+                    </label>
+                    <input
+                      type="number"
+                      placeholder='Number of Passengers'
+                      id="capacity"
+                      name="capacity"
+                      value={formData.capacity}
+                      required
+                      min="0"
+                      max={calculateMaxCapacity()}
+                      onChange={handleInputChange}
+                    />
+                    
+                    {capacityError && (
+                      <div className="capacity-error-cloud">
+                        <span>{capacityError}</span>
+                        <div className="cloud-arrow"></div> 
+                      </div>
+                    )}
+                  </div>
               </div>
               <div className="form-group-inline">
               <div className="form-group">
@@ -640,13 +650,17 @@ const Reservation = () => {
 
       {showCalendar && (
       <div className="calendar-modal">
-        <div className="calendar-modal-content">
+        <div className="user-calendar-modal-content">
         <Calendar 
             onDateSelect={handleDateSelect} 
             minDate={tripType === 'roundTrip' ? new Date() : null} 
             returnScheduleDate={returnScheduleDate}
             plateNumber={selectedVehiclePlateNumber}
           />
+           <br/>
+                <button className="close-button" onClick={handleCloseCalendar}>
+                  <span style={{fontWeight: "700", fontSize: "16px"}}>Close</span>
+                </button>
         </div>
       </div>
       )}

@@ -41,7 +41,7 @@ const closeErrorModal = () => {
       const response = await fetch("https://citumovebackend.up.railway.app/admin/users/read", {
         headers: { "Authorization": `Bearer ${token}` }
       });
-      const data = await response.json();
+      const data = await response.json(); 
       setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to fetch users", error);

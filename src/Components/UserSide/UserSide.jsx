@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Header from './Header';
 import SideNavbar from './SideNavbar';
 import Skeleton from 'react-loading-skeleton';
+import Calendar from './Calendar';
 import ReserveCalendar from './ReserveCalendar';
 import 'react-loading-skeleton/dist/skeleton.css';
 import logoImage1 from '../../Images/citbglogo.png';
@@ -14,7 +15,7 @@ import vehiclesubImage4 from "../../Images/coasterimage.jpg";
 import vehiclesubImage5 from "../../Images/coasterimage2.jpg";
 import vehiclesubImage6 from "../../Images/coasterimage3.jpg";
 import defaultVehicleImage from "../../Images/defualtVehicle.png";
-import { FaBook, FaBus } from "react-icons/fa";
+import { FaBook, FaBus, FaCalendarAlt } from "react-icons/fa";
 import '../../CSS/UserCss/UserSide.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,6 +23,8 @@ const UserSide = () => {
   const [vehicles, setVehicles] = useState([]);
   const [events, setEvents] = useState([]); 
   const [loading, setLoading] = useState(true);
+  const [showCalendar, setShowCalendar] = useState(false); 
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0); 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -130,6 +133,16 @@ const UserSide = () => {
     );
   }
 
+  const handleOpenCalendar = (vehicle) => {
+    setSelectedVehicle(vehicle);    
+    setShowCalendar(true); 
+  };
+
+  const handleCloseCalendar = () => {
+    setShowCalendar(false); 
+    setSelectedVehicle(null); 
+  };
+
   return (
     <div className="app">
       <Header />
@@ -144,26 +157,63 @@ const UserSide = () => {
             <div className="vehicle-list">
               {vehicles.map(vehicle => (
                 <div key={vehicle.id} className="vehicle-item">
+                  <div className="vehicle-card">
+                  <img
+                    src={getVehicleImage(vehicle.vehicleType)}
+                    alt={vehicle.vehicleType}
+                    className="vehicle-image"
+                    loading="lazy"
+                  />
                   <div className="vehicle-info">
-                    <img src={getVehicleImage(vehicle.vehicleType)} alt={vehicle.vehicleType} className="vehicle-image" loading="lazy" />
                     <div className="vehicle-text">
-                      <h2 style={{ marginBottom: "20px" }}>
+                      <h2>
                         <FaBus style={{ marginBottom: "-2px", marginRight: "10px" }} />
                         {vehicle.vehicleType}
                       </h2>
-                      <p>Plate Number: <span style={{ marginLeft: "5px", color: "#782324" }}>{vehicle.plateNumber}</span></p>
-                      <p>👥 Capacity: <span style={{ marginLeft: "5px", color: "#782324" }}>{vehicle.capacity}</span></p>
-                      <p>{vehicle.status === 'Available' ? '🟢' : '🔴'} Status: <span style={{ color: vehicle.status === 'Available' ? 'green' : 'red', marginLeft: "5px" }}>{vehicle.status}</span></p>
+                      <p>
+                        Plate Number:{" "}
+                        <span style={{ marginLeft: "5px", color: "#782324" }}>
+                          {vehicle.plateNumber}
+                        </span>
+                      </p>
+                      <p>
+                        👥 Capacity:{" "}
+                        <span style={{ marginLeft: "5px", color: "#782324" }}>
+                          {vehicle.capacity}
+                        </span>
+                      </p>
+                      <p>
+                        {vehicle.status === "Available" ? "🟢" : "🔴"} Status:{" "}
+                        <span
+                          style={{
+                            color: vehicle.status === "Available" ? "green" : "red",
+                            marginLeft: "5px",
+                          }}
+                        >
+                          {vehicle.status}
+                        </span>
+                      </p>
                     </div>
-                    <button
-                      className={`btn-right-corner ${vehicle.status !== 'Available' ? 'disabled' : ''}`}
-                      onClick={() => handleSelectVehicle(vehicle)}
-                      disabled={vehicle.status !== 'Available'}
-                    >
-                      <FaBus style={{ marginBottom: "-2px", marginRight: "10px" }} />
-                      Select Vehicle
-                    </button>
+                    <div className="user-button-group">
+                      <button
+                        className={`btn-right-corner ${
+                          vehicle.status !== "Available" ? "disabled" : ""
+                        }`}
+                        onClick={() => handleSelectVehicle(vehicle)}
+                        disabled={vehicle.status !== "Available"}
+                      >
+                        <FaBus style={{ marginBottom: "-2px", marginRight: "10px" }} />
+                        Select Vehicle
+                      </button>
+                      <button
+                        className="btn-d"
+                        onClick={() => handleOpenCalendar(vehicle)}
+                      >
+                        <FaCalendarAlt style={{fontSize: "20px", marginBottom: "-3px"}}/>
+                      </button>
+                    </div>
                   </div>
+                </div>
                 </div>
               ))}
             </div>
@@ -196,6 +246,21 @@ const UserSide = () => {
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="logo-image1" loading="lazy" />
+          {showCalendar && (
+            <div className="calendar-modal">
+              <div className="user-calendar-modal-content">
+                <h2>Reserved Schedules for <span style={{color: "#782324"}}>{selectedVehicle?.vehicleType}</span></h2>
+                <Calendar 
+                  vehicle={selectedVehicle}
+                  plateNumber={selectedVehicle?.plateNumber}
+                />
+                <br/>
+                <button className="close-button" onClick={handleCloseCalendar}>
+                  <span style={{fontWeight: "700", fontSize: "16px"}}>Close</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

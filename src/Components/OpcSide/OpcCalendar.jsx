@@ -133,11 +133,8 @@ const OpcCalendar = () => {
     });
 
     const returnEvents = reservations.filter(res => {
-      if (res.tripType === 'roundTrip') {
-        const returnDate = new Date(res.returnSchedule).toLocaleDateString();
-        return returnDate === selectedDate;
-      }
-      return false;
+      const returnDate = new Date(res.returnSchedule).toLocaleDateString();
+      return returnDate === selectedDate;
     });
 
     const generalEvents = events.filter(event => {
@@ -239,32 +236,57 @@ const OpcCalendar = () => {
               {reservationEvents.map((event, index) => (
                 <div key={index} className="event-item" onClick={() => toggleDescription(event.eventId)}>
                   <h4 style={{marginLeft: '15px'}}>
-                     Reason: {event.reason} <span style={{color: 'maroon'}}>(Departure)</span>
+                     {event.reason} <span style={{color: 'maroon'}}>(Departure)</span>
                   </h4>
                   {expandedEvent === event.eventId && (
                     <div className="event-description">
                       <p style={{marginLeft: '15px'}}><strong>Date:</strong> {new Date(event.schedule).toLocaleDateString()}</p>
                       <p style={{marginLeft: '15px'}}><strong>Time:</strong> {new Date(event.schedule).toLocaleTimeString()}</p>
-                      <p style={{marginLeft: '15px'}}><strong>Reason:</strong> {event.reason}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Purpose:</strong> {event.reason}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Type of Trip:</strong> {event.typeOfTrip}</p>
                       <p style={{marginLeft: '15px'}}><strong>Vehicle:</strong> {event.vehicleType} - {event.plateNumber}</p>
+                      <p style={{marginLeft: '15px'}}><strong>Added Vehicle:</strong> 
+                    {event.reservedVehicles && event.reservedVehicles.length > 0 ? (
+                        <ul style={{ paddingLeft: "45px", marginTop: "10px" }}>
+                          {event.reservedVehicles.map((vehicle, index) => (
+                            <li key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No Vehicles Added</p>
+                      )}
+                    </p>
                     </div>
                   )}
                 </div>
               ))}
               {returnEvents.map((event, index) => (
-                <div key={index} className="event-item">
-                  <h4 onClick={() => toggleDescription(event.eventId)}>
-                     {event.reason} (Return)
-                  </h4>
-                  {expandedEvent === event.eventId && (
-                    <div className="event-description">
-                      <p style={{marginLeft: '15px'}}><strong>Return Date:</strong> {new Date(event.returnSchedule).toLocaleDateString()}</p>
-                      <p style={{marginLeft: '15px'}}><strong>Pickup Time:</strong> {new Date(event.returnSchedule).toLocaleTimeString()}</p>
-                      <p style={{marginLeft: '15px'}}><strong>Reason:</strong> {event.reason}</p>
-                    </div>
-                  )}
+           <div key={index} className="event-item" onClick={() => toggleDescription(event.eventId)}>
+           <h4 style={{marginLeft: '15px'}}>
+              {event.reason} <span style={{color: 'maroon'}}>(Pick Up)</span>
+           </h4>
+              {expandedEvent === event.eventId && (
+                <div className="event-description">
+                  <p style={{marginLeft: '15px'}}><strong>Return Date:</strong> {new Date(event.returnSchedule).toLocaleDateString()}</p>
+                  <p style={{marginLeft: '15px'}}><strong>Pickup Time:</strong> {new Date(event.returnSchedule).toLocaleTimeString()}</p>
+                  <p style={{marginLeft: '15px'}}><strong>Purpose</strong> {event.reason}</p>
+                  <p style={{marginLeft: '15px'}}><strong>Type of Trip:</strong> {event.typeOfTrip}</p>
+                  <p style={{marginLeft: '15px'}}><strong>Vehicle:</strong> {event.vehicleType} - {event.plateNumber}</p>
+                  <p style={{marginLeft: '15px'}}><strong>Added Vehicle:</strong> 
+                    {event.reservedVehicles && event.reservedVehicles.length > 0 ? (
+                        <ul style={{ paddingLeft: "45px", marginTop: "10px" }}>
+                          {event.reservedVehicles.map((vehicle, index) => (
+                            <li key={index}>{vehicle.vehicleType} - {vehicle.plateNumber}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No Vehicles Added</p>
+                      )}
+                    </p>
                 </div>
-              ))}
+              )}
+            </div>
+          ))}
             </>
           )}
 

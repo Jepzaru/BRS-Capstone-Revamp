@@ -79,7 +79,7 @@ const AdminDepartment = () => {
 
   const handleDeleteDepartment = async () => {
     try {
-      const response = await fetch(`https://citumovebackend.up.railway.app/department/delete/${selectedDepartment.id}`, {
+      const response = await fetch(`http://localhost:8080/department/delete/${selectedDepartment.id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` },
       });

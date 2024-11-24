@@ -29,7 +29,7 @@
   color: white;
   text-decoration: none;
   display: flex;
-  align-items: center; /* Ensures icon and text are aligned on the same line */
+  align-items: center;
   padding: 10px;
   border-radius: 10px;
 }

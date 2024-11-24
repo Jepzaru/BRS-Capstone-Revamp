@@ -18,6 +18,9 @@ const HeadSide = () => {
   const token = localStorage.getItem('token');
   const [errorMessage, setErrorMessage] = useState(''); 
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
+
   const fetchRequestsData = useCallback(async () => {
     try {
       const response = await fetch("https://citumovebackend.up.railway.app/reservations/getAll", {
@@ -150,10 +153,6 @@ const HeadSide = () => {
     );
   }, [request, searchTerm]);
 
-  const splitText = (text, maxLength) => {
-    return text.match(new RegExp(`.{1,${maxLength}}`, 'g')).join('\n');
-  };
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -161,6 +160,19 @@ const HeadSide = () => {
       month: "short", 
       day: "numeric",
     });
+  };
+
+  const totalPages = Math.ceil(filteredRequests.length / recordsPerPage);
+
+  const paginatedRequests = useMemo(() => 
+    filteredRequests.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage),
+    [filteredRequests, currentPage, recordsPerPage]
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   return (
@@ -240,7 +252,7 @@ const HeadSide = () => {
                       <td>{requests.returnSchedule && requests.returnSchedule !== "0001-01-01" ? formatDate(requests.returnSchedule) : 'N/A'}</td>
                       <td style={{width: '70px'}}>{requests.departureTime}</td>
                       <td style={{width: '70px'}}>{requests.pickUpTime || 'N/A'}</td>
-                      <td>{splitText(requests.reason, 15)}</td>
+                      <td>{requests.reason}</td>
                       <td>
                       <div className="head-action-buttons">
                         <button className="approve-button" onClick={() => openModal(requests, 'approve')}>
@@ -269,6 +281,15 @@ const HeadSide = () => {
                 )}
               </tbody>
             </table>
+            <div className="pagination">
+                      <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                        Previous
+                      </button>
+                      <span>Page {currentPage} of {totalPages}</span>
+                      <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                        Next
+                      </button>
+                    </div>
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="head-logo-image" />

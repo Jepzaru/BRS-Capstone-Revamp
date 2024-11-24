@@ -21,6 +21,9 @@ const ManageRequest = () => {
   const username = formatName(firstName) + " " + formatName(lastName);
   const [loading, setLoading] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 7;
+
   const fetchUsersRequests = async () => {
     setLoading(true); 
     try {
@@ -68,7 +71,9 @@ const ManageRequest = () => {
 
   const filteredRequests = useMemo(() => 
     sortedRequests.filter(request =>
-      (request.reason || '').toLowerCase().includes(searchTerm.toLowerCase())
+      Object.values(request).some(value =>
+        (value || '').toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
     ),
     [sortedRequests, searchTerm]
   );
@@ -119,6 +124,19 @@ const ManageRequest = () => {
     setSelectedRequest(null);
   };
 
+  const totalPages = Math.ceil(filteredRequests.length / recordsPerPage);
+
+  const paginatedRequests = useMemo(() => 
+    filteredRequests.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage),
+    [filteredRequests, currentPage, recordsPerPage]
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
     <div className="app1">
         <Header />
@@ -133,7 +151,7 @@ const ManageRequest = () => {
                     <div className="search-container">
                         <input
                             type="text"
-                            placeholder="Search Reason"
+                            placeholder="Search"
                             value={searchTerm}
                             onChange={handleSearchChange}
                             className="search-bar"
@@ -176,47 +194,60 @@ const ManageRequest = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredRequests.length === 0 ? (
-                                        <tr>
-                                            <td colSpan="15" className="no-requests">No Requests Made</td>
-                                        </tr>
-                                    ) : (
-                                        filteredRequests.map(request => (
-                                            <tr
-                                                key={request.id}
-                                                className={request.rejected ? 'rejected' : ''}
-                                                onClick={() => handleRowClick(request)}
-                                            >
-                                                <td>{request.transactionId}</td>
-                                                <td>{request.typeOfTrip}</td>
-                                                <td>{request.destinationFrom}</td>
-                                                <td>{request.destinationTo}</td>
-                                                <td>{request.capacity}</td>
-                                                <td><span style={{ color: "#782324", fontWeight: "700" }}>{request.vehicleType} : </span><span style={{ color: "green", fontWeight: "700" }}>{request.plateNumber}</span></td>
-                                                <td>
-                                                    {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
-                                                        request.reservedVehicles.map((vehicle) => (
-                                                            <div key={vehicle.id || vehicle.plateNumber}>
-                                                                <span style={{ color: "#782324", fontWeight: "700" }}>{vehicle.vehicleType} : </span><span style={{ color: "green", fontWeight: "700" }}>{vehicle.plateNumber}</span>
-                                                            </div>
-                                                        ))
-                                                    ) : (
-                                                        <div>No Vehicles Added</div>
-                                                    )}
-                                                </td>
-                                                <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
-                                                <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
-                                                <td>{request.departureTime}</td>
-                                                <td>{request.pickUpTime ? request.pickUpTime : 'N/A'}</td>
-                                                <td className="reason-column">{request.reason}</td>
-                                                <td>{getApprovalStatus(request)}</td>
-                                                <td>{request.feedback ? request.feedback : 'N/A'}</td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
+                                {filteredRequests.length === 0 ? (
+                                  <tr>
+                                    <td colSpan="15" className="no-requests">No Requests Made</td>
+                                  </tr>
+                                ) : (
+                                  paginatedRequests.map((request) => (
+                                    <tr
+                                      key={request.id}
+                                      className={request.rejected ? 'rejected' : ''}
+                                      onClick={() => handleRowClick(request)}
+                                    >
+                                      <td>{request.transactionId || 'N/A'}</td>
+                                      <td>{request.typeOfTrip || 'N/A'}</td>
+                                      <td>{request.destinationFrom || 'N/A'}</td>
+                                      <td>{request.destinationTo || 'N/A'}</td>
+                                      <td>{request.capacity || 'N/A'}</td>
+                                      <td>
+                                        <span style={{ color: "#782324", fontWeight: "700" }}>{request.vehicleType || 'N/A'} : </span>
+                                        <span style={{ color: "green", fontWeight: "700" }}>{request.plateNumber || 'N/A'}</span>
+                                      </td>
+                                      <td>
+                                        {request.reservedVehicles && request.reservedVehicles.length > 0 ? (
+                                          request.reservedVehicles.map((vehicle) => (
+                                            <div key={vehicle.id || vehicle.plateNumber}>
+                                              <span style={{ color: "#782324", fontWeight: "700" }}>{vehicle.vehicleType || 'N/A'} : </span>
+                                              <span style={{ color: "green", fontWeight: "700" }}>{vehicle.plateNumber || 'N/A'}</span>
+                                            </div>
+                                          ))
+                                        ) : (
+                                          <div>No Vehicles Added</div>
+                                        )}
+                                      </td>
+                                      <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
+                                      <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
+                                      <td>{request.departureTime || 'N/A'}</td>
+                                      <td>{request.pickUpTime || 'N/A'}</td>
+                                      <td className="reason-column">{request.reason || 'N/A'}</td>
+                                      <td>{getApprovalStatus(request)}</td>
+                                      <td>{request.feedback || 'N/A'}</td>
+                                    </tr>
+                                  ))
+                                )}
+                              </tbody>
                             </table>
                         )}
+                        <div className="pagination">
+                      <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                        Previous
+                      </button>
+                      <span>Page {currentPage} of {totalPages}</span>
+                      <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                        Next
+                      </button>
+                    </div>
                     </div>
                     <ResendRequestModal request={selectedRequest} showModal={showModal} onClose={handleCloseModal} />
                 </div>

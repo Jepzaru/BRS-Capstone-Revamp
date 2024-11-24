@@ -32,6 +32,8 @@
   display: flex;
 }
 
+
+
 .vehicle-list,
 .another-container {
   background-color: var(--background-color);
@@ -46,6 +48,16 @@
   width: 800px;
   margin-right: 20px;
   overflow-y: auto;
+}
+
+.vehicle-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  border-radius: 8px;
+  background-color: #fff;
+  min-height: 200px; 
 }
 
 .another-container {
@@ -114,8 +126,9 @@
 
 .vehicle-info {
   display: flex;
-  align-items: center;
-  width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
 }
 
 .vehicle-image {
@@ -128,8 +141,8 @@
 }
 
 .vehicle-text {
-  display: flex;
-  flex-direction: column;
+  flex: 1;
+  margin-top: 20px;
 }
 
 .vehicle-text h2 {
@@ -144,6 +157,7 @@
 
 .vehicle-text p {
   font-weight: 800;
+  margin-top: 20px;
 }
 
 .btn-inline {
@@ -190,23 +204,34 @@
   border: solid var(--secondary-color);
 }
 
-.btn-right-corner {
-  padding: 10px 16px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
+.btn-right-corner,
+.btn-d {
+  padding: 10px 15px;
   font-size: 14px;
-  align-self: flex-end;
-  margin-left: 50px;
-  transition: background-color 0.3s;
-  font-weight: 800;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.btn-right-corner:hover {
-  background-color: var(--secondary-color);
-  color: var(--primary-color);
+.btn-right-corner {
+  background-color: #782324;
+  color: #fff;
+}
+
+.btn-right-corner:hover{
+  background-color: #57191a;
+  transition: background-color 0.3s;
+}
+
+.btn-d {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.btn-d:hover{
+  background-color: #b98b00;
+  transition: background-color 0.3s;
+  color: #f4f4f4;
 }
 
 .content h1 {
@@ -248,6 +273,39 @@
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+.user-button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: -25px;
+  align-self: flex-end; 
+  margin-right: 10px;
+}
+
+.user-btn-inline {
+  padding: 8px 12px;
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  font-weight: 800;
+}
+
+.user-btn-inline:hover {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+.user-calendar-modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
 
 @media (max-width: 767px) {
   .content {

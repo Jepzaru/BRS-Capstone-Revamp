@@ -1,10 +1,8 @@
-
-
 import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/calendar.css';
 import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
 
-const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
+const DriverManagementCalendar = ({ onDateSelect, minDate, returnDate}) => {
   const currentDate = new Date();
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
@@ -14,45 +12,31 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    const fetchReservedDates = async () => {
-      if (!plateNumber) return;
-
+    const fetchReservations = async () => {
       try {
-        const responses = await Promise.all([
-          fetch(`https://citumovebackend.up.railway.app/reservations/vehicle-availability?plateNumber=${encodeURIComponent(plateNumber)}`, {
-            headers: { "Authorization": `Bearer ${token}` },
-          }),
-          fetch(`https://citumovebackend.up.railway.app/reservations/multiple-vehicle-availability?plateNumber=${encodeURIComponent(plateNumber)}`, {
-            headers: { "Authorization": `Bearer ${token}` },
-          })
-        ]);
-
-        const dataPromises = responses.map(response => {
-          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-          return response.json();
+        const token = localStorage.getItem('token');
+        const response = await fetch(`https://citumovebackend.up.railway.app/reservations/opc-approved`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
-
-        const [data1, data2] = await Promise.all(dataPromises);
-        const combinedData = [...data1, ...data2];
-
-        const parsedDates = combinedData.map(d => ({
-          schedule: new Date(d.schedule),
-          returnSchedule: d.returnSchedule ? new Date(d.returnSchedule) : null,
-          pickUpTime: d.pickUpTime,
-          departureTime: d.departureTime,
-          status: d.status,
-        }));
-
-        const uniqueDates = Array.from(new Set(parsedDates.map(a => a.schedule.getTime())))
-          .map(time => {
-            return parsedDates.find(a => a.schedule.getTime() === time);
-          });
-
-        setReservedDates(uniqueDates);
+    
+        if (response.ok) {
+          const data = await response.json(); 
+    
+          setReservedDates(data.map(reservation => ({
+            schedule: new Date(reservation.schedule),
+            returnSchedule: reservation.returnSchedule ? new Date(reservation.returnSchedule) : null
+          })));
+        } else {
+          console.error('Failed to fetch approved reservations:', response.statusText);
+        }
       } catch (error) {
-        console.error("Error fetching reserved dates:", error);
+        console.error('Error:', error);
       }
     };
+        
 
     const fetchEvents = async () => {
       try {
@@ -70,9 +54,9 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
       }
     };
 
-    fetchReservedDates();
+    fetchReservations();
     fetchEvents(); 
-  }, [plateNumber, token]);
+  }, [token]);
 
   const generateDays = () => {
     const totalDays = daysInMonth(currentMonth, currentYear);
@@ -80,35 +64,34 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
     const days = [];
   
     for (let i = 0; i < firstDay; i++) {
-        days.push({ day: '', selected: false, disabled: true, reserved: false, highlight: false });
+      days.push({ day: '', selected: false, disabled: true, reserved: false, highlight: false });
     }
   
     for (let i = 1; i <= totalDays; i++) {
-        const date = new Date(currentYear, currentMonth, i);
-        const isPast = date < currentDate; 
-        const isBeforeMinDate = minDate && date < minDate;
-
-        const reservedInfo = reservedDates.find(res =>
-            res.schedule.toDateString() === date.toDateString() ||
-            (res.returnSchedule && res.returnSchedule.toDateString() === date.toDateString())
-        );
+      const date = new Date(currentYear, currentMonth, i);
+      const isPast = date < currentDate; 
+      const isBeforeMinDate = minDate && date < minDate;
   
-        const isReserved = reservedInfo !== undefined;
-        const hasEvent = events.some(event => event.toDateString() === date.toDateString());
-
-        const isHighlighted = hasEvent; 
-
-        days.push({
-            day: i,
-            selected: selectedDay === i,
-            disabled: isPast || isBeforeMinDate || isHighlighted, 
-            reserved: isReserved,
-            highlight: isHighlighted 
-        });
+      const reservedInfo = reservedDates.find(res =>
+        res.schedule.toDateString() === date.toDateString() ||
+        (res.returnSchedule && res.returnSchedule.toDateString() === date.toDateString())
+      );
+  
+      const isReserved = reservedInfo !== undefined;
+      const hasEvent = events.some(event => event.toDateString() === date.toDateString());
+  
+      const isHighlighted = hasEvent; 
+  
+      days.push({
+        day: i,
+        selected: selectedDay === i,
+        disabled: isPast || isBeforeMinDate || isHighlighted || isReserved,
+        reserved: isReserved,
+        highlight: isHighlighted 
+      });
     }
     return days;
-};
-
+  };
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -172,7 +155,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         {generateDays().map((item, index) => (
           <div
             key={index}
-            className={`calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.reserved ? ' reserved' : ''}${item.highlight ? ' highlight' : ''}`} // Add highlight class
+            className={`calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.reserved ? ' reserved' : ''}${item.highlight ? ' highlight' : ''}`} 
             onClick={() => !item.disabled && handleDayClick(item.day)}
           >
             {item.day}
@@ -183,4 +166,4 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   );
 };
 
-export default Calendar;
+export default DriverManagementCalendar;

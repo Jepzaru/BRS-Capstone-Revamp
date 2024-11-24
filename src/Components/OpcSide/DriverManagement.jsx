@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
+import DriverManagementCalendar from './DriverManagementCalendar';
 import SideNavbar from './OpcNavbar';
 import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
@@ -47,7 +48,8 @@ const DriverManagement = () => {
   const [modalMessage, setModalMessage] = useState("");
   const [reservationIdToComplete, setReservationIdToComplete] = useState(null);
   
-
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [isSelectingStartDate, setIsSelectingStartDate] = useState(false);
 
   const token = localStorage.getItem('token');
 
@@ -294,6 +296,31 @@ const DriverManagement = () => {
       day: "numeric",
     });
   };
+
+  const handleDateSelect = (date) => {
+    if (isSelectingStartDate) {
+      setUpdateLeaveStartDate(date);
+    } else {
+      setUpdateLeaveEndDate(date);
+    }
+    setShowCalendar(false);
+  };
+  
+  
+  const handleCloseCalendar = () => {
+    setShowCalendar(false); 
+    setSelectedVehicle(null); 
+  };
+  
+  const openCalendarForStartDate = () => {
+    setIsSelectingStartDate(true);
+    setShowCalendar(true);
+  };
+  
+  const openCalendarForEndDate = () => {
+    setIsSelectingStartDate(false);
+    setShowCalendar(true);
+  };
   
   return (
     <div className="drivermanage">
@@ -459,9 +486,9 @@ const DriverManagement = () => {
                             </div>
                           )}
                         </td>
-                        <td>{reservation.schedule ? new Date(reservation.schedule).toLocaleDateString() : 'N/A'}</td>
+                        <td>{reservation.schedule ? formatDate(reservation.schedule) : 'N/A'}</td>
                         <td>{reservation.departureTime || 'N/A'}</td>
-                        <td>{reservation.returnSchedule ? new Date(reservation.returnSchedule).toLocaleDateString() : 'N/A'}</td>
+                        <td>{reservation.returnSchedule ? formatDate(reservation.returnSchedule) : 'N/A'}</td>
                         <td>{reservation.pickUpTime || 'N/A'}</td>
                         <td>
                           {reservation.isCompleted === true ? (
@@ -590,26 +617,27 @@ const DriverManagement = () => {
               <div>
                 <label htmlFor='leave-start-date'>Start Leave Date</label>
                 <input
-                  type="date"
+                  type="text"
                   id="leave-start-date"
-                  value={updateLeaveStartDate}
-                  onChange={(e) => setUpdateLeaveStartDate(e.target.value)}
-                  className="driver-input"
+                  name="leave-start-date"
+                  value={updateLeaveStartDate ? new Date(updateLeaveStartDate).toLocaleDateString('en-US') : ''}
+                  onClick={openCalendarForStartDate}
+                  placeholder='Select Start Date'
+                  readOnly
                   required
-                  min={new Date().toISOString().split("T")[0]} 
                 />
               </div>
               <div>
                 <label htmlFor='leave-end-date'>End Leave Date</label>
                 <input
-                  type="date"
+                  type="text"
                   id="leave-end-date"
-                  value={updateLeaveEndDate}
-                  onChange={(e) => setUpdateLeaveEndDate(e.target.value)}
-                  className="driver-input"
+                  name="leave-end-date"
+                  value={updateLeaveEndDate ? new Date(updateLeaveEndDate).toLocaleDateString('en-US') : ''}
+                  onClick={openCalendarForEndDate}
+                  placeholder='Select Start Date'
+                  readOnly
                   required
-                  min={updateLeaveStartDate || new Date().toISOString().split("T")[0]} 
-                  disabled={!updateLeaveStartDate} 
                 />
               </div>
             </div>
@@ -659,6 +687,20 @@ const DriverManagement = () => {
         </div>
         </div>
       )}
+
+{showCalendar && (
+  <div className="calendar-modal">
+    <div className="user-calendar-modal-content">
+      <DriverManagementCalendar
+        onDateSelect={handleDateSelect} 
+        minDate={updateLeaveStartDate} 
+      />
+      <button className="close-button" style={{marginTop: '10px'}} onClick={handleCloseCalendar}>
+        <span style={{fontWeight: "700", fontSize: "16px"}}>Close</span>
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 };

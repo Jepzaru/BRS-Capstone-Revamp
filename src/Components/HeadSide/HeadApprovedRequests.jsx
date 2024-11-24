@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';  
 import Header from '../UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './HeadNavbar';
@@ -11,6 +11,9 @@ const HeadApprovedRequests = () => {
   const [error, setError] = useState(null);
   const token = localStorage.getItem('token');
   const department = localStorage.getItem('department'); 
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
 
   const fetchApprovedRequests = async () => {
     try {
@@ -75,6 +78,21 @@ const HeadApprovedRequests = () => {
     }
   
     return filteredRequests;
+  };
+
+  const filteredRequests = getDisplayedRequests(); 
+
+  const totalPages = Math.ceil(filteredRequests.length / recordsPerPage);
+
+  const paginatedRequests = useMemo(() => 
+    filteredRequests.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage),
+    [filteredRequests, currentPage, recordsPerPage]
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -143,12 +161,12 @@ const HeadApprovedRequests = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {getDisplayedRequests().length === 0 ? (
+                  {paginatedRequests.length === 0 ? (
                     <tr>
                       <td colSpan="14" className="no-requests">No Approved Requests Available</td>
                     </tr>
                   ) : (
-                    getDisplayedRequests().map((request, index) => (
+                    paginatedRequests.map((request, index) => (
                       <tr key={request.id || index}>
                         <td>{request.transactionId}</td>
                         <td>{request.userName}</td>
@@ -181,6 +199,15 @@ const HeadApprovedRequests = () => {
                   )}
                 </tbody>
               </table>
+              <div className="pagination">
+                      <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                        Previous
+                      </button>
+                      <span>Page {currentPage} of {totalPages}</span>
+                      <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                        Next
+                      </button>
+                    </div>
               </div>
             )}
           </div>

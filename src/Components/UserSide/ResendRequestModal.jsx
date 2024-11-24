@@ -125,8 +125,6 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
     
         try {
             let fileUrl = null;
-    
-            // Check if there is a file to upload
             if (formData.approvalProof instanceof File) {
                 const fileRef = ref(storage, `reservations/${formData.approvalProof.name}`);
                 const snapshot = await uploadBytes(fileRef, formData.approvalProof);
@@ -186,7 +184,7 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
         <div className="modal-overlay">
             <div className="modal-content" style={{ width: '1000px', maxWidth: '100%', padding: '60px', textAlign: 'left', backgroundColor: '#CBC3C3' }}>
                 <h3 style={{ backgroundColor: '#782324', color: 'white', padding: '10px', borderRadius: '10px' }}>
-                    Transaction ID: <span style={{ color: '#ffcc00' }}>{request.transactionId}</span>
+                    Transaction ID: <span style={{ color: '#ffcc00' }}>{request.transactionId}</span> <span style={{marginLeft: '80px'}}>Feedback: {request.feedback}</span>
                 </h3>
 
                 <form className="reservation-form">
@@ -218,44 +216,120 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                     <div className="form-group-inline">
                         <div className="form-group">
                             <label htmlFor="from">
-                                <FaLocationCrosshairs style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <FaLocationCrosshairs 
+                                style={{ 
+                                    backgroundColor: "white", 
+                                    color: "#782324", 
+                                    borderRadius: "20px", 
+                                    padding: "3px", 
+                                    marginBottom: "-5px", 
+                                    marginRight: "5px" }} 
+                                    />
                                 From:
                             </label>
-                            <input type="text" id="from" name="destinationFrom" placeholder='Ex. CIT-University' value={formData.destinationFrom || ''} required onChange={handleInputChange} />
+                            <input 
+                            type="text" 
+                            id="from" 
+                            name="destinationFrom" 
+                            placeholder='Ex. CIT-University' 
+                            value={formData.destinationFrom || ''} 
+                            required onChange={handleInputChange} 
+                            />
                         </div>
                         <div className="form-group">
                             <label htmlFor="to">
-                                <FaLocationDot style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <FaLocationDot style={{ 
+                                    backgroundColor: "white", 
+                                    color: "#782324", 
+                                    borderRadius: "20px", 
+                                    padding: "3px", 
+                                    marginBottom: "-5px", 
+                                    marginRight: "5px" }} />
                                 To:
                             </label>
-                            <input type="text" id="to" name="destinationTo" placeholder='Ex. SM Seaside' value={formData.destinationTo || ''} required onChange={handleInputChange} />
+                            <input 
+                            type="text" 
+                            id="to" 
+                            name="destinationTo"
+                             placeholder='Ex. SM Seaside' 
+                             value={formData.destinationTo || ''} 
+                             required onChange={handleInputChange} 
+                             />
                         </div>
                         <div className="form-group">
                             <label htmlFor="capacity">
-                                <FaUserGroup style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <FaUserGroup 
+                                style={{ backgroundColor: "white", 
+                                color: "#782324", 
+                                borderRadius: "20px", 
+                                padding: "3px", 
+                                marginBottom: "-5px", 
+                                marginRight: "5px" }} 
+                                />
                                 Capacity:
                             </label>
-                            <input type="number" id="capacity" name="capacity" value={formData.capacity || ''} required min="0" onChange={handleInputChange} />
+                            <input 
+                            type="number" 
+                            id="capacity" 
+                            name="capacity" 
+                            value={formData.capacity || ''} 
+                            required min="0" 
+                            onChange={handleInputChange} 
+                            />
                         </div>
                         <div className="form-group">
                             <label htmlFor="vehicleType">
-                                <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} />
+                                <FaBus style={{ 
+                                    backgroundColor: "white", 
+                                    color: "#782324", 
+                                    borderRadius: "20px", 
+                                    padding: "3px", 
+                                    marginBottom: "-5px" }} 
+                                    />
                                 Vehicle:
                             </label>
-                            <input type="text" id="vehicleType" name="vehicleType" value={formData.vehicleType || ''} onChange={handleInputChange} disabled />
+                            <input 
+                            type="text" 
+                            id="vehicleType" 
+                            name="vehicleType" 
+                            value={formData.vehicleType || ''} 
+                            onChange={handleInputChange} 
+                            disabled 
+                            />
                         </div>
                         <div className="form-group">
                             <label htmlFor="plateNumber">
-                                <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <FaBus style={{ 
+                                    backgroundColor: "white", 
+                                    color: "#782324", 
+                                    borderRadius: "20px", 
+                                    padding: "3px", 
+                                    marginBottom: "-5px", 
+                                    marginRight: "5px" }} 
+                                    />
                                 Plate Number:
                             </label>
-                            <input type="text" id="plateNumber" name="plateNumber" value={formData.plateNumber || ''} disabled onChange={handleInputChange} />
+                            <input 
+                            type="text" 
+                            id="plateNumber" 
+                            name="plateNumber" 
+                            value={formData.plateNumber || ''} 
+                            disabled 
+                            onChange={handleInputChange} 
+                            />
                         </div>
                     </div>
                     <div className="form-group-inline">
                         <div className="form-group">
                             <label htmlFor="schedule">
-                                <FaCalendarDay style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <FaCalendarDay style={{ 
+                                    backgroundColor: "white", 
+                                    color: "#782324", 
+                                    borderRadius: "20px", 
+                                    padding: "3px", 
+                                    marginBottom: "-5px", 
+                                    marginRight: "5px" }} 
+                                    />
                                 Schedule:
                             </label>
                             <input
@@ -270,7 +344,14 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                         </div>
                         <div className="form-group">
                             <label htmlFor="returnSchedule">
-                                <FaCalendarDay style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <FaCalendarDay style={{ 
+                                    backgroundColor: "white",
+                                     color: "#782324", 
+                                     borderRadius: "20px", 
+                                     padding: "3px", 
+                                     marginBottom: "-5px", 
+                                     marginRight: "5px" }} 
+                                     />
                                 Return Schedule:
                             </label>
                             <input
@@ -286,7 +367,14 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                         </div>
                         <div className="form-group">
                             <label htmlFor="departureTime">
-                                <IoTime style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <IoTime style={{ 
+                                    backgroundColor: "white", 
+                                    color: "#782324", 
+                                    borderRadius: "20px", 
+                                    padding: "3px", 
+                                    marginBottom: "-5px", 
+                                    marginRight: "5px" }} 
+                                    />
                                 Departure Time:
                             </label>
                             <DepartTimeDropdown
@@ -303,7 +391,14 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                         </div>
                         <div className="form-group">
                             <label htmlFor="pickUpTime">
-                                <IoTime style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <IoTime style={{ 
+                                    backgroundColor: "white", 
+                                    color: "#782324", 
+                                    borderRadius: "20px", 
+                                    padding: "3px", 
+                                    marginBottom: "-5px",
+                                     marginRight: "5px" }} 
+                                     />
                                 Pick-Up Time:
                             </label>
                             <PickUpDropdown
@@ -311,7 +406,7 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                                 name="pickUpTime"
                                 value={formData.pickUpTime}
                                 onChange={handleInputChange}
-                                disabled={formData.typeOfTrip === 'oneWay'}
+                                disabled={formData.typeOfTrip === 'oneWay' || !formData.returnSchedule || formData.returnSchedule === 'N/A'}
                                 date={returnScheduleDate}
                                 plateNumber={formData.plateNumber}
                                 addedPlateNumbers={addedVehicles.map(vehicle => vehicle.plateNumber)}
@@ -322,14 +417,35 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                     <div className="form-group-inline">
                         <div className="form-group">
                             <label htmlFor="department">
-                                <FaBuildingUser style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <FaBuildingUser 
+                                style={{ backgroundColor: "white", 
+                                color: "#782324", 
+                                borderRadius: "20px", 
+                                padding: "3px", 
+                                marginBottom: "-5px",
+                                 marginRight: "5px" }} 
+                                 />
                                 Department:
                             </label>
-                            <input type="text" id="department" name="department" value={formData.department} disabled required />
+                            <input 
+                            type="text" 
+                            id="department" 
+                            name="department" 
+                            value={formData.department} 
+                            disabled 
+                            required 
+                            />
                         </div>
                         <div className="form-group">
                             <label htmlFor="approvalProof">
-                                <FaFileAlt style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <FaFileAlt style={{ 
+                                    backgroundColor: "white", 
+                                    color: "#782324", 
+                                    borderRadius: "20px", 
+                                    padding: "3px", 
+                                    marginBottom: "-5px", 
+                                    marginRight: "5px" }} 
+                                    />
                                 Proof of Approval (optional):
                             </label>
                             <input
@@ -344,7 +460,14 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                     <div className="form-group-inline">
                         <div className="form-group">
                             <label htmlFor="reservationReason">
-                                <CgDetailsMore style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px", marginRight: "5px" }} />
+                                <CgDetailsMore style={{ 
+                                    backgroundColor: "white", 
+                                    color: "#782324", 
+                                    borderRadius: "20px", 
+                                    padding: "3px", 
+                                    marginBottom: "-5px",
+                                     marginRight: "5px" }} 
+                                     />
                                 Purpose of Reservation:
                             </label>
                             <textarea
@@ -359,7 +482,13 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                         </div>
                         <div className="form-group">
                             <label htmlFor="addedVehicle">
-                                <FaBus style={{ backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px" }} />
+                                <FaBus style={{ 
+                                    backgroundColor: "white", 
+                                    color: "#782324", 
+                                    borderRadius: "20px", 
+                                    padding: "3px", 
+                                    marginBottom: "-5px" }} 
+                                    />
                                 Vehicle Added:
                                
                             </label>
@@ -391,7 +520,6 @@ const ResendRequestModal = ({ request, showModal, onClose, refreshManageRequests
                 <div className="close-overlay">
                     <div className={`response-modal ${responseModal.success ? 'success' : 'error'}`}>
                         <h4>{responseModal.message}</h4>
-                        <button onClick={handleCloseResponseModal} className="close-mdl">Close</button>
                     </div>
                 </div>
             )}

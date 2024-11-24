@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { FaFlag, FaSortAlphaDown, FaSwatchbook, FaBus } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { IoCloseCircle, IoSearch } from "react-icons/io5";
@@ -20,56 +20,71 @@ const OpcRequests = () => {
   const [sortBy, setSortBy] = useState('');
   const [loading, setLoading] = useState(false);
   const [requestCount, setRequestCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
+  const token = localStorage.getItem('token');
+  const [approvedRequests, setApprovedRequests] = useState([]);
 
-
-  
-const token = localStorage.getItem('token');
-
-const fetchHeadIsApprovedRequests = async () => {
-  setLoading(true);
-  try {
-    const response = await fetch("https://citumovebackend.up.railway.app/reservations/head-approved", {
-      headers: { "Authorization": `Bearer ${token}` },
-    });
-    const data = await response.json();
-    const currentDate = new Date();
-
-    if (Array.isArray(data)) {
-      const filteredRequests = data.filter(request => {
-        const scheduleDate = new Date(request.schedule);
-        const returnScheduleDate = new Date(request.returnSchedule);
-
-        return (
-          (!request.opcIsApproved && !request.rejected) &&
-          (scheduleDate >= currentDate || returnScheduleDate >= currentDate)
-        );
+  const fetchApprovedRequest = async () =>{
+    try {
+      const response = await fetch(`https://citumovebackend.up.railway.app/reservations/opc-approved`, {
+        headers: { "Authorization": `Bearer ${token}` }  
       });
 
-      const count = filteredRequests.length;
-      setRequests(filteredRequests);
-      setRequestCount(count); 
+      const data = await response.json();
+      setApprovedRequests(data || []);
+    } catch (error) {
+      console.error("Failed to fetch approved requests.", error);
+    }
+  };
 
-      localStorage.setItem('requestCount', count);
+  useEffect(() => {
+    fetchApprovedRequest();
+  }, [])
+
+  const fetchHeadIsApprovedRequests = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("https://citumovebackend.up.railway.app/reservations/head-approved", {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      const data = await response.json();
+      const currentDate = new Date();
+
+      if (Array.isArray(data)) {
+        const filteredRequests = data.filter(request => {
+          const scheduleDate = new Date(request.schedule);
+          const returnScheduleDate = new Date(request.returnSchedule);
+
+          return (
+            (!request.opcIsApproved && !request.rejected) &&
+            (scheduleDate >= currentDate || returnScheduleDate >= currentDate)
+          );
+        });
+
+        const count = filteredRequests.length;
+        setRequests(filteredRequests);
+        setRequestCount(count); 
+
+        localStorage.setItem('requestCount', count);
       
-    } else {
-      console.error("Unexpected data format:", data);
+      } else {
+        console.error("Unexpected data format:", data);
+        setRequests([]);
+        setRequestCount(0);  
+
+        localStorage.setItem('requestCount', 0);
+      }
+    } catch (error) {
+      console.error("Failed to fetch requests.", error);
       setRequests([]);
       setRequestCount(0);  
 
       localStorage.setItem('requestCount', 0);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Failed to fetch requests.", error);
-    setRequests([]);
-    setRequestCount(0);  
-
-    localStorage.setItem('requestCount', 0);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+  };
 
   useEffect(() => {
     fetchHeadIsApprovedRequests();
@@ -84,10 +99,22 @@ const fetchHeadIsApprovedRequests = async () => {
   const fetchDrivers = async () => {
     try {
       const response = await fetch("https://citumovebackend.up.railway.app/opc/driver/getAll", {
-        headers: { "Authorization": `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await response.json();
-      const filteredDrivers = data.filter(driver => driver.status !== 'Unavailable');
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const drivers = await response.json();
+  
+      const filteredDrivers = drivers.filter(driver => {
+        return !approvedRequests.some(request =>
+          request.driverId === driver.id &&
+          request.schedule === selectedRequest.schedule &&
+          request.departureTime === selectedRequest.departureTime
+        );
+      });
   
       setDrivers(filteredDrivers);
     } catch (error) {
@@ -133,7 +160,6 @@ const fetchHeadIsApprovedRequests = async () => {
     return filteredRequests;
   };
   
-
   const handleOpenModal = (request, action) => {
     setSelectedRequest({
       ...request,
@@ -180,8 +206,6 @@ const fetchHeadIsApprovedRequests = async () => {
     });
   };
   
-
-
   const handleReject = async () => {
     if (!feedback.trim()) {
       alert('Please provide reason of rejection.');
@@ -315,6 +339,21 @@ const fetchHeadIsApprovedRequests = async () => {
 
   const allVehiclesHaveDrivers = () => {
     return selectedRequest?.reservedVehicles.every(vehicle => vehicle.driverId);
+  };
+  
+  const filteredRequests = useMemo(() => getFilteredAndSortedRequests(), [requests, searchTerm, sortBy]);
+
+  const totalPages = Math.ceil(filteredRequests.length / recordsPerPage);
+
+  const paginatedRequests = useMemo(() => 
+    filteredRequests.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage),
+    [filteredRequests, currentPage, recordsPerPage]
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   return (
@@ -563,6 +602,15 @@ const fetchHeadIsApprovedRequests = async () => {
                   </tbody>
               </table>
                )}
+                <div className="pagination">
+                      <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                        Previous
+                      </button>
+                      <span>Page {currentPage} of {totalPages}</span>
+                      <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                        Next
+                      </button>
+                    </div>
             </div>
           </div>
           <img src={logoImage1} alt="Logo" className="opc-request-logo-image" />
@@ -599,6 +647,17 @@ const fetchHeadIsApprovedRequests = async () => {
 
               setSelectedDriver(driver);
             }}
+            style={{
+              width: '150px',
+              padding: '2px 5px',
+              border: '2px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: '#f9f9f9',
+              fontSize: '14px',
+              marginLeft: '5px',
+              color: '#333',
+              transition: 'border-color 0.3s ease, background-color 0.3s ease'
+            }}
           >
             <option value="" disabled selected>Select Driver</option>
             {filterDriversByLeaveDates(drivers, selectedRequest.schedule, selectedRequest.returnSchedule)
@@ -628,6 +687,15 @@ const fetchHeadIsApprovedRequests = async () => {
                             const driverId = e.target.value;
                             const driver = drivers.find(driver => String(driver.id) === String(driverId));
                             handleDriverSelect(vehicle.id, driver); 
+                          }}
+                          style={{
+                            width: '150px',
+                            padding: '2px 5px',
+                            border: '2px solid #ccc',
+                            borderRadius: '4px',
+                            backgroundColor: '#f9f9f9',
+                            fontSize: '14px',
+                            marginLeft: '5px',
                           }}
                         >
                           <option value="">Select Driver</option>

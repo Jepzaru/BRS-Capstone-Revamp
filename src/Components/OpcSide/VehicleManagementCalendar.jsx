@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import '../../CSS/UserCss/calendar.css';
 import { BiSolidRightArrow, BiSolidLeftArrow } from "react-icons/bi";
 
-const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
+const VehicleManagementCalendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   const currentDate = new Date();
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
@@ -56,13 +56,15 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
 
     const fetchEvents = async () => {
       try {
-        const response = await fetch('https://citumovebackend.up.railway.app/opc/events/getAll', {
+        const response = await fetch('http://localhost:8080/opc/events/getAll', {
           headers: { "Authorization": `Bearer ${token}` },
         });
     
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     
         const data = await response.json();
+        console.log("Fetched events:", data);
+    
   
         setEvents(data.map(event => new Date(event.eventDate))); 
       } catch (error) {
@@ -80,35 +82,34 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
     const days = [];
   
     for (let i = 0; i < firstDay; i++) {
-        days.push({ day: '', selected: false, disabled: true, reserved: false, highlight: false });
+      days.push({ day: '', selected: false, disabled: true, reserved: false, highlight: false });
     }
   
     for (let i = 1; i <= totalDays; i++) {
-        const date = new Date(currentYear, currentMonth, i);
-        const isPast = date < currentDate; 
-        const isBeforeMinDate = minDate && date < minDate;
-
-        const reservedInfo = reservedDates.find(res =>
-            res.schedule.toDateString() === date.toDateString() ||
-            (res.returnSchedule && res.returnSchedule.toDateString() === date.toDateString())
-        );
+      const date = new Date(currentYear, currentMonth, i);
+      const isPast = date < currentDate; 
+      const isBeforeMinDate = minDate && date < minDate;
   
-        const isReserved = reservedInfo !== undefined;
-        const hasEvent = events.some(event => event.toDateString() === date.toDateString());
-
-        const isHighlighted = hasEvent; 
-
-        days.push({
-            day: i,
-            selected: selectedDay === i,
-            disabled: isPast || isBeforeMinDate || isHighlighted, 
-            reserved: isReserved,
-            highlight: isHighlighted 
-        });
+      const reservedInfo = reservedDates.find(res =>
+        res.schedule.toDateString() === date.toDateString() ||
+        (res.returnSchedule && res.returnSchedule.toDateString() === date.toDateString())
+      );
+  
+      const isReserved = reservedInfo !== undefined;
+      const hasEvent = events.some(event => event.toDateString() === date.toDateString());
+  
+      const isHighlighted = hasEvent; 
+  
+      days.push({
+        day: i,
+        selected: selectedDay === i,
+        disabled: isPast || isBeforeMinDate || isHighlighted || isReserved,
+        reserved: isReserved,
+        highlight: isHighlighted 
+      });
     }
     return days;
-};
-
+  };
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -172,7 +173,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         {generateDays().map((item, index) => (
           <div
             key={index}
-            className={`calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.reserved ? ' reserved' : ''}${item.highlight ? ' highlight' : ''}`} // Add highlight class
+            className={`calendar-day${item.selected ? ' active' : ''}${item.disabled ? ' disabled' : ''}${item.reserved ? ' reserved' : ''}${item.highlight ? ' highlight' : ''}`} 
             onClick={() => !item.disabled && handleDayClick(item.day)}
           >
             {item.day}
@@ -183,4 +184,4 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
   );
 };
 
-export default Calendar;
+export default VehicleManagementCalendar;
