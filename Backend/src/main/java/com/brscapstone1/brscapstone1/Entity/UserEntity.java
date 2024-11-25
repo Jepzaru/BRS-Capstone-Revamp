@@ -18,13 +18,13 @@ public class UserEntity {
 	private int id;
 	private String email;
 	private String password;
-	private String department;
+	private String department = "N/A";
 	private String role;
-	private String imageName;
-    private String imageType;
+	private String imageName = "N/A";
+    private String imageType = "N/A";
     
     @Lob
-    private byte[] imageData;
+	private byte[] imageData = new byte[0];	
 	
 	public int getId() {
 		return id;

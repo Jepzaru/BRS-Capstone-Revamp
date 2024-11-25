@@ -20,8 +20,9 @@ public class DriverEntity {
   private String driverName;
   private String contactNumber;
   private String status;
-  private LocalDate leaveStartDate;
-  private LocalDate leaveEndDate;
+  private LocalDate leaveStartDate = LocalDate.of(1900, 1, 1);
+
+  private LocalDate leaveEndDate = LocalDate.of(1900, 1, 1);
 
   public Long getId() {
     return id;
@@ -75,11 +76,12 @@ public class DriverEntity {
     this.driverName = driverName;
     this.contactNumber = contactNumber;
     this.status = status;
-    this.leaveStartDate = leaveStartDate;
-    this.leaveEndDate = leaveEndDate;
+    this.leaveStartDate = (leaveStartDate != null) ? leaveStartDate : LocalDate.of(0001, 1, 1);
+    this.leaveEndDate = (leaveEndDate != null) ? leaveEndDate : LocalDate.of(0001, 1, 1);
   }
 
   public DriverEntity() {
-    super();
+    this.leaveStartDate = LocalDate.of(0001, 1, 1);
+    this.leaveEndDate = LocalDate.of(0001, 1, 1);
   }
 }

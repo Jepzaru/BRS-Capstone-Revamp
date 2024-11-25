@@ -7,7 +7,7 @@ import '../../CSS/HeadCss/HeadApprovedRequests.css';
 
 const HeadApprovedRequests = () => {
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const token = localStorage.getItem('token');
   const department = localStorage.getItem('department'); 
@@ -16,6 +16,7 @@ const HeadApprovedRequests = () => {
   const recordsPerPage = 10;
 
   const fetchApprovedRequests = async () => {
+    setLoading(true); 
     try {
       const response = await fetch("https://citumovebackend.up.railway.app/reservations/head-approved", {
         headers: { 
@@ -33,17 +34,16 @@ const HeadApprovedRequests = () => {
       const approvedReservations = data.filter(reservation => 
         reservation.department === department && reservation.headIsApproved
       );
-  
-  
+      
       setRequests(approvedReservations.reverse()); 
-      setLoading(false);
     } catch (error) {
       console.error("Failed to fetch approved requests.", error);
-      setError(error.message);
-      setLoading(false);
+      setError(error.message); 
+    } finally {
+      setLoading(false); 
     }
-
   };
+  
   useEffect(() => {
     fetchApprovedRequests();
   }, [token, department]); 
@@ -135,12 +135,13 @@ const HeadApprovedRequests = () => {
             </div>
           </div>
           <div className="approved-container1">
-            {loading ? (
-              <p>Loading approved requests...</p>
-            ) : error ? (
-              <p className="error-message">Error: {error}</p>
-            ) : (
+            
               <div className="table-container">
+              {loading ? (
+          <div className="spinner-container">
+            <div className="spinner"></div> 
+          </div>
+        ) : (
               <table className="approved-requests-table">
                 <thead>
                   <tr>
@@ -189,7 +190,7 @@ const HeadApprovedRequests = () => {
                         <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
                         <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
                         <td>{request.departureTime}</td>
-                        <td>{request.pickUpTime || 'N/A'}</td>
+                        <td>{request.pickUpTime === '0001-01-01' ? 'N/A' : request.pickUpTime || 'N/A'}</td>
                         <td>{request.reason}</td>
                         <td className={request.status === 'Pending' ? 'status-pending' : request.status === 'Approved' ? 'status-approved' : request.status === 'Completed' ? 'status-approved' :  request.status === 'Rejected' ? 'status-rejected' : ''}>
                         {request.status} by OPC
@@ -199,6 +200,7 @@ const HeadApprovedRequests = () => {
                   )}
                 </tbody>
               </table>
+        )}
               <div className="pagination">
                       <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
                         Previous
@@ -209,7 +211,6 @@ const HeadApprovedRequests = () => {
                       </button>
                     </div>
               </div>
-            )}
           </div>
           <img src={logoImage1} alt="Logo" className="approved-logo-image" />
         </div>

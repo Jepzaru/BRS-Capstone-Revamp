@@ -16,13 +16,13 @@ public class VehicleEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-  private String vehicleType;
-  private String plateNumber;
-  private int capacity;
-  private String status;
-  private LocalDate maintenanceStartDate;
-  private LocalDate maintenanceEndDate;
-  private String maintenanceDetails;
+  private String vehicleType = "Unknown";
+  private String plateNumber = "N/A";
+  private int capacity = 1;
+  private String status = "N/A";
+  private LocalDate maintenanceStartDate = LocalDate.of(0001, 1, 1);
+  private LocalDate maintenanceEndDate = LocalDate.of(0001, 1, 1);
+  private String maintenanceDetails = "N/A";
 
   public int getId() {
     return id;
@@ -37,7 +37,7 @@ public class VehicleEntity {
   }
 
   public void setVehicleType(String vehicleType) {
-    this.vehicleType = vehicleType;
+    this.vehicleType = vehicleType != null ? vehicleType : "Unknown";
   }
 
   public String getPlateNumber() {
@@ -45,7 +45,7 @@ public class VehicleEntity {
   }
 
   public void setPlateNumber(String plateNumber) {
-    this.plateNumber = plateNumber;
+    this.plateNumber = plateNumber != null ? plateNumber : "N/A";
   }
 
   public int getCapacity() {
@@ -53,7 +53,8 @@ public class VehicleEntity {
   }
 
   public void setCapacity(int capacity) {
-    this.capacity = capacity;
+    this.capacity = capacity > 0 ? capacity : 1;
+    ;
   }
 
   public String getStatus() {
@@ -61,7 +62,7 @@ public class VehicleEntity {
   }
 
   public void setStatus(String status) {
-    this.status = status;
+    this.status = status != null ? status : "N/A";
   }
 
   public LocalDate getMaintenanceStartDate() {
@@ -69,7 +70,7 @@ public class VehicleEntity {
   }
 
   public void setMaintenanceStartDate(LocalDate maintenanceStartDate) {
-    this.maintenanceStartDate = maintenanceStartDate;
+    this.maintenanceStartDate = maintenanceStartDate != null ? maintenanceStartDate : LocalDate.of(0001, 1, 1);
   }
 
   public LocalDate getMaintenanceEndDate() {
@@ -77,7 +78,7 @@ public class VehicleEntity {
   }
 
   public void setMaintenanceEndDate(LocalDate maintenanceEndDate) {
-    this.maintenanceEndDate = maintenanceEndDate;
+    this.maintenanceEndDate = maintenanceEndDate != null ? maintenanceEndDate : LocalDate.of(1900, 1, 1);
   }
 
   public String getMaintenanceDetails() {
@@ -85,17 +86,17 @@ public class VehicleEntity {
 }
 
   public void setMaintenanceDetails(String maintenanceDetails) {
-    this.maintenanceDetails = maintenanceDetails;
-}
+    this.maintenanceDetails = maintenanceDetails != null ? maintenanceDetails : "N/A";
+  }
 
   public VehicleEntity(String vehicleType, String plateNumber, int capacity, String status, LocalDate maintenanceStartDate, LocalDate maintenanceEndDate, String maintenanceDetails) {
-    this.vehicleType = vehicleType;
-    this.plateNumber = plateNumber;
-    this.capacity = capacity;
-    this.status = status;
-    this.maintenanceStartDate = maintenanceStartDate;
-    this.maintenanceEndDate = maintenanceEndDate;
-    this.maintenanceDetails = maintenanceDetails;
+    this.vehicleType = vehicleType != null ? vehicleType : "Unknown";
+    this.plateNumber = plateNumber != null ? plateNumber : "N/A";
+    this.capacity = capacity > 0 ? capacity : 1;
+    this.status = status != null ? status : "N/A";
+    this.maintenanceStartDate = maintenanceStartDate != null ? maintenanceStartDate : LocalDate.of(0001, 1, 1);
+    this.maintenanceEndDate = maintenanceEndDate != null ? maintenanceEndDate : LocalDate.of(0001, 1, 1);
+    this.maintenanceDetails = maintenanceDetails != null ? maintenanceDetails : "N/A";
   }
 
   public VehicleEntity() {

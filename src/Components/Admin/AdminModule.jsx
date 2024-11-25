@@ -8,18 +8,19 @@ import { user_roles } from '../Roles';
 import '../../CSS/AdminCss/AdminModule.css';
 
 const AdminModule = () => {
-  const [isAddAccountModalOpen, setIsAddAccountModalOpen] = useState(false);
-  const [isUpdateAccountModalOpen, setIsUpdateAccountModalOpen] = useState(false);
-  const [users, setUsers] = useState([]); 
-  const [department, setDepartment] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRole, setSelectedRole] = useState(''); 
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+const [isAddAccountModalOpen, setIsAddAccountModalOpen] = useState(false);
+const [isUpdateAccountModalOpen, setIsUpdateAccountModalOpen] = useState(false);
+const [users, setUsers] = useState([]); 
+const [department, setDepartment] = useState([]);
+const [selectedUser, setSelectedUser] = useState(null);
+const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+const [userToDelete, setUserToDelete] = useState(null);
+const [searchQuery, setSearchQuery] = useState('');
+const [selectedRole, setSelectedRole] = useState(''); 
+const [selectedDepartment, setSelectedDepartment] = useState('');
+const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 const [errorMessage, setErrorMessage] = useState('');
+const [loading, setLoading] = useState(false);
 
 const openErrorModal = (message) => {
     setErrorMessage(message);
@@ -37,14 +38,17 @@ const closeErrorModal = () => {
   const token = localStorage.getItem('token');
 
   const fetchUsers = async () => {
+    setLoading(true); 
     try {
       const response = await fetch("https://citumovebackend.up.railway.app/admin/users/read", {
         headers: { "Authorization": `Bearer ${token}` }
       });
-      const data = await response.json(); 
+      const data = await response.json();
       setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to fetch users", error);
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -259,6 +263,11 @@ const handleUpdateAccount = async (event) => {
             </button>
           </div>
           <div className='accounts-container'>
+          {loading ? (
+          <div className="spinner-container">
+            <div className="spinner"></div> 
+          </div>
+        ) : (
             <table className="accounts-table">
               <thead>
                 <tr>
@@ -287,11 +296,12 @@ const handleUpdateAccount = async (event) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="no-accounts">No accounts available</td>
+                    <td colSpan="6" className="no-accounts">No accounts available</td>
                   </tr>
                 )}
               </tbody>
             </table>
+            )}
           </div>
           <img src={logoImage1} alt="Logo" className="admin-logo-image" />
         </div>

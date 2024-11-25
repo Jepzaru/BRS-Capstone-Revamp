@@ -63,7 +63,6 @@ const VehicleManagementCalendar = ({ onDateSelect, minDate, returnDate, plateNum
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     
         const data = await response.json();
-        console.log("Fetched events:", data);
     
   
         setEvents(data.map(event => new Date(event.eventDate))); 

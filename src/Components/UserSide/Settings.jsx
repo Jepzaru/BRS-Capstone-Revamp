@@ -221,7 +221,6 @@ const Settings = () => {
                       <img 
                         src={profilePic || defaultProfilePic} 
                         alt="Profile" 
-                        style={{ maxWidth: "250px", maxHeight: "250px", borderRadius: "50%" }} 
                       />
                       {hover && (
                         <div
@@ -250,7 +249,7 @@ const Settings = () => {
                       style={{ display: 'none' }}
                       onChange={handleImageUpload}
                     />
-                    <div className="profile-info" style={{ marginLeft: '20px' }}> 
+                    <div className="profile-info" style={{ marginLeft: '80px' }}> 
                       <p><b>Name:</b> {formattedName}</p>
                       <p><b>Email:</b> {email}</p>
                       <p><b>Department:</b> {department}</p>

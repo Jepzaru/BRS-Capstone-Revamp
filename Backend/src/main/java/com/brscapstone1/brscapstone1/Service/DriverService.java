@@ -26,8 +26,8 @@ public class DriverService {
         for (DriverEntity driver : driversOnLeave) {
             if (driver.getLeaveEndDate() != null && driver.getLeaveEndDate().isBefore(today)) {
                 driver.setStatus(Constants.Annotation.AVAILABLE);
-                driver.setLeaveStartDate(null);
-                driver.setLeaveEndDate(null);
+                driver.setLeaveStartDate(LocalDate.of(0001, 1, 1));
+                driver.setLeaveEndDate(LocalDate.of(0001, 1, 1));
                 driverRepo.save(driver);
             }
         }
@@ -44,10 +44,10 @@ public class DriverService {
             post.setStatus(Constants.Annotation.AVAILABLE);
         }
         if (post.getLeaveStartDate() == null) {
-            post.setLeaveStartDate(null);
+            post.setLeaveStartDate(LocalDate.of(0001, 1, 1));
         }
         if (post.getLeaveEndDate() == null) {
-            post.setLeaveEndDate(null);
+            post.setLeaveEndDate(LocalDate.of(0001, 1, 1));
         }
         return driverRepo.save(post);
     }

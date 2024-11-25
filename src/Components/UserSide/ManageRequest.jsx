@@ -31,14 +31,17 @@ const ManageRequest = () => {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await response.json();
-      setRequests(data);
+      
+      const sortedData = data.sort((a, b) => b.id - a.id);
+      setRequests(sortedData);
     } catch (error) {
       console.error("Failed to fetch user's requests.", error);
     } finally {
       setLoading(false); 
     }
   };
-
+  
+  
   useEffect(() => {
     fetchUsersRequests();
   }, [token, username]);
@@ -77,6 +80,7 @@ const ManageRequest = () => {
     ),
     [sortedRequests, searchTerm]
   );
+  
 
   const getApprovalStatus = (request) => {
     if (request.status === 'Completed') {
@@ -229,7 +233,7 @@ const ManageRequest = () => {
                                       <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
                                       <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
                                       <td>{request.departureTime || 'N/A'}</td>
-                                      <td>{request.pickUpTime || 'N/A'}</td>
+                                      <td>{request.pickUpTime === '0001-01-01' ? 'N/A' : request.pickUpTime || 'N/A'}</td>
                                       <td className="reason-column">{request.reason || 'N/A'}</td>
                                       <td>{getApprovalStatus(request)}</td>
                                       <td>{request.feedback || 'N/A'}</td>

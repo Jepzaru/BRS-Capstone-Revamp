@@ -376,7 +376,6 @@ public class ReservationService {
         // Save and return the updated reservation
         return resRepo.save(existingReservation);
     }
-
     
     // Existing methods remain unchanged
     private void resetRejectionStatus(ReservationEntity reservation) {
@@ -414,6 +413,4 @@ public class ReservationService {
 
         return resRepo.save(reservation);
     }
-    
-
 }

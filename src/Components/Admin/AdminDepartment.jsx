@@ -13,6 +13,7 @@ const AdminDepartment = () => {
   const [departments, setDepartments] = useState([]);
   const [newDepartmentName, setNewDepartmentName] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -20,6 +21,7 @@ const AdminDepartment = () => {
   }, []);
 
   const fetchDepartments = async () => {
+    setLoading(true);
     try {
       const response = await fetch("https://citumovebackend.up.railway.app/department/getAll", {
         headers: { "Authorization": `Bearer ${token}` },
@@ -28,8 +30,11 @@ const AdminDepartment = () => {
       setDepartments(data);
     } catch (error) {
       console.error("Failed to fetch departments.", error);
+    } finally {
+      setLoading(false);
     }
   };
+  
 
   const handleAddDepartment = async (event) => {
     event.preventDefault();
@@ -79,7 +84,7 @@ const AdminDepartment = () => {
 
   const handleDeleteDepartment = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/department/delete/${selectedDepartment.id}`, {
+      const response = await fetch(`https://citumovebackend.up.railway.app/department/delete/${selectedDepartment.id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` },
       });
@@ -136,6 +141,11 @@ const AdminDepartment = () => {
             </button>
           </div>
           <div className='accounts-container'>
+          {loading ? (
+          <div className="spinner-container">
+            <div className="spinner"></div> 
+          </div>
+        ) : (
             <table className="accounts-table">
               <thead>
                 <tr>
@@ -173,6 +183,7 @@ const AdminDepartment = () => {
                 )}
               </tbody>
             </table>
+        )}
           </div>
           <img src={logoImage1} alt="Logo" className="admin-logo-image" />
         </div>

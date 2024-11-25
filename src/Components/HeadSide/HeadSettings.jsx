@@ -250,7 +250,7 @@ const HeadSettings = () => {
                       style={{ display: 'none' }}
                       onChange={handleImageUpload}
                     />
-                    <div className="profile-info" style={{ marginLeft: '20px' }}> 
+                    <div className="profile-info" style={{ marginLeft: '80px' }}> 
                       <p><b>Name:</b> {formattedName}</p>
                       <p><b>Email:</b> {email}</p>
                       <p><b>Department:</b> {department}</p>

@@ -1,6 +1,7 @@
 package com.brscapstone1.brscapstone1.Service;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,8 +45,8 @@ public class VehicleService {
 
         if (newVehicle.getStatus() == null) {
             vehicle.setStatus(Constants.Annotation.AVAILABLE);
-            vehicle.setMaintenanceStartDate(null);
-            vehicle.setMaintenanceEndDate(null);
+            vehicle.setMaintenanceStartDate(LocalDate.of(0001, 1, 1));
+            vehicle.setMaintenanceEndDate(LocalDate.of(0001, 1, 1));
         } else {
             vehicle.setStatus(newVehicle.getStatus());
 

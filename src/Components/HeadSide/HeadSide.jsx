@@ -61,6 +61,7 @@ const HeadSide = () => {
       });
 
       if (response.ok) {
+        console.log("Reservation approved successfully.");
         fetchRequestsData();
         closeModal();
       } else {
@@ -89,6 +90,7 @@ const HeadSide = () => {
       });
 
       if (response.ok) {
+        console.log("Reservation rejected successfully.");
         fetchRequestsData();
         closeModal();
       } else {
@@ -224,12 +226,12 @@ const HeadSide = () => {
                 </tr>
               </thead>
               <tbody>
-                {request.length === 0 ? (
+                {paginatedRequests.length === 0 ? (
                   <tr>
                     <td colSpan="13" className="no-requests">No Requests Available</td>
                   </tr>
                 ) : (
-                  request.map((requests, index) => (
+                  paginatedRequests.map((requests, index) => (
                     <tr key={index}>
                       <td>{requests.userName}</td>
                       <td style={{width: '70px'}}>{requests.typeOfTrip}</td>
@@ -251,7 +253,7 @@ const HeadSide = () => {
                       <td>{requests.schedule ? formatDate(requests.schedule) : 'N/A'}</td>
                       <td>{requests.returnSchedule && requests.returnSchedule !== "0001-01-01" ? formatDate(requests.returnSchedule) : 'N/A'}</td>
                       <td style={{width: '70px'}}>{requests.departureTime}</td>
-                      <td style={{width: '70px'}}>{requests.pickUpTime || 'N/A'}</td>
+                      <td style={{width: '70px'}}>{requests.pickUpTime === '0001-01-01' ? 'N/A' : requests.pickUpTime || 'N/A'}</td>
                       <td>{requests.reason}</td>
                       <td>
                       <div className="head-action-buttons">

@@ -47,6 +47,7 @@ const DriverManagementCalendar = ({ onDateSelect, minDate, returnDate}) => {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     
         const data = await response.json();
+    
   
         setEvents(data.map(event => new Date(event.eventDate))); 
       } catch (error) {

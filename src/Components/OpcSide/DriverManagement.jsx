@@ -47,7 +47,6 @@ const DriverManagement = () => {
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [reservationIdToComplete, setReservationIdToComplete] = useState(null);
-  
   const [showCalendar, setShowCalendar] = useState(false);
   const [isSelectingStartDate, setIsSelectingStartDate] = useState(false);
 
@@ -68,7 +67,6 @@ const DriverManagement = () => {
     fetchDriverDetails();
   }, [token]);
 
-  
   useEffect(() => {
     const fetchReservations = async () => {
         try {
@@ -87,13 +85,10 @@ const DriverManagement = () => {
             console.error("Error fetching reservations:", error);
         }
     };
-
     fetchReservations();
-}, [selectedDriver, token]); 
-
+  }, [selectedDriver, token]); 
 
   const driverNames = Array.from(new Set(reservations.map(reservation => reservation.driverName))).filter(Boolean);
-
  
   const filteredList = selectedDriverName === "all"
     ? reservations
@@ -106,6 +101,7 @@ const DriverManagement = () => {
   const filteredReservations = selectedDriver === 'all'
   ? reservations
   : reservations.filter(reservation => {
+     
       return reservation.driverId === Number(selectedDriver); 
     });
 
@@ -488,8 +484,8 @@ const DriverManagement = () => {
                         </td>
                         <td>{reservation.schedule ? formatDate(reservation.schedule) : 'N/A'}</td>
                         <td>{reservation.departureTime || 'N/A'}</td>
-                        <td>{reservation.returnSchedule ? formatDate(reservation.returnSchedule) : 'N/A'}</td>
-                        <td>{reservation.pickUpTime || 'N/A'}</td>
+                        <td>{reservation.returnSchedule === '0001-01-01' ? 'N/A' : reservation.returnSchedule ? formatDate(reservation.returnSchedule) : 'N/A'}</td>
+                        <td>{reservation.pickUpTime === '0001-01-01' ? 'N/A' : reservation.pickUpTime || 'N/A'}</td>
                         <td>
                           {reservation.isCompleted === true ? (
                             <span style={{ color: 'green', fontWeight: 'bold' }}>{reservation.status}</span>

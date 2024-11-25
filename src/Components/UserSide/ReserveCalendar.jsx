@@ -62,7 +62,7 @@ const ReserveCalendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     
         const data = await response.json();
-  
+    
         setEvents(data.map(event => new Date(event.eventDate))); 
       } catch (error) {
         console.error("Error fetching events:", error);

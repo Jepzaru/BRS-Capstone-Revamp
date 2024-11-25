@@ -67,7 +67,7 @@ const OpcRequests = () => {
         setRequestCount(count); 
 
         localStorage.setItem('requestCount', count);
-      
+        
       } else {
         console.error("Unexpected data format:", data);
         setRequests([]);
@@ -531,7 +531,7 @@ const OpcRequests = () => {
                             <td>{request.schedule ? formatDate(request.schedule) : 'N/A'}</td>
                             <td>{request.returnSchedule && request.returnSchedule !== "0001-01-01" ? formatDate(request.returnSchedule) : 'N/A'}</td>
                             <td>{request.departureTime || 'N/A'}</td>
-                            <td>{request.pickUpTime || 'N/A'}</td>
+                            <td>{request.pickUpTime === '0001-01-01' ? 'N/A' : request.pickUpTime || 'N/A'}</td>
                             <td className="reason-column">{request.reason}</td>
                             <td className={request.status === 'Pending' ? 'status-pending' : ''}>
                             <div className="status-container">

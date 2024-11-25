@@ -332,7 +332,7 @@ const sortRequests = (requests) => {
           <p><strong>Capacity:</strong> {selectedRequest.capacity}</p>
           <p><strong>Vehicle:</strong> {selectedRequest.vehicleType} : {selectedRequest.plateNumber}</p>
           <p><strong>Schedule:</strong> {formatDate(selectedRequest.schedule)}</p>
-          <p><strong>Return Schedule:</strong> {formatDate(selectedRequest.returnSchedule)}</p>
+          <p><strong>Return Schedule:</strong> {selectedRequest.returnSchedule === '0001-01-01' ? 'N/A' : formatDate(selectedRequest.returnSchedule)}</p>
           <p><strong>Departure Time:</strong> {selectedRequest.departureTime}</p>
           <p><strong>Pick Up Time:</strong> {selectedRequest.pickUpTime || "N/A"}</p>
           <p><strong>Driver:</strong> {selectedRequest.driverName || "N/A"}</p>

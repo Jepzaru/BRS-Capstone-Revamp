@@ -17,26 +17,12 @@ public class VehicleMaintenanceDetailsEntity {
     @JoinColumn(name = Constants.DataAnnotations.VEHICLE_ID, nullable = false)
     private VehicleEntity vehicle;
 
-    private String vehicleType;
-    private String maintenanceDetails;
-    private String status;
-    private LocalDate maintenanceStartDate;
-    private LocalDate maintenanceEndDate;
+    private String vehicleType = "Unknown";
+    private String maintenanceDetails = "N/A";
+    private String status = "Pending";
+    private LocalDate maintenanceStartDate = LocalDate.of(0001, 1, 1);
+    private LocalDate maintenanceEndDate = LocalDate.of(0001, 1, 1);
     private Boolean isCompleted = false;
-
-    public VehicleMaintenanceDetailsEntity() {
-        super();
-    }
-
-    public VehicleMaintenanceDetailsEntity(VehicleEntity vehicle, String vehicleType, String maintenanceDetails, String status, LocalDate maintenanceStartDate, LocalDate maintenanceEndDate, Boolean isCompleted) {
-        this.vehicle = vehicle;
-        this.vehicleType = vehicleType;
-        this.maintenanceDetails = maintenanceDetails;
-        this.status = status;
-        this.maintenanceStartDate = maintenanceStartDate;
-        this.maintenanceEndDate = maintenanceEndDate;
-        this.isCompleted = isCompleted;
-    }
 
     public int getId() {
         return id;
@@ -100,5 +86,24 @@ public class VehicleMaintenanceDetailsEntity {
     
     public void setIsCompleted(Boolean isCompleted) {
         this.isCompleted = isCompleted;
+    }
+
+    public VehicleMaintenanceDetailsEntity(VehicleEntity vehicle, String vehicleType, String maintenanceDetails, String status, LocalDate maintenanceStartDate, LocalDate maintenanceEndDate, Boolean isCompleted) {
+        this.vehicle = vehicle;
+        this.vehicleType = (vehicleType != null) ? vehicleType : "Unknown";
+        this.maintenanceDetails = (maintenanceDetails != null) ? maintenanceDetails : "N/A";
+        this.status = (status != null) ? status : "Pending";
+        this.maintenanceStartDate = (maintenanceStartDate != null) ? maintenanceStartDate : LocalDate.of(0001, 1, 1);
+        this.maintenanceEndDate = (maintenanceEndDate != null) ? maintenanceEndDate : LocalDate.of(0001, 1, 1);
+        this.isCompleted = (isCompleted != null) ? isCompleted : false;
+    }
+
+    public VehicleMaintenanceDetailsEntity() {
+        this.vehicleType = "Unknown";
+        this.maintenanceDetails = "N/A";
+        this.status = "Pending";
+        this.maintenanceStartDate = LocalDate.of(0001, 1, 1);
+        this.maintenanceEndDate = LocalDate.of(0001, 1, 1);
+        this.isCompleted = false;
     }
 }

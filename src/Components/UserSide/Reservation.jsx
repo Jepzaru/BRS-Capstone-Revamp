@@ -113,7 +113,6 @@ const Reservation = () => {
     setAddedVehiclePlates(prev => prev.filter(p => p !== plateNumber));
   };
 
-
   const calculateMaxCapacity = () => {
     let totalCapacity = 0;
     if (vehicle) {
@@ -124,8 +123,7 @@ const Reservation = () => {
     });
     return totalCapacity;
   };
-  
-  
+
   const handleInputChange = (event) => {
     const { name, value, files } = event.target;
   
@@ -146,7 +144,6 @@ const Reservation = () => {
     }
   };
   
-  
   const isScheduleValid = (scheduleDate, returnDate) => {
     if (tripType === 'oneWay' && scheduleDate) {
       return true; 
@@ -156,10 +153,6 @@ const Reservation = () => {
     }
     return false; 
   };
-  
-  
-  
-  
   
   const handleClear = () => {
     setFormData({
@@ -223,7 +216,6 @@ const Reservation = () => {
       setIsAddVehicleDisabled(true);
     }
   };
-  
   
   const handleTripTypeChange = (event) => {
     const selectedTripType = event.target.value;
@@ -290,21 +282,21 @@ const Reservation = () => {
             destinationFrom: formData.from,
             capacity: formData.capacity, 
             department: userDepartment,
-            schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
-            returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : null,
-            vehicleType: vehicle.vehicleType || null,
-            plateNumber: vehicle.plateNumber || null,
-            pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : null,
+            schedule: selectedDate ? selectedDate.toISOString().split('T')[0] : "0001-01-01",
+            returnSchedule: tripType === 'roundTrip' && returnScheduleDate ? returnScheduleDate.toISOString().split('T')[0] : "0001-01-01",
+            vehicleType: vehicle.vehicleType || "N/A",
+            plateNumber: vehicle.plateNumber || "N/A",
+            pickUpTime: tripType === 'roundTrip' ? formatTime(formData.pickUpTime) : "N/A",
             departureTime: formatTime(formData.departureTime),
-            reason: formData.reservationReason || "",
+            reason: formData.reservationReason || "N/A",
             status: "Pending",
             opcIsApproved: false,
-            headIsApproved: null,
+            headIsApproved: false,
             feedback: formData.feedback || "No feedback",
             driverId: 0,
-            driverName: null,
+            driverName: "N/A",
             rejected: false,
-            approvalProofUrl: fileUrl
+            approvalProofUrl: fileUrl || "N/A"
         };
 
         const reservationFormData = new FormData();
@@ -509,17 +501,19 @@ const Reservation = () => {
                       max={calculateMaxCapacity()}
                       onChange={handleInputChange}
                     />
-                    
-                    {capacityError && (
+                     {capacityError && (
                       <div className="capacity-error-cloud">
                         <span>{capacityError}</span>
                         <div className="cloud-arrow"></div> 
                       </div>
                     )}
+                    
                   </div>
+                  
               </div>
               <div className="form-group-inline">
               <div className="form-group">
+                
                     <label htmlFor="department"><FaBuildingUser style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Department:</label>
                     <input type="text" id="department" name="department" value={userDepartment} disabled />
                   </div>

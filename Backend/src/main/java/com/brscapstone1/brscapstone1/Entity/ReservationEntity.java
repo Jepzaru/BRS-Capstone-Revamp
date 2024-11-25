@@ -29,7 +29,7 @@ public class ReservationEntity {
     private int capacity;
     private String department;
     private LocalDate schedule;
-    private LocalDate returnSchedule;  
+    private LocalDate returnSchedule = LocalDate.of(0001, 1, 1);  
     private String vehicleType;
     private String plateNumber;
     private String pickUpTime;
@@ -44,8 +44,8 @@ public class ReservationEntity {
     private String userName;
     private String feedback;
     private int driverId;
-    private String driverName;
-    private String rejectedBy;
+    private String driverName = "N/A";
+    private String rejectedBy = "N/A";
     
     @OneToMany(orphanRemoval = true)
     @JoinColumn(name = Constants.DataAnnotations.RESERVATION_ID)

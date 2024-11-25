@@ -89,13 +89,12 @@ const Header = () => {
       <div className="header-right">
         <span className="greeting">{getGreeting()}, {formattedName}</span>
         {profilePicUrl && (
-          <img
-            src={profilePicUrl}
-            alt="Profile"
-            className="header-profile-pic"
-            style={{ maxWidth: "35px", maxHeight: "35px", borderRadius: "50%",  border: "solid 2px gold" , marginRight: "20px" }} 
-          />
-        )}
+            <img
+              src={profilePicUrl}
+              alt="Profile"
+              className="header-profile-pic"
+            />
+          )}
         <button className="logout-button" onClick={handleLogoutClick}>
           <span className="logout-text">
             <FaSignOutAlt style={{ marginBottom: "-3px", marginRight: "5px" }} />
