@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../../CSS/OpcCss/OpcBigCalendar.css'; 
+import '../../CSS/OpcCss/OpcBigCalendar.css';
 import SideNavbar from './OpcNavbar';
 import logoImage1 from "../../Images/citbglogo.png";
 import { BiSolidRightArrow, BiSolidLeftArrow, BiSolidMessageAltDetail } from "react-icons/bi";
@@ -29,19 +29,12 @@ const OpcBigCalendar = () => {
     fetchApprovedReservationsForMonth();
   }, [currentDate]);
 
-  useEffect(() => {
-    if (selectedDate) {
-      fetchEventsForMonth();
-      fetchApprovedReservationsForMonth(); 
-    }
-  }, [selectedDate]);
-
   const fetchEventsForMonth = async () => {
     try {
       const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/getAll`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -61,7 +54,7 @@ const OpcBigCalendar = () => {
       const response = await fetch(`https://citumovebackend.up.railway.app/reservations/opc-approved`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -85,46 +78,18 @@ const OpcBigCalendar = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  const daysInMonth = (month, year) => {
-    return new Date(year, month + 1, 0).getDate();
-  };
+  const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
   const generateDays = () => {
     const totalDays = daysInMonth(currentDate.getMonth(), currentDate.getFullYear());
     const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
-    const days = [];
-
-    for (let i = 0; i < firstDay; i++) {
-      days.push(null);
-    }
+    const days = Array.from({ length: firstDay }).fill(null);
 
     for (let i = 1; i <= totalDays; i++) {
       days.push(i);
     }
 
     return days;
-  };
-
-  const deleteEvent = async (eventId) => {
-    try {
-      const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/delete/${eventId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        setEvents(events.filter(event => event.eventId !== eventId));
-        alert('Event deleted successfully!');
-      } else {
-        console.error('Failed to delete event');
-        alert('Failed to delete event.');
-      }
-    } catch (error) {
-      console.error('Error deleting event:', error);
-      alert('An error occurred while deleting the event.');
-    }
   };
 
   const handleDayClick = (day) => {
@@ -141,8 +106,8 @@ const OpcBigCalendar = () => {
 
     const eventData = {
       eventDate: selectedDate,
-      eventTitle: eventTitle,
-      eventDescription: eventDescription,
+      eventTitle,
+      eventDescription,
     };
 
     try {
@@ -150,7 +115,7 @@ const OpcBigCalendar = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(eventData),
       });
@@ -165,59 +130,20 @@ const OpcBigCalendar = () => {
         alert('Failed to add event');
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error adding event:', error);
       alert('An error occurred while adding the event.');
-    }
-  };
-
-  const handleEditEvent = async () => {
-    if (!editTitle || !editDescription) {
-      alert('Please fill in the event title and description');
-      return;
-    }
-
-    const updatedEvent = {
-      ...editingEvent,
-      eventTitle: editTitle,
-      eventDescription: editDescription,
-    };
-
-    try {
-      const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/update/${editingEvent.eventId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedEvent),
-      });
-
-      if (response.ok) {
-        alert('Event updated successfully!');
-        setEvents(events.map(event =>
-          event.eventId === updatedEvent.eventId ? updatedEvent : event
-        ));
-        setEditingEvent(null);
-      } else {
-        alert('Failed to update event');
-      }
-    } catch (error) {
-      console.error('Error updating event:', error);
-      alert('An error occurred while updating the event.');
     }
   };
 
   const renderDays = () => {
     return generateDays().map((day, index) => {
       const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-      
       const hasEvent = events.some(event => new Date(event.eventDate).toDateString() === dayDate.toDateString());
       const hasApprovedReservation = approvedReservations.some(res => new Date(res.schedule).toDateString() === dayDate.toDateString());
       const hasApprovedReturn = approvedReturn.some(res => new Date(res.returnSchedule).toDateString() === dayDate.toDateString());
-      
 
       const dayClass = hasEvent || hasApprovedReservation || hasApprovedReturn ? ' highlighted' : '';
-      
+
       return (
         <div
           key={index}
@@ -228,7 +154,7 @@ const OpcBigCalendar = () => {
         </div>
       );
     });
-};
+  };
 
   const renderEvents = () => {
     if (!selectedDate) return null;

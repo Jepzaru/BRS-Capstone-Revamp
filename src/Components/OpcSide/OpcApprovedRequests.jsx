@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Header from '../../Components/UserSide/Header';
 import logoImage1 from "../../Images/citbglogo.png";
 import SideNavbar from './OpcNavbar';
@@ -24,10 +24,10 @@ const OpcApprovedRequests = () => {
   
   useEffect(() => {
     const fetchApprovedRequests = async () => {
-      setLoading(true); 
-      setError(null); 
+      setLoading(true);
+      setError(null);
       const token = localStorage.getItem('token');
-      
+  
       if (!token) {
         setError("Authorization token is missing. Please login again.");
         setLoading(false);
@@ -41,7 +41,6 @@ const OpcApprovedRequests = () => {
   
         if (!response.ok) {
           const errorMessage = await response.text();
-          console.error("Error fetching approved requests:", response.status, errorMessage);
           setError("Failed to fetch approved requests. Please try again.");
           return;
         }
@@ -50,47 +49,45 @@ const OpcApprovedRequests = () => {
         const approvedRequests = data.filter(request => request.opcIsApproved === true);
         setRequests(approvedRequests); 
       } catch (error) {
-        console.error("Error fetching approved requests:", error);
         setError("Network error. Please check your internet connection.");
       } finally {
         setLoading(false);
       }
     };
   
-    fetchApprovedRequests(); 
+    fetchApprovedRequests();
   }, []); 
-   
   
-  const handleSearchChange = (event) => {
+  const handleSearchChange = useCallback((event) => {
     setSearchTerm(event.target.value);
-};
-
-const handleSortChange = (event) => {
-  setSortOption(event.target.value);
-};
-
-const sortRequests = (requests) => {
-  const filteredRequests = requests.filter(request =>
-    Object.values(request).some(value =>
-      value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
-
-  switch (sortOption) {
-    case "alphabetical":
-      return filteredRequests.sort((a, b) => a.reason.localeCompare(b.reason));
-    case "ascending":
-      return filteredRequests.sort((a, b) => a.capacity - b.capacity);
-    case "descending":
-      return filteredRequests.sort((a, b) => b.capacity - a.capacity);
-    default:
-      return filteredRequests;
-  }
-};
+  }, []);
   
+  const handleSortChange = useCallback((event) => {
+    setSortOption(event.target.value);
+  }, []);
+
+  const sortRequests = useCallback((requests) => {
+    const filteredRequests = requests.filter(request =>
+      Object.values(request).some(value =>
+        value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+
+    switch (sortOption) {
+      case "alphabetical":
+        return filteredRequests.sort((a, b) => a.reason.localeCompare(b.reason));
+      case "ascending":
+        return filteredRequests.sort((a, b) => a.capacity - b.capacity);
+      case "descending":
+        return filteredRequests.sort((a, b) => b.capacity - a.capacity);
+      default:
+        return filteredRequests;
+    }
+  }, [searchTerm, sortOption]);
+
   const sortedRequests = useMemo(() => sortRequests(requests), [requests, searchTerm, sortOption]);
 
-  const handleRowSelection = (transactionId) => {
+  const handleRowSelection = useCallback((transactionId) => {
     setSelectedRows((prevSelectedRows) => {
       const updatedSelectedRows = new Set(prevSelectedRows);
       if (updatedSelectedRows.has(transactionId)) {
@@ -100,62 +97,43 @@ const sortRequests = (requests) => {
       }
       return updatedSelectedRows;
     });
-  };
+  }, []);
 
-  const formatDate = (dateString) => {
+  const formatDate = useCallback((dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short", 
       day: "numeric",
     });
-  };
+  }, []);
 
-  const exportToExcel = () => {
+  const exportToExcel = useCallback(() => {
     const selectedRequests = requests.filter(request => selectedRows.has(request.transactionId));
     const requestsToExport = selectedRequests.length > 0 ? selectedRequests : requests;
 
     const dataToExport = requestsToExport.map(request => ({
-        Requestor: request.userName,
-        TripType: request.typeOfTrip,
-        From: request.destinationFrom,
-        To: request.destinationTo,
-        Capacity: request.capacity,
-        Vehicle: `${request.vehicleType} - ${request.plateNumber}`,
-        Schedule: formatDate(request.schedule),
-        ReturnSchedule: formatDate(request.returnSchedule) || "N/A",
-        Departure: request.departureTime,
-        PickUp: request.pickUpTime || "N/A",
-        Driver: request.driverName || "N/A",
-  
-        "Added Driver and Vehicle": request.reservedVehicles && request.reservedVehicles.length > 0
-            ? request.reservedVehicles.map(vehicle => `${vehicle.driverName || "N/A"} - ${vehicle.vehicleType || "N/A"} : ${vehicle.plateNumber}`).join(', ')
-            : "No Drivers Added",
-        Reason: request.reason
+      Requestor: request.userName,
+      TripType: request.typeOfTrip,
+      From: request.destinationFrom,
+      To: request.destinationTo,
+      Capacity: request.capacity,
+      Vehicle: `${request.vehicleType} - ${request.plateNumber}`,
+      Schedule: formatDate(request.schedule),
+      ReturnSchedule: formatDate(request.returnSchedule) || "N/A",
+      Departure: request.departureTime,
+      PickUp: request.pickUpTime || "N/A",
+      Driver: request.driverName || "N/A",
+      "Added Driver and Vehicle": request.reservedVehicles?.length > 0
+        ? request.reservedVehicles.map(vehicle => `${vehicle.driverName || "N/A"} - ${vehicle.vehicleType || "N/A"} : ${vehicle.plateNumber}`).join(', ')
+        : "No Drivers Added",
+      Reason: request.reason,
     }));
 
     const ws = XLSX.utils.json_to_sheet(dataToExport);
-
-    const headerNames = [
-        "Requestor", "TripType", "From", "To", 
-        "Capacity", "Vehicle", "Schedule", "Return Schedule",
-        "Departure", "PickUp", "Driver", "Added Driver and Vehicle", "Reason"
-    ];
-    
-    XLSX.utils.sheet_add_aoa(ws, [headerNames], { origin: 'A1' });
-
-    XLSX.utils.sheet_add_json(ws, dataToExport, { skipHeader: true, origin: 'A2' });
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Approved Requests");
-
-    XLSX.writeFile(wb, "Approved_Requests.xlsx");
-  };
-
-  const handleCancel = () => {
-    setSelectedRows(new Set());
-    setConfirmMode(false);
-  };
+    XLSX.utils.book_append_sheet(XLSX.utils.book_new(), ws, "Approved Requests");
+    XLSX.writeFile(XLSX.utils.book_new(), "Approved_Requests.xlsx");
+  }, [requests, selectedRows, formatDate]);
 
   const totalPages = Math.ceil(sortedRequests.length / recordsPerPage);
 
@@ -164,16 +142,16 @@ const sortRequests = (requests) => {
     [sortedRequests, currentPage, recordsPerPage]
   );
 
-  const handlePageChange = (page) => {
+  const handlePageChange = useCallback((page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
-  };
+  }, [totalPages]);
 
-  const handleViewMore = (request) => {
+  const handleViewMore = useCallback((request) => {
     setSelectedRequest(request);
     setShowModal(true);
-  };
+  }, []);
   
 
   return (
