@@ -7,8 +7,8 @@ import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
 import { BsPersonFillAdd, BsFillPersonFill } from "react-icons/bs";
 import { PiSteeringWheelFill} from "react-icons/pi";
-import { IoIosCloseCircle, IoMdPerson } from "react-icons/io";
-import { MdOutlineSystemUpdateAlt, MdOutlineRadioButtonChecked } from "react-icons/md";
+import { IoIosCloseCircle } from "react-icons/io";
+import { MdOutlineSystemUpdateAlt } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { RiReservedFill } from "react-icons/ri";
 import '../../CSS/OpcCss/DriverManagement.css';
@@ -95,11 +95,13 @@ const DriverManagement = () => {
 
   const handleDriverChange = (event) => {
     setSelectedDriver(event.target.value);
+    console.log("Selected Driver ID:", event.target.value); 
   };
   
   const filteredReservations = selectedDriver === 'all'
   ? reservations
   : reservations.filter(reservation => {
+      console.log('Checking reservation:', reservation);
       return reservation.driverId === Number(selectedDriver); 
     });
 
@@ -156,8 +158,7 @@ const DriverManagement = () => {
         body: JSON.stringify({ driverName, contactNumber: phoneNumber })
       });
       if (response.ok) {
-        const newDriver = await response.json();
-        setDrivers([newDriver, ...drivers]);
+        await fetchDriverDetails();  
         closeModal();
       } else {
         throw new Error('Failed to add driver');
@@ -183,22 +184,11 @@ const DriverManagement = () => {
           leaveEndDate: updateLeaveEndDate || null
         })
       });
-  
       if (response.ok) {
-        const updatedDriver = await response.json();
-        
-        // Update the drivers state with the updated driver
-        setDrivers(prevDrivers =>
-          prevDrivers.map(driver =>
-            driver.id === selectedDriverId ? { ...driver, ...updatedDriver } : driver
-          )
-        );
-  
-        // Close the update modal
+        await fetchDriverDetails(); 
         closeUpdateModal();
       } else {
-        const errorText = await response.text();
-        throw new Error(`Failed to update driver: ${response.status} ${errorText}`);
+        throw new Error('Failed to update driver');
       }
     } catch (error) {
       console.error("Failed to update driver", error);
@@ -396,8 +386,8 @@ const DriverManagement = () => {
                                 }}>
                                 {driver.status}
                               </td>
-                              <td>{driver.leaveStartDate ? formatDate(driver.leaveStartDate) : 'N/A'}</td>
-                              <td>{driver.leaveEndDate ? formatDate(driver.leaveEndDate) : 'N/A'}</td>
+                              <td>{driver.leaveStartDate && driver.leaveStartDate !== "0001-01-01" ? formatDate(driver.leaveStartDate) : 'N/A'}</td>
+                              <td>{driver.leaveEndDate && driver.leaveEndDate !== "0001-01-01" ? formatDate(driver.leaveEndDate) : 'N/A'}</td>
                               <td className="td-action">
                                 <div className="button-container">
                                   <button className="driver-update-button" onClick={() => openUpdateModal(driver)}>
