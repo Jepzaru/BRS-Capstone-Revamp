@@ -58,10 +58,11 @@
 }
 
 .opc-calendar-day.active {
-  background-color: #ffcc00;
-  border: 4px solid #782324;
+  background-color: #782324;
+  color: #f0f0f0;
   font-weight: bold;
 }
+
 .opc-calendar-day:hover{
   background-color:  #782324;
   transition: background-color 0.3s;
@@ -86,7 +87,6 @@
   
 
 }
-
 
 .event-item:hover{
   background-color: #ffcc00;

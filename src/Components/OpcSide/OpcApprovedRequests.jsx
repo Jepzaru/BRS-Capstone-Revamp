@@ -241,12 +241,12 @@ const OpcApprovedRequests = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {requests.length === 0 ? (
+                    {paginatedRequests.length === 0 ? (
                       <tr>
                         <td colSpan={confirmMode ? "10" : "13"} className="no-requests">No Requests Available</td>
                       </tr>
                     ) : (
-                      sortedRequests.map((request, index) => (
+                      paginatedRequests.map((request, index) => (
                         <tr
                           key={index}
                           className={

@@ -9,6 +9,20 @@ import { IoMdAddCircle } from "react-icons/io";
 import { IoTime } from "react-icons/io5";
 import { FaCalendarDay, FaBus } from "react-icons/fa";
 
+const Modal = ({ show, onClose, title, message }) => {
+  if (!show) return null;
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h3>{title}</h3>
+        <p>{message}</p>
+        <button className="notif-btn" onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+};
+
 const OpcBigCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -23,6 +37,8 @@ const OpcBigCalendar = () => {
   const [editDescription, setEditDescription] = useState('');
   const token = localStorage.getItem('token');
   const isPastDate = selectedDate < new Date();
+
+  const [modal, setModal] = useState({ show: false, title: '', message: '' });
 
   useEffect(() => {
     fetchEventsForMonth();
@@ -98,9 +114,17 @@ const OpcBigCalendar = () => {
     }
   };
 
+  const showModal = (title, message) => {
+    setModal({ show: true, title, message });
+  };
+
+  const closeModal = () => {
+    setModal({ show: false, title: '', message: '' });
+  };
+
   const handleEventSubmit = async () => {
     if (!eventTitle || !eventDescription) {
-      alert('Please fill in the event title and description');
+      showModal('Validation Error', 'Please fill in the event title and description');
       return;
     }
 
@@ -121,32 +145,31 @@ const OpcBigCalendar = () => {
       });
 
       if (response.ok) {
-        alert('Event added successfully!');
+        showModal('Success', 'Event added successfully!');
         setShowAddEvent(false);
         setEventTitle('');
         setEventDescription('');
         fetchEventsForMonth();
       } else {
-        alert('Failed to add event');
+        showModal('Error', 'Failed to add event');
       }
     } catch (error) {
-      console.error('Error adding event:', error);
-      alert('An error occurred while adding the event.');
+      showModal('Error', 'An error occurred while adding the event');
     }
   };
 
   const handleEditEvent = async () => {
     if (!editTitle || !editDescription) {
-      alert('Please fill in the event title and description');
+      showModal('Validation Error', 'Please fill in the event title and description');
       return;
     }
-
+  
     const updatedEvent = {
       ...editingEvent,
       eventTitle: editTitle,
       eventDescription: editDescription,
     };
-
+  
     try {
       const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/update/${editingEvent.eventId}`, {
         method: 'PUT',
@@ -156,49 +179,52 @@ const OpcBigCalendar = () => {
         },
         body: JSON.stringify(updatedEvent),
       });
-
+  
       if (response.ok) {
-        alert('Event updated successfully!');
+        showModal('Success', 'Event updated successfully!');
         setEvents(events.map(event =>
           event.eventId === updatedEvent.eventId ? updatedEvent : event
         ));
         setEditingEvent(null);
       } else {
-        alert('Failed to update event');
+        showModal('Error', 'Failed to update event');
       }
     } catch (error) {
       console.error('Error updating event:', error);
-      alert('An error occurred while updating the event.');
+      showModal('Error', 'An error occurred while updating the event');
     }
   };
-
+  
+  
   const deleteEvent = async (eventId) => {
     try {
       const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/delete/${eventId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
         setEvents(events.filter(event => event.eventId !== eventId));
-        alert('Event deleted successfully!');
+        showModal('Success', 'Event deleted successfully!');
       } else {
-        console.error('Failed to delete event');
-        alert('Failed to delete event.');
+        showModal('Error', 'Failed to delete event');
       }
     } catch (error) {
-      console.error('Error deleting event:', error);
-      alert('An error occurred while deleting the event.');
+      showModal('Error', 'An error occurred while deleting the event');
     }
   };
+
 
 
   const renderDays = () => {
     return generateDays().map((day, index) => {
       const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-      const hasEvent = events.some(event => new Date(event.eventDate).toDateString() === dayDate.toDateString());
+      const hasEvent = events
+      .filter(event => event.isDeleted === false) 
+      .some(event => new Date(event.eventDate).toDateString() === dayDate.toDateString());
+
       const hasApprovedReservation = approvedReservations.some(res => new Date(res.schedule).toDateString() === dayDate.toDateString());
       const hasApprovedReturn = approvedReturn.some(res => new Date(res.returnSchedule).toDateString() === dayDate.toDateString());
 
@@ -220,7 +246,7 @@ const OpcBigCalendar = () => {
     if (!selectedDate) return null;
 
     const dayEvents = events.filter(
-      (event) => new Date(event.eventDate).toDateString() === selectedDate.toDateString()
+      (event) => new Date(event.eventDate).toDateString() === selectedDate.toDateString() && event.isDeleted === false
     );
 
     const dayApprovedReservations = approvedReservations.filter(
@@ -406,6 +432,13 @@ const OpcBigCalendar = () => {
           </div>
           </div>
         )}
+
+<Modal
+        show={modal.show}
+        title={modal.title}
+        message={modal.message}
+        onClose={closeModal}
+      />
       </div>
       <img src={logoImage1} alt="Logo" className="driver-logo-image" />
     </div>

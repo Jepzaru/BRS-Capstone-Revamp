@@ -43,7 +43,7 @@ public class VehicleService {
         vehicle.setPlateNumber(newVehicle.getPlateNumber());
         vehicle.setCapacity(newVehicle.getCapacity());
 
-        if (newVehicle.getStatus() == null) {
+        if (newVehicle.getStatus() == "N/A") {
             vehicle.setStatus(Constants.Annotation.AVAILABLE);
             vehicle.setMaintenanceStartDate(LocalDate.of(0001, 1, 1));
             vehicle.setMaintenanceEndDate(LocalDate.of(0001, 1, 1));

@@ -320,6 +320,7 @@ const Reservation = () => {
 
         const result = await response.json(); 
 
+
         setModalMessage('Reservation submitted successfully!');
         setModalType('success');
         navigate('/user-side');
@@ -477,39 +478,43 @@ const Reservation = () => {
                   <input type="text" id="to" name="to" placeholder='Ex. SM Seaside' value={formData.to} required onChange={handleInputChange}/>
                 </div>
                 <div className="form-group">
-                    <label htmlFor="capacity">
-                      <FaUserGroup
-                        style={{
-                          backgroundColor: "white",
-                          color: "#782324",
-                          borderRadius: "20px",
-                          padding: "3px",
-                          marginBottom: "-5px",
-                          marginRight: "5px"
-                        }}
-                      />
-                      No. of Passengers:
-                    </label>
-                    <input
-                      type="number"
-                      placeholder='Number of Passengers'
-                      id="capacity"
-                      name="capacity"
-                      value={formData.capacity}
-                      required
-                      min="0"
-                      max={calculateMaxCapacity()}
-                      onChange={handleInputChange}
-                    />
-                     {capacityError && (
-                      <div className="capacity-error-cloud">
-                        <span>{capacityError}</span>
-                        <div className="cloud-arrow"></div> 
-                      </div>
-                    )}
-                    
+                <label htmlFor="capacity">
+                  <FaUserGroup
+                    style={{
+                      backgroundColor: "white",
+                      color: "#782324",
+                      borderRadius: "20px",
+                      padding: "3px",
+                      marginBottom: "-5px",
+                      marginRight: "5px"
+                    }}
+                  />
+                  No. of Passengers:
+                </label>
+                <input
+                  type="number"
+                  placeholder="Number of Passengers"
+                  id="capacity"
+                  name="capacity"
+                  value={formData.capacity}
+                  required
+                  min="1" 
+                  max="999" 
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    if (/^\d{0,3}$/.test(value) && Number(value) > 0) {
+                      handleInputChange(e); 
+                    }
+                  }}
+                />
+                {capacityError && (
+                  <div className="capacity-error-cloud">
+                    <span>{capacityError}</span>
+                    <div className="cloud-arrow"></div> 
                   </div>
-                  
+                )}
+              </div>
               </div>
               <div className="form-group-inline">
               <div className="form-group">
@@ -626,8 +631,9 @@ const Reservation = () => {
               <div className="summary-item">
                 <strong>Proof of Approval:</strong> {formData.fileName || 'Not Attached'}
               </div>
-              <div className="summary-item">
-                <strong>Purpose:</strong> {formData.reservationReason}
+                            <div className="summary-item">
+                <strong>Purpose: </strong> 
+                <span className="purpose-ellipsis">{formData.reservationReason || "N/A"}</span>
               </div>
               <div className="button-group">
               <button type="button" className="reset-button" onClick={handleClear}>
