@@ -70,7 +70,7 @@ const DriverManagement = () => {
   useEffect(() => {
     const fetchReservations = async () => {
         try {
-            const response = await fetch("https://citumovebackend.up.railway.app/reservations/opc-approved", {
+            const response = await fetch(`https://citumovebackend.up.railway.app/reservations/opc-approved`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             const data = await response.json();
@@ -169,7 +169,7 @@ const DriverManagement = () => {
   
   const handleUpdateDriver = async () => {
     try {
-      const response = await fetch("https://citumovebackend.up.railway.app/opc/driver/update/${selectedDriverId}", {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/driver/update/${selectedDriverId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -186,12 +186,16 @@ const DriverManagement = () => {
   
       if (response.ok) {
         const updatedDriver = await response.json();
+        
+        // Update the drivers state with the updated driver
         setDrivers(prevDrivers =>
           prevDrivers.map(driver =>
             driver.id === selectedDriverId ? { ...driver, ...updatedDriver } : driver
           )
         );
-        closeUpdateModal(); 
+  
+        // Close the update modal
+        closeUpdateModal();
       } else {
         const errorText = await response.text();
         throw new Error(`Failed to update driver: ${response.status} ${errorText}`);
@@ -205,7 +209,7 @@ const DriverManagement = () => {
 
   const handleDeleteDriver = async () => {
     try {
-      const response = await fetch("https://citumovebackend.up.railway.app/opc/driver/delete/${selectedDriverId}", {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/driver/delete/${selectedDriverId}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });
