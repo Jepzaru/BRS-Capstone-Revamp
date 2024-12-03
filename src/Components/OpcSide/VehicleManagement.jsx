@@ -170,14 +170,8 @@ const VehicleManagement = () => {
     setSelectedVehicleId(null);
   }, []);
 
-  const validatePlateNumber = (plateNumber) => plateNumberPattern.test(plateNumber);
-
   const handleAddVehicle = async (e) => {
     e.preventDefault();
-    if (!validatePlateNumber(plateNumber)) {
-      setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
-      return;
-    }
     try {
       const response = await fetch('https://citumovebackend.up.railway.app/vehicle/getAll', {
         headers: { 'Authorization': `Bearer ${token}` },
@@ -208,13 +202,10 @@ const VehicleManagement = () => {
       setErrorMessage('Error adding vehicle: ' + error.message);
     }
   };
+  
 
   const handleUpdateVehicle = async (e, vehicleId = selectedVehicleId) => {
     e.preventDefault();
-    if (!validatePlateNumber(updatePlateNumber)) {
-      setErrorMessage('Invalid plate number format. Please use the format "TGR-6GT".');
-      return;
-    }
     if (updateStatus === 'Maintenance' && (!updateMaintenanceStartDate || !updateMaintenanceEndDate)) {
       setErrorMessage('Please provide both start and end dates for maintenance.');
       return;
@@ -226,7 +217,7 @@ const VehicleManagement = () => {
       status: updateStatus,
       maintenanceStartDate: updateStatus === 'Maintenance' ? updateMaintenanceStartDate : null,
       maintenanceEndDate: updateStatus === 'Maintenance' ? updateMaintenanceEndDate : null,
-      maintenanceDetails: updateStatus === 'Maintenance' ? updateMaintenanceDetails : null, 
+      maintenanceDetails: updateStatus === 'Maintenance' ? updateMaintenanceDetails : null,
     };
     try {
       const response = await fetch(`https://citumovebackend.up.railway.app/opc/vehicle/update/${vehicleId}`, {
@@ -247,6 +238,7 @@ const VehicleManagement = () => {
       setErrorMessage('Error updating vehicle: ' + error.message);
     }
   };
+  
 
   const handleDeleteVehicle = async (vehicleId = selectedVehicleId) => {
     try {

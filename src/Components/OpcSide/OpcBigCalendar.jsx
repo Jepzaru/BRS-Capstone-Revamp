@@ -135,6 +135,66 @@ const OpcBigCalendar = () => {
     }
   };
 
+  const handleEditEvent = async () => {
+    if (!editTitle || !editDescription) {
+      alert('Please fill in the event title and description');
+      return;
+    }
+
+    const updatedEvent = {
+      ...editingEvent,
+      eventTitle: editTitle,
+      eventDescription: editDescription,
+    };
+
+    try {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/update/${editingEvent.eventId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedEvent),
+      });
+
+      if (response.ok) {
+        alert('Event updated successfully!');
+        setEvents(events.map(event =>
+          event.eventId === updatedEvent.eventId ? updatedEvent : event
+        ));
+        setEditingEvent(null);
+      } else {
+        alert('Failed to update event');
+      }
+    } catch (error) {
+      console.error('Error updating event:', error);
+      alert('An error occurred while updating the event.');
+    }
+  };
+
+  const deleteEvent = async (eventId) => {
+    try {
+      const response = await fetch(`https://citumovebackend.up.railway.app/opc/events/delete/${eventId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setEvents(events.filter(event => event.eventId !== eventId));
+        alert('Event deleted successfully!');
+      } else {
+        console.error('Failed to delete event');
+        alert('Failed to delete event.');
+      }
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      alert('An error occurred while deleting the event.');
+    }
+  };
+
+
   const renderDays = () => {
     return generateDays().map((day, index) => {
       const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);

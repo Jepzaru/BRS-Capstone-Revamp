@@ -111,7 +111,12 @@ const OpcApprovedRequests = () => {
   const exportToExcel = useCallback(() => {
     const selectedRequests = requests.filter(request => selectedRows.has(request.transactionId));
     const requestsToExport = selectedRequests.length > 0 ? selectedRequests : requests;
-
+  
+    if (requestsToExport.length === 0) {
+      alert("No data available to export."); 
+      return;
+    }
+  
     const dataToExport = requestsToExport.map(request => ({
       Requestor: request.userName,
       TripType: request.typeOfTrip,
@@ -129,11 +134,13 @@ const OpcApprovedRequests = () => {
         : "No Drivers Added",
       Reason: request.reason,
     }));
-
+  
     const ws = XLSX.utils.json_to_sheet(dataToExport);
-    XLSX.utils.book_append_sheet(XLSX.utils.book_new(), ws, "Approved Requests");
-    XLSX.writeFile(XLSX.utils.book_new(), "Approved_Requests.xlsx");
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, ws, "Approved Requests");
+    XLSX.writeFile(workbook, "Approved_Requests.xlsx");
   }, [requests, selectedRows, formatDate]);
+  
 
   const totalPages = Math.ceil(sortedRequests.length / recordsPerPage);
 
@@ -141,6 +148,11 @@ const OpcApprovedRequests = () => {
     sortedRequests.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage),
     [sortedRequests, currentPage, recordsPerPage]
   );
+
+  const handleCancel = useCallback(() => {
+    setConfirmMode(false); 
+  }, []);
+  
 
   const handlePageChange = useCallback((page) => {
     if (page >= 1 && page <= totalPages) {

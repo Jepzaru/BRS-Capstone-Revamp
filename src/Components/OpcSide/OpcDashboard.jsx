@@ -76,7 +76,6 @@ const OpcDashboard = () => {
   const handleMonthChange = (e) => setMonth(e.target.value);
   const handleYearChange = (e) => setYear(e.target.value);
 
-  // Define countReservationsPerDepartment here
   const countReservationsPerDepartment = (reservations) => {
     const counts = {};
     reservations.forEach(request => {
