@@ -64,7 +64,6 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
     
         const data = await response.json();
     
-  
         setEvents(data.map(event => new Date(event.eventDate))); 
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -80,6 +79,9 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const days = [];
   
+    const futureBlockDate = new Date(); 
+    futureBlockDate.setDate(currentDate.getDate() + 7); 
+  
     for (let i = 0; i < firstDay; i++) {
         days.push({ day: '', selected: false, disabled: true, reserved: false, highlight: false });
     }
@@ -87,6 +89,7 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
     for (let i = 1; i <= totalDays; i++) {
         const date = new Date(currentYear, currentMonth, i);
         const isPast = date < currentDate; 
+        const isBlocked = date <= futureBlockDate; 
         const isBeforeMinDate = minDate && date < minDate;
 
         const reservedInfo = reservedDates.find(res =>
@@ -102,13 +105,14 @@ const Calendar = ({ onDateSelect, minDate, returnDate, plateNumber }) => {
         days.push({
             day: i,
             selected: selectedDay === i,
-            disabled: isPast || isBeforeMinDate || isHighlighted, 
+            disabled: isPast || isBlocked || isBeforeMinDate || isHighlighted, 
             reserved: isReserved,
             highlight: isHighlighted 
         });
     }
     return days;
 };
+
 
 
   const prevMonth = () => {
