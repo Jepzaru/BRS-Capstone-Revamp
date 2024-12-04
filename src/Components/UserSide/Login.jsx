@@ -139,7 +139,7 @@ const Login = () => {
             <Link to="/forgot-password">Forgot Password?</Link>
           </p>
           <button type="submit" className="login-button">LOGIN</button>
-          <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTITIES</button>
+          <button type="button" className="clear-button" onClick={handleClear}>CLEAR ENTRIES</button>
           <p className="admin-path">
             Are you an admin? <Link to="/admin-authentication">Click Here</Link>
           </p>

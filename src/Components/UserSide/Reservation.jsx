@@ -159,9 +159,6 @@ const Reservation = () => {
       to: '',
       from: '',
       capacity: '',
-      department: '',
-      vehicleType: '', 
-      plateNumber: '',
       departureTime: '',
       pickUpTime: '', 
       reservationReason: '',
@@ -235,8 +232,6 @@ const Reservation = () => {
     const {
         from,
         to,
-        vehicleType,
-        plateNumber,
         departureTime,
         reservationReason
     } = formData;
@@ -244,8 +239,6 @@ const Reservation = () => {
     const isFormValid = [
         from,
         to,
-        vehicleType,
-        plateNumber,
         departureTime,
         reservationReason
     ].every(value => value.trim() !== '') && selectedDate;
@@ -319,7 +312,6 @@ const Reservation = () => {
         }
 
         const result = await response.json(); 
-
 
         setModalMessage('Reservation submitted successfully!');
         setModalType('success');
@@ -523,7 +515,7 @@ const Reservation = () => {
                     <input type="text" id="department" name="department" value={userDepartment} disabled />
                   </div>
                 <div className="form-group">
-                  <label htmlFor="approvalProof"><FaFileAlt style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Proof of Approval (optional):</label>
+                  <label htmlFor="approvalProof"><FaFileAlt style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Proof of Approval (optional): <span style={{color: "#782324"}}>Maximum of 5MB</span></label>
                   <input type="file" id="approvalProof" name="approvalProof" accept="application/pdf" onChange={handleInputChange} />
                 </div>
               </div>

@@ -7,8 +7,8 @@ import { IoSearch } from "react-icons/io5";
 import { FaSortAlphaDown } from "react-icons/fa";
 import { BsPersonFillAdd, BsFillPersonFill } from "react-icons/bs";
 import { PiSteeringWheelFill} from "react-icons/pi";
-import { IoIosCloseCircle } from "react-icons/io";
-import { MdOutlineSystemUpdateAlt } from "react-icons/md";
+import { IoIosCloseCircle, IoMdPerson } from "react-icons/io";
+import { MdOutlineSystemUpdateAlt, MdOutlineRadioButtonChecked } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { RiReservedFill } from "react-icons/ri";
 import '../../CSS/OpcCss/DriverManagement.css';
@@ -52,20 +52,21 @@ const DriverManagement = () => {
 
   const token = localStorage.getItem('token');
 
+  const fetchDriverDetails = async () => {
+    try {
+      const response = await fetch("https://citumovebackend.up.railway.app/opc/driver/getAll", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setDrivers(data);
+    } catch (error) {
+      console.error("Failed to fetch driver details", error);
+    }
+  };
+  
   useEffect(() => {
-    const fetchDriverDetails = async () => {
-      try {
-        const response = await fetch("https://citumovebackend.up.railway.app/opc/driver/getAll", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        const data = await response.json();
-        setDrivers(data);
-      } catch (error) {
-        console.error("Failed to fetch driver details", error);
-      }
-    };
     fetchDriverDetails();
-  }, [token, selectedDriverId]);
+  }, [token]);
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -95,13 +96,11 @@ const DriverManagement = () => {
 
   const handleDriverChange = (event) => {
     setSelectedDriver(event.target.value);
-    console.log("Selected Driver ID:", event.target.value); 
   };
   
   const filteredReservations = selectedDriver === 'all'
   ? reservations
   : reservations.filter(reservation => {
-      console.log('Checking reservation:', reservation);
       return reservation.driverId === Number(selectedDriver); 
     });
 
@@ -185,7 +184,20 @@ const DriverManagement = () => {
         })
       });
       if (response.ok) {
-        await fetchDriverDetails(); 
+        setDrivers(prevDrivers =>
+          prevDrivers.map(driver =>
+            driver.id === selectedDriverId
+              ? {
+                  ...driver,
+                  driverName: updateDriverName,
+                  contactNumber: updatePhoneNumber,
+                  status: updateDriverStatus,
+                  leaveStartDate: updateLeaveStartDate || null,
+                  leaveEndDate: updateLeaveEndDate || null
+                }
+              : driver
+          )
+        );
         closeUpdateModal();
       } else {
         throw new Error('Failed to update driver');
@@ -194,6 +206,7 @@ const DriverManagement = () => {
       console.error("Failed to update driver", error);
     }
   };
+  
   
   
 
@@ -411,7 +424,7 @@ const DriverManagement = () => {
                     <RiReservedFill style={{ color: "#782324", marginRight: "15px", marginBottom: "-2px" }} />
                     Driver Reservations
                   </h3>
-                  <BsFillPersonFill style={{ color: "#782324", marginLeft: "300px", marginBottom: "-2px" }} />
+                  <BsFillPersonFill style={{ color: "#782324", marginLeft: "320px", marginBottom: "-2px" }} />
                 <select className="reservation-filter"
                   value={selectedDriverName}
                   onChange={(e) => setSelectedDriverName(e.target.value)}
