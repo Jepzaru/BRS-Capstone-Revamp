@@ -51,7 +51,6 @@ const Reservation = () => {
   useEffect(() => {
     if (vehicle && vehicle.plateNumber) {
       setSelectedVehiclePlateNumber(vehicle.plateNumber);
-      
     }
   }, [vehicle]);
 
@@ -193,18 +192,13 @@ const Reservation = () => {
       if (returnScheduleDate && returnScheduleDate < date) {
         setReturnScheduleDate(null);
       }
-  
-  
       evaluateButtonState(Number(formData.capacity), date, returnScheduleDate);
     }
-  
     setShowCalendar(false);
   };
   
   const evaluateButtonState = (capacity, scheduleDate, returnDate) => {
     const maxCapacity = calculateMaxCapacity();
-  
-  
     const isValidSchedule = isScheduleValid(scheduleDate, returnDate);
   
     if (capacity > maxCapacity && isValidSchedule) {
@@ -515,7 +509,7 @@ const Reservation = () => {
                     <input type="text" id="department" name="department" value={userDepartment} disabled />
                   </div>
                 <div className="form-group">
-                  <label htmlFor="approvalProof"><FaFileAlt style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Proof of Approval (optional): <span style={{color: "#782324"}}>Maximum of 5MB</span></label>
+                  <label htmlFor="approvalProof"><FaFileAlt style={{backgroundColor: "white", color: "#782324", borderRadius: "20px", padding: "3px", marginBottom: "-5px"}}/> Proof of Approval (optional): <span style={{color: "#782324"}}>Maximum of 5MB PDF file</span></label>
                   <input type="file" id="approvalProof" name="approvalProof" accept="application/pdf" onChange={handleInputChange} />
                 </div>
               </div>

@@ -12,6 +12,8 @@ const ManageRequest = () => {
   const [requests, setRequests] = useState([]);
   const [sortOption, setSortOption] = useState("");
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [cancelModal, setCancelModal] = useState(false);
+const [requestToCancel, setRequestToCancel] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const email = localStorage.getItem('email');
   const token = localStorage.getItem('token');
@@ -40,6 +42,31 @@ const ManageRequest = () => {
       setLoading(false); 
     }
   };
+
+  const handleConfirmCancel = async () => {
+    try {
+        const response = await fetch(`https://citumovebackend.up.railway.app/user/reservation/cancel/${requestToCancel.id}`, {
+            method: 'PUT',
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                isCanceled: 1, 
+            }),
+        });
+        if (response.ok) {
+            
+            fetchUsersRequests();
+            setCancelModal(false); 
+        } else {
+            alert('Failed to cancel the request');
+        }
+    } catch (error) {
+        console.error('Error canceling the request', error);
+        setCancelModal(false); 
+    }
+};
   
   
   useEffect(() => {
@@ -85,6 +112,8 @@ const ManageRequest = () => {
   const getApprovalStatus = (request) => {
     if (request.status === 'Completed') {
       return <span className="mr-status-completed">Completed</span>;
+    } else if (request.status === 'Canceled'){
+      return <span className="mr-status-canceled">Canceled</span>;
     }
   
     const statuses = [];
@@ -106,6 +135,7 @@ const ManageRequest = () => {
   
     return statuses;
   };
+  
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -140,6 +170,16 @@ const ManageRequest = () => {
       setCurrentPage(page);
     }
   };
+
+  const handleCancelRequest = (request) => {
+    setRequestToCancel(request);
+    setCancelModal(true); 
+};
+
+const handleCloseCancelModal = () => {
+  setCancelModal(false);
+  setRequestToCancel(null); 
+};
 
   return (
     <div className="app1">
@@ -236,7 +276,23 @@ const ManageRequest = () => {
                                       <td>{request.pickUpTime === '0001-01-01' ? 'N/A' : request.pickUpTime || 'N/A'}</td>
                                       <td className="reason-column">{request.reason || 'N/A'}</td>
                                       <td>{getApprovalStatus(request)}</td>
-                                      <td>{request.feedback || 'N/A'}</td>
+                                      <td>
+                                        {request.status === 'Canceled' ? (
+                                          <span className="request-canceled-text">Request Canceled</span>
+                                        ) : (
+                                          request.headIsApproved && request.opcIsApproved && !request.isCanceled ? (
+                                            <button className="cancel-request-button" onClick={() => handleCancelRequest(request)}>
+                                              Cancel Request
+                                            </button>
+                                          ) : (
+                                            request.rejected ? (
+                                              request.feedback || 'No reason specified'
+                                            ) : (
+                                              'No feedback'
+                                            )
+                                          )
+                                        )}
+                                      </td>
                                     </tr>
                                   ))
                                 )}
@@ -254,7 +310,17 @@ const ManageRequest = () => {
                     </div>
                     </div>
                     <ResendRequestModal request={selectedRequest} showModal={showModal} onClose={handleCloseModal} />
+                    {cancelModal && (
+                  <div className="cancel-modal">
+                      <div className="user-calendar-modal-content">
+                          <h3>Are you sure you want to cancel this request?</h3>
+                          <button onClick={handleConfirmCancel} className="confirm-cancel-button">Yes</button>
+                          <button onClick={handleCloseCancelModal} className="close-cancel-button">No</button>
+                      </div>
+                  </div>
+              )}
                 </div>
+                
             </div>
             <img src={logoImage1} alt="Logo" className="logo-image2" />
         </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { BsPersonSquare } from "react-icons/bs";
 import { FaLock } from "react-icons/fa";
 import { IoMdSettings } from 'react-icons/io';
@@ -32,35 +32,44 @@ const HeadSettings = () => {
   const [showModal, setShowModal] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const [hover, setHover] = useState(false); 
+  const [oldPasswordError, setOldPasswordError] = useState('');
+
+
   const email = localStorage.getItem('email');
   const role = localStorage.getItem('role');
   const token = localStorage.getItem('token');
   const userId = localStorage.getItem('userId');
   const department = localStorage.getItem('department');
-  const namePart = email.split('@')[0];
-  const [firstName, lastName] = namePart.split('.');
-  const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  const formattedName = `${capitalize(firstName)} ${capitalize(lastName)}`;
+  
+  const formattedName = useMemo(() => {
+    const namePart = email.split('@')[0];
+    const [firstName, lastName] = namePart.split('.');
+    const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    return `${capitalize(firstName)} ${capitalize(lastName)}`;
+  }, [email]);
 
   useEffect(() => {
     const fetchProfilePic = async () => {
       try {
         const response = await fetch(`https://citumovebackend.up.railway.app/users/profile-pic/${userId}`, {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            'Authorization': `Bearer ${token}`,
+          },
         });
-
+    
         if (response.ok) {
           const imageBlob = await response.blob();
           setProfilePic(URL.createObjectURL(imageBlob));
         } else {
+          setProfilePic(defaultProfilePic); 
           console.error('Failed to fetch profile picture');
         }
       } catch (error) {
+        setProfilePic(defaultProfilePic); 
         console.error('Error fetching profile picture:', error);
       }
     };
+   
 
     fetchProfilePic();
   }, [userId, token]);
@@ -68,10 +77,10 @@ const HeadSettings = () => {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-  
+
     const formData = new FormData();
     formData.append('imageFile', file);
-  
+
     try {
       const response = await fetch(`https://citumovebackend.up.railway.app/users/upload-profile-pic/${userId}`, {
         method: 'POST',
@@ -80,9 +89,8 @@ const HeadSettings = () => {
         },
         body: formData,
       });
-  
+
       if (response.ok) {
-  
         window.location.reload();
       } else {
         console.error('Failed to upload image');
@@ -97,55 +105,61 @@ const HeadSettings = () => {
   };
 
   const handleNewPasswordChange = (e) => {
-    setNewPassword(e.target.value);
-    setPasswordTooShort(e.target.value.length < 6);
+    const newPass = e.target.value;
+    setNewPassword(newPass);
+    setPasswordTooShort(newPass.length < 6);
   };
 
   const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
-    if (newPassword.length < 6) {
-      setPasswordTooShort(true);
-    } else {
-      setPasswordTooShort(false);
-    }
+    const confirmPass = e.target.value;
+    setConfirmPassword(confirmPass);
+    setPasswordTooShort(newPassword.length < 6);
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (newPassword !== confirmPassword) {
-      setPasswordMatch(false);
-      setTimeout(() => setPasswordMatch(true), 2000);
-      return;
-    }
+  setOldPasswordError('');  
 
-    try {
-      const response = await fetch(`https://citumovebackend.up.railway.app/users/change-password/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          oldPassword: oldPassword,
-          newPassword: newPassword
-        })
-      });
+  if (newPassword !== confirmPassword) {
+    setPasswordMatch(false);
+    setTimeout(() => setPasswordMatch(true), 2000);
+    return;
+  }
 
-      if (response.ok) {
-        const data = await response.text();
-        setShowModal(true);
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
+  try {
+    const response = await fetch(`https://citumovebackend.up.railway.app/users/change-password/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        oldPassword,
+        newPassword
+      })
+    });
+
+    if (response.ok) {
+      setShowModal(true);
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } else {
+      const errorData = await response.json();
+
+      if (errorData.message === 'Invalid old password') {
+        setOldPasswordError('Invalid old password');
       } else {
-        const errorData = await response.json();
-        console.error(errorData.message);
+        setOldPasswordError('An unexpected error occurred'); 
       }
-    } catch (error) {
-      console.error('Error:', error);
     }
-  };
+  } catch (error) {
+    console.error('Error:', error);
+    setOldPasswordError('An error occurred while updating the password');
+  }
+};
+
 
   const handleProfilePicChange = async (e) => {
     const file = e.target.files[0];
@@ -221,7 +235,10 @@ const HeadSettings = () => {
                       <img 
                         src={profilePic || defaultProfilePic} 
                         alt="Profile" 
-                        style={{ maxWidth: "250px", maxHeight: "250px", borderRadius: "50%" }} 
+                        onError={(e) => {
+                          e.target.onerror = null; 
+                          e.target.src = defaultProfilePic; 
+                        }}
                       />
                       {hover && (
                         <div
@@ -263,7 +280,7 @@ const HeadSettings = () => {
                 <div>
                   <h2> <FaLock style={{ marginRight: "10px" }} />Change Password</h2>
                   <form onSubmit={handleSubmit} className="password-form">
-                    <div className="form-group">
+                  <div className="form-group">
                       <label htmlFor="oldPassword">Old Password</label>
                       <input
                         type="password"
@@ -272,6 +289,11 @@ const HeadSettings = () => {
                         required
                         onChange={(e) => setOldPassword(e.target.value)}
                       />
+                      {oldPasswordError && (
+                        <p className="password-error" style={{ color: 'red' }}>
+                          Old Password Invalid
+                        </p>
+                      )}
                     </div>
                     <div className="form-group">
                       <label htmlFor="newPassword">New Password</label>
@@ -303,7 +325,7 @@ const HeadSettings = () => {
                         </p>
                       )}
                     </div>
-                    <button type="submit" disabled={!passwordMatch}>Change Password</button>
+                    <button type="submit" disabled={!passwordMatch || passwordTooShort}>Change Password</button>
                   </form>
                 </div>
               )}

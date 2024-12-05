@@ -1,9 +1,11 @@
 package com.brscapstone1.brscapstone1.Entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.brscapstone1.brscapstone1.Constants;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -29,7 +31,7 @@ public class ReservationEntity {
     private int capacity;
     private String department;
     private LocalDate schedule;
-    private LocalDate returnSchedule = LocalDate.of(0001, 1, 1);  
+    private LocalDate returnSchedule = Constants.MagicNumbers.DEFAULT_DATE;
     private String vehicleType;
     private String plateNumber;
     private String pickUpTime;
@@ -46,6 +48,13 @@ public class ReservationEntity {
     private int driverId;
     private String driverName = "N/A";
     private String rejectedBy = "N/A";
+    private LocalDateTime reservationTimestamp;
+    private Boolean isCanceled = false;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime headTimestamp = Constants.MagicNumbers.DEFAULT_TIMESTAMP;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime opcTimestamp = Constants.MagicNumbers.DEFAULT_TIMESTAMP;
     
     @OneToMany(orphanRemoval = true)
     @JoinColumn(name = Constants.DataAnnotations.RESERVATION_ID)
@@ -54,7 +63,6 @@ public class ReservationEntity {
     @OneToMany(mappedBy = Constants.DataAnnotations.RESERVATION, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReservationVehicleEntity> reservedVehicles;
 
-    
     public int getId() {
         return id;
     }
@@ -272,6 +280,38 @@ public class ReservationEntity {
         this.rejectedBy = rejectedBy;
     }
 
+    public LocalDateTime getReservationTimestamp() {
+        return reservationTimestamp;
+    }
+
+    public void setReservationTimestamp(LocalDateTime reservationTimestamp) {
+        this.reservationTimestamp = reservationTimestamp;
+    }
+
+    public LocalDateTime getHeadTimestamp() {
+        return headTimestamp;
+    }
+
+    public void setHeadTimestamp(LocalDateTime headTimestamp) {
+        this.headTimestamp = headTimestamp;
+    }
+
+    public LocalDateTime getOpcTimestamp() {
+        return opcTimestamp;
+    }
+
+    public void setOpcTimestamp(LocalDateTime opcTimestamp) {
+        this.opcTimestamp = opcTimestamp;
+    }
+    
+    public Boolean getIsCanceled() {
+        return isCanceled;
+    }
+
+    public void setIsCanceled(Boolean isCanceled) {
+        this.isCanceled = isCanceled;
+    }
+
     public ReservationEntity() {
         super();
     }
@@ -280,7 +320,8 @@ public class ReservationEntity {
             int capacity, String department, LocalDate schedule, LocalDate returnSchedule, String vehicleType,
             String plateNumber, String pickUpTime, String departureTime, String reason, String fileUrl, String status,
             Boolean opcIsApproved, Boolean isRejected, Boolean isCompleted, Boolean headIsApproved, String userName, String feedback,
-            int driverId, String driverName, String rejectedBy) {
+            int driverId, String driverName, String rejectedBy, LocalDateTime reservationTimestamp, LocalDateTime headTimestamp,
+            LocalDateTime opcTimestamp, Boolean isCanceled) {
         this.transactionId = transactionId;
         this.typeOfTrip = typeOfTrip;
         this.destinationTo = destinationTo;
@@ -305,5 +346,9 @@ public class ReservationEntity {
         this.driverId = driverId;
         this.driverName = driverName;
         this.rejectedBy = rejectedBy;
+        this.reservationTimestamp = reservationTimestamp;
+        this.headTimestamp = headTimestamp;
+        this.opcTimestamp = opcTimestamp;
+        this.isCanceled = isCanceled;
     }
 }

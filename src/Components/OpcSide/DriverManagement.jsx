@@ -503,14 +503,16 @@ const DriverManagement = () => {
                         <td>{reservation.returnSchedule === '0001-01-01' ? 'N/A' : reservation.returnSchedule ? formatDate(reservation.returnSchedule) : 'N/A'}</td>
                         <td>{reservation.pickUpTime === '0001-01-01' ? 'N/A' : reservation.pickUpTime || 'N/A'}</td>
                         <td>
-                          {reservation.isCompleted === true ? (
+                          {reservation.isCompleted ? (
                             <span style={{ color: 'green', fontWeight: 'bold' }}>{reservation.status}</span>
+                          ) : reservation.isCanceled ? (
+                            <span style={{ color: 'red', fontWeight: 'bold' }}>{reservation.status}</span>
                           ) : (
                             <button className="complete-button" onClick={() => openConfirmModal(reservation.id)}>Complete</button>
                           )}
                         </td>
                       </tr>
-                    ))
+                    )) 
                 )}
               </tbody>
             </table>

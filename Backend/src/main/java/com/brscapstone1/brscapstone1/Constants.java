@@ -1,5 +1,8 @@
 package com.brscapstone1.brscapstone1;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class Constants {
     public static class ApiRoutes{
         // PLAIN ROUTES
@@ -44,6 +47,7 @@ public class Constants {
         public static final String MAIN_PLATE_NUMBER = "/reservations/main-plate-numbers";
         public static final String RESEND_RESERVATION = "reservations/resend/{reservationId}";
         public static final String COMPLETE_RESERVATION = "/user/reservations/complete/{reservationId}";
+        public static final String CANCEL_RESERVATION = "/user/reservation/cancel/{reservationId}";
 
         // USER ROUTES
         public static final String AUTHENTICATE = "/authenticate";
@@ -87,6 +91,7 @@ public class Constants {
         public static final String HEAD_APPROVED_SUCCESS = "Reservation approved by Head of the Department successfully";
         public static final String OPC_APPROVED_SUCCESS = "Reservation approved by OPC successfully";
         public static final String RESERVATION_COMPLETE_SUCCESS = "Reservation completed successfully: ";
+        public static final String RESERVATION_CANCEL_SUCCESS = "Reservation canceled successfully: ";
         public static final String DRIVER_ASSIGN_SUCCESS = "Driver assigned successfully";
         public static final String RESERVATION_REJECT_SUCCESS = "Reservation rejected successfully";
         public static final String DRIVER_ASSIGN_UPDATE_SUCCESS = "Assigned driver updated successfully";
@@ -158,6 +163,7 @@ public class Constants {
         public static final String REJECTED = "Rejected";
         public static final String PENDING = "Pending";
         public static final String COMPLETED = "Completed";
+        public static final String CANCELED = "Canceled";
         public static final String MAINTENANCE = "Maintenance";
         public static final String NO_FEEDBACK = "No feedback";
         public static final String NO_FILE = "No file(s) attached";
@@ -228,5 +234,10 @@ public class Constants {
         public static final String EMAIL_SUCCESS = "Email send successfully to {}";
         public static final String EMAIL_FAILED = "Failed to send email: ";
         public static final String EMAIL_FAILED_LOGGER = "Error while sending email: {}";
+    }
+
+    public static class MagicNumbers{
+        public static final LocalDate DEFAULT_DATE = LocalDate.of(1, 1, 1);
+        public static final LocalDateTime DEFAULT_TIMESTAMP = LocalDateTime.of(1, 1, 1, 0, 0);
     }
 }

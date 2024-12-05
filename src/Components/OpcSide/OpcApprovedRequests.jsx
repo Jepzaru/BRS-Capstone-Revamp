@@ -164,6 +164,15 @@ const OpcApprovedRequests = () => {
     setSelectedRequest(request);
     setShowModal(true);
   }, []);
+
+  const formattedDateTime = new Date(selectedRequest.reservationTimestamp).toLocaleString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
   
 
   return (
@@ -312,9 +321,43 @@ const OpcApprovedRequests = () => {
       <h2>Request Details</h2>
       <div className='viewmore-modal-container'>
         <div className='transac-container'>
-          <p style={{color: "#FFD700"}}><strong>Transaction Number:</strong> {selectedRequest.transactionId}</p>
+          <p 
+          style={{color: "#FFD700"}}><strong>Transaction Number:</strong> {selectedRequest.transactionId}
+          <span style={{marginLeft: "80px", fontWeight: "600"}}>Status: 
+            <span 
+            style={{
+              backgroundColor: "white", 
+              padding: "5px 10px", 
+              marginLeft: "20px", 
+              borderRadius:"5px",
+              fontWeight: "700",  
+              color: selectedRequest.status === "Approved" || selectedRequest.status === "Completed" ? "green" : selectedRequest.status === "Canceled" ? "red" : "black"  
+              }}>
+                {selectedRequest.status}
+                </span> 
+            </span>
+          </p>
         </div>
-        <div className='viewmore-inner-container'>
+        <div className='viewmore-inner-container'> 
+        <p><strong>Date Requested:</strong> {new Date(selectedRequest.reservationTimestamp).toLocaleString('en-US', {
+          month: 'short',
+          day: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        })}
+        </p>
+
+        <p><strong>Date Approved:</strong> {new Date(selectedRequest.opcTimestamp).toLocaleString('en-US', {
+          month: 'short',
+          day: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        })}
+        </p>
           <p><strong>Requestor:</strong> {selectedRequest.userName}</p>
           <p><strong>Type of Trip:</strong> {selectedRequest.typeOfTrip}</p>
           <p><strong>From:</strong> {selectedRequest.destinationFrom}</p>

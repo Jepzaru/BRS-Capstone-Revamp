@@ -30,6 +30,7 @@ public class ReservationVehicleEntity {
     private int capacity;
     private String status;
     private Boolean isCompleted = false;
+    private Boolean isCanceled = false;
     
     @JsonFormat(pattern = Constants.DataAnnotations.DATE_FORMAT)
     private LocalDate schedule;
@@ -144,5 +145,13 @@ public class ReservationVehicleEntity {
     
     public void setIsCompleted(Boolean isCompleted) {
         this.isCompleted = isCompleted;
+    }
+
+    public Boolean getIsCanceled() {
+        return isCanceled;
+    }
+    
+    public void setIsCanceled(Boolean isCanceled) {
+        this.isCanceled = isCanceled;
     }
 }

@@ -255,4 +255,20 @@ public class ReservationController {
                     .body(Constants.ResponseMessages.INVALID_COMPELTE_RESERVATION + e.getMessage());
         }
     }
+
+    // [PUT] Cancel a reservation
+    @PutMapping(Constants.ApiRoutes.CANCEL_RESERVATION)
+    public ResponseEntity<String> cancelReservation(@PathVariable int reservationId) {
+        try {
+            ReservationEntity canceledReservation = resServ.cancelReservation(reservationId);
+            
+            return ResponseEntity.ok(Constants.ResponseMessages.RESERVATION_CANCEL_SUCCESS + canceledReservation.getId());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Constants.ResponseMessages.NOT_FOUND_RESERVATION + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Constants.ResponseMessages.INVALID_COMPELTE_RESERVATION + e.getMessage());
+        }
+    }
 }

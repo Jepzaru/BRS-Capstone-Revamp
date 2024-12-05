@@ -3,6 +3,7 @@ import '../../CSS/UserCss/Header.css';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { FaBus } from "react-icons/fa";
 import logo from '../../Images/citlogo1.png';
+import defaultProfilePic from '../../Images/defaultProfile.png'; 
 
 const Header = () => {
   const [profilePicUrl, setProfilePicUrl] = useState('');
@@ -35,9 +36,11 @@ const Header = () => {
         setProfilePicUrl(URL.createObjectURL(imageBlob));
       } else {
         console.error('Failed to fetch profile picture');
+        setProfilePicUrl(defaultProfilePic); 
       }
     } catch (error) {
       console.error('Error fetching profile picture:', error);
+      setProfilePicUrl(defaultProfilePic); 
     }
   };
 
@@ -88,13 +91,15 @@ const Header = () => {
       <h2><FaBus style={{ marginRight: "15px", marginBottom: "-3px" }} />TRANSPORTATION RESERVATION SYSTEM</h2>
       <div className="header-right">
         <span className="greeting">{getGreeting()}, {formattedName}</span>
-        {profilePicUrl && (
-            <img
-              src={profilePicUrl}
-              alt="Profile"
-              className="header-profile-pic"
-            />
-          )}
+        <img
+          src={profilePicUrl || defaultProfilePic} 
+          alt="Profile"
+          className="header-profile-pic"
+          onError={(e) => {
+            e.target.onerror = null; 
+            e.target.src = defaultProfilePic; 
+          }}
+        />
         <button className="logout-button" onClick={handleLogoutClick}>
           <span className="logout-text">
             <FaSignOutAlt style={{ marginBottom: "-3px", marginRight: "5px" }} />
