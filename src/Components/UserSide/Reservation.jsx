@@ -623,7 +623,7 @@ const Reservation = () => {
               </div>
               <div className="button-group">
               <button type="button" className="reset-button" onClick={handleClear}>
-                    <IoTrash style={{ marginBottom: "-2px", marginRight: "5px" }} /> Clear Entities
+                    <IoTrash style={{ marginBottom: "-2px", marginRight: "5px" }} /> Clear Entries
                   </button>
                 <button type="button" className="submit-button" onClick={handleSubmit}>
                   <RiSendPlaneFill style={{marginBottom: "-3px", marginRight: "10px", color: "gold"}}/>Submit</button>
