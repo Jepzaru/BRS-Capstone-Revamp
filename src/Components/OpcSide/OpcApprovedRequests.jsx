@@ -341,17 +341,9 @@ const OpcApprovedRequests = () => {
           </p>
         </div>
         <div className='viewmore-inner-container'> 
-        <strong>Reservation Timestamp:</strong> {formattedDateTime || "Not Available"}
-
-        <p><strong>Date Approved:</strong> {new Date(selectedRequest.opcTimestamp).toLocaleString('en-US', {
-          month: 'short',
-          day: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        })}
-        </p>
+          <p><strong>Date Requested:</strong> {selectedRequest.reservationTimestamp}</p>
+          <p><strong>Date Approved:</strong> {selectedRequest.opcTimestamp}</p>
+          <p><strong>Requestor:</strong> {selectedRequest.userName}</p>
           <p><strong>Requestor:</strong> {selectedRequest.userName}</p>
           <p><strong>Type of Trip:</strong> {selectedRequest.typeOfTrip}</p>
           <p><strong>From:</strong> {selectedRequest.destinationFrom}</p>
