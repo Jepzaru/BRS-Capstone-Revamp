@@ -161,19 +161,21 @@ const OpcApprovedRequests = () => {
   }, [totalPages]);
 
   const handleViewMore = useCallback((request) => {
-    setSelectedRequest(request);
+    setSelectedRequest(request || {}); 
     setShowModal(true);
-  }, []);
+  }, [])
 
-  const formattedDateTime = new Date(selectedRequest.reservationTimestamp).toLocaleString('en-US', {
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  });
-  
+  const formattedDateTime = selectedRequest 
+  ? new Date(selectedRequest.reservationTimestamp).toLocaleString('en-US', {
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    })
+  : null;
+
 
   return (
     <div className="opcrequest">
@@ -339,15 +341,7 @@ const OpcApprovedRequests = () => {
           </p>
         </div>
         <div className='viewmore-inner-container'> 
-        <p><strong>Date Requested:</strong> {new Date(selectedRequest.reservationTimestamp).toLocaleString('en-US', {
-          month: 'short',
-          day: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        })}
-        </p>
+        <strong>Reservation Timestamp:</strong> {formattedDateTime || "Not Available"}
 
         <p><strong>Date Approved:</strong> {new Date(selectedRequest.opcTimestamp).toLocaleString('en-US', {
           month: 'short',
